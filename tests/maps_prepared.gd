@@ -49,6 +49,12 @@ func run() -> void:
 				for i in limit:
 					var cell: Vector2i=cells[i*cells.size()/limit]
 					camera.global_position=world.to_global(Vector3(cell.x*20.+10,2,cell.y*20.+10));stream._requeue()
+					# Uploads are intentionally spread over frames; drain the fixed
+					# budget before checking all instances after a teleport.
+					for frame in 40:
+						if stream.pending.is_empty() and stream.far_pending.is_empty():break
+						stream._requeue()
+					check(stream.pending.is_empty() and stream.far_pending.is_empty(),id+": bounded uploads eventually finish")
 					check(stream.pool.size()==49 and stream.created==49 and stream.retired_count==0,id+": teleport reuses the same 49 cells")
 					check(stream.far_pool.size()==49,id+": teleport retains the distant pool")
 					for j in stream.pool.size():check(stream.pool[j].get_instance_id()==nodes[j],id+": stable node identity")
