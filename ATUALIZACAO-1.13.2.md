@@ -1,6 +1,6 @@
 # Atualização 1.13.2 — G3, lunetas e carregamento de vegetação
 
-**Estado:** candidata preparada; publicação ainda não executada.
+**Estado:** PUBLICADA em 04/11/2026 — build 89.
 
 **Data:** 04/11/2026
 
@@ -22,10 +22,12 @@
 - `python tools/maps.py prepare --map all --output work/release1132-maps`: cinco relatórios sem erros; recursos preparados regenerados pelo pipeline oficial.
 - Preflight remoto: `PREFLIGHT_OK build=89`, com build 88 publicado.
 - Instalação assinada local: 13 verificações sem falhas; o executável protegido iniciou e carregou o módulo DLL.
+- Publicador: `VERIFIED_READY build=89` e `DEPLOYED build=89 version=1.13.2`, código zero.
+- Pós-publicação: manifesto público HTTPS igual ao assinado; build ativa 89; hashes dos binários Linux iguais ao manifesto; cinco serviços ativos (7/7 verificações).
 - A branch experimental de colisão FPP/TPP ficou fora da atualização: o ensaio comparativo de 28 atores mostrou regressão de p99 (10,60 ms para 18,43 ms).
 
 ## Limites e pendências
 
 - A validação do uploader é sintética e confirma o limite de trabalho por quadro; ainda não foi feito benchmark gráfico A/B prolongado na GPU afetada. Portanto, esta alteração reduz a concentração de uploads, mas não prova uma queda específica de temperatura, consumo ou frequência de throttling.
 - O validador do Afeganistão ainda rejeita uma âncora de spawn (161 de 162 válidas), condição conhecida e sem erros novos nesta preparação.
-- A validação do deploy Linux ainda está pendente antes de declarar a atualização publicada.
+- Download: https://192.168.101.24/.
