@@ -70,6 +70,8 @@ static func bind(actor: WarPlayer) -> Dictionary:
 	var model_rest_position:=Vector3(model.get_meta("rest_position",model.position)) if is_instance_valid(model) else Vector3.ZERO
 	var muzzle_model_local:=model.global_transform.affine_inverse()*actor.muzzle_marker.global_transform if is_instance_valid(model) and is_instance_valid(actor.muzzle_marker) else Transform3D.IDENTITY
 	var right_model_local:=model.global_transform.affine_inverse()*actor.weapon_hand_target(false) if is_instance_valid(model) else Vector3.ZERO
+	var optic_id:=str(actor.weapon_optics.selected_optic)
+	var optic_aimed_offset:=actor.weapon_optics.aimed_offset(weapon_id) if actor.weapon_optics.enabled(actor) else Vector3.ZERO
 	return {"offsets":offsets,"rest":rest.duplicate(true),"legs":legs,
 		"weapon_id":weapon_id,
 		"grip_left":weapon_space*((actor.avatar_parts.arm_l.get_node("HandL") as Node3D).global_position if weapon_id=="g3" else actor.weapon_hand_target(true)),
@@ -81,6 +83,8 @@ static func bind(actor: WarPlayer) -> Dictionary:
 		"model_rest":model_rest,
 		"model_rest_basis":model_rest_basis,
 		"model_rest_position":model_rest_position,
+		"optic_id":optic_id,
+		"optic_aimed_offset":optic_aimed_offset,
 		"ground_y":actor.stance.visual_ground_offset(actor),
 		"leg_scale":actor.stance.leg_scale(actor),
 		"reference_foot_y":actor.stance.reference_foot_y,
@@ -107,9 +111,13 @@ static func supported(state: Dictionary) -> bool:
 	var iron: bool=bool(state.get("iron",false))
 	var scoped: bool=bool(state.get("scoped",false))
 	var optic_enabled: bool=bool(state.get("optic_enabled",false))
-	# Hip/soft-aim and iron sights without an attached optical module share the
-	# same authoritative world weapon pose. Optical ADS remains a separate gate.
-	var ads_safe: bool=not scoped and (not iron or not optic_enabled)
+	var optic_weight: float=float(state.get("optic_weight",0.))
+	var optic_id: String=str(state.get("optic_id",""))
+	var valid_optic_weight: bool=is_finite(optic_weight) and optic_weight>=0. and optic_weight<=1.
+	var optical_state_valid: bool=(not optic_enabled and not scoped and optic_id.is_empty()) or (optic_enabled and valid_optic_weight and not optic_id.is_empty() and (not scoped or optic_weight>.0))
+	# Hip/soft-aim/iron without an optic and the full optical raise/lower
+	# timeline are both supported. Binding identity is checked in solve().
+	var ads_safe: bool=optical_state_valid and (not iron or not optic_enabled or valid_optic_weight)
 	var reload_left: float=float(state.get("reload_left",0.))
 	var reload_total: float=float(state.get("reload_total",0.))
 	var reload_weapon: String=GameWeapons.canonical(str(state.get("reload_weapon","")))
@@ -118,7 +126,7 @@ static func supported(state: Dictionary) -> bool:
 	return str(state.get("weapon","")) in SUPPORTED_WEAPONS and ads_safe and steady_posture and valid_motion and reload_safe and float(state.get("fire_cooldown",0.))<=0. and float(state.get("reaction",0.))==0. and float(state.get("attack",0.))==0. and float(state.get("recoil",0.))==0. and not bool(state.get("special",false))
 
 static func state(actor: WarPlayer) -> Dictionary:
-	return {"weapon":actor.weapon_id,"pitch":actor.pitch,"lean":actor.lean,"scoped":actor.weapon_optics.presented(),"iron":actor.iron_sights,"aiming":actor.aiming,"optic_enabled":actor.weapon_optics.enabled(actor),"fire_cooldown":actor.fire_cooldown,
+	return {"weapon":actor.weapon_id,"pitch":actor.pitch,"lean":actor.lean,"scoped":actor.weapon_optics.presented(),"iron":actor.iron_sights,"aiming":actor.aiming,"optic_enabled":actor.weapon_optics.enabled(actor),"optic_weight":actor.weapon_optics.aim_weight,"optic_id":str(actor.weapon_optics.selected_optic),"fire_cooldown":actor.fire_cooldown,
 		"grounded":actor.locomotion.grounded,"phase":actor.locomotion.phase,
 		"direction":actor.locomotion.local_direction,"velocity_ground_speed":Vector2(actor.velocity.x,actor.velocity.z).length(),
 		"crouched":actor.crouched,"prone":actor.prone,
@@ -224,7 +232,9 @@ static func _reload_geometry(bindings: Dictionary,input: Dictionary) -> Dictiona
 
 static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	if not supported(input) or str(input.get("weapon",""))!=str(bindings.get("weapon_id","")):
-		return {"supported":false,"reason":"Requires matching calibrated firearm and supported posture/motion; optical ADS, reload, recoil and utility remain gated"}
+		return {"supported":false,"reason":"Requires matching calibrated firearm and supported posture/motion; recoil and utility remain gated"}
+	if bool(input.get("optic_enabled",false)) and str(input.get("optic_id",""))!=str(bindings.get("optic_id","")):
+		return {"supported":false,"reason":"Optic does not match calibrated binding"}
 	var pitch: float=clampf(float(input.pitch),-1.5,1.5)
 	var lean: float=clampf(float(input.lean),-1.,1.)
 	var rest: Dictionary=bindings.rest
@@ -250,11 +260,19 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	var weapon_id: String=bindings.weapon_id
 	var weapon_offset:=Vector3(.15,-.045,-.38) if weapon_id in ["fal","g3"] else (Vector3(.20,-.035,-.48) if weapon_id=="glock" else Vector3(.23,-.06,-.53))
 	var weapon:=body*Transform3D(aim,shoulder+aim*weapon_offset)
-	weapon.origin.y-=.05*crouch+1.20*prone
-	weapon.origin.z-=.30*prone
-	if prone>0.:
-		var head_clearance: float=.19*clampf(float(bindings.head_proportion),.65,1.5)+.06
-		weapon.origin.x=lerpf(weapon.origin.x,maxf(weapon.origin.x,head_clearance),prone)
+	var optical_presenting: bool=bool(input.get("optic_enabled",false)) and (bool(input.get("iron",false)) or float(input.get("optic_weight",0.))>.00001)
+	if not optical_presenting:
+		weapon.origin.y-=.05*crouch+1.20*prone
+		weapon.origin.z-=.30*prone
+		if prone>0.:
+			var head_clearance: float=.19*clampf(float(bindings.head_proportion),.65,1.5)+.06
+			weapon.origin.x=lerpf(weapon.origin.x,maxf(weapon.origin.x,head_clearance),prone)
+	var optic_enabled: bool=bool(input.get("optic_enabled",false))
+	var optic_weight: float=clampf(float(input.get("optic_weight",0.)),0.,1.)
+	if optic_enabled and (bool(input.get("iron",false)) or optic_weight>.0):
+		var camera_position:=Vector3(lean*.23,1.68+float(bindings.ground_y)*(1.-prone)-.55*float(bindings.leg_scale)*crouch-1.20*prone,-.90*prone)
+		var aimed:=Transform3D(aim,camera_position+aim*Vector3(bindings.optic_aimed_offset))
+		weapon=weapon.interpolate_with(aimed,smoothstep(0.,1.,optic_weight))
 	if (moving>.00001 or sprint>.00001) and not bool(input.get("aiming",false)) and not bool(input.get("iron",false)) and float(input.get("reload_left",0.))<=.00001:
 		var pulse: float=sin(phase)
 		var lift: float=absf(cos(phase))

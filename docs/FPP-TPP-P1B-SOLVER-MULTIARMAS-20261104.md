@@ -91,15 +91,29 @@ Regras especificas preservadas:
 
 `tests/true_fpp_p1d_collision_reload.gd`: **150/150 poses** — 5 armas x 3 posturas x parado/movimento x 5 pontos de progresso da recarga. Mais **10/10 estados invalidos** rejeitados por arma/calibracao incompatível ou timer invalido. Gate: <1 mm em posicao/cano e `basis_delta < 0.005`; os erros observados ficaram em poucos milesimos de milimetro.
 
+## P1e — ADS optico e pose fisica da arma real
+
+O `bind()` agora calibra o **ID da optica** e o offset estatico do ponto de olho da lente. O estado do solver transporta `optic_weight` e `optic_id`; `solve()` reproduz a mesma interpolacao do `weapon_root` usada pelo jogo, incluindo standing/crouch/prone e lean, sem consultar camera, viewport, lente ou Node3D vivo.
+
+Tambem foi reproduzida uma regra especifica de `WarPlayer`: enquanto a optica esta sendo apresentada, o rebaixamento extra de arma usado no crouch/prone nao e aplicado antes da interpolacao. O fixture precisou reproduzir o physics tick do lean atualizando o deslocamento lateral do olho; sem isso, o teste comparava um `camera_pivot` artificialmente parado com o estado logico do personagem.
+
+- `tests/true_fpp_p1e_collision_optical_ads.gd`: **120/120 poses** — G3, AK, FAL e sniper x Hensoldt 4x/Precision 8x x 3 posturas x 5 pesos de ADS.
+- **16/16 estados opticos invalidos** rejeitados por ID de optica/calibracao incompatível ou peso fora de faixa.
+- Maior erro observado de posicao de regiao: aproximadamente **0,0073 mm**; maior erro de cano: aproximadamente **0,0044 mm**.
+- Regressao encadeada: P1e 120/120, P1d 150/150, P1c 90/90, P1b locomocao/prone e arsenal — **0 falhas**.
+- `tests/optical_ads_live.gd`, executado graficamente em Compatibility na GTX 1650: **421/421 checks**, BR e Guerra, com PiP real, alinhamento, contatos dos suportes, transicao/reversao de ADS e cancelamentos por recarga, granada, veiculo e morte.
+
+**Limite:** o solver valida a **pose fisica** que sustenta a optica; o SubViewport PiP continua no sistema visual existente. A P1e nao move renderizacao de lente para o CollisionPose e nao altera `weapon_optics.gd`.
+
 ## Etapas que continuam bloqueadas
 
-1. **P1b restante:** PiP/ADS óptico, tiros entre ticks, transições intermediárias de postura e equipamento especial. Standing, crouch, prone estável, caminhada, sprint, rastejamento, soft aim, iron sights sem óptica e recarga já têm paridade matemática nos fixtures atuais.
+1. **P1b restante:** tiros entre ticks, transições intermediárias de postura, equipamento especial e integração real de CollisionRig. Standing, crouch, prone estável, caminhada, sprint, rastejamento, soft aim, iron sights, recarga e ADS óptico já têm paridade matemática nos fixtures atuais.
 2. **Integração física real:** `collision_rig_proxy.gd` ainda recebe pose do rig visual e mantém shapes desligados. O solver multiarmas **não** está conectado a `WarPlayer`, nem as hitboxes autoritativas foram transferidas. Antes do swap, medir `CollisionPose` real 60 Hz x `PresentationPose` 8/15/30 Hz e comparar runtime sob carga.
 3. **Combate:** ainda não foram homologados disparo aceito, cobertura em quinas/janelas, dano por membro, ragdoll e 2 clientes exportados. Nenhum protocolo de rede ou anti-cheat foi mudado.
 4. **P2 e seguintes:** true FPP/câmera, integração de PiP na arma real, remoção de `view_root` e migração de gadgets, BR e outros modos seguem pendentes. Não apresentar a P1b como corpo único final.
 
 ## Segurança e integração
 
-Esta branch altera o solver isolado, testes P1b-P1d, este documento e uma correção pontual em `modes/war/scripts/stance.gd` para restaurar a pelve ao sair do prone. Não toca em `scripts/player.gd`, `modes/war/scripts/player.gd`, `main.gd`, `project.godot`, `weapon_optics.gd`, protocolo de rede nem modelos editados por outras IAs.
+Esta branch altera o solver isolado, testes P1b-P1e, este documento e uma correção pontual em `modes/war/scripts/stance.gd` para restaurar a pelve ao sair do prone. Não toca em `scripts/player.gd`, `modes/war/scripts/player.gd`, `main.gd`, `project.godot`, `weapon_optics.gd`, protocolo de rede nem modelos editados por outras IAs.
 
-**Próximo pacote recomendado:** modelar PiP/ADS óptico na arma real sem renderização dentro do solver; depois adicionar baseline de 28 bots no listen-server/dedicated, cobertura em quinas/janelas e somente então habilitar um piloto controlado do CollisionRig sob flag. Integrar branch atual por revisão; não publicar.
+**Próximo pacote recomendado:** validar tiros aceitos entre ticks e cobertura em quinas/janelas, adicionar baseline de 28 bots no listen-server/dedicated e somente então habilitar um piloto controlado do CollisionRig sob flag. Integrar branch atual por revisão; não publicar.
