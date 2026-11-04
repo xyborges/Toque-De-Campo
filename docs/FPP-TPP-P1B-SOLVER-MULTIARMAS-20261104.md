@@ -40,15 +40,44 @@ Para cada arma o fixture executa 76 lotes com 28 `solve` serializados (8 lotes d
 
 **Limite:** 28 chamadas com a mesma geometria calibrada e estados diferentes, **não** 28 jogadores com cenas, GDExtension, servidor ENet, animação visual, IA, hitboxes ativas e GPU. Não afirmar melhoria de FPS ou menor custo da versão de produção com estes números.
 
+## Segundo pacote — prone e locomocao
+
+A continuidade da P1b ampliou o solver para **prone estavel e locomocao ativa** sem leitura de nodes durante `solve()`. O estado agora carrega postura, contato com o solo, fase da passada, direcao local e os pesos de marcha/sprint; a geometria de pe e os bounds das botas continuam sendo calibrados apenas no `bind()`.
+
+Validacoes desta rodada:
+
+- **25/25 poses prone**: 5 armas x 5 combinacoes de pitch/lean.
+- **60/60 poses de movimento**: caminhada, corrida, deslocamento agachado e rastejamento, com 3 fases de passada por modo e 5 armas.
+- As pernas foram verificadas como realmente variando entre amostras; o teste nao aceita uma pose estacionaria repetida como locomocao valida.
+- Tolerancias reforcadas: erro de posicao de regiao e cano abaixo de **1 mm**, e `basis_delta < 0.005`. Os resultados observados ficaram na ordem de poucos milesimos de milimetro.
+- **25/25 rejeicoes de movimento inseguro** adicionais: sem contato com solo, membros inferiores incapazes, ADS ativo e disparo em cooldown continuam fora do contrato do solver.
+- O prone respeita o clamp real de mira de `WarPlayer` em `-0.38 rad`; valores externos abaixo disso nao deslocam o cano para uma pose que o jogo nunca permite.
+- Foi encontrado e corrigido um bug preexistente no rig atual: ao levantar diretamente do prone, `Pelvis.rotation.x` permanecia em `-PI/2`, deixando `abdomenPelvis` orientado 90 graus. O teste `true_fpp_p1b_pelvis_upright.gd` cobre `2 -> 0` e `2 -> 1 -> 0` com restauracao exata.
+- Suite completa da rodada: `true_fpp_p1b_pelvis_upright`, `true_fpp_p1b_collision_stance_motion`, `true_fpp_p1b_collision_math_arsenal`, `true_fpp_p1b_collision_math_standing`, `true_fpp_p1b_collision_rig_proxy`, `true_fpp_p1a_collision_snapshot`, `prone_weapon_pose_validation` (**1126/1126**) e `optics_universal_validation_20261103` (**242/242**) — todas com exit 0.
+
+### Microbenchmark de movimento
+
+Fixture isolado com 28 estados sinteticos em movimento por lote, 8 lotes de aquecimento e 68 medidos:
+
+| Arma | p50 / 28 solves | p95 | p99 |
+|---|---:|---:|---:|
+| G3 | 2,155 ms | 3,242 ms | 3,534 ms |
+| AK | 1,725 ms | 2,384 ms | 2,475 ms |
+| FAL | 1,841 ms | 2,792 ms | 3,269 ms |
+| Glock | 1,880 ms | 2,375 ms | 2,750 ms |
+| Sniper | 1,749 ms | 2,069 ms | 2,389 ms |
+
+Isto ainda **nao** e custo de 28 personagens reais. Nao inclui entidades, broadphase, rede, IA, audio, renderizacao ou atualizacao de `Area3D`.
+
 ## Etapas que continuam bloqueadas
 
-1. **P1b restante:** solver de prone, gait/locomoção, sprint, recarga, ADS e PiP, tiros entre ticks e equipamento especial. Cada etapa exige equivalência de transforms, não basta que a arma renderize.
+1. **P1b restante:** recarga, ADS/iron, PiP, tiros entre ticks, transições intermediárias de postura e equipamento especial. Standing, crouch, prone estável, caminhada, sprint e rastejamento já têm paridade matemática nos fixtures atuais.
 2. **Integração física real:** `collision_rig_proxy.gd` ainda recebe pose do rig visual e mantém shapes desligados. O solver multiarmas **não** está conectado a `WarPlayer`, nem as hitboxes autoritativas foram transferidas. Antes do swap, medir `CollisionPose` real 60 Hz x `PresentationPose` 8/15/30 Hz e comparar runtime sob carga.
 3. **Combate:** ainda não foram homologados disparo aceito, cobertura em quinas/janelas, dano por membro, ragdoll e 2 clientes exportados. Nenhum protocolo de rede ou anti-cheat foi mudado.
 4. **P2 e seguintes:** true FPP/câmera, integração de PiP na arma real, remoção de `view_root` e migração de gadgets, BR e outros modos seguem pendentes. Não apresentar a P1b como corpo único final.
 
 ## Segurança e integração
 
-Esta branch altera **somente um solver isolado, um teste e este documento**; não toca em `scripts/player.gd`, `modes/war/scripts/player.gd`, `main.gd`, `project.godot`, `weapon_optics.gd`, gameplay nem modelos editados por outras IAs.
+Esta branch altera o solver isolado, dois testes P1b, este documento e uma correção pontual em `modes/war/scripts/stance.gd` para restaurar a pelve ao sair do prone. Não toca em `scripts/player.gd`, `modes/war/scripts/player.gd`, `main.gd`, `project.godot`, `weapon_optics.gd`, protocolo de rede nem modelos editados por outras IAs.
 
-**Próximo pacote recomendado:** expandir o solver para prone/locomoção, adicionar baseline de 28 bots no listen-server e dedicated, testar cobertura e habilitar piloto controlado de CollisionRig sob flag somente após passar esses gates. Integrar branch atual por revisão; não publicar.
+**Próximo pacote recomendado:** modelar recarga e ADS/iron sem depender do rig visual, depois adicionar baseline de 28 bots no listen-server/dedicated, cobertura em quinas/janelas e somente então habilitar um piloto controlado do CollisionRig sob flag. Integrar branch atual por revisão; não publicar.
