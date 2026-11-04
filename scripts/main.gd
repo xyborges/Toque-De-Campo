@@ -13,6 +13,9 @@ var account_summary: Label
 var main_menu: GameMainMenu
 var infantry_hud: GameInfantryHUD
 var loading_screen: GameLoadingScreen
+var launch_layer: CanvasLayer
+var launch_curtain: GameLoadingScreen
+var launch_epoch := 0
 var pvp_connection_generation := 0
 var initial_loadout_pending := false
 var deployment_panel: GameInfantryDeployment
@@ -188,6 +191,7 @@ func _ready() -> void:
 	_build_audio()
 	_build_ui()
 	_build_modal_ui()
+	_build_launch_curtain()
 	_setup_voice()
 	get_window().focus_exited.connect(_focus_changed)
 	if dedicated_pvp: host_game("pvp")
@@ -434,7 +438,64 @@ func _hud_stat(name: String, value: String) -> Label:
 func _panel_style(_color: Color, _radius: int) -> StyleBoxFlat:
 	return FieldTheme.box()
 
+func _build_launch_curtain() -> void:
+	if DisplayServer.get_name() == "headless": return
+	launch_layer = CanvasLayer.new()
+	launch_layer.name = "LaunchCurtain"
+	launch_layer.layer = 90
+	add_child(launch_layer)
+	launch_curtain = GameLoadingScreen.new()
+	launch_layer.add_child(launch_curtain)
+	launch_curtain.hide()
+
+func _begin_launch(title: String, detail: String) -> int:
+	launch_epoch += 1
+	if is_instance_valid(launch_curtain):
+		launch_curtain.present(title,detail)
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	return launch_epoch
+
+func _end_launch(ticket: int) -> void:
+	if ticket == launch_epoch and is_instance_valid(launch_curtain):
+		launch_curtain.fade_away()
+
+func launch_from_menu(selected: String, offline := false) -> void:
+	if mode != "menu" or is_instance_valid(war_mode) or is_instance_valid(naval_mode): return
+	if is_instance_valid(launch_curtain) and launch_curtain.visible: return
+	var title := "PREPARANDO PARTIDA"
+	var detail := "Preparando a operação..."
+	match selected:
+		"office": title = "PREPARANDO TREINO"; detail = "Abrindo o equipamento inicial..."
+		"desert": title = "PREPARANDO DESERTO"; detail = "Iniciando treino..." if offline else "Conectando ao PVP..."
+		"naval": title = "PREPARANDO FROTA"; detail = "Abrindo as salas navais..."
+		"war": title = "PREPARANDO GUERRA"; detail = "Carregando a linha de frente..."
+		"war_afghan": title = "PREPARANDO AFEGÃO"; detail = "Carregando o vale afegão..."
+		"br": title = "PREPARANDO BATTLE ROYALE"; detail = "Carregando mapa e pareamento..."
+		_: return
+	var ticket := _begin_launch(title,detail)
+	# O primeiro frame precisa ser desenhado ANTES de qualquer construção pesada.
+	if is_instance_valid(launch_curtain):
+		await get_tree().process_frame
+		await get_tree().process_frame
+	if ticket != launch_epoch or mode != "menu": return
+	match selected:
+		"office": start_offline("training")
+		"desert":
+			if offline: start_offline("desert")
+			else: join_game("pvp")
+		"naval": open_naval()
+		"war": open_war(offline,WarOperation.UKRAINE)
+		"war_afghan": open_war(offline,WarOperation.AFGHAN)
+		"br": open_battle_royale(offline)
+	# As telas próprias de espera/matchmaking continuam gerindo a partida.
+	# A cortina global desaparece suavemente depois de a UI de destino existir.
+	if is_instance_valid(launch_curtain):
+		await get_tree().process_frame
+		await get_tree().process_frame
+	_end_launch(ticket)
+
 func show_menu() -> void:
+	var returning_from_game := mode != "menu" and not dedicated_pvp
 	if is_instance_valid(voice):voice.reset()
 	pvp_connection_generation += 1
 	match_generation += 1
@@ -494,6 +555,8 @@ func show_menu() -> void:
 	mode = "menu"
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	menu_layer.visible = true
+	if returning_from_game and (not is_instance_valid(launch_curtain) or not launch_curtain.visible):
+		GameUI.scene_fade(menu_layer)
 	if main_menu: main_menu.refresh()
 	hud_layer.visible = false
 	if world_root:
@@ -514,6 +577,11 @@ func start_offline(which: String) -> void:
 	deployment_panel.present(which)
 
 func _begin_offline(which: String,slots: Dictionary={},spawn_zone:="auto") -> void:
+	var ticket := -1
+	if mode == "menu" and not get_meta("test_mode",false) and is_instance_valid(launch_curtain):
+		ticket = _begin_launch("CARREGANDO TREINO","Preparando cenário e adversários...")
+		await get_tree().process_frame
+		await get_tree().process_frame
 	_read_profile_ui()
 	online = false
 	if multiplayer.multiplayer_peer:
@@ -531,6 +599,9 @@ func _begin_offline(which: String,slots: Dictionary={},spawn_zone:="auto") -> vo
 	offline_director = OfflineDirector.new()
 	offline_director.setup(self)
 	for i in range(8 if which == "training" else 12): _spawn_npc(i)
+	if ticket >= 0 and is_instance_valid(launch_curtain):
+		await get_tree().process_frame
+		_end_launch(ticket)
 
 func start_naval(_is_online: bool) -> void:
 	open_naval()
