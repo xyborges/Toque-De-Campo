@@ -104,6 +104,10 @@ func pose(actor: GamePlayer,refresh_grips:=true) -> void:
 	var previous_height:=actor.body_root.position.y
 	actor.body_root.position.y=visual_ground_offset(actor)*(1.-p)-.54*leg_scale(actor)*c+.22*p
 	if c==0 and p==0:
+		# A direct prone -> standing transition bypasses the low-posture
+		# branch that sets pelvis.rotation.x. Never retain a 90-degree pelvis
+		# (and rotated abdomen hitbox) after standing up.
+		(actor.body_root.get_node("Pelvis") as Node3D).rotation.x=0.
 		for data: Dictionary in leg_parts.values(): data.knee.rotation.x=0;data.shoe.rotation=Vector3.ZERO
 		# Swinging around a fixed hip shortened both legs vertically, leaving
 		# a visible gap while running. Plant the lowest sole during grounded
