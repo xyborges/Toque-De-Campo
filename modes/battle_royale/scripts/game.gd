@@ -600,7 +600,7 @@ func _peer_disconnected(id: int) -> void:
 	if _human_ids().is_empty() and had_humans:_cancel_empty_room()
 	elif phase=="waiting":_fill_queue_bots();_send_br_states();_publish_room_status()
 
-func _server_accept_shot(id: int,sequence: int,life: int,camera_origin: Vector3,direction: Vector3,weapon: String,aim_level:=-1) -> void:
+func _server_accept_shot(id: int,sequence: int,life: int,camera_origin: Vector3,direction: Vector3,weapon: String,aim_level:=-1,zero_range:=0) -> void:
 	var actor:=players.get(id) as BRPlayer
 	if not is_instance_valid(actor) or not br_round.is_alive(id) or phase!="active":
 		if is_instance_valid(actor):_reject_br_shot(actor,sequence,life)
@@ -622,7 +622,7 @@ func _server_accept_shot(id: int,sequence: int,life: int,camera_origin: Vector3,
 		if online: _broadcast("remote_shot_packet",[packet])
 		br_round.record_shot(id,weapon);return
 	var before:=int(actor.ammo.get(weapon,0))
-	super._server_accept_shot(id,sequence,life,camera_origin,direction,weapon,aim_level)
+	super._server_accept_shot(id,sequence,life,camera_origin,direction,weapon,aim_level,zero_range)
 	if int(actor.ammo.get(weapon,0))<before: br_round.record_shot(id,weapon)
 	else:_reject_br_shot(actor,sequence,life)
 

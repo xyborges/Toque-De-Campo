@@ -2,6 +2,7 @@ extends Node3D
 
 const PlayerScript = preload("res://scripts/player.gd")
 const NetworkCadence = preload("res://scripts/network_cadence.gd")
+const WEAPON_ZEROING = preload("res://scripts/weapon_zeroing.gd")
 const BASE_PORT := 3010
 const MAX_PLAYERS := 6
 
@@ -1060,15 +1061,15 @@ func remote_player_respawn(id: int, pos: Vector3, life: int) -> void:
 
 func _on_shot_requested(shooter: GamePlayer, _origin: Vector3, direction: Vector3, weapon_id: String, _is_melee: bool) -> void:
 	if online and not multiplayer.is_server():
-		rpc_id(1,"server_shot_request",shooter.shot_sequence,shooter.life_id,shooter.last_camera_origin,direction,weapon_id,2 if shooter.iron_sights else (1 if shooter.aiming else 0))
+		rpc_id(1,"server_shot_request",shooter.shot_sequence,shooter.life_id,shooter.last_camera_origin,direction,weapon_id,2 if shooter.iron_sights else (1 if shooter.aiming else 0),shooter.zeroing_distance(weapon_id))
 	else:
-		_server_accept_shot(shooter.peer_id,shooter.shot_sequence,shooter.life_id,shooter.last_camera_origin,direction,weapon_id,2 if shooter.iron_sights else (1 if shooter.aiming else 0))
+		_server_accept_shot(shooter.peer_id,shooter.shot_sequence,shooter.life_id,shooter.last_camera_origin,direction,weapon_id,2 if shooter.iron_sights else (1 if shooter.aiming else 0),shooter.zeroing_distance(weapon_id))
 
 @rpc("any_peer","call_remote","reliable")
-func server_shot_request(sequence: int, life: int, camera_origin: Vector3, direction: Vector3, weapon: String, aim_level := 0) -> void:
-	if multiplayer.is_server() and network_guard.allow(multiplayer.get_remote_sender_id(),"shot",25,8): _server_accept_shot(multiplayer.get_remote_sender_id(),sequence,life,camera_origin,direction,weapon,aim_level)
+func server_shot_request(sequence: int, life: int, camera_origin: Vector3, direction: Vector3, weapon: String, aim_level := 0,zero_range := 0) -> void:
+	if multiplayer.is_server() and network_guard.allow(multiplayer.get_remote_sender_id(),"shot",25,8): _server_accept_shot(multiplayer.get_remote_sender_id(),sequence,life,camera_origin,direction,weapon,aim_level,zero_range)
 
-func _server_accept_shot(id: int, sequence: int, life: int, camera_origin: Vector3, direction: Vector3, weapon: String, aim_level := -1) -> void:
+func _server_accept_shot(id: int, sequence: int, life: int, camera_origin: Vector3, direction: Vector3, weapon: String, aim_level := -1,zero_range := 0) -> void:
 	if (dedicated_pvp and players.size()<2) or (is_instance_valid(domination) and domination.blocked()):
 		# A rejected predicted shot must still be acknowledged. Otherwise an
 		# empty predicted magazine can remain empty after the room resumes.
@@ -1096,6 +1097,8 @@ func _server_accept_shot(id: int, sequence: int, life: int, camera_origin: Vecto
 		sync_inventory(shooter)
 		return
 	var item := shooter.weapon_spec(weapon)
+	var accepted_zero:=WEAPON_ZEROING.sanitize(int(zero_range),item) if aim_level==2 else 0
+	if aim_level==2 and WEAPON_ZEROING.supported(item):shooter.zeroing_ranges[weapon]=accepted_zero
 	if item.kind == "melee" and CombatRules.limb_disability_enabled(self) and float(shooter.limbs.armL) <= 0.0 and float(shooter.limbs.armR) <= 0.0: return
 	var now := Time.get_ticks_msec() * 0.001
 	var scheduled:=float(shot_clocks.get(id,-100.0))+float(item.cooldown)
@@ -1121,6 +1124,7 @@ func _server_accept_shot(id: int, sequence: int, life: int, camera_origin: Vecto
 	var point: Vector3 = aim_hit.position if not aim_hit.is_empty() else camera_origin + direction * float(item.range)
 	var shot_direction := (point - origin).normalized()
 	if shot_direction.dot(direction) < 0.1: shot_direction = direction
+	if accepted_zero>0:shot_direction=WEAPON_ZEROING.compensate(shot_direction,item,accepted_zero)
 	# The eye-to-muzzle sweep prevents a protruding barrel from bypassing a wall.
 	var block_query := PhysicsRayQueryParameters3D.create(eye,origin,1,_collision_excludes(id,false))
 	block_query.hit_from_inside = true
@@ -1132,7 +1136,7 @@ func _server_accept_shot(id: int, sequence: int, life: int, camera_origin: Vecto
 	shot_direction = shot_direction.rotated(Vector3.UP,random.randf_range(-spread,spread))
 	var side := shot_direction.cross(Vector3.UP).normalized()
 	if side.length_squared() > 0.01: shot_direction = shot_direction.rotated(side,random.randf_range(-spread,spread)).normalized()
-	var packet := {"shot_id":shot_id,"owner":id,"sequence":sequence,"life":life,"weapon":weapon,"origin":origin,"direction":shot_direction,"blocked":not obstruction.is_empty(),"simulation":item.simulation}
+	var packet := {"shot_id":shot_id,"owner":id,"sequence":sequence,"life":life,"weapon":weapon,"origin":origin,"direction":shot_direction,"blocked":not obstruction.is_empty(),"simulation":item.simulation,"zero_range":accepted_zero}
 	if item.kind=="melee": packet["melee_offset"]=_melee_network_delay(id)
 	_present_shot(packet)
 	if online: _broadcast("remote_shot_packet",[packet])
