@@ -839,7 +839,7 @@ func _peer_disconnected(id: int) -> void:
 		if humans==0 and is_instance_valid(bot_director): bot_director.clear_online()
 		if humans==0: reset_operation()
 
-func _server_accept_shot(id: int,sequence: int,life: int,camera_origin: Vector3,direction: Vector3,weapon: String,aim_level := -1) -> void:
+func _server_accept_shot(id: int,sequence: int,life: int,camera_origin: Vector3,direction: Vector3,weapon: String,aim_level := -1,zero_range := 0) -> void:
 	if water_restricted(players.get(id)) or not _eligible(id) or not _battle_active():
 		var rejected:=players.get(id) as GamePlayer
 		if is_instance_valid(rejected) and rejected.life_id==life:
@@ -853,7 +853,7 @@ func _server_accept_shot(id: int,sequence: int,life: int,camera_origin: Vector3,
 		sync_inventory(actor)
 		return
 	members[id].shield = 0.0
-	super._server_accept_shot(id,sequence,life,camera_origin,direction,weapon,aim_level)
+	super._server_accept_shot(id,sequence,life,camera_origin,direction,weapon,aim_level,zero_range)
 
 func _eligible(id: int) -> bool:
 	return players.has(id) and members.has(id) and bool(members[id].deployed) and int(members[id].team)>=0 and players[id].hp>0 and str(members[id].vehicle).is_empty()

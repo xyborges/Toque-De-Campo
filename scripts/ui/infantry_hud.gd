@@ -1,9 +1,11 @@
 extends Control
 class_name GameInfantryHUD
+const WEAPON_ZEROING=preload("res://scripts/weapon_zeroing.gd")
 var game: Node
 var hp: Label
 var health: ProgressBar
 var ammo: Label
+var zeroing: Label
 var rank: Label
 var notice: Label
 var dot: ColorRect
@@ -67,6 +69,8 @@ func _ready() -> void:
 	armament.add_child(right)
 	ammo = GameUI.label(right,"AK\n30 / 180",28)
 	ammo.autowrap_mode=TextServer.AUTOWRAP_OFF
+	zeroing=GameUI.label(right,"ZERAGEM · 0 m",11,FieldTheme.MUTED)
+	zeroing.autowrap_mode=TextServer.AUTOWRAP_OFF
 	low_ammo=GameUI.label(right,"",12,FieldTheme.BAD);low_ammo.hide()
 	var slots:=VBoxContainer.new();slots.add_theme_constant_override("separation",3);right.add_child(slots)
 	for key in [1,2,3,4]: _build_slot(slots,key)
@@ -266,6 +270,10 @@ func refresh() -> void:
 		reload_text.hide();reload_bar.hide()
 	elif grenade_active: ammo_text="GRANADA\n×%d DISPONÍVEIS"%player.grenades
 	_set_text(ammo,ammo_text)
+	var zero_item:=player.weapon_spec(player.weapon_id)
+	zeroing.visible=WEAPON_ZEROING.supported(zero_item) and not grenade_active and not special_active
+	if zeroing.visible:
+		_set_text(zeroing,"ZERAGEM · %d m · SCROLL AO MIRAR"%player.zeroing_distance())
 	var magazine:=int(player.ammo.get(player.weapon_id,0))
 	var warning:="SEM MUNIÇÃO · R PARA RECARREGAR" if magazine==0 and int(player.reserves.get(player.weapon_id,0))>0 else ("SEM MUNIÇÃO" if magazine==0 else "POUCA MUNIÇÃO")
 	low_ammo.visible=item.kind=="firearm" and not grenade_active and not special_active and magazine<=maxi(1,int(item.mag)*.2)
