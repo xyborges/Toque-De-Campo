@@ -3,7 +3,7 @@
 **Data:** 04/11/2026
 **Plano principal:** [FPP-TPP-CORPO-UNICO-PLANO-20261104.md](FPP-TPP-CORPO-UNICO-PLANO-20261104.md)
 **Plano Squad:** [REALISMO-TATICO-PLANO-SQUAD-20261104.md](REALISMO-TATICO-PLANO-SQUAD-20261104.md)
-**Estado:** código e QA preparados em **branch exclusiva**, sem ativar no `WarPlayer` real; nenhum release/merge realizado.
+**Estado:** CollisionRig opt-in no modo Guerra, validado em rede local de QA. O teste de custo com 28 atores ainda reprova o piloto.
 
 ## Escopo entregue
 
@@ -148,16 +148,32 @@ O pipeline completo de combate foi exercitado com `actor.hit_regions` apontando 
 - `DeathRagdoll.create()` construiu o cadáver articulado completo a partir do corpo visual separado; cabeça e torso receberam impulso na direção do impacto fatal.
 - `_collision_excludes()` incluiu as 16 regiões do proxy, preservando a exclusão do próprio corpo durante disparos.
 
-**Resultado:** dano por membro e ragdoll deixam de ser bloqueadores locais da P1. Ainda falta validar esse mesmo caminho em rede real/exportada.
+**Resultado:** dano por membro e ragdoll deixam de ser bloqueadores locais da P1. O teste P1j cobre dano replicado em rede local. A validação em builds exportados segue pendente.
+
+## P1j — disparo G3 e dano replicado em ENet/DTLS
+
+O teste inicia três processos Godot 4.7.2 headless em loopback. O servidor dedicado de QA usa a flag P1g e o atirador chama o fluxo normal de disparo com a câmera efetivamente em TPP. O projétil do G3 atingiu a região `Collision_chest` do CollisionRig independente, o cliente atingido recebeu a mesma região e o mesmo HP, e a munição caiu uma vez no servidor e no atirador. **19/19 verificações passaram** entre os três processos.
+
+Os logs da tentativa anterior registraram `admission_rejected` com motivo `map_content` após o transporte conectar. O fixture usa um campo de tiro plano e mantém a identidade compartilhada do mapa na admissão. Ele substitui a checagem de atualidade do terreno preparado apenas no processo de teste, pois esse terreno fica fora do cenário. O servidor e os clientes usam o fluxo ENet/DTLS do jogo e um certificado local de QA. Builds exportados, rede externa e admissão com o mapa completo seguem pendentes.
+
+Para reproduzir, execute o comando abaixo numa cópia com os recursos já importados.
+
+```powershell
+python tests/run_true_fpp_p1j_network.py --engine <Godot-console> --cert <certificado-localhost-QA> --key <chave-QA>
+```
+
+## Custo com 28 atores sintéticos
+
+O ensaio headless P1g na branch do solver manteve **28 proxies autoritativos, 448 regiões e zero regiões legadas ativas**. A mediana do lote foi de **1,04 ms para 6,55 ms** e o p99 de **10,60 ms para 18,43 ms** com o piloto. O ensaio reprovou. Dos 3.024 ticks de ator contados com aquecimento, 1.463 usaram a pose legada. O contrato do solver ainda rejeita transições intermediárias de prone, presentes na carga. A contagem agrega todos os motivos do fallback.
+
+A amostra compara duas rodadas sequenciais de 90 medições, com LOD visual e colisão. Ela mede custo de CPU e física em atores sintéticos. Falta o A/B pareado em partida renderizada com 28 bots para medir FPS e estabilidade.
 
 ## Etapas que continuam bloqueadas
 
-1. **P1 restante para release:** A/B de 28 bots com CollisionRig real e tiro/dano entre ticks em multiplayer listen/dedicated/exportado. Transições especiais não suportadas já têm fallback seguro para a pose legada, mas ainda precisam de observação em partida.
-2. **Ativação de produção:** o CollisionRig está conectado ao `WarPlayer` sob flag QA, mas **desligado por padrão**. Só remover esse gate depois dos testes de carga/rede.
-3. **P2 e seguintes:** true FPP/câmera, integração definitiva do PiP na arma real, remoção de `view_root` e migração de gadgets, BR e outros modos seguem pendentes. Não apresentar a P1 como corpo único final.
+1. Instrumentar os motivos do fallback em movimento e transições de postura, melhorar o custo do CollisionRig e repetir o A/B com 28 bots em partida.
+2. Validar o piloto em builds exportados e servidor listen/dedicated com o mapa completo antes de ativá-lo por padrão.
+3. Prosseguir para a câmera FPP de corpo único do G3, o PiP na arma real e a remoção de `view_root` conforme os gates do plano.
 
 ## Segurança e integração
 
 A linha P1 altera o solver, testes P1b-P1i, `collision_rig_proxy.gd`, `modes/war/scripts/player.gd`, este documento, uma correção pontual em `modes/war/scripts/stance.gd` e **`scripts/main.gd` apenas na autoridade do raycast de mira**. O piloto P1g permanece desligado sem argumento de QA. `project.godot` e `weapon_optics.gd` não foram alterados por esta linha.
-
-**Próximo pacote recomendado:** concluir o A/B de 28 atores/bots que já roda em sessão separada e depois validar dois clientes exportados em listen/dedicated. Só então considerar habilitação por padrão e release.
