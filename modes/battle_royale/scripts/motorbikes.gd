@@ -118,6 +118,11 @@ func safe_exit(bike: WarVehicle,actor: GamePlayer) -> Dictionary:
 	return {}
 
 func _restore_actor(actor: GamePlayer) -> void:
+	var former_bike:=bikes.get(actor.vehicle_id) as Node
+	if is_instance_valid(former_bike): former_bike.call("reset_rider_pose",actor)
+	else:
+		actor.body_root.position=Vector3.ZERO;actor.body_root.rotation=Vector3.ZERO
+		actor.rotation.x=0.;actor.rotation.z=0.
 	actor.vehicle_id="";actor.velocity=Vector3.ZERO;actor.trigger_held=false
 	actor.camera_pivot.rotation.y=0.;actor.rotation.y=actor.yaw
 	actor.stance.advance(actor,1.)

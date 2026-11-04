@@ -677,6 +677,7 @@ func release(id: int,forced := false) -> bool:
 	controls.erase(id);sequences.erase(id);locks.erase(id);healing.erase(id)
 	if not member.is_empty(): member.vehicle="";member.vehicle_seat=-1;member.vehicle_role=""
 	if is_instance_valid(actor):
+		if _transport(current): current.call("reset_rider_pose",actor)
 		actor.vehicle_id="";actor.velocity=Vector3.ZERO;actor.trigger_held=false
 		actor.fire_cooldown=0;actor.cancel_reload();actor.cancel_melee();actor.clear_aim()
 		if actor.hp>0:
@@ -777,6 +778,11 @@ func exit_confirmed(point: Vector3) -> void:
 		# The identity packet that clears this field is sent immediately after
 		# this reliable confirmation.  Clear the local presentation state here
 		# as well so the restoration below cannot be skipped by packet order.
+		var prior:=find_target(actor.vehicle_id)
+		if is_instance_valid(prior) and _transport(prior): prior.call("reset_rider_pose",actor)
+		else:
+			actor.body_root.position=Vector3.ZERO;actor.body_root.rotation=Vector3.ZERO
+			actor.rotation.x=0.;actor.rotation.z=0.
 		actor.vehicle_id=""
 		actor.global_position=point;actor.velocity=Vector3.ZERO
 		actor.restore_infantry_presentation_after_vehicle_exit()
