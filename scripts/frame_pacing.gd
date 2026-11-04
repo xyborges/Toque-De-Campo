@@ -138,7 +138,7 @@ func tick(game: Node,now: int=-1) -> void:
 	for controller in game.get_tree().get_nodes_in_group("war_vegetation_visuals"):
 		if not game.is_ancestor_of(controller):continue
 		var streamer: Node=controller.get("streamer")
-		if is_instance_valid(streamer):details.grass_stream={"updates":streamer.updates,"far_updates":streamer.far_updates,"maximum_update_ms":streamer.max_build_ms,"last_update_ms":streamer.last_update_ms,"last_update_cells":streamer.last_update_cells,"visible_instances":streamer.visible_instances,"active_cells":streamer.cells.size(),"pool_size":streamer.pool.size(),"far_pool_size":streamer.far_pool.size()}
+		if is_instance_valid(streamer):details.grass_stream={"updates":streamer.updates,"far_updates":streamer.far_updates,"maximum_update_ms":streamer.max_build_ms,"last_update_ms":streamer.last_update_ms,"last_update_cells":streamer.last_update_cells,"visible_instances":streamer.visible_instances,"pending_near":streamer.pending.size(),"pending_far":streamer.far_pending.size(),"max_bindings_per_frame":streamer.max_bindings_per_frame,"active_cells":streamer.cells.size(),"pool_size":streamer.pool.size(),"far_pool_size":streamer.far_pool.size()}
 	var rendering: Node=game.world_root.get_node_or_null("ScenarioRendering") if is_instance_valid(game.world_root) else null
 	if rendering:details.scenario_rendering=rendering.diagnostics()
 	var legacy_grass: Dictionary={"batches":0,"instances":0,"near_instances":0,"distant_instances":0}
