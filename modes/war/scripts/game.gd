@@ -532,7 +532,10 @@ func war_identity(id: int,data: Dictionary) -> void:
 	actor.deployed = bool(data.deployed)
 	if newly_deployed: actor.stance.reset(actor)
 	if actor.deployed: actor.set_posture(int(data.get("posture",0)),false,true)
+	var former_vehicle := actor.vehicle_id
 	actor.vehicle_id = str(data.vehicle)
+	if not former_vehicle.is_empty() and former_vehicle!=actor.vehicle_id and is_instance_valid(vehicle_system):
+		vehicle_system.reset_transport_pose(vehicle_system.find_target(former_vehicle),actor)
 	actor.set_utility(str(data.get("utility","")) if actor.deployed and actor.vehicle_id.is_empty() else "")
 	# Older state has no zoom field. Apply only after occupancy and mode so
 	# a late snapshot cannot activate binoculars inside a vehicle.

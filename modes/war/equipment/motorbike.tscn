@@ -36,7 +36,7 @@ material = SubResource("Metal")
 size = Vector3(0.27,0.28,0.30)
 [sub_resource type="BoxMesh" id="Seat"]
 material = SubResource("Rubber")
-size = Vector3(0.31,0.12,0.70)
+size = Vector3(0.32,0.12,0.52)
 [sub_resource type="SphereMesh" id="Tank"]
 material = SubResource("Olive")
 radius = 0.23
@@ -142,7 +142,7 @@ position = Vector3(0.11,0.63,0.05)
 rotation_degrees = Vector3(62,0,0)
 mesh = SubResource("Frame")
 [node name="Seat" type="MeshInstance3D" parent="."]
-position = Vector3(0,0.91,0.25)
+position = Vector3(0,0.91,0.19)
 mesh = SubResource("Seat")
 [node name="Tank" type="MeshInstance3D" parent="."]
 position = Vector3(0,0.88,-0.22)
@@ -650,11 +650,11 @@ scale = Vector3(0.180,0.100,0.025)
 mesh = SubResource("DetailBox")
 material_override = SubResource("TailLampGlass")
 
-[node name="RearRackPlatform" type="MeshInstance3D" parent="."]
-position = Vector3(0.000,1.020,0.880)
-scale = Vector3(0.480,0.040,0.350)
+[node name="PillionSeat" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.955,0.655)
+scale = Vector3(0.34,0.13,0.43)
 mesh = SubResource("DetailBox")
-material_override = SubResource("SteelDark")
+material_override = SubResource("Rubber")
 
 [node name="LeftExhaustTip" type="MeshInstance3D" parent="."]
 position = Vector3(0.190,0.530,0.820)
@@ -692,11 +692,40 @@ scale = Vector3(0.050,0.090,0.620)
 mesh = SubResource("DetailBox")
 material_override = SubResource("SteelDark")
 
-[node name="SeatAnchor" type="Marker3D" parent="."]
-position = Vector3(0.000,0.910,0.250)
+[node name="DriverSeat" type="Marker3D" parent="."]
+position = Vector3(0,0.97,0.16)
 
-[node name="LeftFootPeg" type="Marker3D" parent="."]
-position = Vector3(-0.300,0.300,0.150)
+[node name="PillionSeatAnchor" type="Marker3D" parent="."]
+position = Vector3(0,1.02,0.68)
 
-[node name="RightFootPeg" type="Marker3D" parent="."]
-position = Vector3(0.300,0.300,0.150)
+[node name="DriverPegLeft" type="Marker3D" parent="."]
+position = Vector3(-0.3,0.32,0.15)
+
+[node name="PillionPegMeshLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-0.31,0.49,0.62)
+rotation_degrees = Vector3(0,0,90)
+scale = Vector3(0.04,0.20,0.045)
+mesh = SubResource("DetailRod")
+material_override = SubResource("SteelDark")
+
+[node name="PillionPegLeft" type="Marker3D" parent="."]
+position = Vector3(-0.31,0.51,0.62)
+
+[node name="PillionGripLeft" type="Marker3D" parent="."]
+position = Vector3(-0.22,0.98,0.72)
+
+[node name="DriverPegRight" type="Marker3D" parent="."]
+position = Vector3(0.3,0.32,0.15)
+
+[node name="PillionPegMeshRight" type="MeshInstance3D" parent="."]
+position = Vector3(0.31,0.49,0.62)
+rotation_degrees = Vector3(0,0,90)
+scale = Vector3(0.04,0.20,0.045)
+mesh = SubResource("DetailRod")
+material_override = SubResource("SteelDark")
+
+[node name="PillionPegRight" type="Marker3D" parent="."]
+position = Vector3(0.31,0.51,0.62)
+
+[node name="PillionGripRight" type="Marker3D" parent="."]
+position = Vector3(0.22,0.98,0.72)

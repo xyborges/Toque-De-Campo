@@ -25,8 +25,8 @@ func command(peer: int,label: String,action: String,data: Dictionary) -> void:
 	game.rpc_id(peer,"qa_bike_command",label,action,data)
 	await wait_for(func():return game.acknowledgements.has(str(peer)+":"+label),label)
 	await create_timer(.10).timeout
-func verify(label: String,bike_id: String,driver: int,exited:=0) -> void:
-	for id in game.multiplayer.get_peers():game.rpc_id(id,"qa_bike_check",label,bike_id,driver,exited)
+func verify(label: String,bike_id: String,driver: int,exited:=0,passenger:=0) -> void:
+	for id in game.multiplayer.get_peers():game.rpc_id(id,"qa_bike_check",label,bike_id,driver,exited,passenger)
 	for id in game.multiplayer.get_peers():
 		await wait_for(func():return game.acknowledgements.has(str(id)+":"+label) or game.acknowledgements.has(str(id)+":FAIL:"+label),label+str(id))
 		check(game.acknowledgements.has(str(id)+":"+label),"observer state "+label+" "+str(id))
@@ -62,14 +62,26 @@ func scenario() -> void:
 	check(bike.driver==alpha,"real boarding RPC reserves the seat for its sender")
 	await verify("boarded",bike.vehicle_id,alpha)
 	await command(bravo,"contested","enter",{"bike":bike.vehicle_id,"life":7,"generation":3})
-	check(bike.driver==alpha and game.players[bravo].vehicle_id.is_empty(),"another client cannot steal an occupied bike")
+	check(bike.driver==alpha and bike.seat_of(bravo)==1,"second client can board as a passenger")
+	await verify("two_aboard",bike.vehicle_id,alpha,0,bravo)
 	await command(alpha,"drive","control",control_data(bike,1))
 	var start: Vector3=bike.position
 	for number in range(2,9):await command(alpha,"drive"+str(number),"control",control_data(bike,number))
 	measurements.physical_travel_m=bike.position.distance_to(start)
 	check(bike.position.distance_to(start)>1.,"client throttle moves the server's real colliding bike")
 	await command(bravo,"foreign_control","control",control_data(bike,90))
-	check(not system.controls.has(bravo),"foreign peer cannot control someone else's bike")
+	check(not system.controls.has(bravo),"passenger cannot send driver controls")
+	var previous_epoch := bike.control_epoch
+	await command(alpha,"promote","enter",{"bike":bike.vehicle_id,"life":7,"generation":3})
+	check(bike.driver==bravo and bike.control_epoch>previous_epoch and not system.controls.has(alpha),
+		"driver exit promotes the passenger and revokes old controls")
+	await verify("promoted",bike.vehicle_id,bravo,alpha)
+	await command(bravo,"drive_after_promotion","control",control_data(bike,1,7,3,0.))
+	check(system.controls.has(bravo),"promoted passenger can drive under the new epoch")
+	await command(bravo,"leave_after_promotion","enter",{"bike":bike.vehicle_id,"life":7,"generation":3})
+	game.players[alpha].position=bike.position+Vector3(1.5,.08,0);game.network_guard.clear()
+	await command(alpha,"board_again","enter",{"bike":bike.vehicle_id,"life":7,"generation":3})
+	check(bike.driver==alpha,"bike is available after both occupants dismount")
 	var before: int=system.sequences.get(alpha,-1)
 	for entry in [["old_life",6,3],["old_round",7,2]]:await command(alpha,str(entry[0]),"control",control_data(bike,100,int(entry[1]),int(entry[2])))
 	var wrong:=control_data(other,100);wrong.epoch=bike.control_epoch

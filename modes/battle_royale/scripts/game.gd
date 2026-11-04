@@ -692,7 +692,7 @@ func _apply_hit(owner_id: int,hit: Dictionary,damage: float,fallback_region:="ch
 			bike.hp=maxf(0.,bike.hp-damage)
 			if bike.hp<=0.:
 				bike.destroyed=true;bike.collision_layer=0
-				if bike.driver>0:motorbikes.release(bike.driver,true)
+				for occupant: int in bike.occupant_ids(): motorbikes.release(occupant,true)
 		return
 	var victim:=_impact_character(hit.get("collider"))
 	if not victim or not br_round.is_alive(victim.peer_id): return

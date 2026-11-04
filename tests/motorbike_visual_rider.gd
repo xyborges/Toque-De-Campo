@@ -1,110 +1,149 @@
 extends SceneTree
 
-var checks:=0
-var failures: Array[String]=[]
+const BIKE := preload("res://modes/war/scripts/motorbike.gd")
+var checks := 0
+var failures: Array[String] = []
 var game: BattleRoyaleGame
 
 func _initialize() -> void:
 	run.call_deferred()
 
-func check(condition: bool,message: String) -> void:
-	checks+=1
-	print(("PASS " if condition else "FAIL ")+message)
-	if not condition: failures.append(message)
+func check(condition: bool, label: String) -> void:
+	checks += 1
+	if not condition:
+		failures.append(label)
+		print("FAIL ", label)
 
-func all_meshes(node: Node) -> Array[MeshInstance3D]:
-	var result: Array[MeshInstance3D]=[]
-	if node is MeshInstance3D: result.append(node)
-	for child in node.get_children(): result.append_array(all_meshes(child))
-	return result
+func occupant(peer: int) -> GamePlayer:
+	var actor := game._spawn_player(peer,peer==1,false,Vector3.ZERO)
+	actor.hp = 100
+	actor.set_physics_process(false)
+	actor.set_process(false)
+	return actor
 
-func capture(bike: WarVehicle,actor: GamePlayer,label: String) -> void:
-	if DisplayServer.get_name()=="headless": return
-	# Gameplay fixture opens the BR lobby on top of the test subject.
-	# Hide UI only in this disposable QA scene, not in production.
+func check_contact(actor: GamePlayer, seat: Marker3D, grips: Array[Marker3D], pegs: Array[Marker3D], label: String) -> void:
+	var pelvis := actor.body_root.get_node("Pelvis") as Node3D
+	check(actor.body_root.to_global(pelvis.position+Vector3.DOWN*.10).distance_to(seat.global_position)<.005,label+" stays seated")
+	check(actor.body_root.global_basis.x.distance_to(seat.global_basis.x)<.005,label+" shares the bike bank")
+	for index in 2:
+		var side := "L" if index==0 else "R"
+		var arm := actor.avatar_parts["arm_"+side.to_lower()] as Node3D
+		var hand := arm.get_node("Hand"+side) as Node3D
+		check(hand.global_position.distance_to(grips[index].global_position)<.015,label+" hand "+side+" stays on grip")
+		var leg: Dictionary = actor.stance.leg_parts[side]
+		var sole: Vector3 = leg.shoe.to_global(Vector3(0,float(leg.sole_y),0))
+		check(sole.distance_to(pegs[index].global_position)<.035,label+" boot "+side+" stays on peg, error "+str(sole.distance_to(pegs[index].global_position)))
+
+func capture(bike: WarVehicle, label: String) -> void:
+	var directory := OS.get_environment("MOTO_QA_DIR")
+	if DisplayServer.get_name()=="headless" or directory.is_empty(): return
 	for ui in root.find_children("*","CanvasLayer",true,false): ui.hide()
 	for control in root.find_children("*","Control",true,false): control.hide()
-	var camera:=Camera3D.new()
+	var camera := Camera3D.new()
 	game.world_root.add_child(camera)
-	camera.global_position=bike.global_position+bike.global_basis*Vector3(2.5,2.2,-3.3)
-	camera.look_at(bike.global_position+Vector3(0,1.1,0))
-	camera.fov=52.
+	camera.global_position = bike.to_global(Vector3(3.15,2.1,-2.35 if label=="right" else 2.35))
+	camera.look_at(bike.global_position+Vector3.UP)
+	camera.fov = 44.
 	camera.make_current()
-	await create_timer(.20).timeout
+	await create_timer(.2).timeout
 	RenderingServer.force_draw(false)
-	root.get_texture().get_image().save_png("user://motorbike-rider-"+label+".png")
+	check(root.get_texture().get_image().save_png(directory.path_join("motorbike-"+label+".png"))==OK,"capture "+label)
 	camera.queue_free()
 
 func run() -> void:
-	game=load("res://tests/br_completion_fixture.gd").new()
+	game = load("res://tests/br_completion_fixture.gd").new()
 	game.set_meta("br_host",true)
 	game.set_meta("test_mode",true)
 	root.add_child(game)
 	game.flat_world()
-	game.online=false
-	game.phase="active"
-	game.br_generation=3
-	var system:=load("res://tests/br_motorbikes_fixture.gd").new() as BRMotorbikes
-	system.game=game
-	game.motorbikes=system
-	game.world_root.add_child(system)
-	var bike: WarVehicle=system.bikes.br_bike_00
-	var actor:=game._spawn_player(1,true,false,Vector3(0,.07,0)) as GamePlayer
-	actor.hp=100
-	actor.life_id=4
-	actor.set_physics_process(false)
-	actor.set_process(false)
-	actor.vehicle_id=bike.vehicle_id
-	var motor:=bike as Node
-	if motor.get("model")==null:
-		var visual:=load("res://modes/war/equipment/motorbike.tscn").instantiate() as Node3D
-		bike.add_child(visual)
-		motor.set("model",visual)
-		motor.set("handlebar",visual.get_node("Steering"))
-		bike.wheels.clear()
-		bike.wheels.append(visual.get_node("RearWheel"))
-		bike.wheels.append(visual.get_node("Steering/FrontWheel"))
-	var model:=motor.get("model") as Node3D
-	var steering:=motor.get("handlebar") as Node3D
-	check(model!=null and steering!=null,"motorcycle model and steering pivot instantiated")
-	check(model.get_node_or_null("SeatAnchor")!=null and model.get_node_or_null("LeftFootPeg")!=null,"seat and rider footrest anchors exist")
-	check(bike.wheels.size()==2 and steering.get_node_or_null("FrontWheel")!=null,"front and rear wheels keep independent pivots")
-	check(model.get_node_or_null("Steering/GripLeft")!=null and model.get_node_or_null("Steering/GripRight")!=null,"hands follow true handlebar grip markers")
-	check(all_meshes(model).size()>10 and all_meshes(model).size()<110,"detailed bike model remains within draw-node budget")
-	bike.steering=1.
-	bike.speed=16.
-	for _i in 45: motor.animate_running_gear(1./60.)
-	check(steering.rotation.y<-.30,"positive/right steering points the visual front wheel right")
-	check(model.rotation.z<-.18,"right turn banks the motorcycle to the right")
-	check(absf(model.rotation.z)<deg_to_rad(19.1),"bank angle stays under safety cap")
-	bike.rotation.y=.67
-	bike.heading=0.
-	actor.global_position=bike.global_position+bike.global_basis*Vector3(0,.07,0)
-	motor.pose_rider(actor)
-	check(absf(angle_difference(actor.rotation.y,bike.rotation.y))<.001,"rider follows presented vehicle yaw, not stale heading")
-	check(absf(actor.body_root.rotation.z-model.rotation.z)<.01,"rider banks in sync with the motorcycle")
-	check(actor.body_root.position.y>.20 and actor.body_root.position.z>.10,"pelvis is seated on the saddle rather than inside the engine")
-	for side in ["l","r"]:
-		var arm:=actor.avatar_parts["arm_"+side] as Node3D
-		check(float(arm.get_meta("grip_error",99.))<.035,side+" hand reaches moving handlebar via IK")
-	await capture(bike,actor,"right")
-	bike.steering=-1.
-	for _i in 85: motor.animate_running_gear(1./60.)
-	motor.pose_rider(actor)
-	check(steering.rotation.y>.30,"negative/left steering points the visual wheel left")
-	check(model.rotation.z>.18,"left turn banks the motorcycle to the left")
-	check(actor.body_root.rotation.z>.18,"rider banks left in sync")
-	await capture(bike,actor,"left")
-	bike.steering=0.
-	bike.speed=0.
-	for _i in 80: motor.animate_running_gear(1./60.)
-	check(absf(steering.rotation.y)<.01 and absf(model.rotation.z)<.01,"bike returns smoothly to upright steering at rest")
-	motor.reset_rider_pose(actor)
-	check(actor.body_root.position.is_zero_approx() and actor.body_root.rotation.is_zero_approx(),"dismount clears motorcycle-specific body transforms")
-	check(actor.avatar_parts.head.rotation.is_zero_approx() and actor.avatar_parts.torso.rotation.is_zero_approx(),"dismount clears head and torso lean")
-	actor.vehicle_id=""
+	game.online = false
+	var bike := BIKE.new()
+	bike.kind = "bike_0"
+	bike.vehicle_id = "v_bike_qa"
+	bike.position.y = -.09
+	game.world_root.add_child(bike)
+	var driver := occupant(1)
+	var passenger := occupant(2)
+	check(bike.allocate_seat(1)==0 and bike.allocate_seat(2)==1 and bike.allocate_seat(3)==-1,"two distinct seat slots")
+	check(bike.wheels.size()==2 and bike.wheels[1].get_parent()==bike.handlebar,"independent front and rear pivots")
+	if DisplayServer.get_name()!="headless":
+		var mesh_count := bike.model.find_children("*","MeshInstance3D",true,false).size()
+		check(mesh_count>=8 and mesh_count<=25,"model detail is grouped into "+str(mesh_count)+" mesh instances")
+	bike.rotation = Vector3(.10,.66,.09)
+	bike.heading = 0.
+	bike.speed = 16.
+	for turn: float in [1.,-1.]:
+		bike.steering = turn
+		for _frame in 90: bike.animate_running_gear(1./60.)
+		check((bike.handlebar.basis*Vector3.FORWARD).x*turn>.30,"front wheel points in the requested direction")
+		check((bike.model.basis*Vector3.UP).x*turn>.27,"bike banks toward the inside of the turn")
+		check(absf(bike.bank)<=bike.MAX_BANK,"bike bank is bounded")
+		for actor: GamePlayer in [driver,passenger]:
+			actor.vehicle_id = bike.vehicle_id
+			actor.global_position = bike.to_global(bike.seat_position(bike.seat_of(actor.peer_id)))
+			bike.pose_rider(actor)
+		check(absf(angle_difference(driver.rotation.y,bike.rotation.y))<.001,"rider follows presented yaw")
+		check(not driver.view_root.visible,"rider has no duplicate first-person arms")
+		check_contact(driver,bike.driver_seat,bike.driver_grips,bike.driver_pegs,"driver")
+		check_contact(passenger,bike.pillion_seat,bike.pillion_grips,bike.pillion_pegs,"passenger")
+		await capture(bike,"right" if turn>0 else "left")
+	bike.speed = 0.
+	bike.steering = 0.
+	for _frame in 100: bike.animate_running_gear(1./60.)
+	check(bike.model.rotation.length()<.005 and absf(bike.handlebar.rotation.y)<.005,"bike settles upright at rest")
+	driver.vehicle_id = ""
+	BIKE.reset_rider_pose(driver)
+	check(driver.body_root.rotation.is_zero_approx() and absf(driver.body_root.position.z)<.001,"dismount restores infantry body transform")
+	check(driver.stance.leg_parts.L.knee.rotation.is_zero_approx(),"dismount restores knee pose")
 	game.free()
 	await process_frame
-	print("MOTORBIKE_VISUAL_RIDER %d checks %d failures"%[checks,failures.size()])
-	if not failures.is_empty(): print(JSON.stringify(failures))
+	if "--war-moto-flow" in OS.get_cmdline_user_args():
+		await check_war_boarding()
+	print("MOTORBIKE_VISUAL_RIDER %d checks, %d failures" % [checks,failures.size()])
 	quit(0 if failures.is_empty() else 1)
+
+func check_war_boarding() -> void:
+	var war := WarGame.new()
+	war.set_meta("war_host",true)
+	war.set_meta("war_test",true)
+	war.set_meta("test_mode",true)
+	root.add_child(war)
+	war.set_physics_process(false)
+	var manager := war.vehicle_system as WarVehicles
+	manager.set_physics_process(false)
+	manager.set_process(false)
+	war.war_fx.set_physics_process(false)
+	var riders: Array[WarPlayer] = []
+	for peer in [701,702]:
+		var actor := war._spawn_player(peer,false,false,Vector3.ZERO) as WarPlayer
+		actor.set_physics_process(false)
+		actor.deployed=true
+		actor.hp=100.
+		war.members[peer]={"team":0,"role":"soldier","deployed":true,"vehicle":"","vehicle_seat":-1,"vehicle_role":"","charges":3,"shield":0.,"gadget":"rpg","pending":{}}
+		war._register_match_stat(actor)
+		riders.append(actor)
+	for team in [0,1]:
+		var bike: WarVehicle = manager.vehicles["v_bike_%d_0"%team]
+		bike.position = WarTerrain.point(-450,280)
+		bike.rotation = Vector3.ZERO
+		await physics_frame
+		await physics_frame
+		for actor in riders:
+			actor.apply_identity(team,"soldier")
+			war.members[actor.peer_id].team=team
+			actor.position=WarTerrain.point(-453.9,280)+Vector3.UP*.2
+			manager.command_for(actor.peer_id,"enter",{"id":bike.vehicle_id})
+		check(bike.driver==701 and bike.seat_of(702)==1,"War team %d boards both seats" % team)
+		bike.speed=12.
+		bike.steering=1.
+		bike.animate_running_gear(.2)
+		manager.sync_occupants(bike)
+		check(riders[1].body_root.global_basis.x.distance_to(bike.model.global_basis.x)<.005,
+			"War team %d presents the passenger on the banked bike" % team)
+		check(manager.release(701,true) and bike.driver==702 and riders[0].body_root.rotation.is_zero_approx(),
+			"War team %d promotes passenger and resets the dismounted pose" % team)
+		manager.reset_occupancy()
+		check(bike.seats.is_empty() and riders[1].body_root.rotation.is_zero_approx(),
+			"War team %d round reset clears the seated pose" % team)
+	war.free()
+	await process_frame

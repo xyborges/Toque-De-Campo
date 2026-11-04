@@ -28,7 +28,9 @@ func _ready() -> void:
 		var bike: WarVehicle=BIKE.new();bike.kind="bike_0";bike.vehicle_id="br_bike_%02d"%bikes.size();bike.position=position;bike.heading=float(house.yaw);bike.rotation.y=bike.heading
 		add_child(bike);bikes[bike.vehicle_id]=bike
 
-func occupied(actor: GamePlayer) -> bool:return bikes.has(actor.vehicle_id) and bikes[actor.vehicle_id].driver==actor.peer_id
+func occupied(actor: GamePlayer) -> bool:
+	var bike := bikes.get(actor.vehicle_id) as WarVehicle
+	return is_instance_valid(bike) and bike.seat_of(actor.peer_id)>=0
 
 func interact() -> bool:
 	var actor:=game.local_player
@@ -38,7 +40,7 @@ func interact() -> bool:
 		var best:=2.8
 		for bike: WarVehicle in bikes.values():
 			var distance:=actor.global_position.distance_to(bike.global_position)
-			if distance<best and bike.driver<=0 and not bike.destroyed:best=distance;id=bike.vehicle_id
+			if distance<best and bike.first_available_seat()>=0 and not bike.destroyed:best=distance;id=bike.vehicle_id
 	if id.is_empty():return false
 	if game.multiplayer.is_server():_interact(actor.peer_id,id,actor.life_id,game.br_generation)
 	else:rpc_id(1,"server_interact",id,actor.life_id,game.br_generation)
@@ -56,11 +58,11 @@ func _interact(peer: int,id: String,life: int,generation: int) -> void:
 	var bike: WarVehicle=bikes[id]
 	if occupied(actor):release(peer);return
 	if not actor.vehicle_id.is_empty():return
-	if bike.driver>0 or bike.destroyed or actor.global_position.distance_to(bike.global_position)>3.:return
+	if bike.first_available_seat()<0 or bike.destroyed or actor.global_position.distance_to(bike.global_position)>3.:return
 	# Proximity alone cannot board through a building wall or closed door.
 	var sight:=PhysicsRayQueryParameters3D.create(actor.global_position+Vector3.UP*.9,bike.global_position+Vector3.UP*.9,1|16,[actor.get_rid(),bike.get_rid()])
 	if not get_world_3d().direct_space_state.intersect_ray(sight).is_empty():return
-	if bike.allocate_seat(peer)!=0:return
+	if bike.allocate_seat(peer)<0:return
 	_prepare_rider(actor);actor.vehicle_id=id;epoch+=1
 	controls.erase(peer);sequences.erase(peer)
 	if actor.body_collision:actor.body_collision.set_deferred("disabled",true)
@@ -71,12 +73,18 @@ func release(peer: int,forced:=false) -> bool:
 	if not game.multiplayer.is_server():return false
 	var actor:=game.players.get(peer) as GamePlayer
 	for bike: WarVehicle in bikes.values():
-		if bike.driver!=peer:continue
+		if bike.seat_of(peer)<0:continue
 		var exit: Dictionary={}
 		if is_instance_valid(actor) and actor.hp>0:
 			exit=safe_exit(bike,actor)
 			if exit.is_empty() and not forced:return false
-		bike.vacate_seat(peer);bike.speed=0.;controls.erase(peer);sequences.erase(peer)
+		var was_driver := bike.driver==peer
+		var promoted := bike.vacate_seat(peer)
+		if was_driver and promoted==0: bike.speed=0.
+		controls.erase(peer);sequences.erase(peer)
+		if promoted>0:
+			controls.erase(promoted);sequences.erase(promoted)
+			_sync_riders(bike)
 		if is_instance_valid(actor):
 			# Death/disconnect must release the reservation without relocating the
 			# corpse. Destruction/reset can force a living rider out of the seat.
@@ -94,7 +102,7 @@ func safe_exit(bike: WarVehicle,actor: GamePlayer) -> Dictionary:
 	var excluded: Array[RID]=[bike.get_rid(),actor.get_rid()]
 	var shape:=CapsuleShape3D.new();shape.radius=.36;shape.height=1.8
 	var space:=get_world_3d().direct_space_state
-	var origin:=bike.global_position+Vector3.UP*.95
+	var origin:=bike.to_global(bike.seat_position(bike.seat_of(actor.peer_id)))+Vector3.UP*.95
 	# Test both sides and ends. Do not teleport through a wall to a farther
 	# candidate; the full capsule must fit at the endpoint and along the route.
 	var offsets: Array[Vector3]=[Vector3(1.3,0,0),Vector3(-1.3,0,0),Vector3(0,0,1.8),Vector3(0,0,-1.8)]
@@ -118,12 +126,8 @@ func safe_exit(bike: WarVehicle,actor: GamePlayer) -> Dictionary:
 	return {}
 
 func _restore_actor(actor: GamePlayer) -> void:
-	var former_bike:=bikes.get(actor.vehicle_id) as Node
-	if is_instance_valid(former_bike): former_bike.call("reset_rider_pose",actor)
-	else:
-		actor.body_root.position=Vector3.ZERO;actor.body_root.rotation=Vector3.ZERO
-		actor.rotation.x=0.;actor.rotation.z=0.
 	actor.vehicle_id="";actor.velocity=Vector3.ZERO;actor.trigger_held=false
+	BIKE.reset_rider_pose(actor)
 	actor.camera_pivot.rotation.y=0.;actor.rotation.y=actor.yaw
 	actor.stance.advance(actor,1.)
 	if actor.body_collision:actor.body_collision.set_deferred("disabled",actor.hp<=0)
@@ -153,22 +157,23 @@ func remote_occupancy(id: String,seats: Dictionary,revision: int,control_epoch: 
 		if actor.vehicle_id==id or actor.vehicle_id.is_empty():
 			if actor.hp>0:actor.global_position=point;actor.network_target=point;actor.previous_position=point;actor.reset_physics_interpolation()
 			_restore_actor(actor)
-	_sync_rider(bike)
+	_sync_riders(bike)
 
-func _sync_rider(bike: WarVehicle) -> void:
-	if bike.driver<=0 or not game.players.has(bike.driver):return
-	var actor: GamePlayer=game.players[bike.driver]
-	var entering:=actor.vehicle_id!=bike.vehicle_id
-	if entering:_prepare_rider(actor)
-	actor.vehicle_id=bike.vehicle_id;actor.trigger_held=false
-	if actor.body_collision:actor.body_collision.set_deferred("disabled",true)
-	pose(actor)
-	_send_state()
+func _sync_riders(bike: WarVehicle) -> void:
+	for peer: int in bike.occupant_ids():
+		var actor := game.players.get(peer) as GamePlayer
+		if not is_instance_valid(actor): continue
+		if actor.vehicle_id!=bike.vehicle_id:
+			_prepare_rider(actor)
+			actor.vehicle_id=bike.vehicle_id
+			if actor.body_collision: actor.body_collision.set_deferred("disabled",true)
+		actor.trigger_held=false
+		pose(actor)
 
 func pose(actor: GamePlayer) -> void:
 	if not occupied(actor):return
 	var bike: WarVehicle=bikes[actor.vehicle_id]
-	actor.global_position=bike.global_position+bike.global_basis*Vector3(0,.07,0)
+	actor.global_position=bike.to_global(bike.seat_position(bike.seat_of(actor.peer_id)))
 	actor.velocity=Vector3.ZERO;actor.weapon_root.hide();actor.camera_pivot.position.y=1.5
 	bike.pose_rider(actor)
 	if actor.is_local:
@@ -195,7 +200,7 @@ func _accept_control(id: int,number: int,life: int,generation: int,throttle: flo
 	var actor:=game.players.get(id) as GamePlayer
 	if not actor or actor.hp<=0 or not occupied(actor) or game.phase!="active" or actor.life_id!=life or generation!=game.br_generation or number<=int(sequences.get(id,-1)) or not is_finite(throttle) or not is_finite(steer):return
 	var bike: WarVehicle=bikes[actor.vehicle_id]
-	if bike_id!=actor.vehicle_id or control_epoch!=bike.control_epoch:return
+	if bike.driver!=id or bike_id!=actor.vehicle_id or control_epoch!=bike.control_epoch:return
 	if not game.network_guard.allow(id,"br_bike_control",24,8):return
 	sequences[id]=number;controls[id]={"throttle":clampf(throttle,-1.,1.),"steer":clampf(steer,-1.,1.),"at":Time.get_ticks_msec()}
 
@@ -203,7 +208,7 @@ func _physics_process(delta: float) -> void:
 	if game.closing:return
 	var actor:=game.local_player
 	send_clock+=delta
-	if actor and occupied(actor) and send_clock>=.05:
+	if actor and occupied(actor) and bikes[actor.vehicle_id].driver==actor.peer_id and send_clock>=.05:
 		send_clock=0.;sequence+=1
 		var allowed:=game.gameplay_input_allowed() and actor.hp>0 and game.phase=="active"
 		var throttle:=Input.get_axis("move_back","move_forward") if allowed else 0.
@@ -212,8 +217,9 @@ func _physics_process(delta: float) -> void:
 		else:rpc_id(1,"server_control",sequence,actor.life_id,game.br_generation,throttle,steer,actor.vehicle_id,bikes[actor.vehicle_id].control_epoch)
 	for bike: WarVehicle in bikes.values():
 		if game.multiplayer.is_server():
-			var rider:=game.players.get(bike.driver) as GamePlayer
-			if bike.driver>0 and (not rider or rider.hp<=0 or game.phase!="active"):release(bike.driver,true)
+			for peer: int in bike.occupant_ids():
+				var rider := game.players.get(peer) as GamePlayer
+				if not is_instance_valid(rider) or rider.hp<=0 or game.phase!="active": release(peer,true)
 			var control: Dictionary=controls.get(bike.driver,{})
 			if Time.get_ticks_msec()-int(control.get("at",0))>300:control={}
 			bike.simulate(delta,control)
@@ -236,21 +242,23 @@ func remote_state(number: int,generation: int,states: Array) -> void:
 	if generation!=game.br_generation or states.size()>6:return
 	latest_sequence=maxi(number,latest_sequence)
 	for state: Variant in states:
-		if not state is Array or state.size()!=12:continue
+		if not state is Array or state.size() not in [12,13]:continue
 		var id:=str(state[0]);var bike:=bikes.get(id) as WarVehicle
 		if not bike or number<=int(state_sequences.get(id,-1)):continue
 		state_sequences[id]=number
-		var previous:=bike.driver;bike.receive_network_state(state)
-		if previous>0 and previous!=bike.driver and game.players.has(previous):
-			var old: GamePlayer=game.players[previous]
-			if old.vehicle_id==bike.vehicle_id:_restore_actor(old)
-		_sync_rider(bike)
+		var previous := bike.occupant_ids()
+		bike.receive_network_state(state)
+		for peer: int in previous:
+			if bike.seat_of(peer)>=0 or not game.players.has(peer): continue
+			var old: GamePlayer = game.players[peer]
+			if old.vehicle_id==bike.vehicle_id: _restore_actor(old)
+		_sync_riders(bike)
 
 func reset_round() -> void:
 	for bike: WarVehicle in bikes.values():
-		if bike.driver>0:
-			if game.multiplayer.is_server():release(bike.driver,true)
-			elif game.players.has(bike.driver):_restore_actor(game.players[bike.driver])
+		for peer: int in bike.occupant_ids():
+			if game.multiplayer.is_server(): release(peer,true)
+			elif game.players.has(peer): _restore_actor(game.players[peer])
 		bike.seats.clear();bike.seat_order.clear();bike.driver=0
 		bike.destroyed=false;bike.hp=220.;bike.position=bike.spawn_position;bike.destination=bike.spawn_position;bike.speed=0.;bike.velocity=Vector3.ZERO;bike.collision_layer=1|16
 		bike._wake_ground_rest();bike.ground_support.tilt=Basis.IDENTITY
