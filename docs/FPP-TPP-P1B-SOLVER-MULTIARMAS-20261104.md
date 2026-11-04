@@ -133,16 +133,31 @@ O swap é completo e reversível: o proxy é sincronizado antes de assumir autor
 - Desativar/reativar hitboxes e desligar o piloto preserva estado e não deixa colisão dupla.
 - Regressão encadeada após P1g: P1g 30/30, P1f 27/27, P1e 120/120, P1d 150/150, P1c 90/90, P1b locomocão/prone e arsenal — **0 falhas**.
 
-**Limite:** o piloto ainda não é configuração de produção. Falta provar custo e estabilidade com 28 bots, dano por membro/ragdoll e multiplayer listen/dedicated/exportado antes de habilitá-lo por padrão.
+**Limite:** o piloto ainda não é configuração de produção. Falta provar custo e estabilidade com 28 bots e multiplayer listen/dedicated/exportado antes de habilitá-lo por padrão.
+
+## P1i — dano por membro e ragdoll sobre o CollisionRig
+
+O pipeline completo de combate foi exercitado com `actor.hit_regions` apontando para o CollisionRig autoritativo. Como cada `Area3D` independente preserva `hit_region` e continua abaixo do `WarPlayer` na hierarquia, `WarGame._apply_hit()` resolve o alvo, a região e o grupo de membro sem depender de o collider permanecer preso ao mesh visual.
+
+- `tests/true_fpp_p1i_damage_ragdoll.gd`: **24/24 checks**, PASS.
+- `armL`: 20 de dano base produziram 13 HP e 20 no membro esquerdo, sem alterar braço direito ou pernas.
+- `handL`: metadado exato preservado e agrupado corretamente em `armL`.
+- `legR`: dano atingiu somente o membro direito correspondente.
+- `abdomenPelvis`: manteve o contrato legado de metadado `abdomen` e agrupamento `torso`.
+- Headshot fatal via collider do proxy registrou região, arma e direção, desativou as hitboxes autoritativas e acionou a contabilidade de morte.
+- `DeathRagdoll.create()` construiu o cadáver articulado completo a partir do corpo visual separado; cabeça e torso receberam impulso na direção do impacto fatal.
+- `_collision_excludes()` incluiu as 16 regiões do proxy, preservando a exclusão do próprio corpo durante disparos.
+
+**Resultado:** dano por membro e ragdoll deixam de ser bloqueadores locais da P1. Ainda falta validar esse mesmo caminho em rede real/exportada.
 
 ## Etapas que continuam bloqueadas
 
-1. **P1 restante para release:** A/B de 28 bots com CollisionRig real, dano por membro + ragdoll e tiro entre ticks em multiplayer real/exportado. Transições especiais não suportadas já têm fallback seguro para a pose legada, mas ainda precisam de observação em partida.
+1. **P1 restante para release:** A/B de 28 bots com CollisionRig real e tiro/dano entre ticks em multiplayer listen/dedicated/exportado. Transições especiais não suportadas já têm fallback seguro para a pose legada, mas ainda precisam de observação em partida.
 2. **Ativação de produção:** o CollisionRig está conectado ao `WarPlayer` sob flag QA, mas **desligado por padrão**. Só remover esse gate depois dos testes de carga/rede.
 3. **P2 e seguintes:** true FPP/câmera, integração definitiva do PiP na arma real, remoção de `view_root` e migração de gadgets, BR e outros modos seguem pendentes. Não apresentar a P1 como corpo único final.
 
 ## Segurança e integração
 
-Esta branch altera o solver, testes P1b-P1g, `collision_rig_proxy.gd`, `modes/war/scripts/player.gd`, este documento, uma correção pontual em `modes/war/scripts/stance.gd` e **`scripts/main.gd` apenas na autoridade do raycast de mira**. O piloto P1g permanece desligado sem argumento de QA. `project.godot` e `weapon_optics.gd` não foram alterados por esta branch.
+A linha P1 altera o solver, testes P1b-P1i, `collision_rig_proxy.gd`, `modes/war/scripts/player.gd`, este documento, uma correção pontual em `modes/war/scripts/stance.gd` e **`scripts/main.gd` apenas na autoridade do raycast de mira**. O piloto P1g permanece desligado sem argumento de QA. `project.godot` e `weapon_optics.gd` não foram alterados por esta linha.
 
-**Próximo pacote recomendado:** medir A/B com 28 bots e o piloto real, depois validar dano por membro/ragdoll e dois clientes exportados em listen/dedicated. Só depois considerar habilitação por padrão e release.
+**Próximo pacote recomendado:** concluir o A/B de 28 atores/bots que já roda em sessão separada e depois validar dois clientes exportados em listen/dedicated. Só então considerar habilitação por padrão e release.
