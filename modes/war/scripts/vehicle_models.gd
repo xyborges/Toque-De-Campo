@@ -3,7 +3,7 @@ class_name WarVehicleModels
 
 # Visual construction only. Turret/elevation/muzzle nodes belong to WarVehicle
 # and are identical on the dedicated server and every client.
-const REFERENCE_VERSION:=3
+const REFERENCE_VERSION:=4
 const RUBBER:="252b28"
 const STEEL:="384039"
 const DIRT:="635f4a"
@@ -324,9 +324,14 @@ func main_tank_gun(label: String,calibre: float) -> void:
 func common() -> void:
 	var width:=float(v.spec.size.x);var length:=float(v.spec.size.z)
 	for side in [-1,1]:
-		for i in (3 if v.kind in ["guarani","bmp2"] else 6):
-			var pos:=Vector3(side*(.49 if v.kind=="guarani" else .93),.22,-.10+i*.115)
-			tube(v.turret,"SmokeDischarger",pos,.048,.24,STEEL,Vector3(.8,0,side*.70))
+		# Paired multi-tube dischargers on the turret cheeks, angled outwards.
+		var launcher_width: float={"guarani":.71,"bmp2":1.02,"abrams":1.22,"t90":1.12}[v.kind]
+		var count:=3 if v.kind in ["guarani","bmp2"] else 6
+		box(v.turret,"SmokeLauncherBracket",Vector3(side*launcher_width,.27,-.18),Vector3(.23,.17,.51),STEEL)
+		for i in count:
+			var row:=i/3
+			var pos:=Vector3(side*(launcher_width+.055),.33+row*.13,-.32+(i%3)*.145)
+			tube(v.turret,"SmokeDischarger",pos,.059,.26,STEEL,Vector3(.95,0,side*.68))
 		box(v,"FrontHeadlampGuard",Vector3(side*width*.36,1.02,-length*.47),Vector3(.26,.23,.17),STEEL)
 		box(v,"Headlamp",Vector3(side*width*.36,1.03,-length*.47-.09),Vector3(.15,.115,.025),"a6ad95")
 		for z in [-length*.43,length*.43]:
