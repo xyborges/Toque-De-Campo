@@ -416,6 +416,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.keycode == KEY_V:
 			game.third_person = not game.third_person
 			_update_view()
+		elif event.keycode == KEY_Y and game.get_meta("battle_royale",false):
+			if not is_npc and grenades>0 and grenades_enabled and grenade_held_id.is_empty() and not grenade_prime_pending:
+				var next_kind: String="grenade" if str(get_meta("grenade_kind","grenade"))=="smoke" else "smoke"
+				if game.has_method("request_grenade_kind_choice"): game.request_grenade_kind_choice(self,next_kind)
 		elif event.keycode == KEY_R: start_reload()
 		elif event.keycode == KEY_F and game.has_method("request_supplies"): game.request_supplies(self)
 		elif event.keycode == KEY_G and game.has_method("request_grenade") and not game.get_meta("war_mode",false):
@@ -1428,6 +1432,7 @@ func _update_grenade_pose() -> void:
 	if grenade_selected and not is_instance_valid(grenade_prop):
 		grenade_prop=GameGrenades.make_prop();body_root.add_child(grenade_prop)
 	if is_instance_valid(grenade_prop):
+		GameGrenades.tune_prop(grenade_prop,str(get_meta("grenade_display_kind",get_meta("grenade_kind","grenade"))))
 		grenade_prop.visible=hp>0 and grenade_selected and not holding and not _uses_first_person_presentation()
 		grenade_prop.global_position=grenade_hand_position()
 	if active:
@@ -1447,6 +1452,7 @@ func _update_grenade_pose() -> void:
 		grenade_view_mesh=GameGrenades.make_prop();grenade_view.add_child(grenade_view_mesh)
 	if is_instance_valid(grenade_view):
 		grenade_view.visible=active and in_first
+		GameGrenades.tune_prop(grenade_view_mesh,str(get_meta("grenade_display_kind",get_meta("grenade_kind","grenade"))))
 		grenade_view_mesh.visible=holding or (grenade_selected and grenades>0)
 		var progress:=1-grenade_throw_left/.75
 		# The FPP mesh occupies exactly the world hand's location. Changing

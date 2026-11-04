@@ -6,9 +6,12 @@ const FUSE:=5.0
 const THROW_SPEED:=18.9
 const RADIUS:=6.0
 const DAMAGE:=160.0
+const SMOKE_FUSE:=FUSE-1.0
 var game: Node
 var rounds: Dictionary={}
 var events: Dictionary={}
+var smoke_events: Dictionary={}
+var smoke_clouds: GameSmokeClouds
 var explosion_audio: GameExplosionAudio
 var bursts: Array[Dictionary]=[]
 var effects_available: Array[MeshInstance3D]=[]
@@ -30,20 +33,65 @@ static var prop_mesh: SphereMesh
 static var prop_material: StandardMaterial3D
 static var lever_mesh: BoxMesh
 static var lever_material: StandardMaterial3D
+static var smoke_body_mesh: CylinderMesh
+static var smoke_body_material: StandardMaterial3D
+static var smoke_cap_mesh: CylinderMesh
+static var smoke_cap_material: StandardMaterial3D
+static var smoke_band_mesh: CylinderMesh
 
-static func make_prop() -> MeshInstance3D:
-	# One model for FPP, TPP, remote preparation and the airborne grenade.
+static func fuse_for(actor: GamePlayer) -> float:
+	return SMOKE_FUSE if str(actor.get_meta("grenade_kind","grenade"))=="smoke" else FUSE
+
+static func make_prop(kind: String="grenade") -> MeshInstance3D:
+	# Identical real-scale models for world, third-person and first-person.
 	if prop_mesh==null:
 		prop_mesh=SphereMesh.new();prop_mesh.radius=.09;prop_mesh.height=.18;prop_mesh.radial_segments=10;prop_mesh.rings=5
 		prop_material=StandardMaterial3D.new();prop_material.albedo_color=Color("43513a");prop_material.roughness=.85
 		lever_mesh=BoxMesh.new();lever_mesh.size=Vector3(.025,.11,.025)
 		lever_material=StandardMaterial3D.new();lever_material.albedo_color=Color("6d7569")
-	var result:=MeshInstance3D.new();result.mesh=prop_mesh;result.material_override=prop_material;result.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var lever:=MeshInstance3D.new();lever.mesh=lever_mesh;lever.material_override=lever_material
-	lever.position=Vector3(.06,.06,0);lever.rotation.z=-.4;lever.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;result.add_child(lever)
+	if smoke_body_mesh==null:
+		# M18 cylindrical sheet-steel body: roughly 64 mm x 146 mm including fuse.
+		smoke_body_mesh=CylinderMesh.new()
+		smoke_body_mesh.top_radius=.032;smoke_body_mesh.bottom_radius=.032;smoke_body_mesh.height=.118;smoke_body_mesh.radial_segments=12
+		smoke_cap_mesh=CylinderMesh.new()
+		smoke_cap_mesh.top_radius=.035;smoke_cap_mesh.bottom_radius=.035;smoke_cap_mesh.height=.021;smoke_cap_mesh.radial_segments=12
+		smoke_band_mesh=CylinderMesh.new()
+		smoke_band_mesh.top_radius=.0323;smoke_band_mesh.bottom_radius=.0323;smoke_band_mesh.height=.014;smoke_band_mesh.radial_segments=12
+		smoke_body_material=StandardMaterial3D.new();smoke_body_material.albedo_color=Color("59674d");smoke_body_material.roughness=.91
+		smoke_cap_material=StandardMaterial3D.new();smoke_cap_material.albedo_color=Color("bec6b5");smoke_cap_material.roughness=.75
+	var result:=MeshInstance3D.new()
+	result.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var lever:=MeshInstance3D.new();lever.name="SafetyLever"
+	lever.mesh=lever_mesh;lever.material_override=lever_material
+	lever.position=Vector3(.06,.06,0);lever.rotation.z=-.4
+	lever.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;result.add_child(lever)
+	var cap:=MeshInstance3D.new();cap.name="SmokeCap";cap.mesh=smoke_cap_mesh
+	cap.position.y=.066;cap.material_override=smoke_cap_material
+	cap.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;result.add_child(cap)
+	var band:=MeshInstance3D.new();band.name="SmokeBand";band.mesh=smoke_band_mesh
+	band.position.y=.020;band.material_override=smoke_cap_material
+	band.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;result.add_child(band)
+	tune_prop(result,kind)
 	return result
 
+static func tune_prop(node: MeshInstance3D,kind: String) -> void:
+	if not is_instance_valid(node): return
+	if kind not in ["grenade","smoke"]: kind="grenade"
+	if node.get_meta("grenade_kind","") == kind: return
+	node.set_meta("grenade_kind",kind)
+	node.mesh=smoke_body_mesh if kind=="smoke" else prop_mesh
+	node.material_override=smoke_body_material if kind=="smoke" else prop_material
+	var cap:=node.get_node_or_null("SmokeCap") as MeshInstance3D
+	var band:=node.get_node_or_null("SmokeBand") as MeshInstance3D
+	if is_instance_valid(cap): cap.visible=kind=="smoke"
+	if is_instance_valid(band): band.visible=kind=="smoke"
+	var lever:=node.get_node_or_null("SafetyLever") as MeshInstance3D
+	if is_instance_valid(lever):
+		lever.position=Vector3(.023,.067,0) if kind=="smoke" else Vector3(.06,.06,0)
+		lever.scale=Vector3(.62,.55,.65) if kind=="smoke" else Vector3.ONE
+
 func _ready() -> void:
+	smoke_clouds=GameSmokeClouds.new();add_child(smoke_clouds)
 	shape.radius=.09
 	sweep_query.shape=shape;sweep_query.collision_mask=1;sweep_query.margin=.002
 	mesh=SphereMesh.new();mesh.radius=1;mesh.height=2;mesh.radial_segments=10;mesh.rings=5
@@ -64,8 +112,11 @@ func prime(actor: GamePlayer,life: int,sequence: int) -> bool:
 	actor.pause_reload()
 	actor.grenade_selected=true;actor._animate_walk()
 	actor.set_meta("grenade_sequence",sequence);actor.set_meta("grenade_at",now);actor.grenades-=1
+	var kind:=str(actor.get_meta("grenade_kind","grenade"))
+	if kind not in ["grenade","smoke"]: kind="grenade"
+	var fuse:=SMOKE_FUSE if kind=="smoke" else FUSE
 	var id:="grenade:%s:%d:%d:%d"%[str(game.match_generation),actor.peer_id,life,sequence]
-	var packet: Dictionary={"id":id,"owner":actor.peer_id,"life":life,"sequence":sequence,"origin":_hand(actor),"velocity":Vector3.ZERO,"fuse":FUSE,"held":true,"revision":0,"server_stamp":Time.get_ticks_usec()*.000001,"deadline":Time.get_ticks_usec()*.000001+FUSE}
+	var packet: Dictionary={"id":id,"owner":actor.peer_id,"life":life,"sequence":sequence,"origin":_hand(actor),"velocity":Vector3.ZERO,"fuse":fuse,"kind":kind,"held":true,"revision":0,"server_stamp":Time.get_ticks_usec()*.000001,"deadline":Time.get_ticks_usec()*.000001+fuse}
 	spawn(packet)
 	if game.online: game._broadcast("remote_grenade_spawn",[packet])
 	game.sync_inventory(actor)
@@ -96,7 +147,7 @@ func accept(actor: GamePlayer,life: int,sequence: int,origin: Vector3,direction:
 	return true
 
 func _packet(round: Dictionary) -> Dictionary:
-	return {"id":round.id,"owner":round.owner,"life":round.life,"sequence":round.sequence,"origin":round.position,"velocity":round.velocity,"fuse":round.left,"held":round.held,"revision":round.revision,"drop":round.get("drop",false),"resting":round.get("resting",false),"server_stamp":Time.get_ticks_usec()*.000001,"deadline":Time.get_ticks_usec()*.000001+float(round.left)}
+	return {"id":round.id,"owner":round.owner,"life":round.life,"sequence":round.sequence,"origin":round.position,"velocity":round.velocity,"fuse":round.left,"kind":round.get("kind","grenade"),"held":round.held,"revision":round.revision,"drop":round.get("drop",false),"resting":round.get("resting",false),"server_stamp":Time.get_ticks_usec()*.000001,"deadline":Time.get_ticks_usec()*.000001+float(round.left)}
 
 func spawn(packet: Dictionary) -> void:
 	var id:=str(packet.id)
@@ -104,13 +155,15 @@ func spawn(packet: Dictionary) -> void:
 	var revision:=int(packet.get("revision",1))
 	var stamp:=float(packet.get("server_stamp",0))
 	if rounds.has(id) and stamp>0 and stamp<float(rounds[id].get("server_stamp",0)): return
+	var kind:=str(packet.get("kind","grenade"))
+	if kind not in ["grenade","smoke"]: kind="grenade"
 	var remaining:=float(packet.fuse)
 	if game.online and not multiplayer.is_server() and stamp>0:
 		var now:=Time.get_ticks_usec()*.000001
 		var sample: float=now-stamp-game._melee_network_delay(1)
 		server_clock_offset=minf(server_clock_offset,sample) if server_clock_ready else sample
 		server_clock_ready=true
-		remaining=clampf(float(packet.get("deadline",stamp+remaining))-(now-server_clock_offset),0,FUSE)
+		remaining=clampf(float(packet.get("deadline",stamp+remaining))-(now-server_clock_offset),0,SMOKE_FUSE if kind=="smoke" else FUSE)
 
 	if rounds.has(id) and revision<int(rounds[id].revision): return
 	var node: MeshInstance3D
@@ -119,15 +172,18 @@ func spawn(packet: Dictionary) -> void:
 	var changed: bool=not existed or revision>int(rounds[id].revision)
 	if existed: node=rounds[id].node
 	elif DisplayServer.get_name()!="headless":
-		node=make_prop()
+		node=make_prop(kind)
 		add_child(node)
 	var held:=bool(packet.get("held",false))
-	rounds[id]={"id":id,"owner":int(packet.owner),"life":int(packet.get("life",1)),"sequence":int(packet.get("sequence",1)),"position":Vector3(packet.origin),"velocity":Vector3(packet.velocity),"left":remaining,"server_stamp":stamp,"node":node,"held":held,"revision":revision,"drop":bool(packet.get("drop",false)),"resting":bool(packet.get("resting",false))}
-	if is_instance_valid(node): node.global_position=packet.origin
+	rounds[id]={"id":id,"owner":int(packet.owner),"life":int(packet.get("life",1)),"sequence":int(packet.get("sequence",1)),"position":Vector3(packet.origin),"velocity":Vector3(packet.velocity),"left":remaining,"server_stamp":stamp,"kind":kind,"node":node,"held":held,"revision":revision,"drop":bool(packet.get("drop",false)),"resting":bool(packet.get("resting",false))}
+	if is_instance_valid(node):
+		tune_prop(node,kind)
+		node.global_position=packet.origin
 	var actor:=game.players.get(int(packet.owner)) as GamePlayer
 	if is_instance_valid(actor):
 		if held or changed: actor.trigger_held=false
 		if held:
+			actor.set_meta("grenade_display_kind",kind)
 			if changed: actor.pause_reload()
 			actor.grenade_prime_pending=false;actor.grenade_selected=true
 			actor.grenade_held_id=id;actor.grenade_fuse_left=remaining;actor.clear_weapon_aim()
@@ -166,8 +222,10 @@ func _physics_process(delta: float) -> void:
 			round.node.visible=not (round.held and is_instance_valid(actor) and actor.is_local and (not game.third_person or actor.iron_sights))
 			if not round.held: round.node.rotate_x(delta*4)
 		if round.left<=0 and authority:
-			_damage(round);present_explosion(id,destination)
-			if game.online: game._broadcast("remote_grenade_explosion",[id,destination])
+			var kind:=str(round.get("kind","grenade"))
+			if kind!="smoke": _damage(round)
+			present_explosion(id,destination,kind)
+			if game.online: game._broadcast("remote_grenade_explosion",[id,destination,kind])
 
 func time_left(actor: GamePlayer) -> float:
 	return maxf(0,float(rounds[actor.grenade_held_id].left)) if rounds.has(actor.grenade_held_id) else actor.grenade_fuse_left
@@ -191,7 +249,7 @@ func _damage(round: Dictionary) -> void:
 		game._apply_hit(int(round.owner),{"collider":region,"position":point},damage,"chest","grenade",(point-Vector3(round.position)).normalized())
 	game.notify_multi_kill(int(round.owner),before,str(round.get("id",round.get("shot_id","grenade:"+str(round.position)))))
 
-func present_explosion(id: String,point: Vector3) -> void:
+func present_explosion(id: String,point: Vector3,kind: String="grenade") -> void:
 	if events.has(id): return
 	events[id]=true
 	if events.size()>256: events.erase(events.keys()[0])
@@ -201,6 +259,10 @@ func present_explosion(id: String,point: Vector3) -> void:
 		if is_instance_valid(actor) and actor.grenade_held_id==id: actor.grenade_held_id="";actor.grenade_selected=false;actor.grenade_fuse_left=0;actor.grenade_aiming=false;actor.grenade_prime_pending=false
 		if is_instance_valid(round.node): round.node.queue_free()
 		rounds.erase(id)
+	if kind=="smoke":
+		if is_instance_valid(smoke_clouds): smoke_clouds.add_hand(id,point)
+		smoke_events[id]={"point":point,"expires":Time.get_ticks_usec()*.000001+GameSmokeClouds.HAND_DURATION}
+		return # Non-lethal concealment; sounds will arrive in a separate audio update.
 	if explosion_audio: explosion_audio.play_event(id,point,"grenade")
 	if DisplayServer.get_name()=="headless": return
 	var camera:=get_viewport().get_camera_3d()
@@ -230,6 +292,9 @@ func present_explosion(id: String,point: Vector3) -> void:
 
 func _process(delta: float) -> void:
 	_preview(delta)
+	var stamp:=Time.get_ticks_usec()*.000001
+	for id in smoke_events.keys():
+		if float(smoke_events[id].expires)<=stamp: smoke_events.erase(id)
 	for i in range(bursts.size()-1,-1,-1):
 		var burst: Dictionary=bursts[i];burst.left-=delta
 		if burst.left<=0:
@@ -252,7 +317,8 @@ func reset_round() -> void:
 		events[id]=true
 		var node: Node=rounds[id].node
 		if is_instance_valid(node): node.queue_free()
-	rounds.clear()
+	rounds.clear();smoke_events.clear()
+	if is_instance_valid(smoke_clouds): smoke_clouds.clear_clouds()
 	while events.size()>512: events.erase(events.keys()[0])
 	for actor: GamePlayer in game.players.values():
 		actor.grenade_selected=false;actor.grenade_prime_pending=false;actor.grenade_aiming=false
@@ -262,6 +328,19 @@ func reset_round() -> void:
 	bursts.clear();preview_full.clear();preview_points.clear();preview_remaining=-1
 	if is_instance_valid(guide): guide.hide()
 	if is_instance_valid(marker): marker.hide()
+
+func send_smoke_initial(peer_id: int) -> void:
+	if not game.online or not multiplayer.is_server(): return
+	var stamp:=Time.get_ticks_usec()*.000001
+	for id in smoke_events:
+		var event: Dictionary=smoke_events[id]
+		var left: float=float(event.expires)-stamp
+		if left>0: game.rpc_id(peer_id,"remote_grenade_smoke",id,event.point,GameSmokeClouds.HAND_DURATION-left)
+
+func receive_smoke_initial(id: String,point: Vector3,elapsed: float) -> void:
+	if id.is_empty() or not point.is_finite() or not is_finite(elapsed) or elapsed<0 or elapsed>=GameSmokeClouds.HAND_DURATION: return
+	if not events.has(id): events[id]=true
+	if is_instance_valid(smoke_clouds): smoke_clouds.add_hand(id,point,elapsed)
 
 func receive_snapshots(states: Array) -> void:
 	for state: Dictionary in states: spawn(state)
@@ -342,7 +421,8 @@ func _preview(delta: float) -> void:
 	preview_clock=0
 	var camera:=actor.camera
 	var launch:=launch_state(actor,-camera.global_basis.z.normalized())
-	var remaining:=minf(FUSE,time_left(actor)) if not actor.grenade_held_id.is_empty() or actor.grenade_prime_pending else FUSE
+	var fuse:=fuse_for(actor)
+	var remaining:=minf(fuse,time_left(actor)) if not actor.grenade_held_id.is_empty() or actor.grenade_prime_pending else fuse
 	if not preview_launch.is_empty() and Vector3(preview_launch.origin).distance_squared_to(launch.origin)<.0004 and Vector3(preview_launch.velocity).distance_squared_to(launch.velocity)<.0004 and absf(remaining-preview_remaining)<.1: return
 	preview_launch=launch;preview_remaining=remaining
 	var prediction:=guide_prediction(launch,remaining)

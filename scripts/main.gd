@@ -2027,6 +2027,7 @@ func server_join_request(nickname: String, appearance: Dictionary, ticket: Dicti
 	# A scoreboard is a room baseline, not one baseline per actor. Repeating
 	# the complete board for every bot floods the joining client's UDP queue.
 	rpc_id(id,"remote_match_stats",match_stats.snapshot())
+	if is_instance_valid(grenades_system): grenades_system.send_smoke_initial(id)
 
 func _send_player_baseline(recipient: int, actor: GamePlayer) -> void:
 	if not get_meta("war_mode",false) and actor.get_meta("awaiting_deployment",false):
@@ -2038,6 +2039,7 @@ func _send_player_baseline(recipient: int, actor: GamePlayer) -> void:
 	rpc_id(recipient,"remote_equipped",actor.peer_id,actor.weapon_id)
 	rpc_id(recipient,"remote_weapon_optics",actor.peer_id,actor.get_meta("weapon_optics",{}),actor.life_id)
 	callv("rpc_id",[recipient,"remote_inventory"]+_inventory_packet(actor))
+	rpc_id(recipient,"remote_grenade_kind",actor.peer_id,str(actor.get_meta("grenade_kind","grenade")))
 	if not get_meta("war_mode",false):
 		rpc_id(recipient,"remote_environment_time",environment_seconds)
 		# Respawn clears equipment presentation: apply selection afterwards.
@@ -2976,6 +2978,30 @@ func remote_weapon_attachment_state(id: int,configurations: Dictionary,life: int
 func grenade_allowed(actor: GamePlayer) -> bool:
 	return is_instance_valid(actor) and actor.hp>0 and not waiting_for_pvp() and not (is_instance_valid(domination) and domination.blocked())
 
+func request_grenade_kind_choice(actor: GamePlayer,kind: String) -> void:
+	# BR has an in-match backpack instead of the loadout picker; use Y.
+	if not get_meta("battle_royale",false) or kind not in ["grenade","smoke"] or not is_instance_valid(actor): return
+	if actor.hp<=0 or actor.grenades<=0 or not actor.grenades_enabled or not actor.grenade_held_id.is_empty() or actor.grenade_prime_pending: return
+	if online and not multiplayer.is_server():
+		rpc_id(1,"server_grenade_kind_choice",kind)
+		# Local preview is corrected by the authoritative reliable broadcast.
+		actor.set_meta("grenade_kind",kind);actor.set_meta("grenade_display_kind",kind)
+	else:
+		_apply_grenade_kind_choice(actor,kind)
+
+@rpc("any_peer","call_remote","reliable")
+func server_grenade_kind_choice(kind: String) -> void:
+	if not multiplayer.is_server() or not get_meta("battle_royale",false) or not network_guard.allow(multiplayer.get_remote_sender_id(),"grenade_kind_choice",4,3): return
+	var actor:=players.get(multiplayer.get_remote_sender_id()) as GamePlayer
+	_apply_grenade_kind_choice(actor,kind)
+
+func _apply_grenade_kind_choice(actor: GamePlayer,kind: String) -> void:
+	if kind not in ["grenade","smoke"] or not is_instance_valid(actor) or actor.hp<=0 or actor.grenades<=0 or not actor.grenades_enabled: return
+	if not actor.grenade_held_id.is_empty() or actor.grenade_prime_pending: return
+	actor.set_meta("grenade_kind",kind);actor.set_meta("grenade_display_kind",kind)
+	actor._update_grenade_pose()
+	if online: _broadcast("remote_grenade_kind",[actor.peer_id,kind])
+
 func request_grenade(actor: GamePlayer) -> void:
 	if not gameplay_input_allowed() or not is_instance_valid(grenades_system) or (actor.grenades<=0 and actor.grenade_held_id.is_empty() and not actor.grenade_prime_pending) or actor.grenade_throw_left>0: return
 	if actor.grenade_held_id.is_empty() and not actor.grenade_prime_pending: actor.grenade_sequence+=1
@@ -3000,8 +3026,20 @@ func remote_grenade_states(states: Array) -> void:
 	if is_instance_valid(grenades_system): grenades_system.receive_snapshots(states)
 
 @rpc("authority","call_remote","reliable")
-func remote_grenade_explosion(id: String,point: Vector3) -> void:
-	if is_instance_valid(grenades_system): grenades_system.present_explosion(id,point)
+func remote_grenade_explosion(id: String,point: Vector3,kind: String="grenade") -> void:
+	if is_instance_valid(grenades_system): grenades_system.present_explosion(id,point,kind)
+
+@rpc("authority","call_remote","reliable")
+func remote_grenade_smoke(id: String,point: Vector3,elapsed: float) -> void:
+	if is_instance_valid(grenades_system): grenades_system.receive_smoke_initial(id,point,elapsed)
+
+@rpc("authority","call_remote","reliable")
+func remote_grenade_kind(id: int,kind: String) -> void:
+	var actor:=players.get(id) as GamePlayer
+	if not is_instance_valid(actor) or kind not in ["grenade","smoke"]: return
+	actor.set_meta("grenade_kind",kind)
+	actor.set_meta("grenade_display_kind",kind)
+	if actor.is_local: actor._update_grenade_pose()
 
 @rpc("authority","call_remote","reliable")
 func remote_earth_impact(_id: String,point: Vector3) -> void:
@@ -3031,7 +3069,7 @@ func remote_environment_time(seconds: float) -> void:
 
 func prime_grenade(actor: GamePlayer) -> void:
 	if not gameplay_input_allowed() or not is_instance_valid(grenades_system) or actor.grenades<=0 or not actor.grenade_held_id.is_empty() or actor.grenade_prime_pending: return
-	actor.grenade_sequence+=1;actor.grenade_prime_pending=true;actor.grenade_aiming=true;actor.grenade_fuse_left=GameGrenades.FUSE;actor.clear_weapon_aim()
+	actor.grenade_sequence+=1;actor.grenade_prime_pending=true;actor.grenade_aiming=true;actor.grenade_fuse_left=GameGrenades.fuse_for(actor);actor.clear_weapon_aim()
 	if online and not multiplayer.is_server(): rpc_id(1,"server_prime_grenade",actor.life_id,actor.grenade_sequence)
 	elif not grenades_system.prime(actor,actor.life_id,actor.grenade_sequence): remote_grenade_rejected(actor.grenade_sequence)
 
@@ -3144,6 +3182,7 @@ func _accept_infantry_deploy(id: int,slots: Dictionary,spawn_zone: String,life: 
 	var approved:=GameLoadouts.validate(slots,"desert" if online else "offline_"+mode,actor.owned)
 	if not approved.ok: _spawn_notice(id,str(approved.error));return false
 	GameLoadouts.apply(actor,approved);actor.set_meta("spawn_zone",spawn_zone)
+	if online: _broadcast("remote_grenade_kind",[id,str(actor.get_meta("grenade_kind","grenade"))])
 	_reset_server_player(actor);actor._refresh_weapon();actor._update_view()
 	_broadcast("remote_weapon_optics",[id,actor.get_meta("weapon_optics",{}),actor.life_id])
 	_broadcast("remote_equipped",[id,actor.weapon_id])

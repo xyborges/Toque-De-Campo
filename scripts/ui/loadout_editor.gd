@@ -94,7 +94,7 @@ func _show_detail(id: String) -> void:
 	detail.show()
 
 func _amount(id: String) -> String:
-	if id=="grenade": return "×2"
+	if id in ["grenade","smoke"]: return "×2"
 	if id=="drone": return "×1"
 	if id in GameLoadouts.EQUIPMENT: return "×%d"%int(WarRules.CLASSES.get(role,WarRules.CLASSES.soldier).charges)
 	var item: Dictionary=GameWeapons.ITEMS.get(id,{})
