@@ -108,8 +108,9 @@ mesh = SubResource("Tire")
 rotation_degrees = Vector3(0,0,90)
 mesh = SubResource("Hub")
 [node name="Steering" type="Node3D" parent="."]
-position = Vector3(0,0.41,-0.74)
+position = Vector3(0,0.71,-0.48)
 [node name="FrontWheel" type="Node3D" parent="Steering"]
+position = Vector3(0.000,-0.300,-0.260)
 [node name="Tire" type="MeshInstance3D" parent="Steering/FrontWheel"]
 rotation_degrees = Vector3(0,0,90)
 mesh = SubResource("Tire")
@@ -117,21 +118,21 @@ mesh = SubResource("Tire")
 rotation_degrees = Vector3(0,0,90)
 mesh = SubResource("Hub")
 [node name="ForkL" type="MeshInstance3D" parent="Steering"]
-position = Vector3(-0.09,0.32,0.08)
+position = Vector3(-0.090,0.020,-0.180)
 rotation_degrees = Vector3(13,0,0)
 mesh = SubResource("Fork")
 [node name="ForkR" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.09,0.32,0.08)
+position = Vector3(0.090,0.020,-0.180)
 rotation_degrees = Vector3(13,0,0)
 mesh = SubResource("Fork")
 [node name="Handlebar" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0,0.73,0.14)
+position = Vector3(0.000,0.430,-0.120)
 rotation_degrees = Vector3(0,0,90)
 mesh = SubResource("Bar")
 [node name="GripLeft" type="Marker3D" parent="Steering"]
-position = Vector3(-0.30,0.73,0.14)
+position = Vector3(-0.300,0.430,-0.120)
 [node name="GripRight" type="Marker3D" parent="Steering"]
-position = Vector3(0.30,0.73,0.14)
+position = Vector3(0.300,0.430,-0.120)
 [node name="FrameL" type="MeshInstance3D" parent="."]
 position = Vector3(-0.11,0.63,0.05)
 rotation_degrees = Vector3(62,0,0)
@@ -369,35 +370,35 @@ mesh = SubResource("DetailRod")
 material_override = SubResource("SteelDark")
 
 [node name="ForkSliderL" type="MeshInstance3D" parent="Steering"]
-position = Vector3(-0.140,0.140,0.060)
+position = Vector3(-0.140,-0.160,-0.200)
 rotation_degrees = Vector3(9.000,0.000,0.000)
 scale = Vector3(0.072,0.310,0.072)
 mesh = SubResource("DetailRod")
 material_override = SubResource("OliveDark")
 
 [node name="ForkBraceL" type="MeshInstance3D" parent="Steering"]
-position = Vector3(-0.145,0.460,0.120)
+position = Vector3(-0.145,0.160,-0.140)
 rotation_degrees = Vector3(60.000,0.000,0.000)
 scale = Vector3(0.043,0.310,0.043)
 mesh = SubResource("DetailRod")
 material_override = SubResource("Metal")
 
 [node name="HandGripL" type="MeshInstance3D" parent="Steering"]
-position = Vector3(-0.285,0.730,0.140)
+position = Vector3(-0.285,0.430,-0.120)
 rotation_degrees = Vector3(0.000,0.000,90.000)
 scale = Vector3(0.087,0.120,0.087)
 mesh = SubResource("DetailRod")
 material_override = SubResource("Rubber")
 
 [node name="HandGuardL" type="MeshInstance3D" parent="Steering"]
-position = Vector3(-0.350,0.760,0.050)
+position = Vector3(-0.350,0.460,-0.210)
 rotation_degrees = Vector3(0.000,-12.000,0.000)
 scale = Vector3(0.080,0.110,0.260)
 mesh = SubResource("DetailBox")
 material_override = SubResource("OliveDark")
 
 [node name="TurnSignalFrontL" type="MeshInstance3D" parent="Steering"]
-position = Vector3(-0.320,0.460,-0.200)
+position = Vector3(-0.320,0.160,-0.460)
 scale = Vector3(0.120,0.100,0.080)
 mesh = SubResource("DetailDome")
 material_override = SubResource("SignalGlass")
@@ -475,35 +476,35 @@ mesh = SubResource("DetailRod")
 material_override = SubResource("SteelDark")
 
 [node name="ForkSliderR" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.140,0.140,0.060)
+position = Vector3(0.140,-0.160,-0.200)
 rotation_degrees = Vector3(9.000,0.000,0.000)
 scale = Vector3(0.072,0.310,0.072)
 mesh = SubResource("DetailRod")
 material_override = SubResource("OliveDark")
 
 [node name="ForkBraceR" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.145,0.460,0.120)
+position = Vector3(0.145,0.160,-0.140)
 rotation_degrees = Vector3(60.000,0.000,0.000)
 scale = Vector3(0.043,0.310,0.043)
 mesh = SubResource("DetailRod")
 material_override = SubResource("Metal")
 
 [node name="HandGripR" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.285,0.730,0.140)
+position = Vector3(0.285,0.430,-0.120)
 rotation_degrees = Vector3(0.000,0.000,90.000)
 scale = Vector3(0.087,0.120,0.087)
 mesh = SubResource("DetailRod")
 material_override = SubResource("Rubber")
 
 [node name="HandGuardR" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.350,0.760,0.050)
+position = Vector3(0.350,0.460,-0.210)
 rotation_degrees = Vector3(0.000,12.000,0.000)
 scale = Vector3(0.080,0.110,0.260)
 mesh = SubResource("DetailBox")
 material_override = SubResource("OliveDark")
 
 [node name="TurnSignalFrontR" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.320,0.460,-0.200)
+position = Vector3(0.320,0.160,-0.460)
 scale = Vector3(0.120,0.100,0.080)
 mesh = SubResource("DetailDome")
 material_override = SubResource("SignalGlass")
@@ -584,33 +585,33 @@ material_override = SubResource("SteelDark")
 visibility_range_end = 170
 
 [node name="FrontNumberPlate" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.000,0.680,-0.050)
+position = Vector3(0.000,0.380,-0.310)
 rotation_degrees = Vector3(8.000,0.000,0.000)
 scale = Vector3(0.400,0.240,0.140)
 mesh = SubResource("DetailBox")
 material_override = SubResource("OliveLight")
 
 [node name="HeadlampHousing" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.000,0.430,-0.180)
+position = Vector3(0.000,0.130,-0.440)
 scale = Vector3(0.360,0.290,0.200)
 mesh = SubResource("DetailBox")
 material_override = SubResource("SteelDark")
 
 [node name="HeadlampLens" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.000,0.430,-0.290)
+position = Vector3(0.000,0.130,-0.550)
 scale = Vector3(0.285,0.215,0.070)
 mesh = SubResource("DetailDome")
 material_override = SubResource("HeadlampGlass")
 
 [node name="FrontFender" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.000,0.370,-0.040)
+position = Vector3(0.000,0.070,-0.300)
 rotation_degrees = Vector3(5.000,0.000,0.000)
 scale = Vector3(0.420,0.065,0.670)
 mesh = SubResource("DetailBox")
 material_override = SubResource("Olive")
 
 [node name="FrontFenderTip" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.000,0.340,-0.410)
+position = Vector3(0.000,0.040,-0.670)
 rotation_degrees = Vector3(10.000,0.000,0.000)
 scale = Vector3(0.340,0.042,0.220)
 mesh = SubResource("DetailBox")
@@ -670,14 +671,14 @@ mesh = SubResource("DetailBox")
 material_override = SubResource("Metal")
 
 [node name="DashScreen" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.000,0.830,0.180)
+position = Vector3(0.000,0.530,-0.080)
 rotation_degrees = Vector3(22.000,0.000,0.000)
 scale = Vector3(0.200,0.090,0.110)
 mesh = SubResource("DetailBox")
 material_override = SubResource("SteelDark")
 
 [node name="DashLens" type="MeshInstance3D" parent="Steering"]
-position = Vector3(0.000,0.880,0.180)
+position = Vector3(0.000,0.580,-0.080)
 rotation_degrees = Vector3(22.000,0.000,0.000)
 scale = Vector3(0.150,0.015,0.070)
 mesh = SubResource("DetailBox")
