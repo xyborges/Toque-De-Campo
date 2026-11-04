@@ -14,6 +14,7 @@ var clouds: Dictionary = {}
 var cloud_order: Array[String] = []
 var pool: MultiMesh
 var overlay: ColorRect
+var smoke_audio: GameSmokeAudio
 var draw_clock := 0.0
 var overlay_alpha := 0.0
 
@@ -44,6 +45,9 @@ func _ready() -> void:
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	layer.add_child(overlay)
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	smoke_audio=GameSmokeAudio.new()
+	smoke_audio.source=self
+	add_child(smoke_audio)
 
 func add_hand(id: String,origin: Vector3,elapsed:=0.0) -> void:
 	if id.is_empty() or not origin.is_finite() or clouds.has(id): return
@@ -55,7 +59,8 @@ func add_hand(id: String,origin: Vector3,elapsed:=0.0) -> void:
 		var radius:=rng.randf_range(.3,3.2)
 		var offset:=Vector3(cos(angle)*radius,rng.randf_range(1.0,2.9),sin(angle)*radius)
 		puffs.append({"index":index,"point":origin+offset,"size":rng.randf_range(2.3,3.45),"drift":Vector3(rng.randf_range(-.08,.08),rng.randf_range(.05,.13),rng.randf_range(-.08,.08))})
-	_insert(id,origin,HAND_DURATION,puffs,elapsed)
+	_insert(id,origin,HAND_DURATION,puffs,elapsed,"hand")
+	if is_instance_valid(smoke_audio): smoke_audio.play_start(id,origin,"hand",elapsed)
 
 func add_vehicle(id: String,origin: Vector3,forward: Vector3,elapsed:=0.0,kind: String="abrams") -> void:
 	if id.is_empty() or not origin.is_finite() or clouds.has(id): return
@@ -77,14 +82,15 @@ func add_vehicle(id: String,origin: Vector3,forward: Vector3,elapsed:=0.0,kind: 
 		for puff in 3:
 			var offset:=Vector3(rng.randf_range(-2.0,2.0),rng.randf_range(.9,3.9)*size_scale,rng.randf_range(-2.0,2.0))
 			puffs.append({"index":canister*3+puff,"launch_at":.08+float(canister%3)*.045,"point":landing+offset,"size":rng.randf_range(3.0,4.1)*size_scale,"drift":Vector3(rng.randf_range(-.10,.10),rng.randf_range(.06,.16),rng.randf_range(-.10,.10))})
-	_insert(id,origin,VEHICLE_DURATION,puffs,elapsed)
+	_insert(id,origin,VEHICLE_DURATION,puffs,elapsed,"vehicle")
+	if is_instance_valid(smoke_audio): smoke_audio.play_start(id,origin,"vehicle",elapsed)
 
-func _insert(id: String,origin: Vector3,duration: float,puffs: Array[Dictionary],elapsed: float) -> void:
+func _insert(id: String,origin: Vector3,duration: float,puffs: Array[Dictionary],elapsed: float,kind: String) -> void:
 	if clouds.has(id) or elapsed>=duration: return
 	while cloud_order.size()>=MAX_EVENTS:
 		clouds.erase(cloud_order.pop_front())
 	cloud_order.append(id)
-	clouds[id]={"origin":origin,"age":clampf(elapsed,0.,duration),"duration":duration,"puffs":puffs}
+	clouds[id]={"origin":origin,"age":clampf(elapsed,0.,duration),"duration":duration,"puffs":puffs,"kind":kind}
 
 func clear_clouds() -> void:
 	clouds.clear()
@@ -92,6 +98,7 @@ func clear_clouds() -> void:
 	overlay_alpha=0.
 	if is_instance_valid(overlay): overlay.color.a=0.
 	if pool!=null: pool.visible_instance_count=0
+	if is_instance_valid(smoke_audio): smoke_audio.stop_all()
 
 func _process(delta: float) -> void:
 	for id in clouds.keys():
