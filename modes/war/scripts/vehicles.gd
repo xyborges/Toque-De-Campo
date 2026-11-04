@@ -147,6 +147,9 @@ func _own_id() -> String:
 func _transport(vehicle: Node) -> bool:
 	return is_instance_valid(vehicle) and vehicle is WarVehicle and bool(vehicle.spec.get("transport",false))
 
+func reset_transport_pose(vehicle: Node, actor: GamePlayer) -> void:
+	if _transport(vehicle): MOTORBIKE.reset_rider_pose(actor)
+
 func _local_is_operator() -> bool:
 	return is_instance_valid(game.local_player) and is_operator(game.local_player.peer_id)
 
@@ -718,6 +721,7 @@ func release(id: int,forced := false,promote_driver := true) -> bool:
 	if is_instance_valid(actor):
 		actor.vehicle_id="";actor.velocity=Vector3.ZERO;actor.trigger_held=false
 		actor.fire_cooldown=0;actor.cancel_reload();actor.cancel_melee();actor.clear_aim()
+		reset_transport_pose(current,actor)
 		if actor.hp>0:
 			if current is WarVehicle: actor.global_position=exit_position
 			actor.body_root.show();actor._set_hitboxes_enabled(true);actor.body_collision.set_deferred("disabled",false)
@@ -804,7 +808,10 @@ func reset_occupancy() -> void:
 	for vehicle: WarVehicle in vehicles.values():
 		for id: int in vehicle.clear_seats():
 			if game.members.has(id): game.members[id].vehicle="";game.members[id].vehicle_seat=-1;game.members[id].vehicle_role=""
-			if game.players.has(id): game.players[id].vehicle_id="";game.players[id].trigger_held=false
+			var actor := game.players.get(id) as WarPlayer
+			if is_instance_valid(actor):
+				actor.vehicle_id="";actor.trigger_held=false
+				reset_transport_pose(vehicle,actor)
 		_send_occupancy(vehicle)
 	for drone: WarDrone in drones.values(): drone.driver=0
 	last_controlled="";last_control_role="";fire_held=false;zoom=false;vehicle_view.reset(false)
@@ -816,7 +823,9 @@ func exit_confirmed(point: Vector3) -> void:
 		# The identity packet that clears this field is sent immediately after
 		# this reliable confirmation.  Clear the local presentation state here
 		# as well so the restoration below cannot be skipped by packet order.
+		var former := find_target(actor.vehicle_id)
 		actor.vehicle_id=""
+		reset_transport_pose(former,actor)
 		actor.global_position=point;actor.velocity=Vector3.ZERO
 		actor.restore_infantry_presentation_after_vehicle_exit()
 

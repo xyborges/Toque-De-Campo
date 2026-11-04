@@ -43,10 +43,15 @@ func render(delta: float) -> void:
 func network_state() -> Array:
 	# Motorcycles have no gun, reload or turret state. Keep movement packets
 	# small enough to fit the transport MTU instead of sending an APC schema.
-	return [vehicle_id,global_position,rotation,driver,seats_revision,control_epoch,spawn_generation,hp,speed,steering,destroyed,engine_load]
+	var state := [vehicle_id,global_position,rotation,driver,seats_revision,control_epoch,spawn_generation,hp,speed,steering,destroyed,engine_load]
+	if seats.has(1): state.append(int(seats[1]))
+	return state
 
 func receive_network_state(state: Array) -> void:
-	var packet: Dictionary={"position":state[1],"rotation":state[2],"driver":int(state[3]),"seats":{0:int(state[3])} if int(state[3])>0 else {},"seats_revision":int(state[4]),"control_epoch":int(state[5]),"spawn_generation":int(state[6]),"hp":float(state[7]),"speed":float(state[8]),"steering":float(state[9]),"destroyed":bool(state[10]),"ammo":0,"secondary_ammo":0,"selected":"primary","reload":0.,"wait":0.,"turret":0.,"pitch":0.}
+	var occupants := {}
+	if int(state[3])>0: occupants[0]=int(state[3])
+	if state.size()==13 and int(state[12])>0: occupants[1]=int(state[12])
+	var packet: Dictionary={"position":state[1],"rotation":state[2],"driver":int(state[3]),"seats":occupants,"seats_revision":int(state[4]),"control_epoch":int(state[5]),"spawn_generation":int(state[6]),"hp":float(state[7]),"speed":float(state[8]),"steering":float(state[9]),"destroyed":bool(state[10]),"ammo":0,"secondary_ammo":0,"selected":"primary","reload":0.,"wait":0.,"turret":0.,"pitch":0.}
 	receive(packet)
 	engine_load=clampf(float(state[11]),0.,1.)
 

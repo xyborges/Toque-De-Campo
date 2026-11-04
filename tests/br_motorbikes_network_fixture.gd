@@ -27,10 +27,15 @@ func qa_bike_command(label: String,action: String,data: Dictionary) -> void:
 	qa_ack.rpc_id(1,label)
 
 @rpc("authority","call_remote","reliable")
-func qa_bike_check(label: String,bike_id: String,driver_id: int,exited_id: int=0) -> void:
+func qa_bike_check(label: String,bike_id: String,driver_id: int,exited_id: int=0,passenger_id: int=0) -> void:
 	var bike: WarVehicle=motorbikes.bikes[bike_id]
 	var rider: GamePlayer=players.get(driver_id)
-	var okay: bool=bike.driver==driver_id
+	var okay: bool=bike.driver==driver_id and int(bike.seats.get(1,0))==passenger_id
+	if passenger_id>0:
+		var passenger := players.get(passenger_id) as GamePlayer
+		okay=okay and passenger!=null and passenger.vehicle_id==bike_id and passenger.body_collision.disabled
+		if is_instance_valid(passenger) and passenger.is_local:
+			okay=okay and not passenger.view_root.visible and passenger.camera.global_position.distance_to(passenger.camera_pivot.global_position)>2.5
 	if driver_id>0:okay=okay and rider!=null and rider.vehicle_id==bike_id and rider.body_collision.disabled and absf(angle_difference(rider.rotation.y,bike.rotation.y))<.02
 	if driver_id==multiplayer.get_unique_id():okay=okay and not local_player.view_root.visible and local_player.camera.global_position.distance_to(local_player.camera_pivot.global_position)>2.5
 	if exited_id>0 and players.has(exited_id):
