@@ -130,7 +130,7 @@ def session(data, sid):
         raise ValueError("Sessao desconhecida: " + sid)
     if task["status"] != "active":
         raise ValueError("Sessao nao ativa (" + task["status"] + "): " + sid)
-    workspace = Path(task.get("workspace", str(ROOT))).resolve()
+    workspace = Path(task.get("workspace", str(HOME.parent.resolve()))).resolve()
     if workspace != ROOT.resolve():
         raise ValueError("Sessao pertence a outra worktree: " + str(workspace))
     return task
@@ -157,7 +157,7 @@ def cmd_start(args):
         data = read_registry()
         for sid, task in data["sessions"].items():
             if task["status"] == "active":
-                same_workspace = Path(task.get("workspace", str(ROOT))).resolve() == ROOT.resolve()
+                same_workspace = Path(task.get("workspace", str(HOME.parent.resolve()))).resolve() == ROOT.resolve()
                 overlap = sorted(set(paths) & set(task["files"])) if same_workspace else []
                 if overlap:
                     raise RuntimeError(
@@ -192,7 +192,7 @@ def cmd_start(args):
 
 def differences(task):
     result = []
-    workspace = Path(task.get("workspace", str(ROOT))).resolve()
+    workspace = Path(task.get("workspace", str(HOME.parent.resolve()))).resolve()
     for path, record in task["files"].items():
         actual = digest(path, workspace=workspace)
         if record["expected_sha256"] != actual:
@@ -282,7 +282,7 @@ def cmd_status(args):
             health = "ERRO AO LER: " + str(exc)
         print("\n[ATIVO][" + health + "] " + sid + " | " + task["agent"] + " | " + task["title"])
         print("  Arquivos: " + ", ".join(task["files"]))
-        print("  Worktree: " + task.get("workspace", str(ROOT)))
+        print("  Worktree: " + task.get("workspace", str(HOME.parent.resolve())))
         print("  Inicio: " + task["started_at"])
         if task["notes"]:
             print("  Nota: " + task["notes"])
