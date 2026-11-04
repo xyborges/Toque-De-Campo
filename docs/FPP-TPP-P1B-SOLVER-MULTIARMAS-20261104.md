@@ -77,15 +77,29 @@ O solver agora aceita `aiming` e `iron_sights` **somente quando nao ha modulo op
 - **10/10 casos de ADS optico rejeitados** de forma explicita.
 - Tolerancia do gate permanece abaixo de 1 mm em posicao/cano e `basis_delta < 0.005`; os erros observados ficaram novamente na ordem de milesimos de milimetro.
 
+## P1d — recarga fisica multiarmas
+
+A recarga passou a ser reconstruida a partir do **timer autoritativo** e de `GameReloadPose.state()`, que ja e uma funcao pura. O `bind()` calibra uma vez a transformacao neutra do modelo, os grips e o cano. Durante `solve()`, nenhuma consulta a `Node3D` e feita: o solver recompõe a transformacao local do modelo, as duas maos, o basis da empunhadura e o cano conforme `reload_left/reload_total`.
+
+Regras especificas preservadas:
+
+- FAL, G3 e Glock acompanham a rotacao/translacao do modelo procedural e o ponto de mao de apoio da timeline.
+- AK usa os pontos `hand/right_hand` e o basis relativo de `GameAKReload`.
+- Sniper mantem o basis das maos alinhado ao `weapon_root` enquanto o rifle importado se move, igual ao rig atual.
+- O cuff da mao esquerda troca para a pegada de magazine/ferrolho apenas nas fases em que `hand_grabbing` esta ativo.
+- O cano acompanha o modelo durante a recarga em todas as cinco armas.
+
+`tests/true_fpp_p1d_collision_reload.gd`: **150/150 poses** — 5 armas x 3 posturas x parado/movimento x 5 pontos de progresso da recarga. Mais **10/10 estados invalidos** rejeitados por arma/calibracao incompatível ou timer invalido. Gate: <1 mm em posicao/cano e `basis_delta < 0.005`; os erros observados ficaram em poucos milesimos de milimetro.
+
 ## Etapas que continuam bloqueadas
 
-1. **P1b restante:** recarga, PiP/ADS óptico, tiros entre ticks, transições intermediárias de postura e equipamento especial. Standing, crouch, prone estável, caminhada, sprint, rastejamento, soft aim e iron sights sem óptica já têm paridade matemática nos fixtures atuais.
+1. **P1b restante:** PiP/ADS óptico, tiros entre ticks, transições intermediárias de postura e equipamento especial. Standing, crouch, prone estável, caminhada, sprint, rastejamento, soft aim, iron sights sem óptica e recarga já têm paridade matemática nos fixtures atuais.
 2. **Integração física real:** `collision_rig_proxy.gd` ainda recebe pose do rig visual e mantém shapes desligados. O solver multiarmas **não** está conectado a `WarPlayer`, nem as hitboxes autoritativas foram transferidas. Antes do swap, medir `CollisionPose` real 60 Hz x `PresentationPose` 8/15/30 Hz e comparar runtime sob carga.
 3. **Combate:** ainda não foram homologados disparo aceito, cobertura em quinas/janelas, dano por membro, ragdoll e 2 clientes exportados. Nenhum protocolo de rede ou anti-cheat foi mudado.
 4. **P2 e seguintes:** true FPP/câmera, integração de PiP na arma real, remoção de `view_root` e migração de gadgets, BR e outros modos seguem pendentes. Não apresentar a P1b como corpo único final.
 
 ## Segurança e integração
 
-Esta branch altera o solver isolado, dois testes P1b, este documento e uma correção pontual em `modes/war/scripts/stance.gd` para restaurar a pelve ao sair do prone. Não toca em `scripts/player.gd`, `modes/war/scripts/player.gd`, `main.gd`, `project.godot`, `weapon_optics.gd`, protocolo de rede nem modelos editados por outras IAs.
+Esta branch altera o solver isolado, testes P1b-P1d, este documento e uma correção pontual em `modes/war/scripts/stance.gd` para restaurar a pelve ao sair do prone. Não toca em `scripts/player.gd`, `modes/war/scripts/player.gd`, `main.gd`, `project.godot`, `weapon_optics.gd`, protocolo de rede nem modelos editados por outras IAs.
 
-**Próximo pacote recomendado:** modelar recarga sem depender do rig visual e depois PiP/ADS óptico na arma real; em seguida adicionar baseline de 28 bots no listen-server/dedicated, cobertura em quinas/janelas e somente então habilitar um piloto controlado do CollisionRig sob flag. Integrar branch atual por revisão; não publicar.
+**Próximo pacote recomendado:** modelar PiP/ADS óptico na arma real sem renderização dentro do solver; depois adicionar baseline de 28 bots no listen-server/dedicated, cobertura em quinas/janelas e somente então habilitar um piloto controlado do CollisionRig sob flag. Integrar branch atual por revisão; não publicar.

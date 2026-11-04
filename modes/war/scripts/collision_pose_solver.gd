@@ -65,12 +65,22 @@ static func bind(actor: WarPlayer) -> Dictionary:
 	# Treat arm, muzzle and model reference as static offsets for THIS weapon.
 	# No scene data from the avatar will be consulted by solve().
 	var weapon_space: Transform3D=actor.weapon_root.global_transform.affine_inverse()
+	var model_rest:=model.transform if is_instance_valid(model) else Transform3D.IDENTITY
+	var model_rest_basis:=Basis(model.get_meta("rest_basis",model.basis)) if is_instance_valid(model) else Basis.IDENTITY
+	var model_rest_position:=Vector3(model.get_meta("rest_position",model.position)) if is_instance_valid(model) else Vector3.ZERO
+	var muzzle_model_local:=model.global_transform.affine_inverse()*actor.muzzle_marker.global_transform if is_instance_valid(model) and is_instance_valid(actor.muzzle_marker) else Transform3D.IDENTITY
+	var right_model_local:=model.global_transform.affine_inverse()*actor.weapon_hand_target(false) if is_instance_valid(model) else Vector3.ZERO
 	return {"offsets":offsets,"rest":rest.duplicate(true),"legs":legs,
 		"weapon_id":weapon_id,
 		"grip_left":weapon_space*((actor.avatar_parts.arm_l.get_node("HandL") as Node3D).global_position if weapon_id=="g3" else actor.weapon_hand_target(true)),
 		"grip_right":weapon_space*actor.weapon_hand_target(false),
 		"hand_basis_local":actor.weapon_root.global_basis.inverse()*hand_basis_world,
 		"muzzle_local":weapon_space*actor.muzzle_marker.global_transform,
+		"muzzle_model_local":muzzle_model_local,
+		"right_model_local":right_model_local,
+		"model_rest":model_rest,
+		"model_rest_basis":model_rest_basis,
+		"model_rest_position":model_rest_position,
 		"ground_y":actor.stance.visual_ground_offset(actor),
 		"leg_scale":actor.stance.leg_scale(actor),
 		"reference_foot_y":actor.stance.reference_foot_y,
@@ -78,7 +88,6 @@ static func bind(actor: WarPlayer) -> Dictionary:
 		"head_proportion":float(actor.body_proportions.get("head",1.)),
 		"arm_proportion":float(actor.body_proportions.get("arms",1.)),
 		"leg_proportion":float(actor.body_proportions.get("legs",1.)),
-		"model_rest":Transform3D.IDENTITY,
 		"bound_regions":offsets.size()}
 
 static func supported(state: Dictionary) -> bool:
@@ -101,7 +110,12 @@ static func supported(state: Dictionary) -> bool:
 	# Hip/soft-aim and iron sights without an attached optical module share the
 	# same authoritative world weapon pose. Optical ADS remains a separate gate.
 	var ads_safe: bool=not scoped and (not iron or not optic_enabled)
-	return str(state.get("weapon","")) in SUPPORTED_WEAPONS and ads_safe and steady_posture and valid_motion and float(state.get("fire_cooldown",0.))<=0. and float(state.get("reaction",0.))==0. and float(state.get("reload_left",0.))==0. and float(state.get("attack",0.))==0. and float(state.get("recoil",0.))==0. and not bool(state.get("special",false))
+	var reload_left: float=float(state.get("reload_left",0.))
+	var reload_total: float=float(state.get("reload_total",0.))
+	var reload_weapon: String=GameWeapons.canonical(str(state.get("reload_weapon","")))
+	var reload_active: bool=reload_left>.00001
+	var reload_safe: bool=not reload_active or (reload_total>.00001 and reload_weapon==GameWeapons.canonical(str(state.get("weapon",""))))
+	return str(state.get("weapon","")) in SUPPORTED_WEAPONS and ads_safe and steady_posture and valid_motion and reload_safe and float(state.get("fire_cooldown",0.))<=0. and float(state.get("reaction",0.))==0. and float(state.get("attack",0.))==0. and float(state.get("recoil",0.))==0. and not bool(state.get("special",false))
 
 static func state(actor: WarPlayer) -> Dictionary:
 	return {"weapon":actor.weapon_id,"pitch":actor.pitch,"lean":actor.lean,"scoped":actor.weapon_optics.presented(),"iron":actor.iron_sights,"aiming":actor.aiming,"optic_enabled":actor.weapon_optics.enabled(actor),"fire_cooldown":actor.fire_cooldown,
@@ -111,7 +125,7 @@ static func state(actor: WarPlayer) -> Dictionary:
 		"legs_intact":float(actor.limbs.legL)>0. and float(actor.limbs.legR)>0.,
 		"crouch_weight":actor.stance.crouch_weight,"prone_weight":actor.stance.prone_weight,
 		"moving":actor.locomotion.moving,"sprint":actor.locomotion.sprint,"reaction":actor.reaction,
-		"reload_left":actor.reload_left,"attack":actor.attack_anim,"recoil":actor.recoil,
+		"reload_left":actor.reload_left,"reload_total":actor.reload_total,"reload_weapon":actor.reload_weapon,"attack":actor.attack_anim,"recoil":actor.recoil,
 		"special":actor.gadget_equipped or not actor.utility_mode.is_empty() or actor._grenade_active() or actor.in_water() or not actor.deployed or actor.hp<=0 or not actor.vehicle_id.is_empty()}
 
 static func _gait_angles(input: Dictionary,side: String,lean: float) -> Vector3:
@@ -146,8 +160,8 @@ static func _upper(pitch: float,lean: float) -> Transform3D:
 	var b:=Basis(Vector3.BACK,-lean*.18)*Basis(Vector3.RIGHT,clampf(pitch*.42,-.49,.49))
 	return Transform3D(b,WAIST+Vector3(lean*.04,0,0)-b*WAIST)
 
-static func _arm(shoulder: Vector3,grip: Vector3,hand_basis: Basis,upper_pose: Transform3D,side: String,proportion: float,pistol: bool=false) -> Dictionary:
-	var cuff:=Vector3(-.035,-.029,.075) if side=="L" and not pistol else Vector3(.023,-.025,.085)
+static func _arm(shoulder: Vector3,grip: Vector3,hand_basis: Basis,upper_pose: Transform3D,side: String,proportion: float,pistol: bool=false,grabbing: bool=false) -> Dictionary:
+	var cuff:=Vector3(-.035,-.029,.075) if side=="L" and not pistol and not grabbing else Vector3(.023,-.025,.085)
 	var wrist:=grip+hand_basis*cuff
 	var direction:=wrist-shoulder
 	var distance:=direction.length()
@@ -170,6 +184,43 @@ static func _arm(shoulder: Vector3,grip: Vector3,hand_basis: Basis,upper_pose: T
 	var upper:=Transform3D(Basis.from_scale(Vector3(proportion,a/UPPER,proportion)),Vector3(0,-a*.5,0))
 	var hand:=Transform3D(inverse.basis*hand_basis*Basis.from_scale(Vector3.ONE*proportion),inverse*grip)
 	return {"arm":arm,"upper":upper,"lower":lower,"hand":hand}
+
+static func _reload_geometry(bindings: Dictionary,input: Dictionary) -> Dictionary:
+	var weapon_id: String=str(bindings.weapon_id)
+	var left: float=float(input.get("reload_left",0.))
+	var total: float=float(input.get("reload_total",0.))
+	var reload_weapon: String=GameWeapons.canonical(str(input.get("reload_weapon","")))
+	var active: bool=left>.00001 and total>.00001 and reload_weapon==weapon_id
+	var pose: Dictionary=GameReloadPose.state(weapon_id,left if active else 0.,total)
+	var model_local: Transform3D=Transform3D(bindings.model_rest)
+	var grip_left: Vector3=bindings.grip_left
+	var grip_right: Vector3=bindings.grip_right
+	var hand_basis_local: Basis=bindings.hand_basis_local
+	var grabbing:=false
+	var muzzle_local: Transform3D=Transform3D(bindings.muzzle_local)
+	if active:
+		var rest_basis: Basis=bindings.model_rest_basis
+		var rest_position: Vector3=bindings.model_rest_position
+		var pose_basis:=Basis.from_euler(Vector3(pose.angles))
+		model_local=Transform3D(pose_basis if weapon_id in ["fal","glock","g3"] else pose_basis*rest_basis,rest_position+Vector3(pose.offset))
+		if weapon_id=="sniper":
+			grip_left=model_local*(rest_basis.inverse()*(Vector3(pose.hand)-rest_position))
+			grip_right=model_local*(rest_basis.inverse()*(Vector3(pose.right_hand)-rest_position))
+			# Sniper hands intentionally stay aligned to the weapon root while
+			# the imported one-piece rifle rocks below them.
+			hand_basis_local=Basis(bindings.hand_basis_local)
+		elif weapon_id=="ak":
+			grip_left=model_local*Vector3(pose.hand)
+			grip_right=model_local*Vector3(pose.right_hand)
+			hand_basis_local=model_local.basis*rest_basis.inverse()
+		else:
+			grip_left=model_local*Vector3(pose.hand)
+			grip_right=model_local*Vector3(bindings.right_model_local)
+			hand_basis_local=model_local.basis
+		grabbing=bool(pose.get("hand_grabbing",false))
+		muzzle_local=model_local*Transform3D(bindings.muzzle_model_local)
+	return {"active":active,"pose":pose,"grip_left":grip_left,"grip_right":grip_right,
+		"hand_basis_local":hand_basis_local,"grabbing":grabbing,"muzzle_local":muzzle_local}
 
 static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	if not supported(input) or str(input.get("weapon",""))!=str(bindings.get("weapon_id","")):
@@ -204,7 +255,7 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	if prone>0.:
 		var head_clearance: float=.19*clampf(float(bindings.head_proportion),.65,1.5)+.06
 		weapon.origin.x=lerpf(weapon.origin.x,maxf(weapon.origin.x,head_clearance),prone)
-	if (moving>.00001 or sprint>.00001) and not bool(input.get("aiming",false)) and not bool(input.get("iron",false)):
+	if (moving>.00001 or sprint>.00001) and not bool(input.get("aiming",false)) and not bool(input.get("iron",false)) and float(input.get("reload_left",0.))<=.00001:
 		var pulse: float=sin(phase)
 		var lift: float=absf(cos(phase))
 		var weight: float=moving*(.38+.62*sprint)
@@ -212,7 +263,8 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 		var rotation_offset:=Vector3(.06*sprint,0.,.12*sprint+pulse*.012*weight)
 		weapon.origin+=Basis(Vector3.RIGHT,pitch)*offset
 		weapon.basis=Basis.from_euler(weapon.basis.get_euler()+rotation_offset)
-	var muzzle: Transform3D=weapon*Transform3D(bindings.muzzle_local)
+	var reload_geometry: Dictionary=_reload_geometry(bindings,input)
+	var muzzle: Transform3D=weapon*Transform3D(reload_geometry.muzzle_local)
 	var torso_scale:=clampf(float(bindings.torso_proportion),.65,1.5)
 	var head_scale:=clampf(float(bindings.head_proportion),.65,1.5)
 	var head_basis:=Basis(Vector3.RIGHT,clampf(pitch*.92,-1.12,1.12))*Basis(Vector3.BACK,-lean*.18)
@@ -260,10 +312,10 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 		var point:=Vector3(rest.left if side=="L" else rest.right)
 		point.x=signf(point.x)*(.325*torso_scale+.025)
 		var arm_position: Vector3=(upper*point).lerp(Vector3(-(.325*torso_scale+.025) if side=="L" else (.325*torso_scale+.025),.13,-.64),prone)
-		var target: Vector3=weapon*Vector3(bindings.grip_left if side=="L" else bindings.grip_right)
+		var target: Vector3=weapon*Vector3(reload_geometry.grip_left if side=="L" else reload_geometry.grip_right)
 		var relative_grip:=body.affine_inverse()*target
-		var relative_hand_basis:=body.basis.inverse()*weapon.basis*Basis(bindings.hand_basis_local)
-		var result: Dictionary=_arm(arm_position,relative_grip,relative_hand_basis,upper,side,clampf(float(bindings.arm_proportion),.65,1.5),str(bindings.weapon_id)=="glock")
+		var relative_hand_basis:=body.basis.inverse()*weapon.basis*Basis(reload_geometry.hand_basis_local)
+		var result: Dictionary=_arm(arm_position,relative_grip,relative_hand_basis,upper,side,clampf(float(bindings.arm_proportion),.65,1.5),str(bindings.weapon_id)=="glock",side=="L" and bool(reload_geometry.grabbing))
 		if result.is_empty():return {"supported":false,"reason":"Invalid arm target"}
 		mounts["upper"+side]=body*result.arm*result.upper
 		mounts["lower"+side]=body*result.arm*result.lower
