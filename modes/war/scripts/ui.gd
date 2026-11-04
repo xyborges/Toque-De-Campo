@@ -433,15 +433,46 @@ func _refresh_marker_labels() -> void:
 		marker.text=str(marker.id)+" · %d m"%int(camera.global_position.distance_to(marker.world))
 		marker.color=FieldTheme.ACCENT if owner==game.local_player.war_team else (FieldTheme.BAD if owner>=0 else FieldTheme.INK)
 
+func _objective_screen_projection(world: Vector3,camera: Camera3D,inverse: Transform2D) -> Dictionary:
+	var actor:=game.local_player as WarPlayer
+	if not is_instance_valid(actor):return {}
+	var optics:=actor.weapon_optics
+	var optical_active: bool=optics!=null and optics.active and is_instance_valid(optics.camera) and is_instance_valid(optics.view) and is_instance_valid(optics.lens)
+	if not optical_active:
+		if camera.is_position_behind(world):return {}
+		return {"screen":inverse*camera.unproject_position(world),"optical":false}
+	# The scope image is rendered by a second, magnified camera into the lens.
+	# Project the objective through that camera, then map its UV back onto the
+	# physical lens quad. This keeps the HUD marker glued to the magnified world
+	# instead of sliding against it with the main-camera projection.
+	var optic_camera:=optics.camera as Camera3D
+	if optic_camera.is_position_behind(world):return {}
+	var viewport_size:=Vector2(optics.view.size)
+	if viewport_size.x<=0. or viewport_size.y<=0.:return {}
+	var uv:=optic_camera.unproject_position(world)/viewport_size
+	var centered:=uv-Vector2(.5,.5)
+	# Keep objective HUD inside the useful glass, before the shader's dark edge.
+	if centered.length()>.42:return {}
+	var definition:=optics.optical.get("definition") as GameAttachmentDefinition
+	var radius:=float(definition.behavior_parameters.get("lens_radius",.032)) if definition else .032
+	var lens_size:=Vector2.ONE*radius*2.
+	if optics.lens.mesh is QuadMesh:lens_size=(optics.lens.mesh as QuadMesh).size
+	var lens_local:=Vector3(centered.x*lens_size.x,-centered.y*lens_size.y,0.)
+	var lens_world:=optics.lens.to_global(lens_local)
+	if camera.is_position_behind(lens_world):return {}
+	return {"screen":inverse*camera.unproject_position(lens_world),"optical":true}
+
 func _update_markers() -> void:
-	# Reuse three records. Only projected positions change at render frequency.
+	# Reuse marker records. Projection follows the actual rendered view every frame.
 	var camera:=get_viewport().get_camera_3d()
 	var allowed: bool=not game.ui_focus.blocked() and is_instance_valid(game.local_player) and game.local_player.hp>0 and is_instance_valid(camera)
 	var inverse:=get_global_transform_with_canvas().affine_inverse()
 	for marker in markers:
 		marker.visible=false
-		if not allowed or camera.is_position_behind(marker.world): continue
-		var screen: Vector2=inverse*camera.unproject_position(marker.world)
+		if not allowed: continue
+		var projection:=_objective_screen_projection(marker.world,camera,inverse)
+		if projection.is_empty():continue
+		var screen: Vector2=projection.screen
 		if screen.x<20 or screen.y<80 or screen.x>size.x-20 or screen.y>size.y-180: continue
 		marker.at=screen;marker.visible=true
 
