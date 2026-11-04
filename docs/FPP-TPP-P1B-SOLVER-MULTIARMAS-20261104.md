@@ -119,15 +119,30 @@ Isso remove a vantagem de parallax da câmera TPP em quinas e janelas sem altera
 
 **Limite:** o teste é determinístico e local; ainda faltam dano por membro, tiro entre ticks em rede, ragdoll e dois clientes exportados/dedicated antes de tratar a mudança como gate de release.
 
+## P1g — CollisionRig real sob piloto reversível
+
+O `WarPlayer` agora possui um piloto **explicitamente opt-in** (`--true-fpp-p1g-collision`) para transformar o CollisionRig independente na árvore de hitboxes usada pelos sistemas de combate. O comportamento normal permanece desligado por padrão.
+
+O swap é completo e reversível: o proxy é sincronizado antes de assumir autoridade, as hitboxes visuais antigas são desativadas, `actor.hit_regions` passa a apontar para as regiões independentes e o estado de colisão é preservado na restauração. Estados ainda não cobertos pelo solver — por exemplo gadgets, água ou recoil — espelham a pose visual para o proxy sem criar uma segunda árvore shootable.
+
+- `tests/true_fpp_p1g_collision_authority.gd`: **30/30 checks**, PASS.
+- 16 regiões físicas independentes preservam `hit_region`, shapes e collision layer.
+- Raycast real em `SHOT_MASK` atinge o proxy e não a hierarquia visual antiga.
+- Num cenário de LOD visual forçado a ficar parado, o CollisionRig reagiu ao novo aim em aproximadamente **0,319 m**, enquanto a árvore visual permaneceu com **0 m** de mudança.
+- Mudança G3 → AK recalibra o solver usando as regiões visuais preservadas, sem aprender os próprios colliders do proxy.
+- Desativar/reativar hitboxes e desligar o piloto preserva estado e não deixa colisão dupla.
+- Regressão encadeada após P1g: P1g 30/30, P1f 27/27, P1e 120/120, P1d 150/150, P1c 90/90, P1b locomocão/prone e arsenal — **0 falhas**.
+
+**Limite:** o piloto ainda não é configuração de produção. Falta provar custo e estabilidade com 28 bots, dano por membro/ragdoll e multiplayer listen/dedicated/exportado antes de habilitá-lo por padrão.
+
 ## Etapas que continuam bloqueadas
 
-1. **P1 restante:** transições intermediárias de postura, equipamento especial, tiro entre ticks em rede e integração real do CollisionRig. Standing, crouch, prone estável, caminhada, sprint, rastejamento, soft aim, iron sights, recarga, ADS óptico e paridade de cobertura FPP/TPP já têm gates locais.
-2. **Integração física real:** `collision_rig_proxy.gd` ainda recebe pose do rig visual e mantém shapes desligados. O solver multiarmas **não** está conectado a `WarPlayer`, nem as hitboxes autoritativas foram transferidas. Antes do swap, medir `CollisionPose` real 60 Hz x `PresentationPose` 8/15/30 Hz e comparar runtime sob carga.
-3. **Combate/release:** cobertura e direção aceita FPP/TPP já passaram localmente; ainda faltam dano por membro, ragdoll, dois clientes exportados, dedicated/listen e teste com 28 bots.
-4. **P2 e seguintes:** true FPP/câmera, integração de PiP na arma real, remoção de `view_root` e migração de gadgets, BR e outros modos seguem pendentes. Não apresentar a P1 como corpo único final.
+1. **P1 restante para release:** A/B de 28 bots com CollisionRig real, dano por membro + ragdoll e tiro entre ticks em multiplayer real/exportado. Transições especiais não suportadas já têm fallback seguro para a pose legada, mas ainda precisam de observação em partida.
+2. **Ativação de produção:** o CollisionRig está conectado ao `WarPlayer` sob flag QA, mas **desligado por padrão**. Só remover esse gate depois dos testes de carga/rede.
+3. **P2 e seguintes:** true FPP/câmera, integração definitiva do PiP na arma real, remoção de `view_root` e migração de gadgets, BR e outros modos seguem pendentes. Não apresentar a P1 como corpo único final.
 
 ## Segurança e integração
 
-Esta branch altera o solver isolado, testes P1b-P1f, este documento, uma correção pontual em `modes/war/scripts/stance.gd` e **`scripts/main.gd` apenas na autoridade do raycast de mira**. Não altera `scripts/player.gd`, `modes/war/scripts/player.gd`, `project.godot`, `weapon_optics.gd` nem modelos editados por outras IAs. O protocolo RPC e o envelope anti-cheat de câmera permanecem os mesmos.
+Esta branch altera o solver, testes P1b-P1g, `collision_rig_proxy.gd`, `modes/war/scripts/player.gd`, este documento, uma correção pontual em `modes/war/scripts/stance.gd` e **`scripts/main.gd` apenas na autoridade do raycast de mira**. O piloto P1g permanece desligado sem argumento de QA. `project.godot` e `weapon_optics.gd` não foram alterados por esta branch.
 
-**Próximo pacote recomendado:** piloto controlado do CollisionRig sob flag, com swap atômico de colliders, dano por membro e A/B de 28 bots; depois validar dois clientes exportados em listen/dedicated antes de considerar release. Integrar branch atual por revisão; não publicar.
+**Próximo pacote recomendado:** medir A/B com 28 bots e o piloto real, depois validar dano por membro/ragdoll e dois clientes exportados em listen/dedicated. Só depois considerar habilitação por padrão e release.

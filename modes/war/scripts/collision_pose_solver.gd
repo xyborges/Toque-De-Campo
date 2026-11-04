@@ -19,9 +19,12 @@ const REGION_MOUNTS: Dictionary={
 	"footL":"footL","footR":"footR"
 }
 
-static func bind(actor: WarPlayer) -> Dictionary:
+static func bind(actor: WarPlayer,region_source: Dictionary={}) -> Dictionary:
 	# Only calibration: local region offsets, authored segment transforms,
 	# rest positions and body translation. Never read live visual pose in solve.
+	# P1g may bind while actor.hit_regions points at the independent proxy;
+	# use the preserved legacy region dictionary to keep authored offsets stable.
+	var physical_regions: Dictionary=actor.hit_regions if region_source.is_empty() else region_source
 	var mounts: Dictionary={
 		"head":actor.avatar_parts.head,
 		"torso":actor.avatar_parts.torso,
@@ -41,7 +44,7 @@ static func bind(actor: WarPlayer) -> Dictionary:
 	}
 	var offsets: Dictionary={}
 	for region_id: String in REGION_MOUNTS:
-		var area: Area3D=actor.hit_regions.get(region_id)
+		var area: Area3D=physical_regions.get(region_id)
 		if not is_instance_valid(area):continue
 		var mount: Node3D=mounts[REGION_MOUNTS[region_id]]
 		# Preserve arbitrary authored offsets, including parent changes

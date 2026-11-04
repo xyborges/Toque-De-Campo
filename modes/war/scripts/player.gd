@@ -1,6 +1,8 @@
 extends GamePlayer
 class_name WarPlayer
 const BINOCULAR_MODEL=preload("res://modes/war/equipment/binoculars.tscn")
+const COLLISION_POSE_SOLVER=preload("res://modes/war/scripts/collision_pose_solver.gd")
+const COLLISION_RIG_PROXY=preload("res://modes/war/scripts/collision_rig_proxy.gd")
 var swim_camera_height:=1.5
 var war_team := -1
 var war_class := "soldier"
@@ -31,16 +33,25 @@ var _water_clock:=0.0
 var _water_weather_seed: int=-1
 var _water_value:=false
 var p1a_authority_collision_pilot:=false
+var p1g_authority_collision_pilot:=false
+var p1g_collision_rig: WarCollisionRigProxy
+var p1g_collision_bindings: Dictionary={}
+var p1g_collision_binding_key:=""
+var p1g_solver_frames:=0
+var p1g_legacy_fallback_frames:=0
 
 func _exit_tree() -> void:
 	if is_instance_valid(binocular_overlay): binocular_overlay.queue_free()
 
 func _ready() -> void:
-	# Explicit QA-only pilot. Never increase host pose CPU by default.
-	p1a_authority_collision_pilot="--true-fpp-p1a-authority" in OS.get_cmdline_user_args()
+	# Explicit QA-only pilots. Neither changes production behavior by default.
+	var user_args:=OS.get_cmdline_user_args()
+	p1a_authority_collision_pilot="--true-fpp-p1a-authority" in user_args
+	p1g_authority_collision_pilot="--true-fpp-p1g-collision" in user_args
 	deployed=false;move_speed=WarRules.WALK_SPEED
 	super._ready()
 	floor_constant_speed=true
+	if p1g_authority_collision_pilot: _p1g_prepare_collision_rig()
 	if is_local:
 		var preferences:=NavalStorage.read_json(NavalStorage.settings_folder().path_join("war-camera.json"))
 		shoulder_distance=clampf(float(preferences.get("distance",3.25)),2.0,4.0)
@@ -55,6 +66,65 @@ func _ready() -> void:
 		shoulder_arm.add_excluded_object(get_rid())
 		camera_pivot.add_child(shoulder_arm)
 		_update_view()
+
+func p1g_set_collision_pilot(enabled: bool) -> void:
+	p1g_authority_collision_pilot=enabled
+	if enabled:
+		_p1g_prepare_collision_rig()
+		_p1g_collision_tick()
+	elif is_instance_valid(p1g_collision_rig):
+		p1g_collision_rig.restore(self)
+
+func _p1g_prepare_collision_rig() -> bool:
+	if is_instance_valid(p1g_collision_rig): return true
+	p1g_collision_rig=COLLISION_RIG_PROXY.new()
+	p1g_collision_rig.name="CollisionRigP1G"
+	add_child(p1g_collision_rig)
+	var count: int=p1g_collision_rig.build_from(self)
+	return count>=13
+
+func _p1g_binding_key() -> String:
+	return GameWeapons.canonical(weapon_id)+"|"+str(weapon_optics.selected_optic)
+
+func _p1g_can_rebind() -> bool:
+	if GameWeapons.canonical(weapon_id) not in COLLISION_POSE_SOLVER.SUPPORTED_WEAPONS: return false
+	if hp<=0 or not deployed or not vehicle_id.is_empty() or swimming or in_water(): return false
+	if gadget_equipped or not utility_mode.is_empty() or _grenade_active(): return false
+	if reload_left>.00001 or attack_anim>.00001 or recoil>.00001: return false
+	if aiming or iron_sights or weapon_optics.aim_weight>.001: return false
+	return true
+
+func _p1g_rebind_if_possible() -> bool:
+	if not is_instance_valid(p1g_collision_rig): return false
+	var key:=_p1g_binding_key()
+	if not p1g_collision_bindings.is_empty() and p1g_collision_binding_key==key: return true
+	if not _p1g_can_rebind(): return false
+	p1g_collision_bindings=COLLISION_POSE_SOLVER.bind(self,p1g_collision_rig.legacy_regions)
+	p1g_collision_binding_key=key if not p1g_collision_bindings.is_empty() else ""
+	return not p1g_collision_bindings.is_empty()
+
+func _p1g_collision_tick() -> void:
+	if not p1g_authority_collision_pilot: return
+	if not _p1g_prepare_collision_rig(): return
+	# Dead/unspawned avatars return cleanly to the legacy dictionary so the
+	# ordinary respawn and deployment code keeps its established semantics.
+	if hp<=0 or not deployed:
+		p1g_collision_rig.sync_legacy(self)
+		if p1g_collision_rig.using_authority: p1g_collision_rig.restore(self)
+		return
+	var solved:=false
+	if _p1g_rebind_if_possible():
+		var frame: Dictionary=COLLISION_POSE_SOLVER.solve(p1g_collision_bindings,COLLISION_POSE_SOLVER.state(self))
+		if bool(frame.get("supported",false)):
+			solved=p1g_collision_rig.sync(frame)
+			if solved: p1g_solver_frames+=1
+	if not solved:
+		# Unsupported actions (gadgets, water, recoil, etc.) remain safe by
+		# mirroring the old articulated regions into the independent hierarchy.
+		p1g_collision_rig.sync_legacy(self)
+		p1g_legacy_fallback_frames+=1
+	if not p1g_collision_rig.using_authority:
+		p1g_collision_rig.activate(self)
 
 func _update_view() -> void:
 	# The base presentation refresh assigns its own camera offset. Preserve
@@ -146,6 +216,7 @@ func _physics_process(delta: float) -> void:
 		GameInfantryPose.reset(self)
 		trigger_held=false;velocity=Vector3.ZERO
 		body_root.hide();weapon_root.hide();_hide_dead_presentations()
+		_p1g_collision_tick()
 		return
 	if not deployed or not vehicle_id.is_empty():
 		weapon_optics.advance(self,delta)
@@ -165,19 +236,25 @@ func _physics_process(delta: float) -> void:
 			elif is_instance_valid(drone_controller): drone_controller.hide()
 			var transport: Node=game.vehicle_system.find_target(vehicle_id) if is_instance_valid(game.vehicle_system) else null
 			if is_instance_valid(transport) and game.vehicle_system._transport(transport): transport.pose_rider(self)
-		return
+			_p1g_collision_tick()
+			return
 	if is_instance_valid(drone_controller): drone_controller.hide()
 	if in_water():
 		if not utility_mode.is_empty():
 			if game.multiplayer.is_server(): game.vehicle_system._set_utility(peer_id,"")
 			else: set_utility("")
 		weapon_optics.advance(self,delta)
-		GameInfantryPose.reset(self);_swim_physics(delta);return
+		GameInfantryPose.reset(self);_swim_physics(delta)
+		_p1g_collision_tick()
+		return
 	elif swimming:
 		swimming=false;body_root.rotation.x=0;body_root.position.y=stance.visual_ground_offset(self);camera_pivot.position.y=swim_camera_height+stance.visual_ground_offset(self);camera_pivot.position.z=0;_update_view()
 	super._physics_process(delta)
 	if not utility_mode.is_empty(): _utility_pose()
 	elif is_instance_valid(utility_model): utility_model.hide()
+	# P1g runs independently of visual articulation LOD. Unsupported special
+	# actions mirror the legacy pivots into the proxy instead of leaving gaps.
+	_p1g_collision_tick()
 	# Only the authority may recover a fallen actor. Spread expensive
 	# procedural terrain checks across six ticks for bots, keeping movement,
 	# collision, hitboxes and the real physics solver at 60 Hz.
