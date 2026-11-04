@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "atualizado_em": "2026-11-04",
+  "tipo": "inventario_e_fila_de_validacao",
+  "main_base": "7a5dc4f",
+  "main_limpa_no_inicio": true,
+  "branches_com_codigo_aguardando_merge": 0,
+  "avisos": [
+    "Este manifesto e um inventario, nao autoriza copiar work/ nem ativar prototipos.",
+    "Provas historicas dos relatorios nao substituem regressao na revisao atual.",
+    "Nao publicar build sem pedido expresso."
+  ],
+  "itens": [
+    {
+      "id": "IA-001",
+      "titulo": "G3, Hensoldt 4x e Telescopica 8x",
+      "estado": "no_main",
+      "prioridade": "P3",
+      "prova": "Modelos, encaixes, ADS e testes de magnificacao no source; 421 verificacoes BR/Guerra e 552 em duelo BR descritos no ciclo 04/11",
+      "arquivos": [
+        "scripts/g3_model.gd",
+        "scripts/attachments/precision_detail.gd",
+        "scenes/weapons/precision8x.tscn",
+        "tests/optical_ads_live.gd",
+        "tests/br_optic_duel.gd"
+      ],
+      "proximo": "Nao portar de laboratorios. Somente regressao visual/cliente exportado na proxima release.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-002",
+      "titulo": "Afeganistao v11-v13, BR e navegacao preparada/Ucrania",
+      "estado": "no_main_com_homologacao_pendente",
+      "prioridade": "P1",
+      "prova": "12 abrigos v13, 32 muros, +12 loot, distribuicao BR e rotas preparadas; documento v13 registra 12/12 depositos navegaveis, 40 jogadores x 8 sementes e verificador 11/11",
+      "arquivos": [
+        "modes/battle_royale/map/afghan_density_stage3.gd",
+        "modes/battle_royale/navigation/prepare_routes.gd",
+        "maps/prepared/afghan/manifest.json",
+        "maps/prepared/ukraine/manifest.json",
+        "tools/verify_prepared_maps_v13.py",
+        "docs/PREPARACAO-MAPAS-V13-UCRANIA-20261103.md"
+      ],
+      "proximo": "Reexecutar verificador apos alteracao de fontes; teste exportado com dois clientes e benchmark 28 bots.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-003",
+      "titulo": "Kit V3 do tanque, explosoes proximas e VFX",
+      "estado": "no_main_com_homologacao_pendente",
+      "prioridade": "P2",
+      "prova": "WAVs V3 instaladas e ajustes de audio/efeitos documentados, QA isolado positivo; ainda sem escuta e FPS em partida longa",
+      "arquivos": [
+        "audio/explosions/tank_near.wav",
+        "audio/explosions/tank_far.wav",
+        "scripts/explosion_audio.gd",
+        "modes/war/scripts/effects.gd",
+        "docs/PLANO-MESTRE-AUDIO-20261104.md"
+      ],
+      "proximo": "Avaliar pico, distancia, mixagem e desempenho no cliente real.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-004",
+      "titulo": "HUD e menus de Guerra, BR e Naval",
+      "estado": "no_main_com_homologacao_pendente",
+      "prioridade": "P2",
+      "prova": "Scripts e manifestos de revisao presentes; manifestos de work registram hashes historicos, nao commits prontos",
+      "arquivos": [
+        "scripts/ui/infantry_hud.gd",
+        "scripts/ui/naval_hud.gd",
+        "modes/battle_royale/ui/hud.gd",
+        "modes/war/scripts/ui.gd"
+      ],
+      "proximo": "Validar visibilidade, resolucoes, alternancias de modo e regressao em cliente exportado.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-005",
+      "titulo": "IA militar e veiculos dos bots",
+      "estado": "no_main_com_homologacao_pendente",
+      "prioridade": "P2",
+      "prova": "Diretor e transito de bots estao versionados; comportamento de APC/objetivos e intensidade de combate nao recebeu homologacao completa nesta auditoria",
+      "arquivos": [
+        "modes/war/scripts/bot_director.gd",
+        "modes/war/scripts/bot_transit.gd"
+      ],
+      "proximo": "QA de entradas/saidas, APC disparando, travamento em trincheiras, objetivos, 28 bots e rede.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-006",
+      "titulo": "Personagem unico FPP/TPP e CollisionRig",
+      "estado": "prototipo_inativo",
+      "prioridade": "P1",
+      "prova": "Proxy de 16 regioes tem shapes desabilitados e copia a pose atual; solver experimental limitado ao G3 em pe; nao substitui a arma, camera nem hitboxes de producao",
+      "arquivos": [
+        "modes/war/scripts/collision_pose_state.gd",
+        "modes/war/scripts/collision_rig_proxy.gd",
+        "modes/war/scripts/collision_pose_solver.gd",
+        "docs/FPP-TPP-P1B-COLLISION-RIG-PROXY-20261104.md",
+        "docs/FPP-TPP-CORPO-UNICO-PLANO-20261104.md"
+      ],
+      "proximo": "Solver multi-arma/postura, hitboxes/IA/rede e benchmark; so depois swap atomico e remocao gradativa da copia FPP.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-007",
+      "titulo": "Mixer dinamico, ducking e limiter de master",
+      "estado": "nao_implementado",
+      "prioridade": "P1",
+      "prova": "Checklist explicito nao concluido no plano mestre de audio; nao confundir limiter existente por categoria com o novo mixer",
+      "arquivos": [
+        "docs/PLANO-MESTRE-AUDIO-20261104.md"
+      ],
+      "proximo": "Implementar sob feature flag em worktree propria, testar pico G3+explosao, voz PTT e volume do usuario.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-008",
+      "titulo": "Trilhas afegas v14 inspiradas no Sinai",
+      "estado": "apenas_plano",
+      "prioridade": "P3",
+      "prova": "Documento v14 registra somente referencia e desenho; sem novo caminho fisico integrado",
+      "arquivos": [
+        "docs/AFEGANISTAO-REFERENCIA-SINAI-TRILHAS-20261104.md"
+      ],
+      "proximo": "Piloto de trilha + colisao + navmesh, preservar loot/spawns e comparar FPS.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-009",
+      "titulo": "Meta 60 FPS a 1080p com 28 bots",
+      "estado": "meta_nao_atingida",
+      "prioridade": "P1",
+      "prova": "Telemetria frame_pacing.gd integrada, mas relatorio mediu p95/p99 de stutter e throttling; nenhum preset aprovado para meta",
+      "arquivos": [
+        "scripts/frame_pacing.gd"
+      ],
+      "proximo": "Benchmark controlado com maquina fria e autoridade separada; otimizar fisica/IA/culling sem copiar laboratorios.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-010",
+      "titulo": "Multiplayer exportado Guerra e BR, release QA",
+      "estado": "homologacao_pendente",
+      "prioridade": "P1",
+      "prova": "Duelo BR local passou na rodada documentada, mas fixture antiga do Guerra nao reproduz autenticacao assinada atual; teste de dois executaveis completo pendente",
+      "arquivos": [
+        "tests/br_optic_duel.gd",
+        "tests/war_multiplayer.gd",
+        "docs/PREPARACAO-MAPAS-V13-UCRANIA-20261103.md"
+      ],
+      "proximo": "Atualizar fixture mantendo tickets assinados, 2 clientes exportados, morte/respawn/desconexao, 28 bots e servicos.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-011",
+      "titulo": "Jolt em thread separada (performance lab)",
+      "estado": "experimento_rejeitado",
+      "prioridade": "NAO_INTEGRAR",
+      "prova": "Relatorio constatou consultas fisicas invalidas e piora de tempo no laboratorio externo",
+      "arquivos": [],
+      "evidencia_externa": [
+        "work/performance-final-20261103/RELATORIO.md",
+        "C:/Users/Joao Borges/Documents/campo-perf-lab-20261103-threaded"
+      ],
+      "proximo": "Preservar somente evidencias; nao copiar configuracao threaded para producao.",
+      "integrar_automaticamente": false
+    },
+    {
+      "id": "IA-012",
+      "titulo": "Variantes Lite/event do CollisionPose e nova grama",
+      "estado": "experimentos_rejeitados_ou_desligados",
+      "prioridade": "NAO_INTEGRAR",
+      "prova": "Lite/event foram revertidos por alto custo; nova grama alternativa teve cauda de FPS instavel em ensaios anteriores",
+      "arquivos": [
+        "docs/FPP-TPP-P1A-COLLISION-LITE-EXPERIMENT-20261104.md"
+      ],
+      "evidencia_externa": [
+        "work/fpp-tpp-p1a-lite-20261104/",
+        "work/grass220-prepared/"
+      ],
+      "proximo": "Nao restaurar snapshots antigos nem ativar estes prototipos.",
+      "integrar_automaticamente": false
+    }
+  ]
+}
