@@ -1115,10 +1115,15 @@ func _server_accept_shot(id: int, sequence: int, life: int, camera_origin: Vecto
 		shooter.iron_sights = aim_level == 2
 	shooter._update_weapon_pose()
 	var origin := shooter.weapon_root.global_position if item.kind == "melee" else shooter.get_muzzle_position()
-	var query := PhysicsRayQueryParameters3D.create(camera_origin,camera_origin + direction * float(item.range),CombatRules.SHOT_MASK,_collision_excludes(id,false))
+	# The client camera remains part of the anti-cheat envelope above, but it
+	# must not decide the gameplay aim point. Third-person cameras are several
+	# metres behind/aside the body and otherwise gain a parallax advantage at
+	# corners/windows. Raycast from the character's logical eye instead; the
+	# projectile still starts at the real muzzle below.
+	var query := PhysicsRayQueryParameters3D.create(eye,eye + direction * float(item.range),CombatRules.SHOT_MASK,_collision_excludes(id,false))
 	query.collide_with_areas = true
 	var aim_hit := get_world_3d().direct_space_state.intersect_ray(query)
-	var point: Vector3 = aim_hit.position if not aim_hit.is_empty() else camera_origin + direction * float(item.range)
+	var point: Vector3 = aim_hit.position if not aim_hit.is_empty() else eye + direction * float(item.range)
 	var shot_direction := (point - origin).normalized()
 	if shot_direction.dot(direction) < 0.1: shot_direction = direction
 	# The eye-to-muzzle sweep prevents a protruding barrel from bypassing a wall.

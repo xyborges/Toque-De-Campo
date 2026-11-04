@@ -105,15 +105,29 @@ Tambem foi reproduzida uma regra especifica de `WarPlayer`: enquanto a optica es
 
 **Limite:** o solver valida a **pose fisica** que sustenta a optica; o SubViewport PiP continua no sistema visual existente. A P1e nao move renderizacao de lente para o CollisionPose e nao altera `weapon_optics.gd`.
 
+## P1f — tiro autoritativo independente da câmera FPP/TPP
+
+O servidor continua validando a posição da câmera enviada pelo cliente com `shot_camera_valid()` e continua aceitando o vetor `direction` validado contra yaw/pitch. A mudança é somente **onde nasce o raycast que escolhe o ponto de mira**: antes partia da câmera renderizada; agora parte do `camera_pivot`/olho lógico do personagem.
+
+Isso remove a vantagem de parallax da câmera TPP em quinas e janelas sem alterar a origem física do projétil: o tiro continua saindo de `get_muzzle_position()`. Também preserva o vetor enviado pelo cliente, portanto não interfere conceitualmente com zeragem/elevação legítima de ópticas implementada em outra branch.
+
+- `tests/true_fpp_p1f_shot_coverage.gd`: **27/27 checks**, PASS.
+- FPP e TPP usam câmeras separadas por aproximadamente **4,09 m** no fixture, mas o mesmo muzzle e a mesma seed produzem **delta de direção 0,0** nos três cenários.
+- Cobertura validada explicitamente: campo aberto atinge o `Backstop`, quina atinge a parede `Corner`, e o centro da janela atravessa o vão e atinge o `Backstop`.
+- A câmera real continua dentro do envelope anti-cheat; ela só deixou de determinar o ponto de impacto lógico.
+- Regressão encadeada após a mudança: P1f 27/27, P1e 120/120, P1d 150/150, P1c 90/90 e P1b prone/locomoção — todos com exit 0.
+
+**Limite:** o teste é determinístico e local; ainda faltam dano por membro, tiro entre ticks em rede, ragdoll e dois clientes exportados/dedicated antes de tratar a mudança como gate de release.
+
 ## Etapas que continuam bloqueadas
 
-1. **P1b restante:** tiros entre ticks, transições intermediárias de postura, equipamento especial e integração real de CollisionRig. Standing, crouch, prone estável, caminhada, sprint, rastejamento, soft aim, iron sights, recarga e ADS óptico já têm paridade matemática nos fixtures atuais.
+1. **P1 restante:** transições intermediárias de postura, equipamento especial, tiro entre ticks em rede e integração real do CollisionRig. Standing, crouch, prone estável, caminhada, sprint, rastejamento, soft aim, iron sights, recarga, ADS óptico e paridade de cobertura FPP/TPP já têm gates locais.
 2. **Integração física real:** `collision_rig_proxy.gd` ainda recebe pose do rig visual e mantém shapes desligados. O solver multiarmas **não** está conectado a `WarPlayer`, nem as hitboxes autoritativas foram transferidas. Antes do swap, medir `CollisionPose` real 60 Hz x `PresentationPose` 8/15/30 Hz e comparar runtime sob carga.
-3. **Combate:** ainda não foram homologados disparo aceito, cobertura em quinas/janelas, dano por membro, ragdoll e 2 clientes exportados. Nenhum protocolo de rede ou anti-cheat foi mudado.
-4. **P2 e seguintes:** true FPP/câmera, integração de PiP na arma real, remoção de `view_root` e migração de gadgets, BR e outros modos seguem pendentes. Não apresentar a P1b como corpo único final.
+3. **Combate/release:** cobertura e direção aceita FPP/TPP já passaram localmente; ainda faltam dano por membro, ragdoll, dois clientes exportados, dedicated/listen e teste com 28 bots.
+4. **P2 e seguintes:** true FPP/câmera, integração de PiP na arma real, remoção de `view_root` e migração de gadgets, BR e outros modos seguem pendentes. Não apresentar a P1 como corpo único final.
 
 ## Segurança e integração
 
-Esta branch altera o solver isolado, testes P1b-P1e, este documento e uma correção pontual em `modes/war/scripts/stance.gd` para restaurar a pelve ao sair do prone. Não toca em `scripts/player.gd`, `modes/war/scripts/player.gd`, `main.gd`, `project.godot`, `weapon_optics.gd`, protocolo de rede nem modelos editados por outras IAs.
+Esta branch altera o solver isolado, testes P1b-P1f, este documento, uma correção pontual em `modes/war/scripts/stance.gd` e **`scripts/main.gd` apenas na autoridade do raycast de mira**. Não altera `scripts/player.gd`, `modes/war/scripts/player.gd`, `project.godot`, `weapon_optics.gd` nem modelos editados por outras IAs. O protocolo RPC e o envelope anti-cheat de câmera permanecem os mesmos.
 
-**Próximo pacote recomendado:** validar tiros aceitos entre ticks e cobertura em quinas/janelas, adicionar baseline de 28 bots no listen-server/dedicated e somente então habilitar um piloto controlado do CollisionRig sob flag. Integrar branch atual por revisão; não publicar.
+**Próximo pacote recomendado:** piloto controlado do CollisionRig sob flag, com swap atômico de colliders, dano por membro e A/B de 28 bots; depois validar dois clientes exportados em listen/dedicated antes de considerar release. Integrar branch atual por revisão; não publicar.
