@@ -249,10 +249,47 @@ func _reconcile_online() -> void:
 		if slot not in used:
 			_add_online_bot(chosen,slot);next_spawn_team=1-chosen;return
 
+# Select a captured, safe rally point that actually shortens travel to this
+# squad's assignment. Drivers still spawn near the vehicle yard while their
+# reserved tank/APC is available. Avoid all expensive physics here.
+func preferred_spawn(id: int) -> String:
+	if not bots.has(id) or not is_instance_valid(game) or not game.members.has(id): return "base"
+	var record: Dictionary=bots[id]
+	var team:=int(record.team)
+	if team not in [0,1]: return "base"
+	var slot:=int(record.slot)
+	if slot<2 and is_instance_valid(game.vehicle_system):
+		var kind: String=("guarani" if team==0 else "bmp2") if slot==0 else ("abrams" if team==0 else "t90")
+		var vehicle:=game.vehicle_system.vehicles.get("v_"+kind) as WarVehicle
+		if is_instance_valid(vehicle) and not vehicle.destroyed and vehicle.driver<=0 and vehicle.global_position.distance_to(WarRules.BASES[team])<125.:
+			return "base"
+	var focus_key:=str(record.get("objective","C"))
+	var focus: Vector3=WarRules.OBJECTIVES[focus_key].position if WarRules.OBJECTIVES.has(focus_key) else WarRules.OBJECTIVES["C"].position
+	var base_distance: float=Vector3(WarRules.BASES[team]).distance_to(focus)
+	var best_id:="base";var best_distance: float=base_distance-15.
+	for key: String in WarRules.OBJECTIVES:
+		var objective: Dictionary=WarRules.OBJECTIVES[key]
+		if not bool(objective.get("active",false)): continue
+		var state: Dictionary=game.objective_states.get(key,{})
+		if int(state.get("owner",-1))!=team or bool(state.get("contested",false)): continue
+		var counts: Array=state.get("count",[0,0])
+		if counts.size()>1 and int(counts[1-team])>0: continue
+		var point: Vector3=objective.position
+		var threatened:=false
+		for candidate: WarPlayer in game.players.values():
+			if not is_instance_valid(candidate) or candidate.hp<=0 or not candidate.deployed or candidate.war_team==team: continue
+			if candidate.global_position.distance_squared_to(point)<90.*90.:
+				threatened=true;break
+		if threatened: continue
+		var distance:=point.distance_to(focus)
+		if counts.size()>team: distance+=minf(45.,int(counts[team])*8.)
+		if distance<best_distance: best_distance=distance;best_id=key
+	return best_id
+
 func _deploy_bot(id: int) -> void:
 	var record: Dictionary=bots[id]
 	var weapon: String=WarRules.primary_for(str(record.role),int(record.team))[0]
-	if game._deploy(id,int(record.team),str(record.role),weapon,WarRules.launcher_for_team(int(record.team)),"base"):
+	if game._deploy(id,int(record.team),str(record.role),weapon,WarRules.launcher_for_team(int(record.team)),preferred_spawn(id)):
 		var actor:=game.players[id] as WarPlayer
 		actor.camera.current=false
 		game._register_match_stat(actor)
@@ -725,7 +762,7 @@ func _board(actor: WarPlayer,record: Dictionary) -> bool:
 	if record.get("boarded_once",false): return false
 	var human:=game.local_player as WarPlayer
 	# Leave the human's two vehicles untouched during initial preparation.
-	if is_instance_valid(human) and actor.war_team==human.war_team and game.war_clock<35 and human.vehicle_id.is_empty() and human.position.distance_to(WarRules.BASES[human.war_team])<85:
+	if WarRules.CURRENT_OPERATION!=WarOperation.AFGHAN and is_instance_valid(human) and actor.war_team==human.war_team and game.war_clock<35 and human.vehicle_id.is_empty() and human.position.distance_to(WarRules.BASES[human.war_team])<85:
 		record.direction=Vector3.ZERO;return true
 	var vehicle: WarVehicle
 	if slot<=3:
@@ -734,6 +771,14 @@ func _board(actor: WarPlayer,record: Dictionary) -> bool:
 	else:
 		vehicle=_nearby_transport(actor,record)
 	if not is_instance_valid(vehicle) or vehicle.destroyed: return false
+	# Keep the tank available to a player at the start of an Afghan match.
+	# Unlike the old rule, this does not immobilize every infantry bot.
+	if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and slot==1 and game.war_clock<65.:
+		for human_id in game.members:
+			var member: Dictionary=game.members[human_id]
+			if bool(member.get("bot",false)) or int(member.get("team",-1))!=actor.war_team: continue
+			var player:=game.players.get(human_id) as WarPlayer
+			if is_instance_valid(player) and player.hp>0 and player.deployed and player.vehicle_id.is_empty(): return false
 	# A nearby teammate has first priority at the start, but a human on
 	# another team must not disable APC AI for the whole online match.
 	if online_fill and vehicle.kind in ["guarani","bmp2"] and game.war_clock<35.:
@@ -843,12 +888,26 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	if vehicle.driver!=actor.peer_id:
 		if vehicle.position.distance_to(goal)<65: manager.release(actor.peer_id)
 		return
+	var follow_road:=WarRules.CURRENT_OPERATION==WarOperation.AFGHAN
 	if record.vehicle_goal!=record.objective or record.vehicle_path.is_empty():
-		record.vehicle_path=transit.path(vehicle.position,goal);record.vehicle_index=0;record.vehicle_goal=record.objective
+		record.vehicle_path=transit.path(vehicle.position,goal,follow_road);record.vehicle_index=0;record.vehicle_goal=record.objective
 		record.terrain_detour=Vector3.INF;record.grade_check_at=0.
 	var path: Array=record.vehicle_path
+	# If the road graph is disconnected, park safely instead of crossing the
+	# mountain on a direct line. Re-evaluate when the objective changes.
+	if path.is_empty():
+		manager.controls[actor.peer_id]={"throttle":0.,"steer":0.,"brake":true,"aim":goal,"fire":false,"at":game.war_clock}
+		return
 	while int(record.vehicle_index)<path.size()-1 and vehicle.position.distance_to(path[int(record.vehicle_index)])<10: record.vehicle_index+=1
+	var endpoint: Vector3=path[-1] if follow_road else goal
+	if follow_road and bool(vehicle.spec.get("transport",false)) and vehicle.position.distance_to(endpoint)<15.:
+		manager.release(actor.peer_id)
+		return
 	var traffic:=_traffic_plan(vehicle,record)
+	# A passing maneuver must not take a tank off the engineered mountain road.
+	if follow_road and traffic.has("point"):
+		traffic={"brake":true,"reason":"afghan_road_no_overtake"}
+		record.traffic=traffic
 	var next_point: Vector3=traffic.get("point",path[int(record.vehicle_index)])
 	var detour: Vector3=record.get("terrain_detour",Vector3.INF)
 	if detour.is_finite() and game.war_clock<float(record.get("terrain_detour_until",0.)) and vehicle.position.distance_to(detour)>4.:
@@ -857,7 +916,9 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	if game.war_clock>=float(record.get("grade_check_at",0.)):
 		record.grade_check_at=game.war_clock+.30
 		record.terrain_blocked=not _vehicle_grade_clear(vehicle,next_point)
-		if bool(record.terrain_blocked):
+		if bool(record.terrain_blocked) and not follow_road:
+			# The Afghan military road is the only approved mountain corridor.
+			# Never bypass a blocked section by steering into an ungraded valley.
 			var alternate:=_vehicle_grade_detour(vehicle,next_point)
 			if alternate.is_finite():
 				record.terrain_detour=alternate
@@ -877,12 +938,12 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	# counter-steer when the next road point is behind it, then drive forward.
 	if not bool(vehicle.spec.tracked) and absf(error)>1.4:
 		throttle=-.18;error=-error
-	if vehicle.position.distance_to(goal)<18 or game.war_clock<float(record.boarding_until): throttle=0
+	if vehicle.position.distance_to(endpoint)<14 or game.war_clock<float(record.boarding_until): throttle=0
 	if bool(record.get("terrain_blocked",false)): throttle=0.
 	if bool(traffic.get("brake",false)):
 		throttle=0.
 		if float(record.get("congestion_since",0.))==0.: record.congestion_since=game.war_clock
-		elif game.war_clock-float(record.congestion_since)>18.:
+		elif game.war_clock-float(record.congestion_since)>18. and not follow_road:
 			_begin_vehicle_evacuation(vehicle);return
 	else: record.congestion_since=0.
 	if game.war_clock>=float(record.vehicle_check_at):
