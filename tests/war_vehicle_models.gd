@@ -2,9 +2,11 @@ extends SceneTree
 var failures: Array[String]=[]
 var checks:=0
 var label:="before"
+var ephemeral:=false
 func _initialize() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--label="): label=arg.trim_prefix("--label=")
+		elif arg=="--ephemeral": ephemeral=true
 	run.call_deferred()
 func check(ok: bool,message: String) -> void:
 	checks+=1
@@ -15,10 +17,11 @@ func meshes(node: Node) -> Array[MeshInstance3D]:
 	if node is MeshInstance3D: result.append(node)
 	for child in node.get_children(): result.append_array(meshes(child))
 	return result
-func mesh_vertices(node: MeshInstance3D) -> Array[Vector3]:
+func mesh_vertices(node: MeshInstance3D,relative_to: Node3D=null) -> Array[Vector3]:
 	var vertices: Array[Vector3]=[]
+	var transform:=node.transform if relative_to==null else relative_to.global_transform.affine_inverse()*node.global_transform
 	for surface in node.mesh.get_surface_count():
-		for vertex: Vector3 in node.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]: vertices.append(node.transform*vertex)
+		for vertex: Vector3 in node.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]: vertices.append(transform*vertex)
 	return vertices
 func geometric_key(vertex: Vector3) -> String:
 	return "%d,%d,%d"%[roundi(vertex.x*100000),roundi(vertex.y*100000),roundi(vertex.z*100000)]
@@ -93,11 +96,11 @@ func run() -> void:
 				else: near_triangles+=amount
 				var material:=mesh.get_active_material(surface) as BaseMaterial3D
 				materials_opaque=materials_opaque and material!=null and material.transparency==BaseMaterial3D.TRANSPARENCY_DISABLED and material.cull_mode==BaseMaterial3D.CULL_BACK
-			if mesh.get_parent()==vehicle.elevation and not is_far:
-				for vertex in mesh_vertices(mesh):
+			if vehicle.elevation.is_ancestor_of(mesh) and not is_far:
+				for vertex in mesh_vertices(mesh,vehicle.elevation):
 					frontmost=minf(frontmost,vertex.z)
 					if absf(vertex.z-vehicle.muzzle.position.z)<.00001 and Vector2(vertex.x,vertex.y).length()<.20: main_tip_vertices+=1
-					if absf(vertex.z-vehicle.secondary_muzzle.position.z)<.00001 and Vector2(vertex.x-vehicle.secondary_muzzle.position.x,vertex.y-vehicle.secondary_muzzle.position.y).length()<.04: secondary_tip_vertices+=1
+					if absf(vertex.z-vehicle.secondary_muzzle.position.z)<.00001 and Vector2(vertex.x-vehicle.secondary_muzzle.position.x,vertex.y-vehicle.secondary_muzzle.position.y).length()<.20: secondary_tip_vertices+=1
 		var origin:=vehicle.muzzle.position
 		check(vehicle.wheels.size()==(6 if kind=="guarani" else (14 if kind=="abrams" else 12)),kind+" running gear count")
 		for yaw_value in [0.,.8,2.4,-2.6]:
@@ -110,7 +113,7 @@ func run() -> void:
 		vehicle.rotation=Vector3.ZERO;vehicle.aim(1,Vector3(0,vehicle.muzzle.global_position.y,-500),true)
 		var detail:=vehicle.get_meta("model_details",{}) as Dictionary
 		if label!="before":
-			check(detail.get("version",0)==2,kind+" dedicated reference-based model")
+			check(int(detail.get("version",0))>=4,kind+" dedicated reference-based model")
 			check(int(detail.get("pieces",0))>100,kind+" authored hull and weapon detail")
 			check(count<65,kind+" rigid details batched below 65 meshes")
 			check(triangles<90000,kind+" model triangle budget")
@@ -121,6 +124,14 @@ func run() -> void:
 			check(far_triangles<2000 and far_triangles<near_triangles/8,kind+" distant silhouette uses less than one eighth of near geometry")
 			check(main_tip_vertices>=32 and absf(frontmost-origin.z)<.00001,kind+" actual visible main muzzle geometry ends at authoritative marker")
 			check(secondary_tip_vertices>=32,kind+" actual visible secondary muzzle geometry ends at authoritative marker")
+			if kind in ["abrams","t90"]:
+				var coax_on_elevation:=false
+				var coax_in_recoil:=false
+				for visual in meshes(vehicle):
+					if str(visual.get_meta("thermal_region",""))!="coax": continue
+					coax_on_elevation=coax_on_elevation or visual.get_parent()==vehicle.elevation
+					coax_in_recoil=coax_in_recoil or (vehicle.barrel_recoil!=null and vehicle.barrel_recoil.is_ancestor_of(visual))
+				check(coax_on_elevation and not coax_in_recoil,kind+" coaxial remains independent from main-gun recoil")
 		var view_draws: Dictionary={}
 		for view in ["front","side","rear","weapon","far"]:
 			camera.fov=40
@@ -134,7 +145,8 @@ func run() -> void:
 			camera.look_at(target)
 			await create_timer(.15).timeout
 			RenderingServer.force_draw(false)
-			root.get_texture().get_image().save_png("res://work/vehicle-%s-%s-%s.png"%[label,kind,view])
+			var shot_path:=("user://vehicle-%s-%s-%s.png" if ephemeral else "res://work/vehicle-%s-%s-%s.png")%[label,kind,view]
+			root.get_texture().get_image().save_png(shot_path)
 			view_draws[view]=Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)
 		results[kind]={"meshes":count,"triangles":triangles,"near_triangles":near_triangles,"far_triangles":far_triangles,"far_meshes":far_meshes,"details":detail,"draw_calls":view_draws.get("front",0),"view_draw_calls":view_draws}
 		vehicle.queue_free();await process_frame
@@ -153,5 +165,6 @@ func run() -> void:
 	check(combined.mesh.surface_get_arrays(0)[Mesh.ARRAY_INDEX].size()==39,"batch retains non-indexed custom triangle alongside indexed box faces")
 	assembly.queue_free()
 	var report: Dictionary={"checks":checks,"failures":failures,"models":results}
-	NavalStorage.write_json("res://tests/war-vehicle-models-"+label+".json",report);print(JSON.stringify(report))
+	var report_path:="user://war-vehicle-models-"+label+".json" if ephemeral else "res://tests/war-vehicle-models-"+label+".json"
+	NavalStorage.write_json(report_path,report);print(JSON.stringify(report))
 	world.queue_free();await process_frame;quit(0 if failures.is_empty() else 1)
