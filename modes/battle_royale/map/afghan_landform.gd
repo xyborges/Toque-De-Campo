@@ -215,6 +215,13 @@ static func _setup() -> void:
 	# isolated pedestal reached by a vertical cut beside a flat village.
 	_make_path([CENTRES[4],Vector2(-800,275),Vector2(-865,70),Vector2(-880,-140),Vector2(-785,-305),CENTRES[2]],3.,"mountain")
 	_make_path([CENTRES[5],Vector2(825,240),Vector2(900,30),Vector2(850,-210),CENTRES[1]],3.,"mountain")
+	# Two engineered military supply roads join the original camps to the
+	# primary road network. In particular, the high southern mountain camp
+	# needs a graded switchback: the direct line crosses steep ravines.
+	# _make_path controls terrain grading and generates the same collision
+	# surface for the War and BR maps; no floating visual-only roadway.
+	_make_path([Vector2(-420,900),Vector2(-315,900),Vector2(-230,925),Vector2(-170,940)],9.,"military")
+	_make_path([Vector2(380,-880),Vector2(420,-845),Vector2(455,-810),Vector2(448,-775),Vector2(410,-740),Vector2(350,-705),Vector2(300,-675),Vector2(250,-650)],9.,"military")
 	var rng:=RandomNumberGenerator.new();rng.seed=SEED+43
 	for region in CENTRES.size():
 		var centre: Vector2=CENTRES[region];var count: int=COUNTS[region]
