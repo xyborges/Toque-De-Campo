@@ -1,8 +1,11 @@
 # Atualização 1.13.2 — G3, lunetas e carregamento de vegetação
 
-**Estado:** candidata preparada; publicação ainda não executada.  
-**Data:** 04/11/2026  
-**Build publicada observada pelo preflight:** 88.  
+**Estado:** candidata preparada; publicação ainda não executada.
+
+**Data:** 04/11/2026
+
+**Build publicada observada pelo preflight:** 88.
+
 **Build candidata assinada:** 89 / 1.13.2.
 
 ## Conteúdo
