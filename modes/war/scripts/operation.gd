@@ -27,7 +27,14 @@ const DATA := {
 		"port":3015,
 		"half":1000.0,
 		"teams":["EUA","Mujahidins"],
-		"bases":[Vector3(380,0,-880),Vector3(-420,0,900)],
+		# Original base coordinates are swapped: US forces occupy the lower
+		# valley; Mujahideen hold the high southern massif. The new military
+		# access roads start at these exact base positions.
+		"bases":[Vector3(-420,0,900),Vector3(380,0,-880)],
+		"armor_bays":[
+			[Vector3(-410,0,905),Vector3(-385,0,900)], # USA, on valley access road
+			[Vector3(390,0,-872),Vector3(433,0,-831)] # Mujahideen, graded mountain road
+		],
 		"objectives":{
 			"A":{"position":Vector3(-720,0,440),"name":"Qala norte","active":true},
 			"B":{"position":Vector3(-340,0,570),"name":"Povoado norte","active":true},
@@ -35,8 +42,8 @@ const DATA := {
 			"D":{"position":Vector3(280,0,-240),"name":"Encruzilhada sul","active":true},
 			"E":{"position":Vector3(450,0,-510),"name":"Povoado sul","active":true}},
 		"transport":{
-			"bike_0":[Vector3(400,0,-850),Vector3(610,0,-340),Vector3(280,0,-240)],
-			"bike_1":[Vector3(-400,0,870),Vector3(-430,0,515),Vector3(-260,0,70)]}}
+			"bike_0":[Vector3(-418,0,895),Vector3(-402,0,900),Vector3(-430,0,916)],
+			"bike_1":[Vector3(379,0,-873),Vector3(370,0,-887),Vector3(405,0,-871)]}}
 }
 
 static func normalize(id: String) -> String:
@@ -74,3 +81,16 @@ static func objectives(id: String) -> Dictionary:
 
 static func transport(id: String) -> Dictionary:
 	return data(id).transport.duplicate(true)
+
+static func armor_heading(id: String,team: int) -> float:
+	if normalize(id)==AFGHAN: return -1.72 if team==0 else -2.72
+	return -PI*.5 if team==0 else PI*.5
+
+static func armor_bay(id: String,team: int,heavy: bool) -> Vector3:
+	var operation: Dictionary=data(id)
+	var clamped:=clampi(team,0,1)
+	var positions: Array=operation.get("armor_bays",[])
+	if positions.size()>clamped:
+		var bays: Array=positions[clamped]
+		if bays.size()>int(heavy): return bays[int(heavy)]
+	return operation.bases[clamped]

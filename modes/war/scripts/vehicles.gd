@@ -58,11 +58,18 @@ func _ready() -> void:
 			vehicle.vehicle_id="v_"+kind+("_"+str(copy) if transport else "")
 			var base: Vector3=WarRules.BASES[int(data.team)]
 			vehicle.position=WarTerrain.point(base.x+(8 if kind in ["guarani","bmp2"] else -8),base.z-12)
+			# In Afghanistan the infantry outpost can be uphill. Park armour on
+			# preselected road-access bays rather than inside its ravines.
+			if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and kind in ["guarani","bmp2","abrams","t90"]:
+				var bay:=WarOperation.armor_bay(WarRules.CURRENT_OPERATION,int(data.team),kind in ["abrams","t90"])
+				vehicle.position=WarTerrain.point(bay.x,bay.z)
 			if transport:
 				var transport_spawn:=WarRules.transport_spawn(kind,copy)
 				vehicle.position=WarTerrain.point(transport_spawn.x,transport_spawn.z)
 			if data.has("naval"): vehicle.position=WarCoast.BERTHS[int(data.team)][0 if str(kind).contains("assault") else 1]
 			vehicle.heading=PI*.5 if data.has("naval") and int(data.team)==0 else (-PI*.5 if data.has("naval") else (-PI*.5 if int(data.team)==0 else PI*.5))
+			if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and not data.has("naval"):
+				vehicle.heading=WarOperation.armor_heading(WarRules.CURRENT_OPERATION,int(data.team))
 			vehicle.rotation.y=vehicle.heading
 			if not data.has("naval"): vehicle.position=_land_spawn_height(vehicle.position,vehicle.heading,data)
 			add_child(vehicle);vehicles[vehicle.vehicle_id]=vehicle
@@ -538,13 +545,19 @@ func boarding_distance(actor: GamePlayer,vehicle: WarVehicle) -> float:
 	var p:=vehicle.to_local(actor.global_position);var half:=Vector3(vehicle.spec.size)*.5
 	return Vector2(maxf(0,absf(p.x)-half.x),maxf(0,absf(p.z)-half.z)).length() if absf(p.y)<6 else INF
 
+func _can_take_bot_driver(actor: GamePlayer,vehicle: WarVehicle) -> bool:
+	if not is_instance_valid(actor) or not is_instance_valid(vehicle): return false
+	var requester: Dictionary=game.members.get(actor.peer_id,{})
+	var current_driver: Dictionary=game.members.get(vehicle.driver,{})
+	return not requester.is_empty() and not bool(requester.get("bot",false)) and not current_driver.is_empty() and bool(current_driver.get("bot",false)) and vehicle.driver>0 and not vehicle.destroyed and vehicle.team==actor.war_team
+
 func _nearby(actor: GamePlayer) -> WarVehicle:
 	if not is_instance_valid(actor): return null
 	var nearest: WarVehicle
 	var best := 5.5
 	for vehicle: WarVehicle in vehicles.values():
 		var distance_to := boarding_distance(actor,vehicle)
-		if vehicle.first_available_seat()>=0 and not vehicle.destroyed and vehicle.team==actor.war_team and distance_to<best:
+		if (vehicle.first_available_seat()>=0 or _can_take_bot_driver(actor,vehicle)) and not vehicle.destroyed and vehicle.team==actor.war_team and distance_to<best:
 			nearest=vehicle;best=distance_to
 	return nearest
 
@@ -576,7 +589,33 @@ func command_for(id: int,action: String,data: Dictionary) -> void:
 				if other.seat_of(id)>=0: return
 			var query:=PhysicsRayQueryParameters3D.create(actor.global_position+Vector3.UP,actor.global_position.lerp(vehicle.global_position,.2)+Vector3.UP if vehicle is WarShip else vehicle.global_position+Vector3.UP,1|16,[actor.get_rid(),vehicle.get_rid()])
 			if not get_world_3d().direct_space_state.intersect_ray(query).is_empty(): game._notice(id,"Entrada bloqueada por um obstáculo.");return
-			var seat:=vehicle.allocate_seat(id)
+			var taking_over:=_can_take_bot_driver(actor,vehicle)
+			var previous_driver:=vehicle.driver if taking_over else 0
+			if taking_over and vehicle.first_available_seat()<0:
+				# Prefer dismounting a BOT passenger; leave every human
+				# passenger in place. With no BOT passenger, dismount only the
+				# BOT driver without promoting an existing human passenger.
+				var bot_to_exit:=0
+				for peer: int in vehicle.occupant_ids():
+					if peer!=previous_driver and bool(game.members.get(peer,{}).get("bot",false)):
+						bot_to_exit=peer
+						break
+				if bot_to_exit==0: bot_to_exit=previous_driver
+				if not release(bot_to_exit,false,bot_to_exit!=previous_driver):
+					game._notice(id,"Sem saída segura para assumir o piloto.")
+					return
+			var seat:=-1
+			if taking_over and vehicle.driver==previous_driver and vehicle.hand_over_driver(id,previous_driver):
+				seat=0
+				controls.erase(previous_driver);sequences.erase(previous_driver)
+				locks.erase(previous_driver);healing.erase(previous_driver)
+				var old_member: Dictionary=game.members.get(previous_driver,{})
+				if not old_member.is_empty():
+					old_member.vehicle_seat=vehicle.seat_of(previous_driver)
+					old_member.vehicle_role="passenger"
+					game._broadcast("war_identity",[previous_driver,old_member])
+			else:
+				seat=vehicle.allocate_seat(id)
 			if seat<0: game._notice(id,"Veículo lotado.");return
 			actor.grenade_selected=false;actor.grenade_aiming=false;actor.clear_aim();_set_utility(id,"")
 			actor.stance.reset(actor);member.posture=0
@@ -648,7 +687,7 @@ func select_gadget(id: String) -> void:
 	actor.set_gadget(enabled,id)
 	request_command("select",{"gadget":id,"enabled":enabled})
 
-func release(id: int,forced := false) -> bool:
+func release(id: int,forced := false,promote_driver := true) -> bool:
 	var member: Dictionary=game.members.get(id,{})
 	var current := find_target(str(member.get("vehicle","")))
 	# Clean stale reservations even if the member was already erased by a
@@ -672,7 +711,7 @@ func release(id: int,forced := false) -> bool:
 		exit_position=exit.get("position",game.find_spawn(id) if forced else actor.global_position)
 	tv.release_owner(id)
 	var promoted:=0
-	if current is WarVehicle: promoted=current.vacate_seat(id,not current.destroyed)
+	if current is WarVehicle: promoted=current.vacate_seat(id,promote_driver and not current.destroyed)
 	elif current is WarDrone: current.begin_fall()
 	controls.erase(id);sequences.erase(id);locks.erase(id);healing.erase(id)
 	if not member.is_empty(): member.vehicle="";member.vehicle_seat=-1;member.vehicle_role=""
@@ -911,7 +950,7 @@ func context_text() -> String:
 		return "OPERADOR · F SAIR · C CÂMERA · RMB ZOOM · T TÉRMICA · R RECARGA · "+keys+" ARMAS"+extra if _local_is_operator() else "PASSAGEIRO · F · SAIR    MOUSE · OBSERVAR"
 	if game.local_player.gadget_equipped and game.local_player.gadget=="stinger": return "SEM ALVO" if lock_target.is_empty() else ("ALVO TRAVADO" if lock_progress>=1 else "TRAVANDO · %d%%" % int(lock_progress*100))
 	var nearby:=_nearby(game.local_player)
-	if nearby: return "F · ENTRAR NO %s · %s · %d/%d" % [str(nearby.spec.name).to_upper(),"OPERADOR" if nearby.driver==0 else "PASSAGEIRO",nearby.seats.size(),nearby.seat_capacity()]
+	if nearby: return "F · ENTRAR NO %s · %s · %d/%d" % [str(nearby.spec.name).to_upper(),"OPERADOR" if nearby.driver==0 or _can_take_bot_driver(game.local_player,nearby) else "PASSAGEIRO",nearby.seats.size(),nearby.seat_capacity()]
 	if not supply_point_for(game.local_player).is_empty(): return "H · MUNIÇÃO"
 	var returning: PackedStringArray=[]
 	for vehicle: WarVehicle in vehicles.values():
@@ -1011,6 +1050,8 @@ func _clear_land_spawn(vehicle: WarVehicle,yaw: float) -> Variant:
 
 func _respawn_vehicle(vehicle: WarVehicle) -> void:
 	var spawn_yaw: float=(PI*.5 if vehicle.team==0 else -PI*.5) if vehicle is WarShip else (-PI*.5 if vehicle.team==0 else PI*.5)
+	if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and not vehicle.spec.has("naval"):
+		spawn_yaw=WarOperation.armor_heading(WarRules.CURRENT_OPERATION,vehicle.team)
 	var safe_spawn: Variant=vehicle.spawn_position if vehicle is WarShip else _clear_land_spawn(vehicle,spawn_yaw)
 	if safe_spawn==null:
 		# Retry rather than materialise inside another occupant or obstruction.
