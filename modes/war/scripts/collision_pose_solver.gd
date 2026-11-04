@@ -95,10 +95,16 @@ static func supported(state: Dictionary) -> bool:
 	var no_stale_gait: bool=moving>.00001 or float(state.get("velocity_ground_speed",0.))<.001
 	var direction: Vector3=state.get("direction",Vector3.ZERO)
 	var valid_motion: bool=walking and no_stale_gait and bool(state.get("legs_intact",true)) and is_finite(float(state.get("phase",0.))) and direction.is_finite()
-	return str(state.get("weapon","")) in SUPPORTED_WEAPONS and not bool(state.get("scoped",false)) and not bool(state.get("iron",false)) and steady_posture and valid_motion and not bool(state.get("aiming",false)) and float(state.get("fire_cooldown",0.))<=0. and float(state.get("reaction",0.))==0. and float(state.get("reload_left",0.))==0. and float(state.get("attack",0.))==0. and float(state.get("recoil",0.))==0. and not bool(state.get("special",false))
+	var iron: bool=bool(state.get("iron",false))
+	var scoped: bool=bool(state.get("scoped",false))
+	var optic_enabled: bool=bool(state.get("optic_enabled",false))
+	# Hip/soft-aim and iron sights without an attached optical module share the
+	# same authoritative world weapon pose. Optical ADS remains a separate gate.
+	var ads_safe: bool=not scoped and (not iron or not optic_enabled)
+	return str(state.get("weapon","")) in SUPPORTED_WEAPONS and ads_safe and steady_posture and valid_motion and float(state.get("fire_cooldown",0.))<=0. and float(state.get("reaction",0.))==0. and float(state.get("reload_left",0.))==0. and float(state.get("attack",0.))==0. and float(state.get("recoil",0.))==0. and not bool(state.get("special",false))
 
 static func state(actor: WarPlayer) -> Dictionary:
-	return {"weapon":actor.weapon_id,"pitch":actor.pitch,"lean":actor.lean,"scoped":actor.weapon_optics.presented(),"iron":actor.iron_sights,"aiming":actor.aiming,"fire_cooldown":actor.fire_cooldown,
+	return {"weapon":actor.weapon_id,"pitch":actor.pitch,"lean":actor.lean,"scoped":actor.weapon_optics.presented(),"iron":actor.iron_sights,"aiming":actor.aiming,"optic_enabled":actor.weapon_optics.enabled(actor),"fire_cooldown":actor.fire_cooldown,
 		"grounded":actor.locomotion.grounded,"phase":actor.locomotion.phase,
 		"direction":actor.locomotion.local_direction,"velocity_ground_speed":Vector2(actor.velocity.x,actor.velocity.z).length(),
 		"crouched":actor.crouched,"prone":actor.prone,
@@ -167,7 +173,7 @@ static func _arm(shoulder: Vector3,grip: Vector3,hand_basis: Basis,upper_pose: T
 
 static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	if not supported(input) or str(input.get("weapon",""))!=str(bindings.get("weapon_id","")):
-		return {"supported":false,"reason":"Requires matching calibrated firearm, standing idle, no optics/reload/utility"}
+		return {"supported":false,"reason":"Requires matching calibrated firearm and supported posture/motion; optical ADS, reload, recoil and utility remain gated"}
 	var pitch: float=clampf(float(input.pitch),-1.5,1.5)
 	var lean: float=clampf(float(input.lean),-1.,1.)
 	var rest: Dictionary=bindings.rest
@@ -198,7 +204,7 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	if prone>0.:
 		var head_clearance: float=.19*clampf(float(bindings.head_proportion),.65,1.5)+.06
 		weapon.origin.x=lerpf(weapon.origin.x,maxf(weapon.origin.x,head_clearance),prone)
-	if moving>.00001 or sprint>.00001:
+	if (moving>.00001 or sprint>.00001) and not bool(input.get("aiming",false)) and not bool(input.get("iron",false)):
 		var pulse: float=sin(phase)
 		var lift: float=absf(cos(phase))
 		var weight: float=moving*(.38+.62*sprint)

@@ -67,6 +67,7 @@ func run() -> void:
 	var evaluated:=0
 	var movement_evaluated:=0
 	var rejected:=0
+	var soft_supported:=0
 	var summary: Array[Dictionary]=[]
 	for weapon: String in WEAPONS:
 		actor.weapon_id=weapon
@@ -187,11 +188,17 @@ func run() -> void:
 				notable.append("No physical gait for posture="+str(mode.posture)+" sprint="+str(mode.sprint))
 				movement_varied=false
 		var invalid_motion: Dictionary=Solver.state(actor)
-		for field: String in ["grounded","legs_intact","aiming","fire_cooldown"]:
+		for field: String in ["grounded","legs_intact","fire_cooldown"]:
 			var forbidden: Dictionary=invalid_motion.duplicate(true)
-			forbidden[field]=false if field in ["grounded","legs_intact"] else (true if field=="aiming" else .2)
+			forbidden[field]=false if field in ["grounded","legs_intact"] else .2
 			if not bool(Solver.solve(bind,forbidden).get("supported",true)):
 				rejected+=1
+		var soft_aim: Dictionary=invalid_motion.duplicate(true)
+		soft_aim.aiming=true
+		if bool(Solver.solve(bind,soft_aim).get("supported",false)):
+			soft_supported+=1
+		else:
+			notable.append("soft aim unexpectedly rejected")
 		var motion_cost: Dictionary=benchmark_28_moving(bind,Solver.state(actor))
 		var ok: bool=full_prone and int(motion_cost.calls)==2128 and movement_varied and cases==POSES.size() and movement_cases==12 and bind.bound_regions==16 and max_origin<.001 and max_basis<.005 and max_muzzle<.001 and movement_origin<.001 and movement_basis<.005 and movement_muzzle<.001
 		passed=passed and ok
@@ -202,8 +209,8 @@ func run() -> void:
 			"notes":notable,"pass":ok}
 		summary.append(row)
 		print("P1B_PRONE_WEAPON ",JSON.stringify(row))
-	passed=passed and evaluated==25 and movement_evaluated==60 and rejected==25
-	print("P1B_PRONE_RESULT ",JSON.stringify({"pass":passed,"cases":evaluated,"motion_cases":movement_evaluated,"transition_rejected":rejected,"weapons":WEAPONS.size()}))
+	passed=passed and evaluated==25 and movement_evaluated==60 and rejected==20 and soft_supported==5
+	print("P1B_PRONE_RESULT ",JSON.stringify({"pass":passed,"cases":evaluated,"motion_cases":movement_evaluated,"transition_rejected":rejected,"soft_aim_supported":soft_supported,"weapons":WEAPONS.size()}))
 	game.queue_free()
 	await process_frame
 	quit(0 if passed else 1)

@@ -69,9 +69,17 @@ Fixture isolado com 28 estados sinteticos em movimento por lote, 8 lotes de aque
 
 Isto ainda **nao** e custo de 28 personagens reais. Nao inclui entidades, broadphase, rede, IA, audio, renderizacao ou atualizacao de `Area3D`.
 
+## P1c — soft aim e mira de ferro
+
+O solver agora aceita `aiming` e `iron_sights` **somente quando nao ha modulo optico ativo**. No rig atual, a mira de ferro sem luneta usa o mesmo `weapon_root` autoritativo e apenas suprime o sway de marcha; por isso o solver reproduz essa regra diretamente. Qualquer ADS com optica continua bloqueado para o pacote de PiP/lente real.
+
+- `tests/true_fpp_p1c_collision_ads_iron.gd`: **90/90 poses** — 5 armas x 3 posturas x 2 modos (soft aim/iron) x 3 fases de movimento.
+- **10/10 casos de ADS optico rejeitados** de forma explicita.
+- Tolerancia do gate permanece abaixo de 1 mm em posicao/cano e `basis_delta < 0.005`; os erros observados ficaram novamente na ordem de milesimos de milimetro.
+
 ## Etapas que continuam bloqueadas
 
-1. **P1b restante:** recarga, ADS/iron, PiP, tiros entre ticks, transições intermediárias de postura e equipamento especial. Standing, crouch, prone estável, caminhada, sprint e rastejamento já têm paridade matemática nos fixtures atuais.
+1. **P1b restante:** recarga, PiP/ADS óptico, tiros entre ticks, transições intermediárias de postura e equipamento especial. Standing, crouch, prone estável, caminhada, sprint, rastejamento, soft aim e iron sights sem óptica já têm paridade matemática nos fixtures atuais.
 2. **Integração física real:** `collision_rig_proxy.gd` ainda recebe pose do rig visual e mantém shapes desligados. O solver multiarmas **não** está conectado a `WarPlayer`, nem as hitboxes autoritativas foram transferidas. Antes do swap, medir `CollisionPose` real 60 Hz x `PresentationPose` 8/15/30 Hz e comparar runtime sob carga.
 3. **Combate:** ainda não foram homologados disparo aceito, cobertura em quinas/janelas, dano por membro, ragdoll e 2 clientes exportados. Nenhum protocolo de rede ou anti-cheat foi mudado.
 4. **P2 e seguintes:** true FPP/câmera, integração de PiP na arma real, remoção de `view_root` e migração de gadgets, BR e outros modos seguem pendentes. Não apresentar a P1b como corpo único final.
@@ -80,4 +88,4 @@ Isto ainda **nao** e custo de 28 personagens reais. Nao inclui entidades, broadp
 
 Esta branch altera o solver isolado, dois testes P1b, este documento e uma correção pontual em `modes/war/scripts/stance.gd` para restaurar a pelve ao sair do prone. Não toca em `scripts/player.gd`, `modes/war/scripts/player.gd`, `main.gd`, `project.godot`, `weapon_optics.gd`, protocolo de rede nem modelos editados por outras IAs.
 
-**Próximo pacote recomendado:** modelar recarga e ADS/iron sem depender do rig visual, depois adicionar baseline de 28 bots no listen-server/dedicated, cobertura em quinas/janelas e somente então habilitar um piloto controlado do CollisionRig sob flag. Integrar branch atual por revisão; não publicar.
+**Próximo pacote recomendado:** modelar recarga sem depender do rig visual e depois PiP/ADS óptico na arma real; em seguida adicionar baseline de 28 bots no listen-server/dedicated, cobertura em quinas/janelas e somente então habilitar um piloto controlado do CollisionRig sob flag. Integrar branch atual por revisão; não publicar.
