@@ -17,6 +17,7 @@ var capacity_bar: ProgressBar
 var nearby_list: VBoxContainer
 var nearby_signature:=-1
 var ammunition: Label
+var grenade_hint: Label
 var reload_text: Label
 var prompt: Label
 var death_text: Label
@@ -78,6 +79,7 @@ func _ready() -> void:
 	var weapon:=GameUI.panel(self,14);GameUI.rect(weapon,-255,-132,-20,-20,Vector2.ONE)
 	var weaponbox:=VBoxContainer.new();weapon.add_child(weaponbox)
 	ammunition=GameUI.label(weaponbox,"SOCOS",23)
+	grenade_hint=GameUI.label(weaponbox,"",11,FieldTheme.ACCENT)
 	reload_text=GameUI.label(weaponbox,"",13,FieldTheme.ACCENT)
 	GameUI.label(weaponbox,"1 / 2 · ARMAS   3 · SOCOS",11,FieldTheme.MUTED)
 	minimap=BRMinimap.new();GameUI.rect(minimap,-200,118,-20,298,Vector2(1,0));add_child(minimap)
@@ -253,6 +255,9 @@ func refresh(state: Dictionary,own_inventory: Dictionary,loot: Array) -> void:
 		protection_text.text="%s   ·   %s"%[_gear_name("vest",int(gear.get("vest",{}).get("level",0))),_gear_name("helmet",int(gear.get("helmet",{}).get("level",0)))]
 		ammunition.text=_name(actor.weapon_id)
 		if GameWeapons.ITEMS.get(actor.weapon_id,{}).get("kind","") in ["firearm","launcher"]: ammunition.text+="\n%d / %d"%[int(actor.ammo.get(actor.weapon_id,0)),int(actor.reserves.get(actor.weapon_id,0))]
+		grenade_hint.visible=actor.hp>0 and actor.grenades>0
+		var smoke_selected:=str(actor.get_meta("grenade_kind","grenade"))=="smoke"
+		grenade_hint.text="Y · M18 FUMAÇA ×%d"%actor.grenades if smoke_selected else "Y · EXPLOSIVA ×%d"%actor.grenades
 		reload_text.text="RECARGA %.1f s"%actor.reload_left if actor.reload_left>0 else ""
 		if float(state.get("heal_remaining",0))>0:reload_text.text="CURATIVO %.1f s"%float(state.heal_remaining)
 		elif state.get("heal_recovering",false):reload_text.text="RECUPERANDO"

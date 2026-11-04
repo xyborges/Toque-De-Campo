@@ -218,7 +218,7 @@ func _refresh_slots(player: GamePlayer) -> void:
 			var grenade:=id=="grenade"
 			view.button.visible=not id.is_empty()
 			view.icon.texture=GameUI.icon(id) if not id.is_empty() else null
-			_set_text(view.label,"GRANADA" if grenade else (str(GameWeapons.ITEMS[id].name).to_upper() if not id.is_empty() else {1:"PISTOLA",2:"PRINCIPAL",3:"GRANADA",4:"ARMA BRANCA"}.get(key,"EXTRA")))
+			_set_text(view.label,("FUMAÇA M18" if str(player.get_meta("grenade_kind","grenade"))=="smoke" else "GRANADA") if grenade else (str(GameWeapons.ITEMS[id].name).to_upper() if not id.is_empty() else {1:"PISTOLA",2:"PRINCIPAL",3:"GRANADA",4:"ARMA BRANCA"}.get(key,"EXTRA")))
 			view.button.tooltip_text="%d · %s"%[key,view.label.text]
 			if not grenade and not id.is_empty(): weapon_buttons[id]=view.button
 	for key in slot_views:
@@ -281,8 +281,11 @@ func refresh() -> void:
 	var color:=FieldTheme.BAD if low_ammo.visible or (special_active and bool(equipment_context.get("empty",false))) else FieldTheme.INK
 	if color!=ammo_color: ammo_color=color;ammo.add_theme_color_override("font_color",color)
 	grenade_text.visible=player.grenades_enabled
-	_set_text(grenade_text,("ARMADA · %.1f s · SOLTE O CLIQUE"%player.grenade_fuse_left if not player.grenade_held_id.is_empty() or player.grenade_prime_pending else ("CLIQUE PARA ARMAR · PAVIO 5 s" if player.grenade_selected else "3 / G · GRANADA ×%d"%player.grenades)).replace(".",","))
+	var smoke:=str(player.get_meta("grenade_kind","grenade"))=="smoke"
+	var fuse:=GameGrenades.fuse_for(player)
+	_set_text(grenade_text,("ATIVADA · %.1f s · SOLTE O CLIQUE"%player.grenade_fuse_left if not player.grenade_held_id.is_empty() or player.grenade_prime_pending else ("CLIQUE PARA ARMAR · PAVIO %.0f s"%fuse if player.grenade_selected else ("3 / G · M18 FUMAÇA ×%d" if smoke else "3 / G · GRANADA ×%d")%player.grenades)).replace(".",","))
 	fuse_bar.visible=not player.grenade_held_id.is_empty() or player.grenade_prime_pending
+	fuse_bar.max_value=GameGrenades.fuse_for(player)
 	fuse_bar.value=player.grenade_fuse_left
 	shop.text = "ARSENAL · %d MOEDAS" % int(game.profile.coins)
 	if game.get_meta("war_mode",false):

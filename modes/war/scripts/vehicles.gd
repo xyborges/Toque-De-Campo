@@ -436,7 +436,7 @@ func send_initial(id: int,include_aircraft:=true) -> void:
 	else:rpc_id(id,"baseline_vehicles",_states())
 	for key in smoke_screens:
 		var smoke: Dictionary=smoke_screens[key]
-		if float(smoke.until)>game.war_clock: rpc_id(id,"smoke_event",str(key),smoke.point,float(smoke.until))
+		if float(smoke.until)>game.war_clock: rpc_id(id,"smoke_event",str(key),smoke.point,float(smoke.until),smoke.get("forward",Vector3.FORWARD),str(smoke.get("kind","abrams")))
 	# A late observer receives the current physical missile, not its old
 	# launch position. Guidance remains reserved to the original operator.
 	for key in tv.flights:
@@ -805,6 +805,7 @@ func reset_occupancy() -> void:
 	tv.clear()
 	controls.clear();sequences.clear();locks.clear();healing.clear();shot_events.clear();blast_events.clear();last_damage_confirmation.clear();impact_events.clear();runover_recent.clear();point_supply_at.clear();smoke_screens.clear();smoke_cooldowns.clear();hull_shock=0
 	if is_instance_valid(smoke_overlay): smoke_overlay.color=Color(.36,.37,.35,0.)
+	if is_instance_valid(game.grenades_system) and is_instance_valid(game.grenades_system.smoke_clouds): game.grenades_system.smoke_clouds.clear_clouds()
 	for vehicle: WarVehicle in vehicles.values():
 		for id: int in vehicle.clear_seats():
 			if game.members.has(id): game.members[id].vehicle="";game.members[id].vehicle_seat=-1;game.members[id].vehicle_role=""
@@ -1436,17 +1437,20 @@ func resupply_point(id: int) -> void:
 func deploy_smoke(id: int) -> void:
 	if not multiplayer.is_server() or not game._battle_active() or not is_operator(id): return
 	var vehicle:=find_target(str(game.members[id].vehicle)) as WarVehicle
-	if not is_instance_valid(vehicle) or vehicle.kind not in ["abrams","t90"] or vehicle.destroyed: return
-	if game.war_clock-float(smoke_cooldowns.get(vehicle.vehicle_id,-100.))<45.: return
+	# All land armor uses the same smoke protocol: Abrams, T-90, BMP-2, Guarani.
+	if not is_instance_valid(vehicle) or vehicle.kind not in ["abrams","t90","bmp2","guarani"] or vehicle.destroyed: return
+	if game.war_clock-float(smoke_cooldowns.get(vehicle.vehicle_id,-1000.))<90.: return
 	smoke_cooldowns[vehicle.vehicle_id]=game.war_clock
 	var event:=vehicle.vehicle_id+":"+str(game.war_clock)
-	var point:=vehicle.global_position+Vector3.UP*1.2
-	register_smoke(event,point,game.war_clock+12.)
-	_broadcast("smoke_event",[event,point,game.war_clock+12.])
+	var point:=vehicle.global_position+Vector3.UP*.35
+	var forward: Vector3=-vehicle.turret.global_basis.z if is_instance_valid(vehicle.turret) else -vehicle.global_basis.z
+	var expires:=game.war_clock+GameSmokeClouds.VEHICLE_DURATION
+	register_smoke(event,point,expires,forward,vehicle.kind)
+	_broadcast("smoke_event",[event,point,expires,forward,vehicle.kind])
 
 @rpc("authority","call_remote","reliable")
-func smoke_event(id: String,point: Vector3,until: float) -> void:
-	register_smoke(id,point,until)
+func smoke_event(id: String,point: Vector3,until: float,forward: Vector3=Vector3.FORWARD,kind: String="abrams") -> void:
+	register_smoke(id,point,until,forward,kind)
 
 func _update_smoke_overlay(delta: float) -> void:
 	if not is_instance_valid(smoke_overlay): return
@@ -1456,17 +1460,21 @@ func _update_smoke_overlay(delta: float) -> void:
 		var remaining: float=float(screen.until)-game.war_clock
 		if remaining<=0: smoke_screens.erase(key);continue
 		if tv.viewing():
-			var proximity:=1.0-smoothstep(7.,14.,camera.global_position.distance_to(screen.point))
-			var fade:=smoothstep(0.,1.,remaining)*smoothstep(0.,1.2,12.-remaining)
+			var proximity:=1.0-smoothstep(10.,23.,camera.global_position.distance_to(screen.point))
+			var fade:=smoothstep(0.,5.,remaining)*smoothstep(0.,1.2,GameSmokeClouds.VEHICLE_DURATION-remaining)
 			opacity=maxf(opacity,.94*proximity*fade)
 	var color:=smoke_overlay.color
 	color.a=lerpf(color.a,opacity,1.-exp(-delta*8.))
 	smoke_overlay.color=color
 
-func register_smoke(id: String,point: Vector3,until: float) -> void:
-	if id.is_empty() or not point.is_finite() or not is_finite(until) or smoke_screens.has(id): return
-	smoke_screens[id]={"point":point,"until":until}
-	if is_instance_valid(game.combat_effects): game.combat_effects.smoke_screen(point,hash(id))
+func register_smoke(id: String,point: Vector3,until: float,forward: Vector3=Vector3.FORWARD,kind: String="abrams") -> void:
+	if id.is_empty() or not point.is_finite() or not forward.is_finite() or not is_finite(until) or smoke_screens.has(id): return
+	if kind not in ["abrams","t90","guarani","bmp2"]: return
+	var remaining:=until-game.war_clock
+	if remaining<=0. or remaining>GameSmokeClouds.VEHICLE_DURATION+1.: return
+	smoke_screens[id]={"point":point,"until":until,"forward":forward,"kind":kind}
+	if is_instance_valid(game.grenades_system) and is_instance_valid(game.grenades_system.smoke_clouds):
+		game.grenades_system.smoke_clouds.add_vehicle(id,point,forward,GameSmokeClouds.VEHICLE_DURATION-remaining,kind)
 
 @rpc("authority","call_remote","unreliable_ordered")
 func tv_state(id: String,sequence_value: int,point: Vector3,velocity_value: Vector3,left: float,linked: bool,stamp: float) -> void:

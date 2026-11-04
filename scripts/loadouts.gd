@@ -1,7 +1,7 @@
 extends RefCounted
 class_name GameLoadouts
 
-const PROTOCOL:=13
+const PROTOCOL:=14
 const ORDER:=["helmet","vest","sidearm","primary","optic","grenade","melee","equipment","drone"]
 const TITLES:={"helmet":"Capacete","vest":"Colete","sidearm":"Pistola","primary":"Principal","optic":"Mira","grenade":"Granada","melee":"Arma branca","equipment":"Equipamento","drone":"Drone"}
 const EQUIPMENT:={"medkit":"Kit médico","supply":"Munição","spot":"Observação","drone":"Drone"}
@@ -23,7 +23,7 @@ static func allowed(mode: String,owned: Array,role:="soldier",team:=0) -> Dictio
 			break
 	for id in ["squeegee","broom","axe"]:
 		if id in weapons: choices.melee.append(id)
-	if mode!="war" or role=="soldier": choices.grenade=["grenade"]
+	if mode!="war" or role=="soldier": choices.grenade=["grenade","smoke"]
 	if mode=="war": choices.equipment=[WarRules.launcher_for_team(team) if role=="antitank" else {"medic":"medkit","soldier":"supply","marksman":"spot"}.get(role,"")]
 	if mode=="war": choices.drone=["drone"]
 	for slot in choices.keys():
@@ -67,12 +67,14 @@ static func validate(raw: Variant,mode: String,owned: Array,role:="soldier",team
 static func title(id: String) -> String:
 	if id.begins_with("vest_") or id.begins_with("helmet_"):
 		return ("Colete" if id.begins_with("vest_") else "Capacete")+" · "+str(["","Leve","Padrão","Pesado"][clampi(int(id.get_slice("_",1)),0,3)])
-	return "Granada" if id=="grenade" else (GameOpticCatalog.item_name(id) if GameOpticCatalog.valid(id) else str(EQUIPMENT.get(id,GameWeapons.ITEMS.get(id,{}).get("name",id))))
+	return ("Granada de fumaça (M18)" if id=="smoke" else "Granada explosiva") if id in ["grenade","smoke"] else (GameOpticCatalog.item_name(id) if GameOpticCatalog.valid(id) else str(EQUIPMENT.get(id,GameWeapons.ITEMS.get(id,{}).get("name",id))))
 
 static func apply(actor: GamePlayer,approved: Dictionary,war:=false) -> void:
 	actor.set_meta("approved_loadout",approved.slots.duplicate())
 	if war: actor.owned=approved.choices.duplicate()
 	actor.loadout=approved.choices.duplicate();actor.grenades_enabled=bool(approved.grenades)
+	actor.set_meta("grenade_kind",str(approved.slots.get("grenade","grenade")))
+	actor.set_meta("grenade_display_kind",str(approved.slots.get("grenade","grenade")))
 	actor.grenades=2 if actor.grenades_enabled else 0
 	actor.weapon_id=str(approved.equipped)
 	actor.set_meta("class_equipment",not str(approved.equipment).is_empty())
