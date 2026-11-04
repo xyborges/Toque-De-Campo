@@ -2,7 +2,7 @@
   "version": "1.13.2",
   "date": "04/11/2026",
   "title": "G3 refinado, lunetas reconstruídas e mira mais consistente",
-  "summary": "Revisão visual e funcional do G3, da Hensoldt 4× e da Telescópica 8×, com suportes ajustados, geometria mais sólida, apresentação de mira da sniper corrigida e ampliação testada em quatro fuzis.",
+  "summary": "Revisão visual e funcional do G3 e das lunetas, mais redução dos picos de upload da vegetação que podem pressionar a GPU ao carregar ou atravessar o mapa.",
   "changes": [
     {
       "title": "G3 com detalhes mais fiéis",
@@ -19,6 +19,10 @@
     {
       "title": "Transições de mira da sniper",
       "text": "A arma permanece visível ao mirar; entrada e saída do ADS ajustadas de acordo com a óptica: 0,18 s na 4× e 0,26 s na 8×."
+    },
+    {
+      "title": "Carregamento gradual da vegetação",
+      "text": "As atualizações de células de vegetação agora têm um limite por quadro, distribuindo o envio dos buffers ao longo de vários quadros para evitar picos concentrados durante deslocamento e carregamento do mapa."
     }
   ],
   "fixes": [

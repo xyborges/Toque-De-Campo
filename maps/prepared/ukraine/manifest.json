@@ -6,7 +6,7 @@
 		},
 		{
 			"path": "res://maps/prepared/ukraine/grass.res",
-			"sha256": "3a9d2c1d8bca109f3db7b593dfecfcb48da3555dd096428744fdf196998351a4"
+			"sha256": "3503b7a2b6f464f3ad328765c39fd1450673ff3d8b623ec533f09322fc0ced5b"
 		},
 		{
 			"path": "res://maps/prepared/ukraine/grass_far_mesh.res",
@@ -30,7 +30,7 @@
 		},
 		{
 			"path": "res://maps/prepared/ukraine/navigation.res",
-			"sha256": "1e56f50a388e86cf4f791a9fcabc49c0ea4f378f6fff2ea3c2101600476444ca"
+			"sha256": "d2e6bd5782746938a841b593b4c43f5038318ae226c1aba80b5942fc2dfdd672"
 		}
 	],
 	"benchmark": {
@@ -51,7 +51,7 @@
 		3500.0,
 		3500.0
 	],
-	"content_hash": "cefdfd7db1f3f45fbbb3a43086016deb610fd6611e826af4d26abac6774bdf72",
+	"content_hash": "b6e76ba5e2488a7f9cb528b4df6f6e2f6e4776847de8b57d9b55865672f323b8",
 	"grass_approved": false,
 	"grass_enabled": true,
 	"id": "ukraine",
@@ -105,7 +105,7 @@
 		"objectives",
 		"authored_terrain"
 	],
-	"source_hash": "b459573183c55a0fd446b4d3d024a3a34c3da561da18c1edcc0a18a17a98128c",
+	"source_hash": "d563736a9c0f3227754e0901908b3e8c6f18d726139c4ab7f39a728d54d5ae5a",
 	"sources": [
 		"res://assets/war/biomes/nova_grama.png",
 		"res://modes/naval/scripts/catalog.gd",
@@ -155,6 +155,9 @@
 		"res://modes/war/scripts/bot_transit.gd",
 		"res://modes/war/scripts/city_life.gd",
 		"res://modes/war/scripts/coast.gd",
+		"res://modes/war/scripts/collision_pose_solver.gd",
+		"res://modes/war/scripts/collision_pose_state.gd",
+		"res://modes/war/scripts/collision_rig_proxy.gd",
 		"res://modes/war/scripts/day_night.gd",
 		"res://modes/war/scripts/devastation_factory.gd",
 		"res://modes/war/scripts/districts.gd",
@@ -254,5 +257,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 14
+	"version": 15
 }
