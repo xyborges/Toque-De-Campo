@@ -1,0 +1,330 @@
+﻿{
+    "title":  "Deserto Afegão — biblioteca regional",
+    "units":  "metres",
+    "catalog_scene":  "res://modes/battle_royale/library/catalog_v2.tscn",
+    "buildings":  [
+                      {
+                          "variant":  0,
+                          "id":  "adobe_house_v2",
+                          "label":  "Casa de adobe",
+                          "footprint":  [
+                                            13,
+                                            8
+                                        ],
+                          "height":  3.65,
+                          "features":  [
+                                           "interior",
+                                           "roof",
+                                           "stairs",
+                                           "deep_windows"
+                                       ]
+                      },
+                      {
+                          "variant":  1,
+                          "id":  "terrace_house_v2",
+                          "label":  "Casa com terraço",
+                          "footprint":  [
+                                            15,
+                                            12
+                                        ],
+                          "height":  6.9,
+                          "features":  [
+                                           "two_floors",
+                                           "roof",
+                                           "stairs",
+                                           "deep_windows"
+                                       ]
+                      },
+                      {
+                          "variant":  2,
+                          "id":  "farm_store_v2",
+                          "label":  "Depósito rural",
+                          "footprint":  [
+                                            16,
+                                            11
+                                        ],
+                          "height":  3.65,
+                          "features":  [
+                                           "interior",
+                                           "roof",
+                                           "canopy",
+                                           "shelves"
+                                       ]
+                      },
+                      {
+                          "variant":  3,
+                          "id":  "qala_compound_v2",
+                          "label":  "Recinto murado",
+                          "footprint":  [
+                                            18,
+                                            17
+                                        ],
+                          "height":  4.9,
+                          "features":  [
+                                           "courtyard",
+                                           "gate",
+                                           "corner_towers",
+                                           "room",
+                                           "roof",
+                                           "stairs"
+                                       ]
+                      },
+                      {
+                          "variant":  4,
+                          "id":  "stone_ruin_v2",
+                          "label":  "Ruína de pedra",
+                          "footprint":  [
+                                            10,
+                                            8
+                                        ],
+                          "height":  3.3,
+                          "features":  [
+                                           "interior",
+                                           "rubble",
+                                           "broken_beams"
+                                       ]
+                      }
+                  ],
+    "props":  [
+                  {
+                      "id":  "courtyard_wall_v2",
+                      "label":  "Muro de barro",
+                      "length":  6,
+                      "sockets":  [
+                                      "SnapA",
+                                      "SnapB"
+                                  ]
+                  },
+                  {
+                      "id":  "rural_bridge_v2",
+                      "label":  "Ponte rústica",
+                      "footprint":  [
+                                        3.5,
+                                        10
+                                    ],
+                      "sockets":  [
+                                      "SnapA",
+                                      "SnapB"
+                                  ]
+                  },
+                  {
+                      "id":  "poplar_v2",
+                      "label":  "Choupo",
+                      "height":  12
+                  },
+                  {
+                      "id":  "willow_v2",
+                      "label":  "Salgueiro",
+                      "height":  8
+                  },
+                  {
+                      "id":  "farm_crate_v2",
+                      "label":  "Caixa agrícola",
+                      "loot_marker":  "LootInterior"
+                  },
+                  {
+                      "id":  "village_well_v2",
+                      "label":  "Poço do povoado"
+                  },
+                  {
+                      "id":  "woodpile_v2",
+                      "label":  "Lenha empilhada"
+                  },
+                  {
+                      "id":  "clothesline_v2",
+                      "label":  "Varal",
+                      "collision":  false
+                  },
+                  {
+                      "id":  "haystack_v2",
+                      "label":  "Palheiro"
+                  },
+                  {
+                      "label":  "Leito de irrigação",
+                      "id":  "irrigation_channel_v3",
+                      "collision":  "shared_terrain",
+                      "sockets":  [
+                                      "SnapA",
+                                      "SnapB"
+                                  ]
+                  },
+                  {
+                      "collision":  "trunk",
+                      "shared_materials":  true,
+                      "lod":  true,
+                      "id":  "poplar_v4",
+                      "label":  "Choupo ramificado"
+                  },
+                  {
+                      "collision":  "trunk",
+                      "shared_materials":  true,
+                      "lod":  true,
+                      "id":  "willow_v4",
+                      "label":  "Salgueiro ramificado"
+                  },
+                  {
+                      "id":  "poplar_v5",
+                      "label":  "Choupo — folhagem",
+                      "shared_materials":  true,
+                      "lod":  true,
+                      "collision":  "trunk"
+                  },
+                  {
+                      "id":  "willow_v5",
+                      "label":  "Salgueiro — folhagem",
+                      "shared_materials":  true,
+                      "lod":  true,
+                      "collision":  "trunk"
+                  },
+                  {
+                      "lod":  true,
+                      "collision":  false,
+                      "label":  "Arbusto de quintal",
+                      "id":  "garden_shrub_v5"
+                  },
+                  {
+                      "id":  "poplar_v7",
+                      "collision":  "trunk",
+                      "label":  "Choupo",
+                      "lod":  true
+                  },
+                  {
+                      "id":  "willow_v7",
+                      "collision":  "trunk",
+                      "label":  "Salgueiro",
+                      "lod":  true
+                  },
+                  {
+                      "id":  "garden_shrub_v7",
+                      "collision":  false,
+                      "label":  "Arbusto",
+                      "lod":  true
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Rochedo",
+                      "id":  "cliff_buttress_v8",
+                      "surface":  "stone",
+                      "collision":  "convex"
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Pedras de encosta",
+                      "id":  "talus_fan_v8",
+                      "collision":  false
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Arbustos secos",
+                      "id":  "dry_scrub_patch_v8",
+                      "collision":  false
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Canto de trabalho",
+                      "id":  "farm_work_corner_v8",
+                      "collision":  true
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Muro em ruínas",
+                      "id":  "collapsed_farm_wall_v8",
+                      "collision":  true
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Sulcos",
+                      "id":  "field_furrows_v8",
+                      "collision":  false
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Escarpa em camadas",
+                      "collision":  "convex",
+                      "id":  "stratified_shelf_v9"
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Pedras de leito seco",
+                      "collision":  "convex",
+                      "id":  "wadi_boulders_v9"
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Capim de margem",
+                      "collision":  false,
+                      "id":  "wild_margin_v9"
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Talude rural",
+                      "collision":  "convex",
+                      "id":  "field_bank_v10"
+                  },
+                  {
+                      "lod":  true,
+                      "label":  "Muro rural",
+                      "collision":  true,
+                      "id":  "field_wall_v10"
+                  },
+                  {
+                      "lod":  "tamarisk_far_v10",
+                      "label":  "Tamargueira",
+                      "collision":  false,
+                      "id":  "tamarisk_v10"
+                  },
+                  {
+                      "id":  "rural_annex_v11",
+                      "label":  "Anexo rural arruinado",
+                      "footprint":  [
+                                        6.8,
+                                        5.2
+                                    ],
+                      "height":  3.1,
+                      "lod":  true,
+                      "collision":  "masonry",
+                      "sockets":  [
+                                      "Entrada",
+                                      "Saida"
+                                  ],
+                      "visual_reach_m":  2300
+                  },
+                  {
+                      "id": "erosion_berm_v12",
+                      "label": "Berma de erosao natural",
+                      "footprint": [15.0, 5.6],
+                      "height": 1.42,
+                      "collision": "convex",
+                      "surface": "dirt",
+                      "resistance": "earthwork",
+                      "lod": true,
+                      "visual_reach_m": 2300
+                  },
+                  {
+                      "id": "wadi_bank_v12",
+                      "label": "Margem de leito seco",
+                      "footprint": [15.0, 7.2],
+                      "height": 0.96,
+                      "collision": "convex",
+                      "surface": "dirt",
+                      "resistance": "earthwork",
+                      "lod": true,
+                      "visual_reach_m": 2300
+                  },
+                  {
+                      "id": "rural_shade_shed_v13",
+                      "label": "Abrigo aberto de propriedade rural",
+                      "footprint": [6.6, 5.4],
+                      "height": 3.1,
+                      "collision": "timber_adobe",
+                      "surface": "dirt",
+                      "resistance": "timber_adobe",
+                      "lod": true,
+                      "visual_reach_m": 2300,
+                      "sockets": ["Entrada", "Saida"],
+                      "features": ["open_entrance", "covered_yard", "partial_wall"]
+                  }
+              ],
+    "scene_pattern":  "res://modes/battle_royale/library/{id}.tscn",
+    "material_pattern":  "res://modes/battle_royale/library/materials/{material}_v2.tres"
+}

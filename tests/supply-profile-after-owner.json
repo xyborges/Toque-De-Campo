@@ -1,0 +1,1 @@
+{"checks":1,"failures":[],"metrics":{"after":{"average_fps":60.0858927837343,"frames":120,"max_ms":17.508,"p95_ms":17.059},"baseline":{"average_fps":60.5394366502723,"frames":120,"max_ms":17.662,"p95_ms":17.195},"equipment_calls":0,"hud_calls_until_response":2,"inventory_calls":1,"nodes_delta":0,"response_ms":18},"role":"owner","sample":"after"}

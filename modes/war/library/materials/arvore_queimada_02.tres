@@ -1,0 +1,19 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/environment/materials/wood-albedo.png" id="1_mcpt4"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/wood-normal.png" id="2_jtmso"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/wood-roughness.png" id="3_5ehtk"]
+
+[resource]
+resource_name = "charcoal"
+albedo_color = Color(0.20392157, 0.22352941, 0.19607843, 1)
+albedo_texture = ExtResource("1_mcpt4")
+metallic_specular = 0.35
+roughness = 0.99
+roughness_texture = ExtResource("3_5ehtk")
+normal_enabled = true
+normal_scale = 0.45
+normal_texture = ExtResource("2_jtmso")
+uv1_scale = Vector3(0.65, 0.65, 0.65)
+uv1_triplanar = true
+texture_filter = 5

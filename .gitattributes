@@ -1,0 +1,56 @@
+# Arquivos texto canonicos, sem reescrever os dados originais no disco
+* text=auto
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.githooks/* text eol=lf
+*.uid text eol=lf
+*.import text eol=lf
+*.gdignore text eol=lf
+*.crt text eol=lf
+*.pem text eol=lf
+*.gd text eol=lf
+*.gdshader text eol=lf
+*.tscn text eol=lf
+*.tres text eol=lf
+*.godot text eol=lf
+*.cfg text eol=lf
+*.json text eol=lf
+*.jsonl text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Assets binarios (sempre manter bytes exatos)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.svg text eol=lf
+*.ogg binary
+*.wav binary
+*.mp3 binary
+*.flac binary
+*.glb binary
+*.blend binary
+*.fbx binary
+*.obj text eol=lf
+*.res binary
+*.stex binary
+*.zip binary
+*.7z binary
+*.tar binary
+*.gz binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary

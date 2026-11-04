@@ -1,0 +1,1713 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://modes/war/library/carga_portuaria.tscn" id="1_h72jk"]
+[ext_resource type="PackedScene" path="res://modes/war/library/defensa_portuaria.tscn" id="2_6ob7m"]
+[ext_resource type="PackedScene" path="res://modes/war/library/canaleta_danificada.tscn" id="3_lxqnw"]
+[ext_resource type="PackedScene" path="res://modes/war/library/cratera_impacto.tscn" id="4_1klla"]
+[ext_resource type="PackedScene" path="res://modes/war/library/entulho_tijolos.tscn" id="5_3wqsj"]
+[ext_resource type="PackedScene" path="res://modes/war/library/fachada_atingida.tscn" id="6_a16g4"]
+[ext_resource type="PackedScene" path="res://modes/war/library/laje_desabada.tscn" id="7_rxhdj"]
+[ext_resource type="PackedScene" path="res://modes/war/library/carro_carbonizado.tscn" id="8_26x30"]
+
+[node name="DetalhamentoDeGuerra" type="Node3D" unique_id=531723098]
+metadata/ground_conformed = true
+metadata/safe_sites = true
+metadata/safe_sites_v2 = true
+
+[node name="CargaPortuaria0" type="Node3D" parent="." unique_id=620915508 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.99280864, 0, 0.119712204, 0, 1, 0, -0.119712204, 0, 0.99280864, -796, 4, -482)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria1" type="Node3D" parent="." unique_id=162311970 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.990216, 0, -0.13954312, 0, 1, 0, 0.13954312, 0, 0.990216, -796, 4, -468)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria2" type="Node3D" parent="." unique_id=1602543555 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.99280864, 0, 0.119712204, 0, 1, 0, -0.119712204, 0, 0.99280864, -796, 4, -454)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria3" type="Node3D" parent="." unique_id=962215962 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.990216, 0, -0.13954312, 0, 1, 0, 0.13954312, 0, 0.990216, -796, 4, -440)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria4" type="Node3D" parent="." unique_id=1058467775 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.99280864, 0, 0.119712204, 0, 1, 0, -0.119712204, 0, 0.99280864, -796, 4, -426)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria5" type="Node3D" parent="." unique_id=158200321 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.990216, 0, -0.13954312, 0, 1, 0, 0.13954312, 0, 0.990216, -796, 4, -412)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria6" type="Node3D" parent="." unique_id=973251311 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.99280864, 0, 0.119712204, 0, 1, 0, -0.119712204, 0, 0.99280864, -796, 4, -398)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria7" type="Node3D" parent="." unique_id=617717222 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.990216, 0, -0.13954312, 0, 1, 0, 0.13954312, 0, 0.990216, -796, 4, -384)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria8" type="Node3D" parent="." unique_id=1070010622 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -857, 4, -521)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria9" type="Node3D" parent="." unique_id=103745640 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -857, 4, -492)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria10" type="Node3D" parent="." unique_id=278717912 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -857, 4, -463)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria11" type="Node3D" parent="." unique_id=181484908 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -857, 4, -434)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria12" type="Node3D" parent="." unique_id=2016987793 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -857, 4, -405)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria13" type="Node3D" parent="." unique_id=853310835 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -857, 4, -376)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria14" type="Node3D" parent="." unique_id=389740198 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -857, 4, -347)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada15" type="Node3D" parent="." unique_id=430852402 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -785, 4, -510)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada16" type="Node3D" parent="." unique_id=44395900 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -785, 4, -476)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada17" type="Node3D" parent="." unique_id=1811816116 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -785, 4, -442)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada18" type="Node3D" parent="." unique_id=1263619662 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -785, 4, -408)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada19" type="Node3D" parent="." unique_id=975521474 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -785, 4, -374)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto20" type="Node3D" parent="." unique_id=1564212539 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999244, 0, -0.012288834, 0, 1, 0, 0.012288834, 0, 0.9999244, -734, 26.415194, -565)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos21" type="Node3D" parent="." unique_id=983789387 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(1, 0, -4.0132698e-05, 0, 1, 0, 4.0132698e-05, 0, 1, -732.41156, 27.163036, -553)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto22" type="Node3D" parent="." unique_id=1824828969 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999963, 0, -0.002701287, 0, 0.99999994, 0, 0.0027012867, 0, 0.99999636, -701, 26.760178, -578)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos23" type="Node3D" parent="." unique_id=1959991762 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.7586093, 0, 0.6515458, 0, 1, 0, -0.6515458, 0, 0.7586093, -691, 27.215727, -575)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto24" type="Node3D" parent="." unique_id=436880189 instance=ExtResource("4_1klla")]
+transform = Transform3D(1, 0, -0.00017380217, 0, 0.99999994, 0, 0.00017380218, 0, 0.99999994, -692, 28.048532, -565)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos25" type="Node3D" parent="." unique_id=1661019200 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.14665502, 0, 0.98918766, 0, 1, 0, -0.9891877, 0, 0.14665501, -700, 27.950468, -562)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto26" type="Node3D" parent="." unique_id=1706794828 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.99999934, 0, -0.001068817, 0, 1, 0, 0.001068817, 0, 0.99999934, -692, 26.675714, -583.19617)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos27" type="Node3D" parent="." unique_id=1871427246 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(-0.5324427, 0, 0.8464659, 0, 0.99999994, 0, -0.8464659, 0, -0.5324427, -679, 28.720945, -563)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida28" type="Node3D" parent="." unique_id=1992668754 instance=ExtResource("6_a16g4")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, -735, 23.652128, -594.80383)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada29" type="Node3D" parent="." unique_id=1167871112 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.8251439, 0, 0.56492245, 0, 1, 0, -0.56492245, 0, 0.8251439, -740.58844, 21.234777, -614)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado30" type="Node3D" parent="." unique_id=100823785 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.99999374, 0, -0.0035396668, 0, 0.99999994, 0, 0.0035396668, 0, 0.99999374, -735.80383, 22.305006, -606)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos31" type="Node3D" parent="." unique_id=72076420 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.99975324, 0, -0.022212544, 0, 1, 0, 0.022212543, 0, 0.9997533, -748.39233, 20.870281, -611)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida32" type="Node3D" parent="." unique_id=486676785 instance=ExtResource("6_a16g4")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, -693.80383, 25.95719, -597)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada33" type="Node3D" parent="." unique_id=1950501105 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(-0.02733216, 0, 0.9996263, 0, 1, 0, -0.9996263, 0, -0.02733216, -697.7846, 21.206326, -642.9808)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado34" type="Node3D" parent="." unique_id=1801592293 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.9011515, 0, 0.43350434, 0, 0.99999994, 0, -0.43350434, 0, 0.9011515, -699, 22.899952, -624.58844)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos35" type="Node3D" parent="." unique_id=1666568792 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.529004, 0, 0.84861916, 0, 1, 0, -0.84861916, 0, 0.529004, -730.9808, 21.50227, -620)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida36" type="Node3D" parent="." unique_id=1538288201 instance=ExtResource("6_a16g4")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, -660.80383, 29.24705, -561)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada37" type="Node3D" parent="." unique_id=631081770 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(-0.8568768, 0, 0.51552105, 0, 1, 0, -0.515521, 0, -0.8568769, -647, 29.08816, -566.2154)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado38" type="Node3D" parent="." unique_id=245740390 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.62207216, 0, 0.78295976, 0, 1, 0, -0.78295976, 0, 0.62207216, -645, 29.655176, -597)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos39" type="Node3D" parent="." unique_id=480647048 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(-0.42059866, 0, 0.9072468, 0, 1, 0, -0.9072468, 0, -0.42059866, -672, 28.95679, -563)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto40" type="Node3D" parent="." unique_id=1432375934 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999978, 0, 0.002093552, 0, 1, 0, -0.0020935521, 0, 0.99999774, -741.60767, 30.236391, -301)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos41" type="Node3D" parent="." unique_id=1510879389 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.99999726, 0, 0.0023422632, 0, 1, 0, -0.0023422635, 0, 0.9999972, -742, 19.857485, -292)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto42" type="Node3D" parent="." unique_id=1705475490 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.99999136, 0, 0.004136438, 0, 1, 0, -0.004136438, 0, 0.99999136, -695, 28.564568, -282)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos43" type="Node3D" parent="." unique_id=1944829641 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.7572123, 0, 0.65316886, 0, 1, 0, -0.65316886, 0, 0.7572123, -727, 23.638468, -279)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto44" type="Node3D" parent="." unique_id=529601222 instance=ExtResource("4_1klla")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -698, 28.067873, -295)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos45" type="Node3D" parent="." unique_id=800367585 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.15063305, 0, 0.98858976, 0, 1, 0, -0.98858976, 0, 0.15063305, -688, 27.69419, -292)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto46" type="Node3D" parent="." unique_id=1163262650 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.99999946, 0, 0.0010538202, 0, 1, 0, -0.0010538202, 0, 0.99999946, -683, 27.7382, -282)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos47" type="Node3D" parent="." unique_id=129957070 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(-0.5298362, 0, 0.8480999, 0, 1, 0, -0.8480998, 0, -0.5298362, -682, 28.205208, -273.80383)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida48" type="Node3D" parent="." unique_id=135992625 instance=ExtResource("6_a16g4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -732, 18.738104, -260)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada49" type="Node3D" parent="." unique_id=867907548 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.8276867, 0, 0.5611904, 0, 0.99999994, 0, -0.5611904, 0, 0.8276867, -725, 18.597143, -243)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado50" type="Node3D" parent="." unique_id=1574755388 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.99999946, 0, 0.001056651, 0, 0.99999994, 0, -0.001056651, 0, 0.99999946, -741, 15.531149, -251)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos51" type="Node3D" parent="." unique_id=98581883 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.9999418, 0, 0.010788842, 0, 0.99999994, 0, -0.010788842, 0, 0.9999418, -735, 16.657288, -249.80385)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida52" type="Node3D" parent="." unique_id=481221116 instance=ExtResource("6_a16g4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -693, 29.016228, -260)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada53" type="Node3D" parent="." unique_id=596612506 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(-0.029870281, 0, 0.99955374, 0, 1, 0, -0.99955374, 0, -0.029870281, -689, 29.571735, -249.80385)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado54" type="Node3D" parent="." unique_id=287557166 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.899947, 0, 0.4359994, 0, 1, 0, -0.4359994, 0, 0.899947, -696, 28.281292, -251)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos55" type="Node3D" parent="." unique_id=581314430 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.5400199, 0, 0.84165204, 0, 1, 0, -0.84165204, 0, 0.5400199, -696, 27.339283, -239.41154)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida56" type="Node3D" parent="." unique_id=588053348 instance=ExtResource("6_a16g4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -666, 28.965534, -260)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada57" type="Node3D" parent="." unique_id=595762349 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(-0.8573911, 0, 0.5146654, 0, 1, 0, -0.5146654, 0, -0.8573911, -656, 28.828209, -249.80385)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado58" type="Node3D" parent="." unique_id=642639068 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.6211751, 0, 0.7836718, 0, 1, 0, -0.7836718, 0, 0.6211751, -675, 30.049242, -251)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos59" type="Node3D" parent="." unique_id=284778751 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(-0.40965387, 0, 0.91224104, 0, 1, 0, -0.91224104, 0, -0.40965387, -669, 29.843822, -249.80385)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria60" type="Node3D" parent="." unique_id=1603952744 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.99280864, 0, 0.119712204, 0, 1, 0, -0.119712204, 0, 0.99280864, 1166, 4, 418)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria61" type="Node3D" parent="." unique_id=1088640479 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.990216, 0, -0.13954312, 0, 1, 0, 0.13954312, 0, 0.990216, 1166, 4, 432)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria62" type="Node3D" parent="." unique_id=1928415881 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.99280864, 0, 0.119712204, 0, 1, 0, -0.119712204, 0, 0.99280864, 1166, 4, 446)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria63" type="Node3D" parent="." unique_id=975184693 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.990216, 0, -0.13954312, 0, 1, 0, 0.13954312, 0, 0.990216, 1166, 4, 460)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria64" type="Node3D" parent="." unique_id=2042963634 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.99280864, 0, 0.119712204, 0, 1, 0, -0.119712204, 0, 0.99280864, 1166, 4, 474)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria65" type="Node3D" parent="." unique_id=530372650 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.990216, 0, -0.13954312, 0, 1, 0, 0.13954312, 0, 0.990216, 1166, 4, 488)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria66" type="Node3D" parent="." unique_id=224261621 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.99280864, 0, 0.119712204, 0, 1, 0, -0.119712204, 0, 0.99280864, 1166, 4, 502)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria67" type="Node3D" parent="." unique_id=6950961 instance=ExtResource("1_h72jk")]
+transform = Transform3D(0.990216, 0, -0.13954312, 0, 1, 0, 0.13954312, 0, 0.990216, 1166, 4, 516)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria68" type="Node3D" parent="." unique_id=644952053 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1227, 4, 379)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria69" type="Node3D" parent="." unique_id=1289412790 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1227, 4, 408)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria70" type="Node3D" parent="." unique_id=1525723622 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1227, 4, 437)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria71" type="Node3D" parent="." unique_id=1919621534 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1227, 4, 466)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria72" type="Node3D" parent="." unique_id=1579962413 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1227, 4, 495)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria73" type="Node3D" parent="." unique_id=1669452366 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1227, 4, 524)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria74" type="Node3D" parent="." unique_id=384482612 instance=ExtResource("2_6ob7m")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1227, 4, 553)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada75" type="Node3D" parent="." unique_id=431481238 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1155, 4, 390)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada76" type="Node3D" parent="." unique_id=347275634 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1155, 4, 424)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada77" type="Node3D" parent="." unique_id=36127929 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1155, 4, 458)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada78" type="Node3D" parent="." unique_id=559806495 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1155, 4, 492)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada79" type="Node3D" parent="." unique_id=2039392944 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1155, 4, 526)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto80" type="Node3D" parent="." unique_id=1016636050 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.99999684, 0, -0.0025084764, 0, 1, 0, 0.0025084764, 0, 0.99999684, 1106.4115, 30.425016, 344)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos81" type="Node3D" parent="." unique_id=89192552 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.9999531, 0, 0.009680877, 0, 0.99999994, 0, -0.0096808765, 0, 0.99995315, 1105.2153, 30.260212, 326)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto82" type="Node3D" parent="." unique_id=947729627 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999995, 0, -0.0009671413, 0, 0.99999994, 0, 0.00096714136, 0, 0.99999946, 1095.8038, 29.992231, 325)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos83" type="Node3D" parent="." unique_id=167184390 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.7585749, 0, 0.6515859, 0, 1, 0, -0.6515859, 0, 0.7585749, 1105, 30.076803, 319)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto84" type="Node3D" parent="." unique_id=898809998 instance=ExtResource("4_1klla")]
+transform = Transform3D(1, 0, -0.00019959734, 0, 1, 0, 0.00019959736, 0, 0.99999994, 1080, 30.056908, 335)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos85" type="Node3D" parent="." unique_id=2025827560 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.15002243, 0, 0.98868245, 0, 1, 0, -0.9886825, 0, 0.15002243, 1090, 30.264349, 338)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto86" type="Node3D" parent="." unique_id=552210187 instance=ExtResource("4_1klla")]
+transform = Transform3D(1, 0, 1.9365994e-05, 0, 1, 0, -1.9365994e-05, 0, 1, 1059, 29.395773, 322)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos87" type="Node3D" parent="." unique_id=1338750832 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(-0.5302291, 0, 0.8478544, 0, 1, 0, -0.84785444, 0, -0.53022903, 1069, 29.291126, 325)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida88" type="Node3D" parent="." unique_id=102818876 instance=ExtResource("6_a16g4")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 1102, 28.776226, 300)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada89" type="Node3D" parent="." unique_id=591237468 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.8252878, 0, 0.5647123, 0, 1, 0, -0.5647123, 0, 0.8252878, 1115, 28.922165, 295)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado90" type="Node3D" parent="." unique_id=315338923 instance=ExtResource("8_26x30")]
+transform = Transform3D(1, 0, -0.00010617467, 0, 1, 0, 0.00010617467, 0, 1, 1093, 28.673943, 291)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos91" type="Node3D" parent="." unique_id=361151924 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(1, 0, -0.00024014055, 0, 1, 0, 0.00024014055, 0, 1, 1090.8038, 28.592545, 298)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida92" type="Node3D" parent="." unique_id=1279395614 instance=ExtResource("6_a16g4")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 1069, 29.245153, 300)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada93" type="Node3D" parent="." unique_id=795629584 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(-0.028952647, 0, 0.9995808, 0, 0.99999994, 0, -0.99958074, 0, -0.028952649, 1082, 28.821226, 295)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado94" type="Node3D" parent="." unique_id=310218633 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.9006624, 0, 0.43451944, 0, 1, 0, -0.4345194, 0, 0.9006625, 1060, 29.92629, 291)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos95" type="Node3D" parent="." unique_id=1039497613 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.53872204, 0, 0.84248346, 0, 1, 0, -0.8424836, 0, 0.538722, 1057.8038, 29.933672, 298)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida96" type="Node3D" parent="." unique_id=852574689 instance=ExtResource("6_a16g4")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 1036, 30.717955, 300)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada97" type="Node3D" parent="." unique_id=33565955 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(-0.85705495, 0, 0.51522493, 0, 1, 0, -0.515225, 0, -0.8570548, 1049, 30.394487, 295)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado98" type="Node3D" parent="." unique_id=2053788046 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.6215886, 0, 0.78334385, 0, 1, 0, -0.78334385, 0, 0.6215886, 1027, 30.73515, 291)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos99" type="Node3D" parent="." unique_id=1584527373 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(-0.41614625, 0, 0.9092975, 0, 1, 0, -0.9092975, 0, -0.41614625, 1024.8038, 30.710726, 298)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto100" type="Node3D" parent="." unique_id=1301809032 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.99990964, 0, -0.013443762, 0, 1, 0, 0.013443762, 0, 0.99990964, 1101.2153, 19.055983, 617)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos101" type="Node3D" parent="." unique_id=1140181798 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.9999978, 0, -0.0020994481, 0, 1, 0, 0.0020994481, 0, 0.9999978, 1089.627, 20.182697, 629)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto102" type="Node3D" parent="." unique_id=894212253 instance=ExtResource("4_1klla")]
+transform = Transform3D(1, 0, 0.0001318573, 0, 1, 0, -0.00013185732, 0, 0.99999994, 1080.2153, 20.992504, 630)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos103" type="Node3D" parent="." unique_id=1169346460 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.7617663, 0, 0.6478519, 0, 1, 0, -0.6478519, 0, 0.7617663, 1093, 19.97611, 621)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto104" type="Node3D" parent="." unique_id=1750486931 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.999971, 0, -0.0076185507, 0, 0.99999994, 0, 0.0076185507, 0, 0.999971, 1080, 20.956142, 641)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos105" type="Node3D" parent="." unique_id=1486507704 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.14525975, 0, 0.9893935, 0, 1, 0, -0.9893935, 0, 0.14525975, 1051, 22.230848, 665.15765)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto106" type="Node3D" parent="." unique_id=1510813932 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.99993503, 0, -0.011399776, 0, 1, 0, 0.011399776, 0, 0.99993503, 1077, 21.022202, 649.17694)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos107" type="Node3D" parent="." unique_id=1403363675 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(-0.528909, 0, 0.8486785, 0, 1, 0, -0.8486785, 0, -0.528909, 1088.9807, 20.248869, 636)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida108" type="Node3D" parent="." unique_id=909039215 instance=ExtResource("6_a16g4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1084, 21.7048, 608.82306)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada109" type="Node3D" parent="." unique_id=839085273 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.844301, 0, 0.53586924, 0, 0.99999994, 0, -0.53586924, 0, 0.844301, 1051.8423, 21.828413, 678)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado110" type="Node3D" parent="." unique_id=1783582704 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.9999546, 0, -0.009530336, 0, 1, 0, 0.009530336, 0, 0.9999546, 1087, 19.951494, 649)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos111" type="Node3D" parent="." unique_id=1042015077 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.9999522, 0, 0.009778171, 0, 1, 0, -0.009778172, 0, 0.99995214, 1044.0385, 22.568125, 675)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida112" type="Node3D" parent="." unique_id=1508268986 instance=ExtResource("6_a16g4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1048.2153, 22.633774, 652)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada113" type="Node3D" parent="." unique_id=1075931995 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(-0.0320846, 0, 0.999485, 0, 1, 0, -0.9994851, 0, -0.0320846, 1039.627, 23.03149, 666)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado114" type="Node3D" parent="." unique_id=1192803123 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.90067106, 0, 0.43450147, 0, 0.99999994, 0, -0.43450144, 0, 0.9006711, 1049.6077, 22.859743, 643)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos115" type="Node3D" parent="." unique_id=1646415804 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.5403379, 0, 0.84144807, 0, 1, 0, -0.84144795, 0, 0.540338, 1031.8231, 23.7525, 663)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida116" type="Node3D" parent="." unique_id=1090152965 instance=ExtResource("6_a16g4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1016.60767, 25.46304, 661.58844)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada117" type="Node3D" parent="." unique_id=2082116199 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(-0.84984654, 0, 0.52703, 0, 0.99999994, 0, -0.52702993, 0, -0.84984666, 1027.4115, 23.903913, 672)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado118" type="Node3D" parent="." unique_id=868084741 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.61848813, 0, 0.78579414, 0, 0.99999994, 0, -0.78579414, 0, 0.61848813, 1015, 24.905296, 673)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos119" type="Node3D" parent="." unique_id=1995044335 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(-0.35249093, 0, 0.9358151, 0, 0.99999994, 0, -0.9358152, 0, -0.3524909, 1014.41156, 24.600351, 684)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida120" type="Node3D" parent="." unique_id=1307157099 instance=ExtResource("6_a16g4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -728, 21.700808, 527)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada121" type="Node3D" parent="." unique_id=840736043 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.76536787, 0, -0.64359295, 0, 1, 0, 0.64359295, 0, 0.7653678, -714, 22.137503, 532)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos122" type="Node3D" parent="." unique_id=1528323443 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.36381412, 0, 0.9314715, 0, 1, 0, -0.9314716, 0, 0.3638141, -727.80383, 21.666098, 536)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado123" type="Node3D" parent="." unique_id=1786480265 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.12036272, 0, 0.99272996, 0, 1, 0, -0.99272996, 0, 0.12036272, -677.19617, 18.309761, 597)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida124" type="Node3D" parent="." unique_id=1591697801 instance=ExtResource("6_a16g4")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, -492, 24.155334, 693)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada125" type="Node3D" parent="." unique_id=1931473881 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.76501495, 0, 0.6440125, 0, 1, 0, -0.6440125, 0, 0.76501495, -478, 23.64994, 698)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos126" type="Node3D" parent="." unique_id=1561060248 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.36195156, 0, 0.93219686, 0, 1, 0, -0.93219686, 0, 0.36195156, -491.80383, 23.779264, 702)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado127" type="Node3D" parent="." unique_id=1004791728 instance=ExtResource("8_26x30")]
+transform = Transform3D(-0.119281314, 0, 0.9928605, 0, 1, 0, -0.99286044, 0, -0.11928132, -542.80383, 20.859425, 623)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada128" type="Node3D" parent="." unique_id=1840493109 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -686, 17.31043, 620)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos129" type="Node3D" parent="." unique_id=1941991944 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.99999994, 0, 0.00022190003, 0, 0.99999994, 0, -0.00022190002, 0, 1, -686, 17.179037, 624)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada130" type="Node3D" parent="." unique_id=1851610921 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -657, 18.963799, 599)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada131" type="Node3D" parent="." unique_id=8407626 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -628, 18.461529, 620)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos132" type="Node3D" parent="." unique_id=10434468 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.99999964, 0, 0.00066178857, 0, 1, 0, -0.00066178857, 0, 0.9999997, -628, 18.32355, 624)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada133" type="Node3D" parent="." unique_id=426249379 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -599, 19.524172, 599)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada134" type="Node3D" parent="." unique_id=1048784933 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -570, 20.091654, 620)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos135" type="Node3D" parent="." unique_id=1191671319 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.99999994, 0, 0.00029925472, 0, 1, 0, -0.00029925472, 0, 0.99999994, -570, 19.958603, 624)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada136" type="Node3D" parent="." unique_id=1643748395 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -541, 21.308922, 599)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida137" type="Node3D" parent="." unique_id=937273824 instance=ExtResource("6_a16g4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 492, 12.013359, -693)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada138" type="Node3D" parent="." unique_id=1755008950 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.76581717, 0, -0.64305836, 0, 1, 0, 0.64305836, 0, 0.76581717, 506, 12.770752, -688)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos139" type="Node3D" parent="." unique_id=982801251 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.36309922, 0, 0.9317504, 0, 1, 0, -0.9317504, 0, 0.36309922, 492.19617, 12.130016, -684)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado140" type="Node3D" parent="." unique_id=697904199 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.11925307, 0, 0.99286383, 0, 0.99999994, 0, -0.9928639, 0, 0.11925306, 542.80383, 14.989706, -623)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida141" type="Node3D" parent="." unique_id=71081717 instance=ExtResource("6_a16g4")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 728, 16.15666, -527)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada142" type="Node3D" parent="." unique_id=2007781290 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.7647544, 0, 0.64432186, 0, 1, 0, -0.6443218, 0, 0.7647545, 742, 16.19382, -522)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos143" type="Node3D" parent="." unique_id=638223544 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.362499, 0, 0.931984, 0, 1, 0, -0.93198407, 0, 0.362499, 728.19617, 15.879121, -518)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado144" type="Node3D" parent="." unique_id=825986251 instance=ExtResource("8_26x30")]
+transform = Transform3D(-0.11900305, 0, 0.99289376, 0, 1, 0, -0.9928938, 0, -0.11900304, 677.19617, 16.8156, -597)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada145" type="Node3D" parent="." unique_id=156197437 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 534, 15.705756, -600)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos146" type="Node3D" parent="." unique_id=941200600 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.9999998, 0, -0.00057768903, 0, 1, 0, 0.0005776891, 0, 0.99999976, 534, 15.871392, -596)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada147" type="Node3D" parent="." unique_id=1263394029 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 563, 15.627726, -621)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada148" type="Node3D" parent="." unique_id=1518257964 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 592, 15.655893, -600)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos149" type="Node3D" parent="." unique_id=431129010 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.9999998, 0, 0.0005158213, 0, 0.99999994, 0, -0.0005158212, 0, 0.9999999, 592, 15.533256, -596)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada150" type="Node3D" parent="." unique_id=383185053 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 621, 17.551025, -621)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada151" type="Node3D" parent="." unique_id=276755125 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 650, 17.35365, -600)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos152" type="Node3D" parent="." unique_id=666721369 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.9999992, 0, -0.0012163033, 0, 1, 0, 0.0012163033, 0, 0.9999992, 650, 17.003418, -596)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada153" type="Node3D" parent="." unique_id=1215136530 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 679, 19.077719, -621)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida154" type="Node3D" parent="." unique_id=572361969 instance=ExtResource("6_a16g4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -737, 27.114435, -513)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada155" type="Node3D" parent="." unique_id=166627031 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.7659218, 0, -0.6429336, 0, 1, 0, 0.6429336, 0, 0.7659218, -732, 26.646034, -502.80383)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos156" type="Node3D" parent="." unique_id=17356338 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.49292347, 0, 0.8700726, 0, 1, 0, -0.8700726, 0, 0.49292347, -742, 19.897898, -496.6077)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado157" type="Node3D" parent="." unique_id=1142307603 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.11795847, 0, 0.9930185, 0, 0.99999994, 0, -0.99301845, 0, 0.11795848, -692.19617, 26.75056, -443)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida158" type="Node3D" parent="." unique_id=39447092 instance=ExtResource("6_a16g4")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, -507, 25.010773, -347)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada159" type="Node3D" parent="." unique_id=1509270541 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.76780266, 0, 0.64068645, 0, 1, 0, -0.64068645, 0, 0.76780266, -493, 25.711115, -352.3923)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos160" type="Node3D" parent="." unique_id=662813491 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.3631772, 0, 0.93172, 0, 1, 0, -0.9317201, 0, 0.36317718, -517.19617, 24.595995, -338)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado161" type="Node3D" parent="." unique_id=187256817 instance=ExtResource("8_26x30")]
+transform = Transform3D(-0.11964692, 0, 0.9928165, 0, 1, 0, -0.9928165, 0, -0.11964692, -563, 17.300846, -414)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada162" type="Node3D" parent="." unique_id=1939488194 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -701, 26.953848, -420)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos163" type="Node3D" parent="." unique_id=133232947 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.9999962, 0, -0.00273812, 0, 1, 0, 0.00273812, 0, 0.9999962, -692, 24.73662, -400.41153)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada164" type="Node3D" parent="." unique_id=1931034682 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -672, 24.793932, -441)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada165" type="Node3D" parent="." unique_id=1513840026 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -643, 20.354036, -420)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos166" type="Node3D" parent="." unique_id=955764493 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.99999905, 0, -0.0012759184, 0, 0.99999994, 0, 0.0012759184, 0, 0.9999991, -646, 20.343868, -410.80383)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada167" type="Node3D" parent="." unique_id=976877796 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -614, 20.290478, -441)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada168" type="Node3D" parent="." unique_id=2066969100 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -585, 18.139658, -420)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos169" type="Node3D" parent="." unique_id=1709593228 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.9999989, 0, -0.0014202022, 0, 0.99999994, 0, 0.0014202021, 0, 0.999999, -563.41156, 17.414545, -407)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada170" type="Node3D" parent="." unique_id=42074837 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -556, 17.897903, -441)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida171" type="Node3D" parent="." unique_id=1624528921 instance=ExtResource("6_a16g4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 862.19617, 10.335181, 355)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada172" type="Node3D" parent="." unique_id=1214036065 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.76485664, 0, -0.64420056, 0, 0.99999994, 0, 0.64420056, 0, 0.76485664, 871, 9.806287, 367.3923)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos173" type="Node3D" parent="." unique_id=1828052388 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.36240658, 0, 0.93201995, 0, 0.99999994, 0, -0.93202, 0, 0.36240658, 852, 15.424192, 364)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado174" type="Node3D" parent="." unique_id=781446551 instance=ExtResource("8_26x30")]
+transform = Transform3D(0.11980874, 0, 0.99279696, 0, 1, 0, -0.992797, 0, 0.11980873, 907.80383, 6.7724147, 422)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida175" type="Node3D" parent="." unique_id=199993145 instance=ExtResource("6_a16g4")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 1093, 26.946453, 518)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada176" type="Node3D" parent="." unique_id=1574389804 instance=ExtResource("7_rxhdj")]
+transform = Transform3D(0.775593, 0, 0.63123333, 0, 1, 0, -0.63123333, 0, 0.775593, 1053, 33.54848, 523)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos177" type="Node3D" parent="." unique_id=1077146745 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.36566684, 0, 0.9307458, 0, 0.99999994, 0, -0.93074566, 0, 0.36566687, 1082, 28.216293, 513.60767)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado178" type="Node3D" parent="." unique_id=1713007511 instance=ExtResource("8_26x30")]
+transform = Transform3D(-0.11952928, 0, 0.9928307, 0, 0.99999994, 0, -0.99283063, 0, -0.119529285, 1046, 6.1645346, 460.58847)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada179" type="Node3D" parent="." unique_id=1328035143 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 899, 35.024693, 445)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos180" type="Node3D" parent="." unique_id=284937601 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.99999756, 0, -0.0021753265, 0, 1, 0, 0.0021753265, 0, 0.99999756, 902, 12.211314, 454.19617)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada181" type="Node3D" parent="." unique_id=150946684 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 928, 33.768307, 424)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada182" type="Node3D" parent="." unique_id=1522040502 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 957, 36.31283, 445)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos183" type="Node3D" parent="." unique_id=1050912411 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.99999565, 0, -0.0029472879, 0, 1, 0, 0.0029472879, 0, 0.99999565, 951.80383, 23.493008, 482)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada184" type="Node3D" parent="." unique_id=40220352 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 986, 34.36355, 424)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada185" type="Node3D" parent="." unique_id=710408576 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1015, 35.573814, 445)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos186" type="Node3D" parent="." unique_id=815777544 instance=ExtResource("5_3wqsj")]
+transform = Transform3D(0.9999995, 0, 0.00091633806, 0, 0.99999994, 0, -0.000916338, 0, 0.9999996, 1038.7847, 10.054809, 466.19617)
+metadata/footprint = Vector2(5, 5)
+metadata/terrain_grade = true
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada187" type="Node3D" parent="." unique_id=236281087 instance=ExtResource("3_lxqnw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1044, 34.895714, 424)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CraterasUrbanas" type="Node3D" parent="." unique_id=1389074364]
+
+[node name="CrateraImpacto" type="Node3D" parent="CraterasUrbanas" unique_id=502277167 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999998, 0, 0.0004506319, 0, 0.99999994, 0, -0.0004506319, 0, 0.9999998, -653, 22.003967, 556)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto2" type="Node3D" parent="CraterasUrbanas" unique_id=187661706 instance=ExtResource("4_1klla")]
+transform = Transform3D(1, 0, -0.00022642741, 0, 1, 0, 0.00022642741, 0, 1, -616, 21.714018, 556)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto3" type="Node3D" parent="CraterasUrbanas" unique_id=2003828110 instance=ExtResource("4_1klla")]
+transform = Transform3D(1, 0, -6.067144e-08, 0, 1, 0, 6.067144e-08, 0, 1, -579, 21.53725, 556)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto4" type="Node3D" parent="CraterasUrbanas" unique_id=1799628992 instance=ExtResource("4_1klla")]
+transform = Transform3D(1, 0, 0.00013792439, 0, 1, 0, -0.00013792439, 0, 1, 567, 15.291794, -664)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto5" type="Node3D" parent="CraterasUrbanas" unique_id=1977617497 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999998, 0, -0.0005935999, 0, 0.99999994, 0, 0.0005935999, 0, 0.9999998, 604, 17.322367, -664)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto6" type="Node3D" parent="CraterasUrbanas" unique_id=172261792 instance=ExtResource("4_1klla")]
+transform = Transform3D(1, 0, -3.396628e-05, 0, 1, 0, 3.396628e-05, 0, 1, 641, 19.4686, -664)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto7" type="Node3D" parent="CraterasUrbanas" unique_id=248587953 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999943, 0, -0.0033586526, 0, 0.99999994, 0, 0.0033586528, 0, 0.9999942, -647.2154, 24.832872, -478)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto8" type="Node3D" parent="CraterasUrbanas" unique_id=1934844519 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999998, 0, -0.00058258005, 0, 0.99999994, 0, 0.00058258005, 0, 0.9999998, -631, 24.783169, -484)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto9" type="Node3D" parent="CraterasUrbanas" unique_id=594155657 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999852, 0, -0.005421804, 0, 1, 0, 0.005421804, 0, 0.9999852, -616.17694, 24.575102, -486.41153)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto10" type="Node3D" parent="CraterasUrbanas" unique_id=1534998838 instance=ExtResource("4_1klla")]
+transform = Transform3D(1, 0, -0.00010013807, 0, 1, 0, 0.00010013807, 0, 1, 932, 32.205044, 381)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto11" type="Node3D" parent="CraterasUrbanas" unique_id=722259343 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999998, 0, 0.00042453487, 0, 1, 0, -0.00042453487, 0, 0.9999998, 969, 31.56871, 381)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto12" type="Node3D" parent="CraterasUrbanas" unique_id=1166550794 instance=ExtResource("4_1klla")]
+transform = Transform3D(0.9999993, 0, -0.0011619123, 0, 0.99999994, 0, 0.0011619122, 0, 0.99999934, 1006, 31.448618, 381)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"

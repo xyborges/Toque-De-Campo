@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3]
+
+[sub_resource type="StandardMaterial3D" id="Cloth"]
+albedo_color = Color(0.23, 0.26, 0.18, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="Bag"]
+size = Vector3(0.39, 0.18, 0.46)
+
+[sub_resource type="BoxMesh" id="Pouch"]
+size = Vector3(0.24, 0.055, 0.24)
+
+[node name="LootBackpack" type="Node3D"]
+metadata/surface = "cloth"
+metadata/loot_prop = true
+
+[node name="Bag" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.09, 0)
+cast_shadow = 0
+mesh = SubResource("Bag")
+material_override = SubResource("Cloth")
+
+[node name="Pouch" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.195, 0.04)
+cast_shadow = 0
+mesh = SubResource("Pouch")
+material_override = SubResource("Cloth")

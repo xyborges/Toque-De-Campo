@@ -1,0 +1,28 @@
+{
+  "version": "1.6.10",
+  "date": "24/10/2026",
+  "title": "Balística, térmica e áudio de Guerra",
+  "summary": "Canhões e30mm revisados, térmica de longo alcance e na câmeraTV, feedback de explosões e controles de áudio durante a partida.",
+  "changes": [
+    {
+      "title": "Guarani30mm e projéteis",
+      "text": "Guarani recebe autocanhão30mm no lugar da.50, com novo cano, carregador e explosão. A30mm usa405m/s, queda e pequena dispersão; os projéteis dos dois tanques estão15% mais lentos."
+    },
+    {
+      "title": "Dano e explosões",
+      "text": "Dano em blindados agora gera confirmação visual para o atirador. Explosões verificam exposição do corpo, mantêm proteção por paredes e não repetem crédito. Validado um disparo real de tanque a850m."
+    },
+    {
+      "title": "Térmica e câmeraTV",
+      "text": "Assinaturas e silhuetas dos veículos permanecem disponíveis a longa distância. A câmeraTV herda a térmica da torre; T alterna o sensor. A câmera externa continua normal."
+    },
+    {
+      "title": "Armamento dos veículos",
+      "text": "1 seleciona o canhão e2 o armamento secundário. HUD mostra as duas armas, munição e seleção. Teclas sem armamento não fazem troca."
+    },
+    {
+      "title": "Áudio menos intrusivo",
+      "text": "Vento mais suave, efeitos ambientes mais discretos e fontes fixas no cenário. Volumes geral, música, efeitos, armas, ambiente, veículos, passos e interface podem ser ajustados e salvos durante a partida."
+    }
+  ]
+}

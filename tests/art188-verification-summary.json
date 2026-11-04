@@ -1,0 +1,32 @@
+[
+  {
+    "file": "art188-validation-results.json",
+    "checks": 188,
+    "failures": []
+  },
+  {
+    "file": "art188-reload-results.json",
+    "checks": 56,
+    "failures": []
+  },
+  {
+    "file": "art188-network-server.json",
+    "checks": 8,
+    "failures": []
+  },
+  {
+    "file": "art188-network-alpha.json",
+    "checks": 26,
+    "failures": []
+  },
+  {
+    "file": "art188-network-bravo.json",
+    "checks": 9,
+    "failures": []
+  },
+  {
+    "file": "art188-editor-results.json",
+    "checks": 6,
+    "failures": []
+  }
+]

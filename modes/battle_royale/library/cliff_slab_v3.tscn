@@ -1,0 +1,33 @@
+[gd_scene format=4]
+
+[ext_resource type="Texture2D" path="res://assets/environment/materials/rock-albedo.png" id="1_rpk7v"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xhn7g"]
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.5058824, 0.4745098, 0.41568628, 1)
+albedo_texture = ExtResource("1_rpk7v")
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_5i5le"]
+_surfaces = [{
+"aabb": AABB(-0.8295423, 0, -0.6937348, 1.718404, 1.76, 1.3727474),
+"attribute_data": PackedByteArray("c4xjPwAAAACQUjM/rkfhPotmOj8AAAAA21UNP65H4T40QZEkAAAAAM/qVySuR+E+bWAkvwAAAAAzthe/rkfhPuJcVL8AAAAAYJ1Cv65H4T5skzu/AAAAAAYPBr+uR+E+KptepQAAAAAIUDylrkfhPhuJJz8AAAAAf0kqP65H4T6YGy8/rkdhPz9I8T6uR2E/8VJVJK5HYT8+XhK/rkdhP2rHQb+uR2E/a1f3vq5HYT/Eyx+lrkdhPxh23T6uR2E/NjAIP8P1qD9PweY+w/WoPzEyMiTD9ag/XYrfvsP1qD8M7im/w/WoP1bf577D9ag/k33zpMP1qD972Lc+w/WoP3B71z6uR+E/LJG4Pq5H4T9m3v8jrkfhPzSDor6uR+E/cSoGv65H4T9NW62+rkfhP2vX26SuR+E/cyatPq5H4T8="),
+"format": 34359742487,
+"index_count": 192,
+"index_data": PackedByteArray("AAABAAIAAgABAAMAAgADAAQABAADAAUABAAFAAYABgAFAAcABgAHAAgACAAHAAkACAAJAAoACgAJAAsACgALAAwADAALAA0ADAANAA4ADgANAA8ADgAPAAAAAAAPAAEAAQAQAAMAAwAQABEAAwARAAUABQARABIABQASAAcABwASABMABwATAAkACQATABQACQAUAAsACwAUABUACwAVAA0ADQAVABYADQAWAA8ADwAWABcADwAXAAEAAQAXABAAEAAYABEAEQAYABkAEQAZABIAEgAZABoAEgAaABMAEwAaABsAEwAbABQAFAAbABwAFAAcABUAFQAcAB0AFQAdABYAFgAdAB4AFgAeABcAFwAeAB8AFwAfABAAEAAfABgAGAAgABkAGQAgACEAGQAhABoAGgAhACIAGgAiABsAGwAiACMAGwAjABwAHAAjACQAHAAkAB0AHQAkACUAHQAlAB4AHgAlACYAHgAmAB8AHwAmACcAHwAnABgAGAAnACAA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 40,
+"vertex_data": PackedByteArray("c4xjPwAAAAAAAAAAkFIzP65H4T4AAAAAi2Y6PwAAAAB6DPY+21UNP65H4T4MkLo+NEGRJAAAAADG0y0/z+pXJK5H4T7dMQE/bWAkvwAAAAAq+tg+M7YXv65H4T5sQsg+4lxUvwAAAACHmZokYJ1Cv65H4T7drY0kbJM7vwAAAACjmfe+Bg8Gv65H4T4c9bC+KptepQAAAACbmDG/CFA8pa5H4T6TPBa/G4knPwAAAACfJd2+f0kqP65H4T5qx+C+mBsvP65HYT8AAAAAP0jxPq5HYT8LP58+8VJVJK5HYT9FSf8+Pl4Sv65HYT+5NME+asdBv65HYT8aEo0ka1f3vq5HYT/RPqO+xMsfpa5HYT/I+P6+GHbdPq5HYT8aKpK+NjAIP8P1qD8AAAAAT8HmPsP1qD9iTJg+MTIyJMP1qD+WP9U+XYrfvsP1qD9niZM+DO4pv8P1qD/PanckVt/nvsP1qD8qCZm+k33zpMP1qD//QcK+e9i3PsP1qD8drXK+cHvXPq5H4T8AAAAALJG4Pq5H4T/ooHM+Zt7/I65H4T+TGZk+NIOivq5H4T86hFY+cSoGv65H4T9JWEMkTVutvq5H4T+u1GS+a9fbpK5H4T/3Y6++cyatPq5H4T/qjmS+viI0ZvmBk81FH/9c8HJDzmcfGDYNSRq/IxaFL21Sk6+YIlUEvm8KmLsSSwKLeueL2u5CK6+eBKFC+KA1PaaTpaDxlF0lkQa3e+0IbpR8NbeLtqBiwk5IpaOvbW3PUfmeD4oCZONVqIgJh1RvwWa6hC9Ri3rDqXGfcUruaIe1D69HHRNrJYSuyn8LhjUPVXarHwmXB7J38YhC8jszuKJKpfXmQ28ldW63GLLSdQVVrKDifCRmg2LSgR9OqWnqtNeodR28atGD4spODtU5dVMisUHoiAEhfI+N/+loLNebfqIm5sZjxHtOsyGsE29RU/SbKHeRbTWY3IKnTkR0e65ao1cYHWIHdWHLUhS8KW9WA6ng5zUM7oX9jwfroS4hnaaj4tG0Y+1lzbCHpMFuJlZNlQNyXHjBk+aGP0L9dRWvOq4=")
+}]
+
+[node name="cliff_slab_v3" type="Node3D" unique_id=1889007129]
+metadata/library_id = "cliff_slab_v3"
+metadata/surface = "stone"
+
+[node name="Geometry" type="MeshInstance3D" parent="." unique_id=1730908791]
+material_override = SubResource("StandardMaterial3D_xhn7g")
+cast_shadow = 0
+visibility_range_end = 150.0
+mesh = SubResource("ArrayMesh_5i5le")

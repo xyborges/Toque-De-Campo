@@ -1,0 +1,677 @@
+[
+  {
+    "average_fps": 57.5128118881019,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0226585536037,
+      "frame_ms_max": 31.723999999997,
+      "frame_ms_mean": 16.6603750000001,
+      "frame_ms_p95": 27.3520000000005,
+      "frames": 120,
+      "one_percent_low": 32.6168498646439
+    },
+    "failures": [],
+    "frame_ms_max": 326.725,
+    "frame_ms_mean": 17.3874301598333,
+    "frame_ms_p95": 28.1710000000004,
+    "frames": 1439,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 3630.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 56,
+    "memory_mib": 148.989825248718,
+    "one_percent_low": 11.2122120423643,
+    "physics_ms_mean": 33.1727845726199,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "server",
+    "script_frame_ms_mean": 9.56460389159128,
+    "spikes": [
+      {
+        "elapsed": 3.064769,
+        "frame_ms": 99.4810000000008,
+        "projectiles": 53
+      },
+      {
+        "elapsed": 3.142135,
+        "frame_ms": 77.3650000000004,
+        "projectiles": 50
+      },
+      {
+        "elapsed": 3.200973,
+        "frame_ms": 58.8380000000015,
+        "projectiles": 44
+      },
+      {
+        "elapsed": 3.277128,
+        "frame_ms": 76.1489999999974,
+        "projectiles": 51
+      },
+      {
+        "elapsed": 3.364215,
+        "frame_ms": 87.0870000000004,
+        "projectiles": 46
+      },
+      {
+        "elapsed": 8.359193,
+        "frame_ms": 326.725,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 8.436147,
+        "frame_ms": 76.9260000000003,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 8.5023,
+        "frame_ms": 66.0950000000007,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 25.156207,
+        "frame_ms": 74.8929999999959,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 25.25328,
+        "frame_ms": 97.0739999999992,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 25.342616,
+        "frame_ms": 89.3319999999989,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 25.411936,
+        "frame_ms": 69.3190000000001,
+        "projectiles": 4
+      }
+    ]
+  },
+  {
+    "average_fps": 39.4246887386871,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 50.0687443860416,
+      "frame_ms_max": 150.722000000002,
+      "frame_ms_mean": 19.9725400000002,
+      "frame_ms_p95": 27.1830000000008,
+      "frames": 100,
+      "one_percent_low": 6.63473149241642
+    },
+    "failures": [],
+    "frame_ms_max": 853.080000000002,
+    "frame_ms_mean": 25.3648166160081,
+    "frame_ms_p95": 33.9670000000005,
+    "frames": 987,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 1719.0,
+    "max_nodes": 7644.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 81,
+    "memory_mib": 197.735945701599,
+    "one_percent_low": 1.92908267681827,
+    "physics_ms_mean": 6.08244072948327,
+    "real_network_clients": true,
+    "resolution": "(1920, 1080)",
+    "role": "0",
+    "script_frame_ms_mean": 19.6198490374874,
+    "spikes": [
+      {
+        "elapsed": 3.655094,
+        "frame_ms": 137.854000000001,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 4.644243,
+        "frame_ms": 121.413999999998,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 5.678029,
+        "frame_ms": 155.601000000001,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 6.637388,
+        "frame_ms": 112.333,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 7.65276,
+        "frame_ms": 116.382000000002,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 8.666547,
+        "frame_ms": 122.146000000001,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 9.877419,
+        "frame_ms": 321.558,
+        "projectiles": 34
+      },
+      {
+        "elapsed": 11.176444,
+        "frame_ms": 607.291999999998,
+        "projectiles": 35
+      },
+      {
+        "elapsed": 11.226569,
+        "frame_ms": 50.1780000000025,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 11.310853,
+        "frame_ms": 50.3040000000006,
+        "projectiles": 48
+      },
+      {
+        "elapsed": 12.434312,
+        "frame_ms": 853.080000000002,
+        "projectiles": 43
+      },
+      {
+        "elapsed": 12.510362,
+        "frame_ms": 76.0480000000001,
+        "projectiles": 81
+      },
+      {
+        "elapsed": 12.57227,
+        "frame_ms": 61.8639999999999,
+        "projectiles": 37
+      },
+      {
+        "elapsed": 13.448499,
+        "frame_ms": 832.336999999999,
+        "projectiles": 37
+      },
+      {
+        "elapsed": 14.361904,
+        "frame_ms": 725.950000000001,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 15.204089,
+        "frame_ms": 563.455999999999,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 16.291017,
+        "frame_ms": 632.679000000003,
+        "projectiles": 6
+      },
+      {
+        "elapsed": 17.0094,
+        "frame_ms": 341.135999999999,
+        "projectiles": 5
+      },
+      {
+        "elapsed": 17.80575,
+        "frame_ms": 126.571999999996,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 18.836054,
+        "frame_ms": 143.153999999996,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 19.845692,
+        "frame_ms": 147.002000000001,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 20.858572,
+        "frame_ms": 142.718000000002,
+        "projectiles": 10
+      },
+      {
+        "elapsed": 21.866074,
+        "frame_ms": 150.722000000002,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 22.873952,
+        "frame_ms": 148.553999999997,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 23.869747,
+        "frame_ms": 130.890000000001,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 24.890478,
+        "frame_ms": 150.666999999999,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 25.852409,
+        "frame_ms": 112.237,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 26.884978,
+        "frame_ms": 141.894000000001,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 27.882091,
+        "frame_ms": 132.542000000001,
+        "projectiles": 5
+      }
+    ]
+  },
+  {
+    "average_fps": 59.926771725205,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0745525196778,
+      "frame_ms_max": 25.7839999999945,
+      "frame_ms_mean": 16.6459833333331,
+      "frame_ms_p95": 19.0680000000043,
+      "frames": 120,
+      "one_percent_low": 41.771966833063
+    },
+    "failures": [],
+    "frame_ms_max": 67.3560000000037,
+    "frame_ms_mean": 16.6870327102804,
+    "frame_ms_p95": 19.2010000000025,
+    "frames": 1498,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 6678.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 54,
+    "memory_mib": 171.720863342285,
+    "one_percent_low": 32.9847214770116,
+    "physics_ms_mean": 8.97580106809077,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "1",
+    "script_frame_ms_mean": 6.69229506008014,
+    "spikes": [
+      {
+        "elapsed": 25.144251,
+        "frame_ms": 67.3560000000037,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 25.294054,
+        "frame_ms": 57.8429999999983,
+        "projectiles": 1
+      }
+    ]
+  },
+  {
+    "average_fps": 60.0261810191133,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.060984235728,
+      "frame_ms_max": 27.3690000000002,
+      "frame_ms_mean": 16.6497438016532,
+      "frame_ms_p95": 18.1490000000011,
+      "frames": 121,
+      "one_percent_low": 43.2769290691141
+    },
+    "failures": [],
+    "frame_ms_max": 44.1679999999991,
+    "frame_ms_mean": 16.6593973333333,
+    "frame_ms_p95": 18.7260000000009,
+    "frames": 1500,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 6748.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 54,
+    "memory_mib": 172.418412208557,
+    "one_percent_low": 35.7745914541648,
+    "physics_ms_mean": 8.70049333333332,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "2",
+    "script_frame_ms_mean": 4.92999999999998,
+    "spikes": []
+  },
+  {
+    "average_fps": 59.9723806982717,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0185757491955,
+      "frame_ms_max": 23.2979999999969,
+      "frame_ms_mean": 16.661508333333,
+      "frame_ms_p95": 18.1090000000026,
+      "frames": 120,
+      "one_percent_low": 47.026734698682
+    },
+    "failures": [],
+    "frame_ms_max": 84.6069999999983,
+    "frame_ms_mean": 16.674342228152,
+    "frame_ms_p95": 18.5279999999999,
+    "frames": 1499,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 6818.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 55,
+    "memory_mib": 172.712899208069,
+    "one_percent_low": 33.5238980694711,
+    "physics_ms_mean": 9.05958905937288,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "3",
+    "script_frame_ms_mean": 5.85328952635087,
+    "spikes": [
+      {
+        "elapsed": 25.233735,
+        "frame_ms": 84.6069999999983,
+        "projectiles": 2
+      }
+    ]
+  },
+  {
+    "average_fps": 60.0260681208632,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0883298448714,
+      "frame_ms_max": 29.317000000006,
+      "frame_ms_mean": 16.6421666666668,
+      "frame_ms_p95": 18.5940000000002,
+      "frames": 120,
+      "one_percent_low": 40.647927971867
+    },
+    "failures": [],
+    "frame_ms_max": 32.7669999999998,
+    "frame_ms_mean": 16.6594286666668,
+    "frame_ms_p95": 18.9340000000016,
+    "frames": 1500,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 6888.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 54,
+    "memory_mib": 173.035977363586,
+    "one_percent_low": 35.5066563145034,
+    "physics_ms_mean": 8.37688066666673,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "4",
+    "script_frame_ms_mean": 6.10488333333331,
+    "spikes": []
+  },
+  {
+    "average_fps": 59.8984966557676,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.124728749792,
+      "frame_ms_max": 26.132000000004,
+      "frame_ms_mean": 16.6320916666665,
+      "frame_ms_p95": 18.4950000000015,
+      "frames": 120,
+      "one_percent_low": 42.8696975542845
+    },
+    "failures": [],
+    "frame_ms_max": 53.836000000004,
+    "frame_ms_mean": 16.6949098196392,
+    "frame_ms_p95": 19.1170000000014,
+    "frames": 1497,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 6958.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 55,
+    "memory_mib": 173.462079048157,
+    "one_percent_low": 34.897192869806,
+    "physics_ms_mean": 8.85086573146295,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "5",
+    "script_frame_ms_mean": 6.10787775551101,
+    "spikes": [
+      {
+        "elapsed": 25.182969,
+        "frame_ms": 53.836000000004,
+        "projectiles": 2
+      }
+    ]
+  },
+  {
+    "average_fps": 59.9670833118805,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0628557785738,
+      "frame_ms_max": 29.4620000000023,
+      "frame_ms_mean": 16.6492249999996,
+      "frame_ms_p95": 18.6830000000029,
+      "frames": 120,
+      "one_percent_low": 38.7859982546273
+    },
+    "failures": [],
+    "frame_ms_max": 60.6660000000048,
+    "frame_ms_mean": 16.6758152101402,
+    "frame_ms_p95": 18.616999999999,
+    "frames": 1499,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 7098.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 55,
+    "memory_mib": 174.148812294006,
+    "one_percent_low": 33.121722329561,
+    "physics_ms_mean": 8.20197865243505,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "6",
+    "script_frame_ms_mean": 5.8919172781854,
+    "spikes": [
+      {
+        "elapsed": 25.184543,
+        "frame_ms": 60.6660000000048,
+        "projectiles": 2
+      }
+    ]
+  },
+  {
+    "average_fps": 59.9549733750322,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.115511956224,
+      "frame_ms_max": 26.885,
+      "frame_ms_mean": 16.6346416666666,
+      "frame_ms_p95": 18.4709999999981,
+      "frames": 120,
+      "one_percent_low": 42.7104021184356
+    },
+    "failures": [],
+    "frame_ms_max": 54.9619999999962,
+    "frame_ms_mean": 16.6791834556371,
+    "frame_ms_p95": 19.0990000000006,
+    "frames": 1499,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 7168.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 55,
+    "memory_mib": 174.506756782532,
+    "one_percent_low": 31.8333460666722,
+    "physics_ms_mean": 10.701129419613,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "7",
+    "script_frame_ms_mean": 4.98202468312212,
+    "spikes": [
+      {
+        "elapsed": 25.199499,
+        "frame_ms": 54.9619999999962,
+        "projectiles": 2
+      }
+    ]
+  },
+  {
+    "average_fps": 59.9155179190222,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0119123646044,
+      "frame_ms_max": 23.6299999999972,
+      "frame_ms_mean": 16.6633583333333,
+      "frame_ms_p95": 18.2369999999992,
+      "frames": 120,
+      "one_percent_low": 43.3266177075906
+    },
+    "failures": [],
+    "frame_ms_max": 67.3640000000049,
+    "frame_ms_mean": 16.690167000668,
+    "frame_ms_p95": 18.5279999999999,
+    "frames": 1497,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 7238.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 55,
+    "memory_mib": 174.960789680481,
+    "one_percent_low": 32.8617309807246,
+    "physics_ms_mean": 7.68431329325315,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "8",
+    "script_frame_ms_mean": 7.10618837675356,
+    "spikes": [
+      {
+        "elapsed": 3.552559,
+        "frame_ms": 52.441,
+        "projectiles": 29
+      },
+      {
+        "elapsed": 25.174057,
+        "frame_ms": 67.3640000000049,
+        "projectiles": 2
+      }
+    ]
+  },
+  {
+    "average_fps": 60.0142593880305,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0094824901243,
+      "frame_ms_max": 37.7710000000029,
+      "frame_ms_mean": 16.6640330578516,
+      "frame_ms_p95": 17.7359999999993,
+      "frames": 121,
+      "one_percent_low": 35.3850781125599
+    },
+    "failures": [],
+    "frame_ms_max": 39.0330000000034,
+    "frame_ms_mean": 16.6627066666667,
+    "frame_ms_p95": 18.2719999999996,
+    "frames": 1500,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 7308.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 55,
+    "memory_mib": 175.287682533264,
+    "one_percent_low": 35.4944735104731,
+    "physics_ms_mean": 8.06829133333334,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "9",
+    "script_frame_ms_mean": 7.05130733333335,
+    "spikes": []
+  },
+  {
+    "average_fps": 59.9843656493268,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0213676068675,
+      "frame_ms_max": 28.5740000000025,
+      "frame_ms_mean": 16.6607333333335,
+      "frame_ms_p95": 18.0909999999983,
+      "frames": 120,
+      "one_percent_low": 41.6250416250373
+    },
+    "failures": [],
+    "frame_ms_max": 48.290999999999,
+    "frame_ms_mean": 16.6710106737825,
+    "frame_ms_p95": 18.5069999999996,
+    "frames": 1499,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 7378.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 55,
+    "memory_mib": 175.691657066345,
+    "one_percent_low": 34.3489162916917,
+    "physics_ms_mean": 9.18079119412944,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "10",
+    "script_frame_ms_mean": 4.58446964643103,
+    "spikes": []
+  },
+  {
+    "average_fps": 59.9626671394342,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0964548099706,
+      "frame_ms_max": 19.4040000000015,
+      "frame_ms_mean": 16.6399166666665,
+      "frame_ms_p95": 16.810999999997,
+      "frames": 120,
+      "one_percent_low": 54.7225566378411
+    },
+    "failures": [],
+    "frame_ms_max": 50.8039999999994,
+    "frame_ms_mean": 16.6770433622415,
+    "frame_ms_p95": 18.7509999999982,
+    "frames": 1499,
+    "gpu": "NVIDIA GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after168",
+    "max_draw_calls": 0.0,
+    "max_nodes": 7378.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 54,
+    "memory_mib": 175.708292961121,
+    "one_percent_low": 31.1310534333398,
+    "physics_ms_mean": 7.67770580386923,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "11",
+    "script_frame_ms_mean": 4.17546164109411,
+    "spikes": [
+      {
+        "elapsed": 25.101993,
+        "frame_ms": 50.8039999999994,
+        "projectiles": 9
+      }
+    ]
+  }
+]

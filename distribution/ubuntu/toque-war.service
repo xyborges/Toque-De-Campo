@@ -1,0 +1,26 @@
+[Unit]
+Description=Toque de Campo - Guerra Conquista
+After=network-online.target nginx.service php8.3-fpm.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=toque-server
+Group=toque-server
+WorkingDirectory=/opt/toque-de-campo/current
+ExecStart=/opt/toque-de-campo/current/ToqueDeCampo.x86_64 --headless --max-fps 60 --log-file /var/lib/toque-de-campo/game/war.log -- --war-server --naval-data=/var/lib/toque-de-campo/game --accounts-service-token=/etc/toque-de-campo/service-token
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/toque-de-campo/game
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=2G
+TasksMax=128
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

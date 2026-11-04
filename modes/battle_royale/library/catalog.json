@@ -1,0 +1,12 @@
+{
+  "title": "Deserto Afegão",
+  "units": "metres",
+  "items": [
+    {"id": "adobe_house", "label": "Casa de adobe", "scene": "res://modes/battle_royale/library/adobe_house.tscn", "footprint": [13, 8.7], "features": ["interior", "roof", "stairs", "loot_markers"]},
+    {"id": "courtyard_wall", "label": "Muro de pátio", "scene": "res://modes/battle_royale/library/courtyard_wall.tscn"},
+    {"id": "stone_ruin", "label": "Ruína de pedra", "scene": "res://modes/battle_royale/library/stone_ruin.tscn"},
+    {"id": "market_stall", "label": "Banca de mercado", "scene": "res://modes/battle_royale/library/market_stall.tscn"},
+    {"id": "rock_outcrop", "label": "Afloramento rochoso", "scene": "res://modes/battle_royale/library/rock_outcrop.tscn"},
+    {"id": "dry_shrub", "label": "Arbusto seco", "scene": "res://modes/battle_royale/library/dry_shrub.tscn", "collision": false}
+  ]
+}

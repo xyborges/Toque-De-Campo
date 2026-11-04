@@ -1,0 +1,306 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://editor/war/gallery_view.gd" id="1_rgw7w"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/concrete-albedo.png" id="2_ukppr"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/concrete-normal.png" id="3_0raqq"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/concrete-roughness.png" id="4_n77u7"]
+[ext_resource type="PackedScene" path="res://modes/war/library/soldado_equipe_1.tscn" id="5_lpuqp"]
+[ext_resource type="PackedScene" path="res://modes/war/library/soldado_equipe_2.tscn" id="6_h0r4m"]
+[ext_resource type="PackedScene" path="res://modes/war/library/guarani_referencia.tscn" id="7_uifn3"]
+[ext_resource type="PackedScene" path="res://modes/war/library/container_20ft.tscn" id="8_kkac0"]
+[ext_resource type="PackedScene" path="res://modes/war/library/pinheiro.tscn" id="9_t0fls"]
+[ext_resource type="PackedScene" path="res://modes/war/library/arvore_queimada.tscn" id="10_lxe5g"]
+[ext_resource type="PackedScene" path="res://modes/war/library/trincheira_6m.tscn" id="11_e1p3c"]
+[ext_resource type="PackedScene" path="res://modes/war/library/escada_4m.tscn" id="12_7cj6h"]
+[ext_resource type="PackedScene" path="res://modes/war/library/estrada_12m.tscn" id="13_drjx8"]
+[ext_resource type="PackedScene" path="res://modes/war/library/cais_8m.tscn" id="14_w3rae"]
+[ext_resource type="PackedScene" path="res://modes/war/library/casa_ruina.tscn" id="15_jhlwv"]
+[ext_resource type="PackedScene" path="res://modes/war/library/barreira_concreto.tscn" id="16_u4a5g"]
+[ext_resource type="PackedScene" path="res://modes/war/library/estrada_curva_90.tscn" id="17_m75wf"]
+[ext_resource type="PackedScene" path="res://modes/war/library/estrada_cruzamento.tscn" id="18_msts1"]
+[ext_resource type="PackedScene" path="res://modes/war/library/estrada_entroncamento.tscn" id="19_a57d2"]
+[ext_resource type="PackedScene" path="res://modes/war/library/estrada_rampa_12m.tscn" id="20_1gs44"]
+[ext_resource type="PackedScene" path="res://modes/war/library/cais_curva_90.tscn" id="21_pp2u7"]
+[ext_resource type="PackedScene" path="res://modes/war/library/cais_rampa_8m.tscn" id="22_7ron6"]
+[ext_resource type="PackedScene" path="res://modes/war/library/trincheira_escavavel_6m.tscn" id="23_1eyt6"]
+[ext_resource type="Script" path="res://modes/war/scripts/trench_module.gd" id="24_sjeq0"]
+[ext_resource type="PackedScene" path="res://modes/war/library/fachada_atingida.tscn" id="25_8wdd0"]
+[ext_resource type="PackedScene" path="res://modes/war/library/carro_carbonizado.tscn" id="26_7fjpj"]
+[ext_resource type="PackedScene" path="res://modes/war/library/carga_portuaria.tscn" id="27_ga0rf"]
+[ext_resource type="PackedScene" path="res://modes/war/library/entulho_tijolos.tscn" id="28_g2b6a"]
+[ext_resource type="PackedScene" path="res://modes/war/library/defensa_portuaria.tscn" id="29_8drb2"]
+[ext_resource type="PackedScene" path="res://modes/war/library/laje_desabada.tscn" id="30_sdqir"]
+[ext_resource type="PackedScene" path="res://modes/war/library/canaleta_danificada.tscn" id="31_l46s1"]
+[ext_resource type="PackedScene" path="res://modes/war/library/cratera_impacto.tscn" id="32_krk11"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_olfty"]
+resource_name = "concrete"
+albedo_color = Color(0.57254905, 0.5921569, 0.54901963, 1)
+albedo_texture = ExtResource("2_ukppr")
+metallic_specular = 0.35
+roughness = 0.96
+roughness_texture = ExtResource("4_n77u7")
+normal_enabled = true
+normal_scale = 0.45
+normal_texture = ExtResource("3_0raqq")
+uv1_scale = Vector3(0.65, 0.65, 0.65)
+uv1_triplanar = true
+texture_filter = 5
+
+[sub_resource type="BoxMesh" id="BoxMesh_wxdcr"]
+size = Vector3(120, 0.3, 110)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ts3js"]
+size = Vector3(120, 0.3, 110)
+
+[sub_resource type="Environment" id="Environment_0cksh"]
+background_mode = 1
+background_color = Color(0.5372549, 0.5803922, 0.5921569, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.7176471, 0.7529412, 0.7411765, 1)
+ambient_light_energy = 0.55
+
+[node name="BibliotecaGuerra" type="Node3D" unique_id=1679365492]
+script = ExtResource("1_rgw7w")
+
+[node name="Piso" type="MeshInstance3D" parent="." unique_id=334864822]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+material_override = SubResource("StandardMaterial3D_olfty")
+mesh = SubResource("BoxMesh_wxdcr")
+
+[node name="PisoCollision" type="StaticBody3D" parent="." unique_id=523384904]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+collision_mask = 0
+metadata/surface = "concrete"
+
+[node name="Shape" type="CollisionShape3D" parent="PisoCollision" unique_id=141905707]
+shape = SubResource("BoxShape3D_ts3js")
+
+[node name="SoldadoEquipe1" type="Node3D" parent="." unique_id=1240505726 instance=ExtResource("5_lpuqp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+
+[node name="SoldadoEquipe2" type="Node3D" parent="." unique_id=2107652911 instance=ExtResource("6_h0r4m")]
+
+[node name="GuaraniReferencia" type="Node3D" parent="." unique_id=1926203228 instance=ExtResource("7_uifn3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 1)
+
+[node name="Container20Ft" type="Node3D" parent="." unique_id=822156132 instance=ExtResource("8_kkac0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -8)
+metadata/footprint = Vector2(2.44, 6.06)
+metadata/library_id = "container_20ft"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Pinheiro" type="Node3D" parent="." unique_id=2001398455 instance=ExtResource("9_t0fls")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, -11)
+metadata/footprint = Vector2(4.6, 4.6)
+metadata/library_id = "pinheiro"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="ArvoreQueimada" type="Node3D" parent="." unique_id=2100842075 instance=ExtResource("10_lxe5g")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, -6)
+metadata/footprint = Vector2(4.6, 4.6)
+metadata/library_id = "arvore_queimada"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Trincheira6m" type="Node3D" parent="." unique_id=65529227 instance=ExtResource("11_e1p3c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -12)
+metadata/footprint = Vector2(3.4, 6)
+metadata/snap_grid = 6.0
+metadata/library_id = "trincheira_6m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Escada4m" type="Node3D" parent="." unique_id=318920666 instance=ExtResource("12_7cj6h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -14)
+metadata/footprint = Vector2(2.4, 4)
+metadata/step_height = 0.18
+metadata/library_id = "escada_4m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m" type="Node3D" parent="." unique_id=1909206980 instance=ExtResource("13_drjx8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -14)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m" type="Node3D" parent="." unique_id=1069730974 instance=ExtResource("14_w3rae")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 12)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CasaRuina" type="Node3D" parent="." unique_id=1020536876 instance=ExtResource("15_jhlwv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, 10)
+metadata/footprint = Vector2(9, 7)
+metadata/library_id = "casa_ruina"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="BarreiraConcreto" type="Node3D" parent="." unique_id=1353393191 instance=ExtResource("16_u4a5g")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 6)
+metadata/footprint = Vector2(0.7, 3)
+metadata/library_id = "barreira_concreto"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaCurva90" type="Node3D" parent="." unique_id=272531807 instance=ExtResource("17_m75wf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, 0, -23)
+metadata/footprint = Vector2(20, 20)
+metadata/grade_centre = Vector2(6, -6)
+metadata/terrain_grade = true
+metadata/library_id = "estrada_curva_90"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaCruzamento" type="Node3D" parent="." unique_id=2064490685 instance=ExtResource("18_msts1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -30)
+metadata/footprint = Vector2(12, 12)
+metadata/terrain_grade = true
+metadata/library_id = "estrada_cruzamento"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaEntroncamento" type="Node3D" parent="." unique_id=2124083820 instance=ExtResource("19_a57d2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -30)
+metadata/footprint = Vector2(12, 12)
+metadata/terrain_grade = true
+metadata/library_id = "estrada_entroncamento"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaRampa12m" type="Node3D" parent="." unique_id=1647221612 instance=ExtResource("20_1gs44")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0, -30)
+metadata/footprint = Vector2(7, 12)
+metadata/rise = 1.5
+metadata/terrain_grade = true
+metadata/library_id = "estrada_rampa_12m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CaisCurva90" type="Node3D" parent="." unique_id=1378841127 instance=ExtResource("21_pp2u7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, 0, 26)
+metadata/footprint = Vector2(20, 20)
+metadata/grade_centre = Vector2(6, -6)
+metadata/library_id = "cais_curva_90"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CaisRampa8m" type="Node3D" parent="." unique_id=797548321 instance=ExtResource("22_7ron6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 20)
+metadata/footprint = Vector2(8, 8)
+metadata/rise = 1.2
+metadata/library_id = "cais_rampa_8m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="TrincheiraEscavavel6m" type="Node3D" parent="." unique_id=1921876178 instance=ExtResource("23_1eyt6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 1.5, 12)
+script = ExtResource("24_sjeq0")
+metadata/footprint = Vector2(3.4, 6)
+metadata/terrain_cut = true
+metadata/library_id = "trincheira_escavavel_6m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="FachadaAtingida" type="Node3D" parent="." unique_id=1062531642 instance=ExtResource("25_8wdd0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -44)
+metadata/footprint = Vector2(13, 8)
+metadata/terrain_grade = true
+metadata/library_id = "fachada_atingida"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CarroCarbonizado" type="Node3D" parent="." unique_id=401640069 instance=ExtResource("26_7fjpj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -44)
+metadata/footprint = Vector2(2.1, 4.4)
+metadata/library_id = "carro_carbonizado"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CargaPortuaria" type="Node3D" parent="." unique_id=1122887240 instance=ExtResource("27_ga0rf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -44)
+metadata/footprint = Vector2(3, 2.2)
+metadata/library_id = "carga_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EntulhoTijolos" type="Node3D" parent="." unique_id=914822341 instance=ExtResource("28_g2b6a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -44)
+metadata/footprint = Vector2(5, 5)
+metadata/library_id = "entulho_tijolos"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="DefensaPortuaria" type="Node3D" parent="." unique_id=980129125 instance=ExtResource("29_8drb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 36)
+metadata/footprint = Vector2(3, 2)
+metadata/library_id = "defensa_portuaria"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="LajeDesabada" type="Node3D" parent="." unique_id=333968874 instance=ExtResource("30_sdqir")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 36)
+metadata/footprint = Vector2(6, 5)
+metadata/library_id = "laje_desabada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CanaletaDanificada" type="Node3D" parent="." unique_id=1709316801 instance=ExtResource("31_l46s1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 36)
+metadata/footprint = Vector2(1.8, 4.5)
+metadata/library_id = "canaleta_danificada"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CrateraImpacto" type="Node3D" parent="." unique_id=743495770 instance=ExtResource("32_krk11")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 36)
+metadata/footprint = Vector2(6, 6)
+metadata/crater_depth = 0.65
+metadata/library_id = "cratera_impacto"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Luz" type="DirectionalLight3D" parent="." unique_id=1992880040]
+transform = Transform3D(0.8660254, 0.30783075, -0.3940054, 0, 0.7880108, 0.6156615, 0.5, -0.5331785, 0.68243736, 0, 0, 0)
+light_color = Color(0.8784314, 0.8666667, 0.8117647, 1)
+light_energy = 1.35
+shadow_enabled = true
+
+[node name="Ambiente" type="WorldEnvironment" parent="." unique_id=1049648879]
+environment = SubResource("Environment_0cksh")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=188245199]
+transform = Transform3D(0.97618705, 0.0609687, -0.20818657, 0, 0.9596926, 0.2810518, 0.21693046, -0.27435914, 0.93683946, -2, 3.7, 9)
+current = true

@@ -1,0 +1,94 @@
+[
+  {
+    "case": "combat_153",
+    "exit": 0,
+    "seconds": 4.07,
+    "checks": 48,
+    "errors": []
+  },
+  {
+    "case": "combat_154",
+    "exit": 1,
+    "seconds": 3.5,
+    "checks": 52,
+    "errors": [
+      "FAIL HUD displays the armed fuse"
+    ]
+  },
+  {
+    "case": "combat_155",
+    "exit": 0,
+    "seconds": 5.17,
+    "checks": 64,
+    "errors": []
+  },
+  {
+    "case": "war_offline_equipment",
+    "exit": 0,
+    "seconds": 16.92,
+    "checks": 34,
+    "errors": []
+  },
+  {
+    "case": "war_class_hud",
+    "exit": 0,
+    "seconds": 5.31,
+    "checks": 49,
+    "errors": []
+  },
+  {
+    "case": "equipment_hud",
+    "exit": 0,
+    "seconds": 3.76,
+    "checks": 25,
+    "errors": []
+  },
+  {
+    "case": "reload_resume",
+    "exit": 0,
+    "seconds": 5.4,
+    "checks": 28,
+    "errors": [
+      "ERROR: Texture with GL ID of 23: leaked 349524 bytes.",
+      "ERROR: Texture with GL ID of 24: leaked 349524 bytes."
+    ]
+  },
+  {
+    "case": "persistent_death_dispatch",
+    "exit": 0,
+    "seconds": 2.93,
+    "checks": 10,
+    "errors": []
+  },
+  {
+    "case": "naval_physics",
+    "exit": 0,
+    "seconds": 9.62,
+    "checks": 15,
+    "errors": []
+  },
+  {
+    "case": "naval_weapon_switch",
+    "exit": 0,
+    "seconds": 16.42,
+    "checks": 19,
+    "errors": []
+  },
+  {
+    "case": "ragdoll_stability",
+    "exit": 0,
+    "seconds": 14.33,
+    "checks": 0,
+    "errors": []
+  },
+  {
+    "case": "war163_environment_projectiles",
+    "exit": 0,
+    "seconds": 2.71,
+    "checks": 24,
+    "errors": [
+      "ERROR: Texture with GL ID of 24: leaked 349524 bytes.",
+      "ERROR: Texture with GL ID of 25: leaked 349524 bytes."
+    ]
+  }
+]

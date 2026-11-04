@@ -1,0 +1,1 @@
+{"checks": ["recognizes existing live server without interruption", "fresh server binds and hosting window waits", "duplicate startup reuses fresh server", "hosting window detects server exit", "unrelated occupied port is reported without killing it"], "failures": []}

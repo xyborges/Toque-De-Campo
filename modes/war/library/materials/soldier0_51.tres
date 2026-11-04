@@ -1,0 +1,19 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/environment/materials/steel-albedo.png" id="1_fuoh3"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/steel-normal.png" id="2_rdsvb"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/steel-roughness.png" id="3_7seew"]
+
+[resource]
+albedo_color = Color(0.13725491, 0.15686275, 0.14509805, 1)
+albedo_texture = ExtResource("1_fuoh3")
+metallic = 0.55
+roughness = 0.86
+roughness_texture = ExtResource("3_7seew")
+normal_enabled = true
+normal_scale = 0.65
+normal_texture = ExtResource("2_rdsvb")
+uv1_scale = Vector3(1.4, 1.4, 1.4)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5

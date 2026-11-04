@@ -1,0 +1,34 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://modes/war/scripts/trench_module.gd" id="1_wig7h"]
+[ext_resource type="PackedScene" path="res://modes/war/library/trincheira_6m.tscn" id="2_xfyc3"]
+
+[node name="TrincheiraEscavavel6m" type="Node3D" unique_id=1921876178]
+script = ExtResource("1_wig7h")
+metadata/footprint = Vector2(3.4, 6)
+metadata/terrain_cut = true
+metadata/library_id = "trincheira_escavavel_6m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Revestimento" type="Node3D" parent="." unique_id=65529227 instance=ExtResource("2_xfyc3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
+metadata/footprint = Vector2(3.4, 6)
+metadata/snap_grid = 6.0
+metadata/library_id = "trincheira_6m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Encaixes" type="Node3D" parent="." unique_id=1267315773]
+
+[node name="Entrada" type="Marker3D" parent="Encaixes" unique_id=386017697]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 3)
+metadata/profile = "trench"
+metadata/width = 2.2
+
+[node name="Saida" type="Marker3D" parent="Encaixes" unique_id=716477755]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)
+metadata/profile = "trench"
+metadata/width = 2.2

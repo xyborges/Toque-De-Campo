@@ -1,0 +1,20 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/environment/materials/steel-albedo.png" id="1_dif1n"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/steel-normal.png" id="2_3huof"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/steel-roughness.png" id="3_dwuco"]
+
+[resource]
+resource_name = "recess"
+albedo_color = Color(0.07450981, 0.105882354, 0.09411765, 1)
+albedo_texture = ExtResource("1_dif1n")
+metallic = 0.18
+metallic_specular = 0.35
+roughness = 0.8
+roughness_texture = ExtResource("3_dwuco")
+normal_enabled = true
+normal_scale = 0.45
+normal_texture = ExtResource("2_3huof")
+uv1_scale = Vector3(0.65, 0.65, 0.65)
+uv1_triplanar = true
+texture_filter = 5

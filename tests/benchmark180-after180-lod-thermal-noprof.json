@@ -1,0 +1,2819 @@
+[
+  {
+    "average_fps": 4.1201348932164,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 3.50619544735548,
+      "frame_ms_max": 435.873000000001,
+      "frame_ms_mean": 285.209428571428,
+      "frame_ms_p95": 435.873000000001,
+      "frames": 7,
+      "one_percent_low": 2.29424625980503
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 496.724999999998,
+    "frame_ms_mean": 242.7105,
+    "frame_ms_p95": 347.764000000012,
+    "frames": 104,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 19777.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 60,
+    "memory_mib": 278.355627059937,
+    "one_percent_low": 2.14454673932391,
+    "physics_ms_mean": 67.5840769230769,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "server",
+    "script_frame_ms_mean": 46.6269615384615,
+    "spikes": [
+      {
+        "elapsed": 3.045546,
+        "frame_ms": 293.687000000006,
+        "projectiles": 47
+      },
+      {
+        "elapsed": 3.37570700000001,
+        "frame_ms": 330.302000000003,
+        "projectiles": 47
+      },
+      {
+        "elapsed": 3.70056100000001,
+        "frame_ms": 324.826000000002,
+        "projectiles": 47
+      },
+      {
+        "elapsed": 4.04829600000001,
+        "frame_ms": 347.764000000012,
+        "projectiles": 48
+      },
+      {
+        "elapsed": 4.39305,
+        "frame_ms": 344.748999999993,
+        "projectiles": 49
+      },
+      {
+        "elapsed": 4.712778,
+        "frame_ms": 319.727,
+        "projectiles": 52
+      },
+      {
+        "elapsed": 5.05835400000001,
+        "frame_ms": 345.557999999997,
+        "projectiles": 49
+      },
+      {
+        "elapsed": 5.371004,
+        "frame_ms": 312.661000000006,
+        "projectiles": 48
+      },
+      {
+        "elapsed": 5.666296,
+        "frame_ms": 295.291000000006,
+        "projectiles": 44
+      },
+      {
+        "elapsed": 5.935508,
+        "frame_ms": 269.190999999992,
+        "projectiles": 40
+      },
+      {
+        "elapsed": 6.221536,
+        "frame_ms": 285.957999999994,
+        "projectiles": 35
+      },
+      {
+        "elapsed": 6.5261,
+        "frame_ms": 304.616999999993,
+        "projectiles": 36
+      },
+      {
+        "elapsed": 6.82490900000001,
+        "frame_ms": 298.798999999988,
+        "projectiles": 35
+      },
+      {
+        "elapsed": 7.132696,
+        "frame_ms": 307.790999999995,
+        "projectiles": 33
+      },
+      {
+        "elapsed": 7.409105,
+        "frame_ms": 276.41100000001,
+        "projectiles": 30
+      },
+      {
+        "elapsed": 7.637508,
+        "frame_ms": 228.369999999998,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 7.900721,
+        "frame_ms": 263.111000000009,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 8.120189,
+        "frame_ms": 209.160999999995,
+        "projectiles": 10
+      },
+      {
+        "elapsed": 8.60655700000001,
+        "frame_ms": 496.724999999998,
+        "projectiles": 7
+      },
+      {
+        "elapsed": 8.81636400000001,
+        "frame_ms": 209.721000000002,
+        "projectiles": 7
+      },
+      {
+        "elapsed": 8.99594500000001,
+        "frame_ms": 179.643999999996,
+        "projectiles": 5
+      },
+      {
+        "elapsed": 9.19015,
+        "frame_ms": 194.271000000001,
+        "projectiles": 5
+      },
+      {
+        "elapsed": 9.379375,
+        "frame_ms": 189.177999999998,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 9.536125,
+        "frame_ms": 156.790999999998,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 9.742964,
+        "frame_ms": 206.868999999998,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 9.91574,
+        "frame_ms": 172.747999999999,
+        "projectiles": 5
+      },
+      {
+        "elapsed": 10.125162,
+        "frame_ms": 207.161999999997,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 10.302903,
+        "frame_ms": 180.017000000007,
+        "projectiles": 6
+      },
+      {
+        "elapsed": 10.467351,
+        "frame_ms": 164.412999999996,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 10.679016,
+        "frame_ms": 211.573999999999,
+        "projectiles": 5
+      },
+      {
+        "elapsed": 10.873651,
+        "frame_ms": 194.759000000005,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 11.034531,
+        "frame_ms": 160.843999999997,
+        "projectiles": 5
+      },
+      {
+        "elapsed": 11.231823,
+        "frame_ms": 197.274000000007,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 11.478154,
+        "frame_ms": 246.351000000004,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 11.759982,
+        "frame_ms": 281.726999999989,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 12.032409,
+        "frame_ms": 272.525000000002,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 12.309971,
+        "frame_ms": 275.296999999995,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 12.503968,
+        "frame_ms": 196.218999999999,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 12.710615,
+        "frame_ms": 206.722999999997,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 12.879559,
+        "frame_ms": 168.800000000005,
+        "projectiles": 2
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 53.9477171837516,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 48.5378345065781,
+      "frame_ms_max": 71.3799999999907,
+      "frame_ms_mean": 20.602484848484,
+      "frame_ms_p95": 50.4900000000106,
+      "frames": 99,
+      "one_percent_low": 14.0095264780069
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 105.612000000008,
+    "frame_ms_mean": 18.5364655300223,
+    "frame_ms_p95": 38.4450000000101,
+    "frames": 1349,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 26616.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 38,
+    "memory_mib": 322.821939468384,
+    "one_percent_low": 13.4089598669829,
+    "physics_ms_mean": 20.8116968124537,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "0",
+    "script_frame_ms_mean": 22.2657442550038,
+    "spikes": [
+      {
+        "elapsed": 4.94781,
+        "frame_ms": 70.1990000000023,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 5.030328,
+        "frame_ms": 82.4620000000067,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 5.088498,
+        "frame_ms": 57.7849999999955,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 5.58360399999999,
+        "frame_ms": 68.1939999999912,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 5.692719,
+        "frame_ms": 73.9230000000077,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 7.57544799999999,
+        "frame_ms": 55.8100000000081,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 7.667098,
+        "frame_ms": 55.6530000000066,
+        "projectiles": 7
+      },
+      {
+        "elapsed": 8.091312,
+        "frame_ms": 58.0649999999991,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 11.79485,
+        "frame_ms": 51.3830000000013,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 15.715957,
+        "frame_ms": 77.3989999999998,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 17.587438,
+        "frame_ms": 57.8789999999998,
+        "projectiles": 7
+      },
+      {
+        "elapsed": 18.084878,
+        "frame_ms": 50.3230000000059,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 20.00016,
+        "frame_ms": 51.3459999999952,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 20.112884,
+        "frame_ms": 58.0989999999986,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 20.684058,
+        "frame_ms": 53.5229999999984,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 20.739701,
+        "frame_ms": 55.5869999999885,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 20.877224,
+        "frame_ms": 90.4480000000092,
+        "projectiles": 8
+      },
+      {
+        "elapsed": 20.954728,
+        "frame_ms": 77.7020000000022,
+        "projectiles": 10
+      },
+      {
+        "elapsed": 21.013925,
+        "frame_ms": 59.1869999999943,
+        "projectiles": 8
+      },
+      {
+        "elapsed": 21.429951,
+        "frame_ms": 67.3519999999996,
+        "projectiles": 6
+      },
+      {
+        "elapsed": 21.502575,
+        "frame_ms": 71.3799999999907,
+        "projectiles": 9
+      },
+      {
+        "elapsed": 22.937048,
+        "frame_ms": 50.4900000000106,
+        "projectiles": 7
+      },
+      {
+        "elapsed": 22.99461,
+        "frame_ms": 57.5269999999932,
+        "projectiles": 7
+      },
+      {
+        "elapsed": 23.100204,
+        "frame_ms": 105.612000000008,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 23.163751,
+        "frame_ms": 63.5510000000039,
+        "projectiles": 9
+      },
+      {
+        "elapsed": 23.242512,
+        "frame_ms": 78.5699999999991,
+        "projectiles": 9
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 50.1913404992121,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 50.6185040610285,
+      "frame_ms_max": 68.0300000000074,
+      "frame_ms_mean": 19.7556213592236,
+      "frame_ms_p95": 42.7430000000015,
+      "frames": 103,
+      "one_percent_low": 15.8310510234757
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 159.284,
+    "frame_ms_mean": 19.9237555732487,
+    "frame_ms_p95": 47.0349999999939,
+    "frames": 1256,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 26886.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 42,
+    "memory_mib": 324.093099594116,
+    "one_percent_low": 9.25382165038348,
+    "physics_ms_mean": 23.7703407643313,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "1",
+    "script_frame_ms_mean": 22.5722874203822,
+    "spikes": [
+      {
+        "elapsed": 3.108171,
+        "frame_ms": 89.2660000000092,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 3.162486,
+        "frame_ms": 54.3870000000055,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 3.268984,
+        "frame_ms": 59.2180000000013,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 3.33836600000001,
+        "frame_ms": 69.6650000000005,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 3.47959800000001,
+        "frame_ms": 93.7430000000035,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 3.577308,
+        "frame_ms": 97.6780000000019,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 3.654736,
+        "frame_ms": 77.43099999999,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 3.72891700000001,
+        "frame_ms": 74.1199999999935,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 3.78052700000001,
+        "frame_ms": 51.6199999999998,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 4.126322,
+        "frame_ms": 76.1040000000008,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 4.215238,
+        "frame_ms": 53.9150000000035,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 4.34273400000001,
+        "frame_ms": 52.0049999999941,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 4.39915500000001,
+        "frame_ms": 56.3559999999939,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.451992,
+        "frame_ms": 52.8320000000093,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 4.555831,
+        "frame_ms": 59.3820000000136,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 4.607181,
+        "frame_ms": 51.3619999999975,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 4.725104,
+        "frame_ms": 68.634000000003,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 4.77945200000001,
+        "frame_ms": 54.3499999999995,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 4.896635,
+        "frame_ms": 71.1209999999909,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 5.016952,
+        "frame_ms": 121.696999999998,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 5.13186,
+        "frame_ms": 114.601000000008,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 5.24676700000001,
+        "frame_ms": 115.212999999997,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 5.35557,
+        "frame_ms": 108.778999999998,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 5.452696,
+        "frame_ms": 97.0839999999953,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 5.551773,
+        "frame_ms": 96.3469999999944,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 5.708263,
+        "frame_ms": 159.284,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 5.81400000000001,
+        "frame_ms": 105.669000000006,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 5.90451800000001,
+        "frame_ms": 90.557000000004,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 5.981009,
+        "frame_ms": 76.3549999999924,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 6.08068800000001,
+        "frame_ms": 99.8179999999991,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 6.175725,
+        "frame_ms": 95.0469999999939,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 6.272358,
+        "frame_ms": 96.5040000000101,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 6.32945100000001,
+        "frame_ms": 57.2190000000035,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 6.44162300000001,
+        "frame_ms": 63.8950000000023,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 11.8192,
+        "frame_ms": 97.1040000000016,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 14.627401,
+        "frame_ms": 57.0639999999969,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 16.222325,
+        "frame_ms": 53.8120000000077,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 16.574972,
+        "frame_ms": 55.5640000000039,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 17.583406,
+        "frame_ms": 50.4549999999995,
+        "projectiles": 9
+      },
+      {
+        "elapsed": 17.93871,
+        "frame_ms": 64.1880000000015,
+        "projectiles": 11
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 46.8583568943385,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 50.7180078762078,
+      "frame_ms_max": 92.6180000000016,
+      "frame_ms_mean": 19.7168627450982,
+      "frame_ms_p95": 40.8100000000076,
+      "frames": 102,
+      "one_percent_low": 11.729586121554
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 185.699,
+    "frame_ms_mean": 21.3409104859334,
+    "frame_ms_p95": 52.4110000000064,
+    "frames": 1173,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 27246.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 68,
+    "memory_mib": 325.998315811157,
+    "one_percent_low": 6.74112236316775,
+    "physics_ms_mean": 22.9653444160275,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "2",
+    "script_frame_ms_mean": 22.2612080136401,
+    "spikes": [
+      {
+        "elapsed": 3.08902499999999,
+        "frame_ms": 138.463000000002,
+        "projectiles": 45
+      },
+      {
+        "elapsed": 3.240661,
+        "frame_ms": 151.662999999999,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 3.426384,
+        "frame_ms": 185.699,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 3.60706,
+        "frame_ms": 180.714000000009,
+        "projectiles": 27
+      },
+      {
+        "elapsed": 3.737075,
+        "frame_ms": 130.026000000001,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 3.84638199999999,
+        "frame_ms": 109.093000000001,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 3.95774299999999,
+        "frame_ms": 111.548999999997,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 4.05108299999999,
+        "frame_ms": 93.3219999999864,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 4.14180500000001,
+        "frame_ms": 90.7319999999885,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.23279099999999,
+        "frame_ms": 90.9779999999927,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 4.340872,
+        "frame_ms": 108.106000000006,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 4.430401,
+        "frame_ms": 89.4300000000072,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 4.506676,
+        "frame_ms": 76.3170000000031,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 4.598327,
+        "frame_ms": 91.6749999999951,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 4.719385,
+        "frame_ms": 121.075999999988,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 4.842242,
+        "frame_ms": 122.868999999994,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 5.00428700000001,
+        "frame_ms": 162.022000000007,
+        "projectiles": 29
+      },
+      {
+        "elapsed": 5.15062500000001,
+        "frame_ms": 146.359000000004,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 5.295593,
+        "frame_ms": 144.938999999994,
+        "projectiles": 26
+      },
+      {
+        "elapsed": 5.41412,
+        "frame_ms": 118.538999999998,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 5.52385200000001,
+        "frame_ms": 109.743999999992,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 5.66533799999999,
+        "frame_ms": 141.462000000004,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 5.797478,
+        "frame_ms": 132.021000000009,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 5.922246,
+        "frame_ms": 124.872999999994,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 6.063486,
+        "frame_ms": 141.263999999993,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.189014,
+        "frame_ms": 125.487000000007,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 6.29956799999999,
+        "frame_ms": 110.569999999996,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.373987,
+        "frame_ms": 74.421000000001,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 6.437967,
+        "frame_ms": 63.9790000000033,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 6.507288,
+        "frame_ms": 69.2700000000031,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 6.589685,
+        "frame_ms": 82.451000000006,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 6.65418099999999,
+        "frame_ms": 64.3469999999979,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 6.714378,
+        "frame_ms": 60.370000000006,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.782455,
+        "frame_ms": 67.9499999999962,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 6.838926,
+        "frame_ms": 56.5229999999985,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.992216,
+        "frame_ms": 64.0199999999993,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 7.098314,
+        "frame_ms": 106.260000000006,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 7.179564,
+        "frame_ms": 81.2729999999959,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 7.27030600000001,
+        "frame_ms": 90.5740000000037,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 7.33692599999999,
+        "frame_ms": 66.773000000012,
+        "projectiles": 15
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 50.2097880258054,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 51.5944436290625,
+      "frame_ms_max": 61.1260000000016,
+      "frame_ms_mean": 19.3819320388351,
+      "frame_ms_p95": 45.3180000000089,
+      "frames": 103,
+      "one_percent_low": 16.6964419882116
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 133.139999999997,
+    "frame_ms_mean": 19.916435406699,
+    "frame_ms_p95": 45.7439999999991,
+    "frames": 1254,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 27030.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 41,
+    "memory_mib": 324.812105178833,
+    "one_percent_low": 9.03021719061626,
+    "physics_ms_mean": 22.3596953748004,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "3",
+    "script_frame_ms_mean": 23.6061220095693,
+    "spikes": [
+      {
+        "elapsed": 3.07300600000001,
+        "frame_ms": 89.0109999999993,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 3.14839500000001,
+        "frame_ms": 75.3399999999971,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 3.248136,
+        "frame_ms": 99.7669999999999,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 3.376689,
+        "frame_ms": 128.360999999998,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 3.503551,
+        "frame_ms": 127.101999999994,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 3.636753,
+        "frame_ms": 133.139999999997,
+        "projectiles": 27
+      },
+      {
+        "elapsed": 3.740228,
+        "frame_ms": 103.515999999999,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 3.84284600000001,
+        "frame_ms": 102.625999999987,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 3.92815900000001,
+        "frame_ms": 85.1969999999938,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 4.031685,
+        "frame_ms": 103.577000000001,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 4.13807,
+        "frame_ms": 106.427999999994,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.201643,
+        "frame_ms": 63.5930000000116,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 4.265989,
+        "frame_ms": 64.2840000000007,
+        "projectiles": 25
+      },
+      {
+        "elapsed": 4.33681,
+        "frame_ms": 70.841999999999,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.391673,
+        "frame_ms": 54.9020000000127,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 4.478746,
+        "frame_ms": 87.0019999999982,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 4.549115,
+        "frame_ms": 70.4329999999942,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 4.613654,
+        "frame_ms": 64.4379999999956,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.685283,
+        "frame_ms": 71.7040000000111,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.799159,
+        "frame_ms": 65.6419999999969,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 4.875015,
+        "frame_ms": 75.924999999998,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 4.954835,
+        "frame_ms": 79.8719999999946,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 5.02465100000001,
+        "frame_ms": 69.8450000000008,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 5.124396,
+        "frame_ms": 53.97099999999,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 5.262142,
+        "frame_ms": 66.1640000000006,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 5.319743,
+        "frame_ms": 57.4919999999963,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 5.4289,
+        "frame_ms": 63.9870000000116,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 5.547449,
+        "frame_ms": 71.1409999999972,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 5.64173700000001,
+        "frame_ms": 94.032999999996,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 5.75687500000001,
+        "frame_ms": 115.393999999995,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 5.870448,
+        "frame_ms": 113.568000000001,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 5.977187,
+        "frame_ms": 106.73700000001,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 6.05276600000001,
+        "frame_ms": 75.5549999999943,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 6.15989,
+        "frame_ms": 105.362,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 6.235373,
+        "frame_ms": 74.6210000000076,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.298304,
+        "frame_ms": 63.8099999999895,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 6.35455900000001,
+        "frame_ms": 56.1110000000014,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 8.06766400000001,
+        "frame_ms": 68.8009999999935,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 9.54051800000001,
+        "frame_ms": 62.2079999999983,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 11.822005,
+        "frame_ms": 76.7349999999993,
+        "projectiles": 2
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 52.5756301439154,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 51.3657051421759,
+      "frame_ms_max": 80.1589999999948,
+      "frame_ms_mean": 19.4682424242417,
+      "frame_ms_p95": 46.5569999999929,
+      "frames": 99,
+      "one_percent_low": 12.4752055290119
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 136.169999999993,
+    "frame_ms_mean": 19.020219011407,
+    "frame_ms_p95": 39.0830000000051,
+    "frames": 1315,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 26816.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 41,
+    "memory_mib": 323.669122695923,
+    "one_percent_low": 9.82553361420324,
+    "physics_ms_mean": 23.39632851711,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "4",
+    "script_frame_ms_mean": 22.1797771863116,
+    "spikes": [
+      {
+        "elapsed": 3.083545,
+        "frame_ms": 127.284000000003,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 3.19455000000001,
+        "frame_ms": 111.007999999998,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 3.296001,
+        "frame_ms": 101.449000000002,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 3.429258,
+        "frame_ms": 133.252999999996,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 3.56542899999999,
+        "frame_ms": 136.169999999993,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 3.66529,
+        "frame_ms": 99.8250000000098,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 3.756861,
+        "frame_ms": 91.5289999999942,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 3.833308,
+        "frame_ms": 76.5210000000138,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 3.956395,
+        "frame_ms": 73.3749999999986,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 5.489926,
+        "frame_ms": 55.6150000000031,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 5.661736,
+        "frame_ms": 58.1320000000005,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 5.750654,
+        "frame_ms": 52.8790000000043,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 11.274702,
+        "frame_ms": 64.8520000000019,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 11.810625,
+        "frame_ms": 54.1759999999982,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 12.048236,
+        "frame_ms": 70.5140000000029,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 12.106238,
+        "frame_ms": 58.0759999999998,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 12.170057,
+        "frame_ms": 63.4580000000113,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 14.627381,
+        "frame_ms": 70.2160000000021,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 14.734299,
+        "frame_ms": 57.2690000000051,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 14.815008,
+        "frame_ms": 50.500999999997,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 20.03845,
+        "frame_ms": 65.1620000000008,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 20.682341,
+        "frame_ms": 113.357999999991,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 20.772884,
+        "frame_ms": 90.5099999999948,
+        "projectiles": 8
+      },
+      {
+        "elapsed": 20.876893,
+        "frame_ms": 103.999999999999,
+        "projectiles": 10
+      },
+      {
+        "elapsed": 20.934579,
+        "frame_ms": 57.7179999999942,
+        "projectiles": 10
+      },
+      {
+        "elapsed": 20.98771,
+        "frame_ms": 53.1179999999978,
+        "projectiles": 8
+      },
+      {
+        "elapsed": 21.418452,
+        "frame_ms": 69.9680000000029,
+        "projectiles": 6
+      },
+      {
+        "elapsed": 21.471849,
+        "frame_ms": 53.5190000000085,
+        "projectiles": 9
+      },
+      {
+        "elapsed": 22.915429,
+        "frame_ms": 80.1589999999948,
+        "projectiles": 7
+      },
+      {
+        "elapsed": 23.001999,
+        "frame_ms": 86.418000000009,
+        "projectiles": 8
+      },
+      {
+        "elapsed": 23.066086,
+        "frame_ms": 64.4010000000037,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 23.124839,
+        "frame_ms": 58.7519999999984,
+        "projectiles": 9
+      },
+      {
+        "elapsed": 23.184453,
+        "frame_ms": 59.6120000000013,
+        "projectiles": 9
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 52.734145503143,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 45.7122858895497,
+      "frame_ms_max": 89.4370000000038,
+      "frame_ms_mean": 21.8759569892481,
+      "frame_ms_p95": 58.486000000002,
+      "frames": 93,
+      "one_percent_low": 11.1810548207113
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 126.622999999995,
+    "frame_ms_mean": 18.9630454890067,
+    "frame_ms_p95": 39.7999999999996,
+    "frames": 1319,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 26744.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 42,
+    "memory_mib": 323.231378555298,
+    "one_percent_low": 11.095181600385,
+    "physics_ms_mean": 21.9074336618648,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "5",
+    "script_frame_ms_mean": 23.2457854435177,
+    "spikes": [
+      {
+        "elapsed": 3.069265,
+        "frame_ms": 90.5439999999942,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 3.146355,
+        "frame_ms": 78.3050000000003,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 3.217899,
+        "frame_ms": 67.346999999998,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 3.34012299999999,
+        "frame_ms": 126.622999999995,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 3.445634,
+        "frame_ms": 105.454999999992,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 3.552593,
+        "frame_ms": 98.3279999999951,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 3.65128899999999,
+        "frame_ms": 107.398000000003,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 3.732342,
+        "frame_ms": 81.0540000000088,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 3.78827199999999,
+        "frame_ms": 55.8949999999925,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 4.891971,
+        "frame_ms": 55.9119999999922,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 5.26799199999999,
+        "frame_ms": 50.9569999999968,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 6.59689999999999,
+        "frame_ms": 72.8679999999997,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 7.078276,
+        "frame_ms": 60.0009999999997,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 7.795109,
+        "frame_ms": 50.1930000000073,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 8.111401,
+        "frame_ms": 82.6229999999981,
+        "projectiles": 6
+      },
+      {
+        "elapsed": 12.087274,
+        "frame_ms": 57.502999999997,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 18.549979,
+        "frame_ms": 50.1649999999927,
+        "projectiles": 8
+      },
+      {
+        "elapsed": 20.693878,
+        "frame_ms": 73.5640000000046,
+        "projectiles": 10
+      },
+      {
+        "elapsed": 20.846501,
+        "frame_ms": 78.8529999999952,
+        "projectiles": 8
+      },
+      {
+        "elapsed": 20.952268,
+        "frame_ms": 105.530999999999,
+        "projectiles": 10
+      },
+      {
+        "elapsed": 21.041485,
+        "frame_ms": 89.4370000000038,
+        "projectiles": 8
+      },
+      {
+        "elapsed": 21.09997,
+        "frame_ms": 58.486000000002,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 21.157717,
+        "frame_ms": 57.7109999999976,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 21.228956,
+        "frame_ms": 71.2259999999958,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 21.438305,
+        "frame_ms": 61.5080000000034,
+        "projectiles": 6
+      },
+      {
+        "elapsed": 22.041832,
+        "frame_ms": 69.6459999999917,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 22.09513,
+        "frame_ms": 53.4140000000036,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 23.852821,
+        "frame_ms": 69.5709999999963,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 24.55924,
+        "frame_ms": 56.9989999999905,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 27.553517,
+        "frame_ms": 51.5840000000054,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 47.7492559107582,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 46.4197989331329,
+      "frame_ms_max": 99.7289999999964,
+      "frame_ms_mean": 21.5425319148945,
+      "frame_ms_p95": 55.7440000000042,
+      "frames": 94,
+      "one_percent_low": 10.0271736405663
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 116.720999999998,
+    "frame_ms_mean": 20.9427347280336,
+    "frame_ms_p95": 55.4249999999996,
+    "frames": 1195,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 27106.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 41,
+    "memory_mib": 325.279066085815,
+    "one_percent_low": 9.93170298911176,
+    "physics_ms_mean": 23.4726694560669,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "6",
+    "script_frame_ms_mean": 23.2329673640167,
+    "spikes": [
+      {
+        "elapsed": 3.043221,
+        "frame_ms": 87.1940000000109,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 3.12345500000001,
+        "frame_ms": 80.2350000000018,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 3.185715,
+        "frame_ms": 62.2730000000047,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 3.241119,
+        "frame_ms": 55.3759999999954,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 3.332035,
+        "frame_ms": 90.9280000000052,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 3.40132800000001,
+        "frame_ms": 69.2780000000113,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 3.47626100000001,
+        "frame_ms": 74.5739999999984,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 3.541354,
+        "frame_ms": 65.4030000000034,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 3.61217600000001,
+        "frame_ms": 70.9010000000063,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 3.693895,
+        "frame_ms": 81.6460000000063,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 3.74506600000001,
+        "frame_ms": 51.2360000000029,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 3.804123,
+        "frame_ms": 58.9950000000101,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 4.000321,
+        "frame_ms": 61.0550000000103,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 4.07157100000001,
+        "frame_ms": 71.241999999998,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 4.142476,
+        "frame_ms": 66.3240000000087,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 4.21679900000001,
+        "frame_ms": 78.7419999999912,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.272065,
+        "frame_ms": 55.4249999999996,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 4.35630900000001,
+        "frame_ms": 84.2520000000064,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 4.49954200000001,
+        "frame_ms": 51.1180000000024,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 4.556433,
+        "frame_ms": 56.9729999999993,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 4.61162,
+        "frame_ms": 55.1519999999925,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 4.68455800000001,
+        "frame_ms": 72.9479999999967,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 4.777209,
+        "frame_ms": 51.6709999999989,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 4.843833,
+        "frame_ms": 66.6590000000014,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 4.91324300000001,
+        "frame_ms": 69.4719999999904,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 4.99132900000001,
+        "frame_ms": 77.9190000000085,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 5.072012,
+        "frame_ms": 80.8080000000047,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 5.14750600000001,
+        "frame_ms": 75.3780000000006,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 5.202653,
+        "frame_ms": 55.3030000000092,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 5.30499300000001,
+        "frame_ms": 102.350999999999,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 5.383233,
+        "frame_ms": 78.243999999998,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 5.438743,
+        "frame_ms": 55.5039999999991,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 5.505144,
+        "frame_ms": 66.3879999999892,
+        "projectiles": 10
+      },
+      {
+        "elapsed": 5.61536000000001,
+        "frame_ms": 109.719999999996,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 5.72753400000001,
+        "frame_ms": 112.667000000002,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 5.832521,
+        "frame_ms": 104.981999999993,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 5.924396,
+        "frame_ms": 91.8780000000083,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 6.015585,
+        "frame_ms": 91.1109999999979,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 6.132276,
+        "frame_ms": 116.720999999998,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 6.215913,
+        "frame_ms": 83.636999999996,
+        "projectiles": 16
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 45.9621126039815,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 44.6267657609712,
+      "frame_ms_max": 76.730000000012,
+      "frame_ms_mean": 22.4080769230774,
+      "frame_ms_p95": 58.5430000000002,
+      "frames": 91,
+      "one_percent_low": 13.0327121073875
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 198.005999999992,
+    "frame_ms_mean": 21.7570503909643,
+    "frame_ms_p95": 55.3629999999998,
+    "frames": 1151,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 27316.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 94,
+    "memory_mib": 326.293836593628,
+    "one_percent_low": 6.43075788625274,
+    "physics_ms_mean": 25.0474031277152,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "7",
+    "script_frame_ms_mean": 23.902631624674,
+    "spikes": [
+      {
+        "elapsed": 3.040255,
+        "frame_ms": 91.5809999999908,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.13195399999999,
+        "frame_ms": 91.6509999999988,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.213731,
+        "frame_ms": 81.7980000000063,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.289292,
+        "frame_ms": 75.6080000000026,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.365118,
+        "frame_ms": 75.7110000000125,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.469283,
+        "frame_ms": 104.20400000001,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.552729,
+        "frame_ms": 83.4940000000017,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.64887399999999,
+        "frame_ms": 96.0469999999987,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 3.70519399999999,
+        "frame_ms": 56.3060000000064,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 3.91882,
+        "frame_ms": 80.2950000000067,
+        "projectiles": 42
+      },
+      {
+        "elapsed": 4.057439,
+        "frame_ms": 138.609000000002,
+        "projectiles": 94
+      },
+      {
+        "elapsed": 4.19562499999999,
+        "frame_ms": 138.18400000001,
+        "projectiles": 80
+      },
+      {
+        "elapsed": 4.329459,
+        "frame_ms": 133.792999999997,
+        "projectiles": 78
+      },
+      {
+        "elapsed": 4.46914699999999,
+        "frame_ms": 139.702,
+        "projectiles": 31
+      },
+      {
+        "elapsed": 4.626796,
+        "frame_ms": 157.553000000007,
+        "projectiles": 31
+      },
+      {
+        "elapsed": 4.746769,
+        "frame_ms": 119.919999999993,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 4.903862,
+        "frame_ms": 157.253999999995,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 5.081226,
+        "frame_ms": 177.375000000012,
+        "projectiles": 76
+      },
+      {
+        "elapsed": 5.239529,
+        "frame_ms": 157.990999999996,
+        "projectiles": 66
+      },
+      {
+        "elapsed": 5.393073,
+        "frame_ms": 153.841,
+        "projectiles": 73
+      },
+      {
+        "elapsed": 5.526663,
+        "frame_ms": 133.493999999999,
+        "projectiles": 44
+      },
+      {
+        "elapsed": 5.724569,
+        "frame_ms": 198.005999999992,
+        "projectiles": 53
+      },
+      {
+        "elapsed": 5.851243,
+        "frame_ms": 126.664999999988,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 5.96570699999999,
+        "frame_ms": 114.336000000009,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 6.090401,
+        "frame_ms": 124.784000000005,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 6.270583,
+        "frame_ms": 180.229999999995,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 6.36774199999999,
+        "frame_ms": 97.1389999999985,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.485542,
+        "frame_ms": 117.745999999997,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 6.594194,
+        "frame_ms": 108.661999999995,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 6.68683799999999,
+        "frame_ms": 92.5090000000068,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 6.804868,
+        "frame_ms": 118.214000000009,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 6.89354,
+        "frame_ms": 88.5979999999904,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.990713,
+        "frame_ms": 97.2349999999977,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 7.113094,
+        "frame_ms": 122.203999999996,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 7.211534,
+        "frame_ms": 98.3429999999998,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 7.286644,
+        "frame_ms": 75.3409999999946,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 7.351322,
+        "frame_ms": 64.6009999999961,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 7.416753,
+        "frame_ms": 65.4770000000013,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 8.12408499999999,
+        "frame_ms": 58.770999999993,
+        "projectiles": 5
+      },
+      {
+        "elapsed": 8.184074,
+        "frame_ms": 60.1490000000098,
+        "projectiles": 7
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 27.4361468675339,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 26.4728256444761,
+      "frame_ms_max": 55.5899999999951,
+      "frame_ms_mean": 37.7745849056602,
+      "frame_ms_p95": 50.8569999999935,
+      "frames": 53,
+      "one_percent_low": 17.9888469149143
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 116.543000000007,
+    "frame_ms_mean": 36.4482667638484,
+    "frame_ms_p95": 48.8289999999978,
+    "frames": 686,
+    "gpu": "NVIDIA GeForce GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 2629.0,
+    "max_nodes": 27290.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 41,
+    "memory_mib": 370.814037322998,
+    "one_percent_low": 14.0689377951964,
+    "physics_ms_mean": 6.99518658892131,
+    "real_network_clients": true,
+    "resolution": "(1920, 1080)",
+    "role": "8",
+    "script_frame_ms_mean": 37.937912536443,
+    "spikes": [
+      {
+        "elapsed": 3.080237,
+        "frame_ms": 50.1450000000006,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 3.319959,
+        "frame_ms": 59.7840000000076,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 3.64254799999999,
+        "frame_ms": 50.5390000000006,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.306608,
+        "frame_ms": 55.8069999999873,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 4.61873,
+        "frame_ms": 53.8209999999992,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 4.66964899999999,
+        "frame_ms": 50.9190000000075,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 4.72048599999999,
+        "frame_ms": 50.8319999999998,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.86225399999999,
+        "frame_ms": 50.9289999999964,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 5.00549799999999,
+        "frame_ms": 51.5450000000044,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 5.585004,
+        "frame_ms": 53.6809999999974,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 6.16586199999999,
+        "frame_ms": 53.4130000000062,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 6.48350099999999,
+        "frame_ms": 51.3729999999981,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.71209399999999,
+        "frame_ms": 50.257000000002,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 7.02524099999999,
+        "frame_ms": 50.3909999999905,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 8.18178999999999,
+        "frame_ms": 116.543000000007,
+        "projectiles": 7
+      },
+      {
+        "elapsed": 8.26911,
+        "frame_ms": 102.32400000001,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 14.813633,
+        "frame_ms": 51.3479999999902,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 18.311344,
+        "frame_ms": 50.6749999999982,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 20.554842,
+        "frame_ms": 50.2520000000004,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 21.425407,
+        "frame_ms": 50.8569999999935,
+        "projectiles": 6
+      },
+      {
+        "elapsed": 21.478152,
+        "frame_ms": 52.7610000000038,
+        "projectiles": 9
+      },
+      {
+        "elapsed": 21.533765,
+        "frame_ms": 55.5899999999951,
+        "projectiles": 5
+      }
+    ],
+    "thermal_window": {
+      "average_fps": 28.6758469746706,
+      "frame_ms_max": 116.543000000007,
+      "frame_ms_mean": 34.8725532286213,
+      "frame_ms_p95": 45.4660000000047,
+      "frames": 573,
+      "one_percent_low": 13.9722371647536
+    }
+  },
+  {
+    "average_fps": 50.3885315702147,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 51.8352158488157,
+      "frame_ms_max": 79.1749999999922,
+      "frame_ms_mean": 19.2919038461542,
+      "frame_ms_p95": 40.4449999999912,
+      "frames": 104,
+      "one_percent_low": 14.2407541903426
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 134.955000000005,
+    "frame_ms_mean": 19.8457857142857,
+    "frame_ms_p95": 43.9140000000009,
+    "frames": 1260,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 26958.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 41,
+    "memory_mib": 324.445520401001,
+    "one_percent_low": 9.91468792375753,
+    "physics_ms_mean": 22.8080515873017,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "9",
+    "script_frame_ms_mean": 22.8492761904762,
+    "spikes": [
+      {
+        "elapsed": 3.090914,
+        "frame_ms": 105.945999999989,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 3.18594299999999,
+        "frame_ms": 95.1249999999959,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 3.28705099999999,
+        "frame_ms": 101.014000000006,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 3.422284,
+        "frame_ms": 134.955000000005,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 3.528688,
+        "frame_ms": 106.521999999998,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 3.62222199999999,
+        "frame_ms": 93.7689999999947,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 3.74273699999999,
+        "frame_ms": 120.229000000009,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 3.835939,
+        "frame_ms": 93.4529999999967,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 3.91747699999999,
+        "frame_ms": 81.4969999999988,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 3.998677,
+        "frame_ms": 80.9930000000065,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 4.083686,
+        "frame_ms": 85.2700000000084,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 4.157702,
+        "frame_ms": 74.0150000000028,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 4.212682,
+        "frame_ms": 54.9389999999903,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 4.52078899999999,
+        "frame_ms": 59.4779999999986,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 4.879243,
+        "frame_ms": 63.1960000000049,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 4.96853399999999,
+        "frame_ms": 89.2960000000045,
+        "projectiles": 24
+      },
+      {
+        "elapsed": 5.050946,
+        "frame_ms": 82.373000000004,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 5.131968,
+        "frame_ms": 80.9459999999973,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 5.209457,
+        "frame_ms": 77.6039999999938,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 5.283477,
+        "frame_ms": 74.0249999999918,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 5.336675,
+        "frame_ms": 53.0020000000064,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 5.39002499999999,
+        "frame_ms": 53.5310000000067,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 5.451277,
+        "frame_ms": 61.2579999999952,
+        "projectiles": 11
+      },
+      {
+        "elapsed": 5.63489799999999,
+        "frame_ms": 65.872000000013,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 6.04076599999999,
+        "frame_ms": 52.6260000000036,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 6.74237099999999,
+        "frame_ms": 57.462000000001,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 7.09818799999999,
+        "frame_ms": 57.2519999999912,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 8.104411,
+        "frame_ms": 62.531000000007,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 11.467303,
+        "frame_ms": 61.5839999999963,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 11.770766,
+        "frame_ms": 56.4560000000114,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 12.126713,
+        "frame_ms": 99.9439999999936,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 14.715741,
+        "frame_ms": 65.6000000000034,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 14.845622,
+        "frame_ms": 51.9630000000006,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 15.711322,
+        "frame_ms": 73.7040000000064,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 18.433382,
+        "frame_ms": 53.3680000000061,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 20.695662,
+        "frame_ms": 89.0559999999994,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 20.75464,
+        "frame_ms": 58.9800000000054,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 20.839473,
+        "frame_ms": 75.846999999996,
+        "projectiles": 8
+      },
+      {
+        "elapsed": 20.927141,
+        "frame_ms": 96.6070000000059,
+        "projectiles": 10
+      },
+      {
+        "elapsed": 21.097256,
+        "frame_ms": 50.8280000000099,
+        "projectiles": 7
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 48.7361276733648,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 50.7914668324193,
+      "frame_ms_max": 61.2129999999951,
+      "frame_ms_mean": 19.6883465346529,
+      "frame_ms_p95": 40.734999999998,
+      "frames": 101,
+      "one_percent_low": 16.7616493462974
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 200.135000000003,
+    "frame_ms_mean": 20.5186593137255,
+    "frame_ms_p95": 47.8859999999912,
+    "frames": 1224,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 27176.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 68,
+    "memory_mib": 325.617219924927,
+    "one_percent_low": 8.30238565858681,
+    "physics_ms_mean": 23.0270057189543,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "10",
+    "script_frame_ms_mean": 23.6641176470587,
+    "spikes": [
+      {
+        "elapsed": 3.01524199999999,
+        "frame_ms": 138.013000000001,
+        "projectiles": 45
+      },
+      {
+        "elapsed": 3.18059,
+        "frame_ms": 165.308999999993,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 3.305667,
+        "frame_ms": 125.140999999999,
+        "projectiles": 25
+      },
+      {
+        "elapsed": 3.50585699999999,
+        "frame_ms": 200.135000000003,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 3.65743599999999,
+        "frame_ms": 151.686000000012,
+        "projectiles": 28
+      },
+      {
+        "elapsed": 3.761602,
+        "frame_ms": 104.165999999992,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 3.84785099999999,
+        "frame_ms": 86.1819999999938,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 3.927183,
+        "frame_ms": 79.3990000000093,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 4.00934099999999,
+        "frame_ms": 82.1619999999967,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 4.12260099999999,
+        "frame_ms": 113.226999999995,
+        "projectiles": 21
+      },
+      {
+        "elapsed": 4.21528499999999,
+        "frame_ms": 92.6890000000071,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.311358,
+        "frame_ms": 96.0490000000078,
+        "projectiles": 25
+      },
+      {
+        "elapsed": 4.391554,
+        "frame_ms": 80.2259999999961,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 4.465295,
+        "frame_ms": 73.7370000000084,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 4.54257799999999,
+        "frame_ms": 77.2639999999996,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 4.61017699999999,
+        "frame_ms": 67.6040000000029,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.67837399999999,
+        "frame_ms": 68.0349999999947,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.73502499999999,
+        "frame_ms": 56.7339999999916,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 4.78521099999999,
+        "frame_ms": 50.1749999999959,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 4.835572,
+        "frame_ms": 50.4580000000061,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 4.89653,
+        "frame_ms": 60.961000000006,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 4.99503799999999,
+        "frame_ms": 50.4609999999985,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 5.08073499999999,
+        "frame_ms": 85.8329999999938,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 5.14931199999999,
+        "frame_ms": 68.5869999999937,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 5.29108199999999,
+        "frame_ms": 50.3470000000021,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 5.34478999999999,
+        "frame_ms": 53.7029999999987,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 5.65592699999999,
+        "frame_ms": 88.0539999999996,
+        "projectiles": 20
+      },
+      {
+        "elapsed": 5.74861899999999,
+        "frame_ms": 92.7069999999901,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 5.830913,
+        "frame_ms": 82.3139999999967,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 5.914429,
+        "frame_ms": 83.4650000000039,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 5.97759799999999,
+        "frame_ms": 63.209999999998,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 6.03881699999999,
+        "frame_ms": 61.0900000000072,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 6.14207999999999,
+        "frame_ms": 59.5489999999899,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 6.201881,
+        "frame_ms": 59.781000000001,
+        "projectiles": 19
+      },
+      {
+        "elapsed": 6.266712,
+        "frame_ms": 64.8220000000066,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.616608,
+        "frame_ms": 71.9509999999985,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 7.82734699999999,
+        "frame_ms": 69.6790000000078,
+        "projectiles": 5
+      },
+      {
+        "elapsed": 7.88343499999999,
+        "frame_ms": 56.0480000000041,
+        "projectiles": 6
+      },
+      {
+        "elapsed": 8.106286,
+        "frame_ms": 70.4389999999933,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 11.853321,
+        "frame_ms": 57.0419999999956,
+        "projectiles": 2
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 49.0037677786928,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 57.9791564932422,
+      "frame_ms_max": 63.8299999999958,
+      "frame_ms_mean": 17.2475775862064,
+      "frame_ms_p95": 30.4000000000002,
+      "frames": 116,
+      "one_percent_low": 17.4770177216963
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 248.041999999998,
+    "frame_ms_mean": 20.4065941320293,
+    "frame_ms_p95": 42.901999999998,
+    "frames": 1227,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "after180-lod-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 27316.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 88,
+    "memory_mib": 326.778215408325,
+    "one_percent_low": 6.38756292363663,
+    "physics_ms_mean": 18.307467807661,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "11",
+    "script_frame_ms_mean": 21.2055639771802,
+    "spikes": [
+      {
+        "elapsed": 3.004565,
+        "frame_ms": 73.5600000000005,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.055117,
+        "frame_ms": 50.5270000000024,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.153622,
+        "frame_ms": 65.528999999998,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.404217,
+        "frame_ms": 64.2940000000038,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.49157,
+        "frame_ms": 87.403000000009,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 3.590762,
+        "frame_ms": 99.1560000000078,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 3.67308199999999,
+        "frame_ms": 82.2369999999921,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 3.73621399999999,
+        "frame_ms": 62.9650000000055,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 3.80978999999999,
+        "frame_ms": 73.7529999999964,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 3.925749,
+        "frame_ms": 115.85199999999,
+        "projectiles": 61
+      },
+      {
+        "elapsed": 4.09865499999999,
+        "frame_ms": 173.102,
+        "projectiles": 88
+      },
+      {
+        "elapsed": 4.262818,
+        "frame_ms": 164.125999999996,
+        "projectiles": 81
+      },
+      {
+        "elapsed": 4.40709699999999,
+        "frame_ms": 144.130000000004,
+        "projectiles": 79
+      },
+      {
+        "elapsed": 4.572349,
+        "frame_ms": 165.454000000011,
+        "projectiles": 31
+      },
+      {
+        "elapsed": 4.68582499999999,
+        "frame_ms": 113.288999999995,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 4.80980599999999,
+        "frame_ms": 124.114999999989,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 5.057906,
+        "frame_ms": 248.041999999998,
+        "projectiles": 74
+      },
+      {
+        "elapsed": 5.211359,
+        "frame_ms": 153.393000000008,
+        "projectiles": 65
+      },
+      {
+        "elapsed": 5.3625,
+        "frame_ms": 151.298999999995,
+        "projectiles": 72
+      },
+      {
+        "elapsed": 5.496467,
+        "frame_ms": 133.930000000007,
+        "projectiles": 44
+      },
+      {
+        "elapsed": 5.683953,
+        "frame_ms": 187.46800000001,
+        "projectiles": 53
+      },
+      {
+        "elapsed": 5.81594299999999,
+        "frame_ms": 132.033000000007,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 5.949541,
+        "frame_ms": 133.589999999998,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 6.074218,
+        "frame_ms": 124.522999999996,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.192831,
+        "frame_ms": 118.547000000007,
+        "projectiles": 22
+      },
+      {
+        "elapsed": 6.278116,
+        "frame_ms": 85.5060000000094,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 6.34503599999999,
+        "frame_ms": 66.7449999999974,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 6.396867,
+        "frame_ms": 52.0040000000108,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 6.550546,
+        "frame_ms": 54.0549999999911,
+        "projectiles": 13
+      },
+      {
+        "elapsed": 6.795953,
+        "frame_ms": 52.1359999999902,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 6.861271,
+        "frame_ms": 65.3659999999974,
+        "projectiles": 14
+      },
+      {
+        "elapsed": 7.08642399999999,
+        "frame_ms": 82.7140000000099,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 8.100078,
+        "frame_ms": 70.8599999999961,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 8.203682,
+        "frame_ms": 55.7639999999964,
+        "projectiles": 5
+      },
+      {
+        "elapsed": 11.83267,
+        "frame_ms": 78.0150000000077,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 12.121564,
+        "frame_ms": 61.6349999999954,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 14.626383,
+        "frame_ms": 54.2000000000087,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 14.861985,
+        "frame_ms": 70.1329999999984,
+        "projectiles": 3
+      },
+      {
+        "elapsed": 18.424526,
+        "frame_ms": 51.5670000000057,
+        "projectiles": 15
+      },
+      {
+        "elapsed": 20.723688,
+        "frame_ms": 106.234000000001,
+        "projectiles": 15
+      }
+    ],
+    "thermal_window": {}
+  }
+]

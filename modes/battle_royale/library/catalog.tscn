@@ -1,0 +1,27 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="PackedScene" path="res://modes/battle_royale/library/adobe_house.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://modes/battle_royale/library/courtyard_wall.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://modes/battle_royale/library/stone_ruin.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://modes/battle_royale/library/market_stall.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://modes/battle_royale/library/rock_outcrop.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://modes/battle_royale/library/dry_shrub.tscn" id="6"]
+
+[node name="DesertoAfegaoBiblioteca" type="Node3D"]
+
+[node name="CasaAdobe" parent="." instance=ExtResource("1")]
+
+[node name="MuroPatio" parent="." instance=ExtResource("2")]
+position = Vector3(18, 0, 0)
+
+[node name="Ruina" parent="." instance=ExtResource("3")]
+position = Vector3(30, 0, 0)
+
+[node name="Mercado" parent="." instance=ExtResource("4")]
+position = Vector3(44, 0, 0)
+
+[node name="Rocha" parent="." instance=ExtResource("5")]
+position = Vector3(54, 0, 0)
+
+[node name="Arbusto" parent="." instance=ExtResource("6")]
+position = Vector3(62, 0, 0)

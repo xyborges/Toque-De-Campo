@@ -1,0 +1,58 @@
+[gd_scene format=4]
+
+[ext_resource type="Material" path="res://modes/battle_royale/library/materials/adobe_v2.tres" id="1_728ex"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_0dtbq"]
+_surfaces = [{
+"aabb": AABB(-7.5, -0.22, -2.8, 15, 1.5559212, 5.6),
+"attribute_data": PackedByteArray("4NGt/5qZmb9s5/u+4NGt/zEILL9IJBU+4NGt/zEILL9s5/u+4NGt/5qZmb/xv5W94NGt/wAAAADo0iM+4NGt/wAAAABs5/u+4NGt/1CNFz/AEcs94NGt/1CNFz9s5/u+4NGt/5qZmT+GVSS94NGt/5qZmT9s5/u+4NGt/zEILL/8E74+4NGt/5qZmb+4Ixw+4NGt/wAAAABMa8U+4NGt/1CNFz9IRqY+4NGt/5qZmT9O7j0+4NGt/zEILL8W2c4+4NGt/5qZmb8W2c4+4NGt/wAAAAAW2c4+4NGt/1CNFz8W2c4+4NGt/5qZmT8W2c4+"),
+"format": 34359742495,
+"index_count": 84,
+"index_data": PackedByteArray("AAABAAIAAAADAAEAAgAEAAUAAgABAAQABQAGAAcABQAEAAYABwAIAAkABwAGAAgAAwAKAAEAAwALAAoAAQAMAAQAAQAKAAwABAANAAYABAAMAA0ABgAOAAgABgANAA4ACwAPAAoACwAQAA8ACgARAAwACgAPABEADAASAA0ADAARABIADQATAA4ADQASABMAAAADABAAAwALABAACQATAAgACAATAA4A"),
+"lods": [3.9745483, PackedByteArray("AAADAAIAAgAOAAUAAgADAA4ABQAOAAcABwAIAAkABwAOAAgACwAPAAMACwAQAA8AAwARAA4AAwAPABEADgARABIADgASABMAAAADABAAAwALABAACQATAAgACAATAA4A")],
+"material": ExtResource("1_728ex"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("AADwwK5HYb4zMzPAZmaGwFPSoT8fhSu/ZmaGwK5HYb4zMzPAAADwwFZ9Lj4fhSu/AAAAAHf/qj8fhSu/AAAAAK5HYb4zMzPAzcxsQDIRhD8fhSu/zcxsQK5HYb4zMzPAAADwQCS5qz4fhSu/AADwQK5HYb4zMzPAZmaGwFPSoT+kcD0/AADwwFZ9Lj6kcD0/AAAAAHf/qj+kcD0/zcxsQDIRhD+kcD0/AADwQCS5qz6kcD0/ZmaGwK5HYb4zMzNAAADwwK5HYb4zMzNAAAAAAK5HYb4zMzNAzcxsQK5HYb4zMzNAAADwQK5HYb4zMzNATGSGOcwUdtd1i90h9g8IrmyATDU8HfWcml7KJl4ondCLfNIhQQbvrf59CTWhGvCdAnVbJagDq88fezgs+wzepsyoQTtAMq2pp7k0SN5M0anwqsgO/jORtE5ZAA5CIprD1F/VAUYkTbzzXwUKahyDwmCZXBBXHIy37bD3Bz8+MbOwJ8lQBGmT0NK2aQCISHCwEUwfAipBorOOywc1eWkuqA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_a4ykd"]
+points = PackedVector3Array(-7.5, -0.22, -2.8, -4.2, -0.22, -2.8, 0, -0.22, -2.8, 3.7, -0.22, -2.8, 7.5, -0.22, -2.8, -7.5, 0.1704, -0.67, -4.2, 1.2642311, -0.67, 0, 1.3359212, -0.67, 3.7, 1.0317748, -0.67, 7.5, 0.3353969, -0.67, -7.5, 0.1704, 0.74, -4.2, 1.2642311, 0.74, 0, 1.3359212, 0.74, 3.7, 1.0317748, 0.74, 7.5, 0.3353969, 0.74, -7.5, -0.22, 2.8, -4.2, -0.22, 2.8, 0, -0.22, 2.8, 3.7, -0.22, 2.8, 7.5, -0.22, 2.8)
+
+[node name="erosion_berm_v12" type="StaticBody3D" unique_id=165713302]
+collision_mask = 0
+metadata/library_id = "erosion_berm_v12"
+metadata/br_library = true
+metadata/surface = "dirt"
+metadata/resistance = "earthwork"
+metadata/height_m = 1.42
+metadata/footprint = Vector2(15, 5.6)
+metadata/collision_persistent = true
+metadata/lod_profile = "physical_cover"
+metadata/lod_near_end = 2300.0
+metadata/lod_far_end = 2300.0
+metadata/individual_shadows = false
+
+[node name="Geometry" type="MeshInstance3D" parent="." unique_id=1229779652]
+cast_shadow = 0
+visibility_range_end = 2300.0
+mesh = SubResource("ArrayMesh_0dtbq")
+
+[node name="@CollisionShape3D@2" type="CollisionShape3D" parent="." unique_id=1424494663]
+shape = SubResource("ConvexPolygonShape3D_a4ykd")
+
+[node name="GroundAnchor" type="Marker3D" parent="." unique_id=1059532132]
+
+[node name="Encaixes" type="Node3D" parent="." unique_id=369587601]
+
+[node name="Entrada" type="Marker3D" parent="Encaixes" unique_id=424579593]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.5, 0, 0)
+metadata/profile = "erosion_shoulder"
+metadata/width = 5.6
+
+[node name="Saida" type="Marker3D" parent="Encaixes" unique_id=2076867021]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.5, 0, 0)
+metadata/profile = "erosion_shoulder"
+metadata/width = 5.6

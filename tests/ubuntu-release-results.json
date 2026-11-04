@@ -1,0 +1,74 @@
+{
+  "release": "1.2.0",
+  "build": 13,
+  "download": "http://192.168.101.24/",
+  "reports": {
+    "naval-accounts-results.json": {
+      "checks": 18,
+      "failures": []
+    },
+    "naval-upgrade-results.json": {
+      "checks": 13,
+      "failures": [],
+      "guide_errors": [
+        6.103515625e-05,
+        6.103515625e-05,
+        0.0
+      ]
+    },
+    "menu-music-results.json": {
+      "checks": 5,
+      "failures": []
+    },
+    "ubuntu-distribution-results.json": {
+      "build": 13,
+      "version": "1.2.0",
+      "tls": true,
+      "private_paths_blocked": true,
+      "download_identical": true,
+      "real_launcher_install": true,
+      "no_redownload": true,
+      "production_boot": true
+    },
+    "ubuntu-pvp-host.json": {
+      "account_loaded": true,
+      "failures": [],
+      "players": 2,
+      "role": "host",
+      "shots": 1
+    },
+    "ubuntu-pvp-guest.json": {
+      "account_loaded": true,
+      "failures": [],
+      "players": 2,
+      "role": "guest",
+      "shots": 1
+    }
+  },
+  "pe_icons_verified": true,
+  "account_rewards_tested": true,
+  "updater_security_scenarios": 7,
+  "dedicated_pvp_rejoin_cycles": 3,
+  "provided_music_sha256": "84b11c3cf218922ba0bc01c592784b067c513f605054c9fcd53afb95d834f63e",
+  "native_naval": {
+    "host": {
+      "continued_after_creator": false,
+      "failures": [],
+      "fired": true,
+      "moved": true,
+      "remote_audio": false,
+      "remote_shot": false,
+      "role": "host"
+    },
+    "guest": {
+      "continued_after_creator": true,
+      "failures": [],
+      "fired": false,
+      "moved": false,
+      "remote_audio": true,
+      "remote_shot": true,
+      "role": "guest"
+    }
+  },
+  "final_runtime_log_errors": 0
+}

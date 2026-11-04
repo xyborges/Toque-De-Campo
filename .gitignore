@@ -1,0 +1,82 @@
+# Godot 4 / caches de importacao (nao apagar do disco)
+**/.godot/
+**/.godot-test-profile/
+**/.import/
+.godot-test-profile/
+*.translation
+
+# Saidas, laboratorios, capturas, servidores e estado pessoal
+/work/
+/user_data/
+/.ai-coord/
+/distribution/build/
+/distribution/published/
+/distribution/private/
+/distribution/launcher/.godot/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+*.prof
+*.trace
+
+# Executaveis exportados, empacotamentos e logs gerados
+*.exe
+*.pck
+*.dmp
+*.core
+*.log
+*.log.*
+*.tmp
+*.temp
+*.bak
+# Copias antigas de teste de IA: preservadas no disco, nunca como fonte versionada
+*.gd.g3-before-*
+*.gd.g3-stage*-backup
+*.gd.ai-backup-*
+*.orig
+*.rej
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
+.vs/
+
+# Dados locais, credenciais e material de assinatura PRIVADO
+**/.env
+**/.env.*
+!**/.env.example
+*.p12
+*.pfx
+*.p8
+*.ppk
+*.keystore
+*.jks
+*.key
+*.pem
+!assets/accounts/accounts-public.pem
+!distribution/launcher/release-public.pem
+**/id_rsa*
+**/id_ed25519*
+**/device-private.*
+**/*-private.pem
+**/*-private.key
+**/*-secret.*
+**/*-credentials.*
+**/*-credential.*
+**/*-token.*
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+
+# EXCECOES INTENCIONAIS:
+# - assets, audio, scenes, scripts, modes, maps, docs e tests: versionados.
+# - arquivos .gd.uid: versionados (identidade estavel do Godot).
+# - distribution/ubuntu, distribution/launcher (fontes) e notas JSON: versionados.
+# - ZIP de fonte de modelo em assets/weapons/_import/guns-low.zip: versionado.
+# NUNCA limpar pastas ignoradas com "git clean -fdx".

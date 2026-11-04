@@ -1,0 +1,54 @@
+{
+  "version": "1.13.0",
+  "date": "03/11/2026",
+  "title": "Arsenal modular, explosões e combates renovados",
+  "summary": "Novas lunetas 4× e 8× para os fuzis, G3 no modo Guerra, melhorias na IA e no HUD, explosões mais expressivas e maior variedade de abrigos e loot no Afeganistão.",
+  "changes": [
+    {
+      "title": "Miras modulares em todos os fuzis",
+      "text": "AK, FAL, G3 e Sniper passam a aceitar Prismática 4×, PSO 4×, Hensoldt ZF 4×24 e Telescópica 8×. A Sniper pode ser usada apenas com mira de ferro e nenhuma luneta é obrigatória."
+    },
+    {
+      "title": "Novo fuzil G3",
+      "text": "O G3 entra como arma principal padrão da Rússia na Ucrânia e dos Mujahidins no Afeganistão, com carregador de 20 cartuchos, animação de recarga e sons de disparo próximo e distante."
+    },
+    {
+      "title": "Explosões e propagação sonora",
+      "text": "Novo conjunto de sons para granadas, tanques e drones, amostras próximas e distantes, propagação espacial ao ar livre e efeitos visuais maiores com fumaça persistente, explosões secundárias visuais e ondas de choque."
+    },
+    {
+      "title": "Bots mais táticos",
+      "text": "IA do modo Guerra melhora seleção de alvos, defesa de objetivos, emprego de lançadores e armas de blindados, granadas e recuperação de veículos presos. O limite atual continua em 28 bots; 57 permanece um objetivo futuro."
+    },
+    {
+      "title": "Mais coberturas no Deserto Afegão",
+      "text": "Novos abrigos rurais, muros de pátio e detalhes ambientais complementam as construções existentes, com colisões, cobertura e navegação adaptadas."
+    },
+    {
+      "title": "Battle Royale menos repetitivo",
+      "text": "Nova variação das sementes de partida melhora a alternância dos spawns sem mover os pontos autorais. Doze abrigos recebem novos locais de saque, preservando os pontos anteriores."
+    },
+    {
+      "title": "Menus e HUD unificados",
+      "text": "Botões e informações de partida passam a usar componentes de interface compartilhados, com navegação de volta e ESC mais consistente, ajustes de inventário em telas menores e melhorias no placar."
+    },
+    {
+      "title": "Uniformes aprimorados",
+      "text": "Mangas e detalhes dos combatentes afegãos acompanham melhor as articulações do personagem, preservando a identidade visual cartunesca."
+    }
+  ],
+  "fixes": [
+    {
+      "title": "Sniper sem luneta fixa",
+      "text": "A arma recebe mira de ferro própria, montagem correta das lunetas opcionais, ajustes de ADS e correção da pose do braço ao mirar deitado."
+    },
+    {
+      "title": "Navegação e loot dos novos abrigos",
+      "text": "A navegação do Battle Royale foi reconstruída e validada para os doze novos abrigos, com rotas de entrada e pontos de loot alcançáveis."
+    },
+    {
+      "title": "Inventário e navegação",
+      "text": "Corrigidos o fechamento do inventário e o retorno às telas de origem em rotas dos menus e configurações."
+    }
+  ]
+}

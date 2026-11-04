@@ -1,0 +1,186 @@
+{
+  "version": "1.8.9",
+  "build": 60,
+  "checks": 2624,
+  "results": {
+    "pose189-validation-results.json": {
+      "checks": 2214,
+      "failures": [],
+      "minimum_torso_ellipse": 1.08442983491788
+    },
+    "pose189-network-server.json": {
+      "checks": 11,
+      "failures": [],
+      "frame_ms": {},
+      "role": "server",
+      "rtt_ms": {}
+    },
+    "pose189-network-alpha.json": {
+      "checks": 34,
+      "failures": [],
+      "frame_ms": {
+        "max": 80.147,
+        "mean": 16.7132442596991,
+        "median": 16.668,
+        "n": 2526,
+        "p95": 17.042
+      },
+      "role": "alpha",
+      "rtt_ms": {
+        "max": 43.0,
+        "mean": 22.3809523809524,
+        "median": 21.0,
+        "n": 84,
+        "p95": 31.0
+      }
+    },
+    "pose189-network-bravo.json": {
+      "checks": 17,
+      "failures": [],
+      "frame_ms": {
+        "max": 45.013,
+        "mean": 16.6720295743505,
+        "median": 16.665,
+        "n": 3618,
+        "p95": 17.122
+      },
+      "role": "bravo",
+      "rtt_ms": {
+        "max": 28.0,
+        "mean": 20.5042016806723,
+        "median": 20.0,
+        "n": 119,
+        "p95": 24.0
+      }
+    },
+    "pose189-desert-server.json": {
+      "checks": 7,
+      "failures": [],
+      "measurements": {},
+      "role": "server"
+    },
+    "pose189-desert-alpha.json": {
+      "checks": 21,
+      "failures": [],
+      "measurements": {
+        "FAL after grenade": 5,
+        "FAL while opponent is dead": 5,
+        "alpha final burst": 6,
+        "initial FAL burst": 7
+      },
+      "role": "alpha"
+    },
+    "pose189-desert-bravo.json": {
+      "checks": 7,
+      "failures": [],
+      "measurements": {
+        "bravo final burst": 6
+      },
+      "role": "bravo"
+    },
+    "pose189-gallery-results.json": {
+      "checks": 14,
+      "failures": []
+    },
+    "art188-validation-results.json": {
+      "checks": 188,
+      "failures": []
+    },
+    "art188-reload-results.json": {
+      "checks": 56,
+      "failures": []
+    },
+    "combat183-state-results.json": {
+      "checks": 15,
+      "failures": []
+    },
+    "rifles185-state-regression.json": {
+      "checks": 15,
+      "failures": []
+    },
+    "ubuntu-war187-pose189-host.json": {
+      "checks": 16,
+      "dtls": true,
+      "enet_rtt_ms": {
+        "max": 41.0,
+        "mean": 28.4307692307692,
+        "median": 28.0,
+        "n": 65,
+        "p95": 39.0
+      },
+      "failures": [],
+      "frame_interval_ms": {
+        "max": 81.618,
+        "mean": 16.6889816700611,
+        "median": 16.672,
+        "n": 1964,
+        "p95": 17.185
+      },
+      "headless": false,
+      "label": "pose189",
+      "process_ms": {
+        "max": 78.436,
+        "mean": 14.5405066191446,
+        "median": 11.827,
+        "n": 1964,
+        "p95": 30.233
+      },
+      "role": "host"
+    },
+    "ubuntu-war187-pose189-guest.json": {
+      "checks": 9,
+      "dtls": true,
+      "enet_rtt_ms": {
+        "max": 36.0,
+        "mean": 35.1698113207547,
+        "median": 35.0,
+        "n": 106,
+        "p95": 36.0
+      },
+      "failures": [],
+      "frame_interval_ms": {
+        "max": 18.553,
+        "mean": 16.6654539249147,
+        "median": 16.664,
+        "n": 3223,
+        "p95": 17.105
+      },
+      "headless": true,
+      "label": "pose189",
+      "process_ms": {
+        "max": 9.83,
+        "mean": 2.50230499534595,
+        "median": 1.813,
+        "n": 3223,
+        "p95": 4.425
+      },
+      "role": "guest"
+    }
+  },
+  "before": {
+    "average_fps": 120.072639564724,
+    "draw_calls": 619.0,
+    "frames": 959,
+    "gpu": "NVIDIA GeForce GTX 1650",
+    "one_percent_low_fps": 103.629329403095,
+    "p95_frame_ms": 8.62,
+    "peak_frame_ms": 10.499,
+    "primitives": 196906.0,
+    "resolution": "(1920, 1080)",
+    "scope": "isolated 12 animated soldier models, both firearm reloads and nine library props; not a full 12-player network match"
+  },
+  "after": {
+    "average_fps": 120.073518478952,
+    "draw_calls": 619.0,
+    "frames": 961,
+    "gpu": "NVIDIA GeForce GTX 1650",
+    "one_percent_low_fps": 111.376489660549,
+    "p95_frame_ms": 8.578,
+    "peak_frame_ms": 9.46,
+    "primitives": 196906.0,
+    "resolution": "(1920, 1080)",
+    "scope": "isolated 12 animated soldier models, both firearm reloads, lean poses and nine library props; not a full 12-player network match"
+  },
+  "deploy_log": "work/pose189-deploy.log",
+  "distribution_log": "work/pose189-download.log"
+}

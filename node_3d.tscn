@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bj4j5sjtfdcng"]
+
+[ext_resource type="Texture2D" uid="uid://tsy48pghceyn" path="res://assets/game-icon.png" id="1_noarx"]
+[ext_resource type="Script" uid="uid://dkxqsqslul2p1" path="res://sprite_3d.gd" id="2_a0tk4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fanq5"]
+size = Vector3(4.796875, 5.3201904, 3.0478516)
+
+[node name="Node3D" type="Node3D" unique_id=79832632]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1812665155]
+
+[node name="Sprite3D" type="Sprite3D" parent="CharacterBody3D" unique_id=1790820054]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.47891343, 0.19156504, 0.14238119)
+texture = ExtResource("1_noarx")
+script = ExtResource("2_a0tk4")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=450478192]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46650016, 0.08994663, -0.3917762)
+shape = SubResource("BoxShape3D_fanq5")

@@ -1,0 +1,394 @@
+{
+  "completed_at": "2026-10-25T08:12:56.959043-03:00",
+  "version": "1.7.0",
+  "build": 38,
+  "war_protocol": 10,
+  "naval_protocol": 5,
+  "desert_deployment_protocol": 1,
+  "published": true,
+  "corrections_first_release": "1.6.10/build37",
+  "download": "http://192.168.101.24/",
+  "reports": {
+    "offline_ui": {
+      "checks": 30,
+      "failures": []
+    },
+    "war_deployment": {
+      "checks": 15,
+      "failures": []
+    },
+    "naval_ui": {
+      "checks": 13,
+      "failures": []
+    },
+    "core_combat": {
+      "checks": 25,
+      "failures": [],
+      "samples": {
+        "covered_peak": 0.0588235296308994,
+        "long_shot": {
+          "damage": 100.0,
+          "distance": 844.809402227402,
+          "kills": 1,
+          "point": "(0.0, 1.436219, -849.825)",
+          "target_hp": 0.0
+        },
+        "thermal_distance": 1200,
+        "thermal_peak": 0.803921580314636
+      }
+    },
+    "combat": {
+      "checks": 48,
+      "failures": []
+    },
+    "aim_sensitivity": {
+      "checks": 37,
+      "failures": [],
+      "profiles": 27
+    },
+    "war_optics": {
+      "checks": 49,
+      "failures": [],
+      "measurements": {
+        "dot_contrast": 0.304534107446671,
+        "rpg": {
+          "direction": "Vector3(-0.5806521, 0.16918235, -0.7963796)",
+          "left_hand_error": 5.96046447753906e-08,
+          "muzzle": "Vector3(-0.6702186, 1.652396, -1.3605402)",
+          "right_hand_error": 0.0581094399094582
+        },
+        "scope_false": {
+          "deep_ratio": 0.12,
+          "first_ratio": 0.25,
+          "normal_delta": 0.046,
+          "pixels_per_mrad": 7.35743741672416
+        },
+        "scope_true": {
+          "deep_ratio": 0.12,
+          "first_ratio": 0.25,
+          "normal_delta": 0.046,
+          "pixels_per_mrad": 7.35743741672416
+        },
+        "stinger": {
+          "direction": "Vector3(-0.5806521, 0.16918235, -0.7963796)",
+          "left_hand_error": 5.96046447753906e-08,
+          "muzzle": "Vector3(-0.55475116, 1.6238257, -1.2021734)",
+          "right_hand_error": 0.106764316558838
+        }
+      }
+    },
+    "war_equipment": {
+      "checks": 80,
+      "failures": [],
+      "native": true
+    },
+    "war_class_hud": {
+      "captures": [
+        "res://work/war-class-hud-1024x768-fpp.png",
+        "res://work/war-class-hud-1024x768-tpp.png",
+        "res://work/war-class-hud-1920x1080-fpp.png",
+        "res://work/war-class-hud-1920x1080-tpp.png"
+      ],
+      "checks": 50,
+      "failures": [],
+      "fixture": "Real WarPlayer/WarVehicles actions and a small deterministic floor. No multiplayer transport; online resource replication requires its separate regression.",
+      "native_render": true
+    },
+    "war_sniper": {
+      "checks": 18,
+      "drag": 0.008,
+      "failures": [],
+      "gravity": 12.0,
+      "measurements": [
+        {
+          "distance": 300.0,
+          "elevation_degrees": 0.192596856309877,
+          "flight_seconds": 0.491666666666667,
+          "impact": "Vector3(299.8, 1.3011606, 0)",
+          "lifetime": 5.06774193548387
+        },
+        {
+          "distance": 800.0,
+          "elevation_degrees": 0.691837841572392,
+          "flight_seconds": 1.3,
+          "impact": "Vector3(799.8, 1.3025537, 0)",
+          "lifetime": 5.06774193548387
+        },
+        {
+          "distance": 1200.0,
+          "elevation_degrees": 1.06554184853127,
+          "flight_seconds": 1.95833333333333,
+          "impact": "Vector3(1199.8, 1.3039522, 0)",
+          "lifetime": 5.06774193548387
+        },
+        {
+          "distance": 1800.0,
+          "elevation_degrees": 1.62329171238487,
+          "flight_seconds": 2.94166666666666,
+          "impact": "Vector3(1799.8, 1.3060837, 0)",
+          "lifetime": 5.06774193548387
+        },
+        {
+          "distance": 2000.0,
+          "elevation_degrees": 1.80978206905659,
+          "flight_seconds": 3.27499999999999,
+          "impact": "Vector3(1999.8, 1.307027, 0)",
+          "lifetime": 5.06774193548387
+        }
+      ],
+      "range": 2200.0,
+      "speed": 620.0
+    },
+    "war_tv": {
+      "checks": 53,
+      "failures": []
+    },
+    "naval_production": {
+      "checks": 10,
+      "failures": [],
+      "source": "production Ubuntu; two signed real QA accounts; no authority fixture or test-account mode"
+    }
+  },
+  "war_production": {
+    "operator": {
+      "checks": 12,
+      "failures": [],
+      "fixture": "Three real QA accounts and production Ubuntu ENet authority. Coordinated via local stage files only. Infantry approach uses legal 5.8 m/s server_player_state packets; vehicle commands and malicious passenger packets use existing RPCs. No privileged server teleport, test account mode, service token or authority fixture.",
+      "role": "operator",
+      "samples": {}
+    },
+    "opponent": {
+      "checks": 6,
+      "failures": [],
+      "fixture": "Three real QA accounts and production Ubuntu ENet authority. Coordinated via local stage files only. Infantry approach uses legal 5.8 m/s server_player_state packets; vehicle commands and malicious passenger packets use existing RPCs. No privileged server teleport, test account mode, service token or authority fixture.",
+      "role": "opponent",
+      "samples": {}
+    },
+    "passenger": {
+      "checks": 7,
+      "failures": [],
+      "fixture": "Three real QA accounts and production Ubuntu ENet authority. Coordinated via local stage files only. Infantry approach uses legal 5.8 m/s server_player_state packets; vehicle commands and malicious passenger packets use existing RPCs. No privileged server teleport, test account mode, service token or authority fixture.",
+      "role": "passenger",
+      "samples": {}
+    }
+  },
+  "desert_production": {
+    "host": {
+      "account_loaded": true,
+      "failures": [],
+      "players": 1,
+      "role": "host",
+      "shots": 1
+    },
+    "guest": {
+      "account_loaded": true,
+      "failures": [],
+      "players": 2,
+      "role": "guest",
+      "shots": 1
+    }
+  },
+  "distribution": {
+    "build": 38,
+    "version": "1.7.0",
+    "tls": true,
+    "private_paths_blocked": true,
+    "download_identical": true,
+    "real_launcher_install": true,
+    "no_redownload": true,
+    "production_boot": true
+  },
+  "regressions": [
+    {
+      "case": "deployment170_ui",
+      "exit": 0,
+      "seconds": 7.41,
+      "errors": false
+    },
+    {
+      "case": "deployment170_war",
+      "exit": 0,
+      "seconds": 10.62,
+      "errors": false
+    },
+    {
+      "case": "deployment170_naval_ui",
+      "exit": 0,
+      "seconds": 15.74,
+      "errors": false
+    },
+    {
+      "case": "war1610_corrections",
+      "exit": 0,
+      "seconds": 4.12,
+      "errors": false
+    },
+    {
+      "case": "war165_movement",
+      "exit": 0,
+      "seconds": 14.4,
+      "errors": false
+    },
+    {
+      "case": "aim_settings_168",
+      "exit": 0,
+      "seconds": 4.87,
+      "errors": false
+    },
+    {
+      "case": "war_tv168",
+      "exit": 0,
+      "seconds": 4.66,
+      "errors": false
+    },
+    {
+      "case": "war165_equipment",
+      "exit": 0,
+      "seconds": 5.95,
+      "errors": false
+    },
+    {
+      "case": "war_optics",
+      "exit": 0,
+      "seconds": 6.96,
+      "errors": false
+    },
+    {
+      "case": "war_class_hud",
+      "exit": 0,
+      "seconds": 4.62,
+      "errors": false
+    },
+    {
+      "case": "war167_sniper",
+      "exit": 0,
+      "seconds": 4.36,
+      "errors": false
+    },
+    {
+      "case": "combat_153",
+      "exit": 0,
+      "errors": false,
+      "checks": 48,
+      "log": "work/combat_153-native.stdout.log",
+      "note": "Component fixture controls respawn; full new deployment tested separately."
+    },
+    {
+      "case": "run_war_multiplayer",
+      "exit": 0,
+      "seconds": 25.97,
+      "errors": false
+    },
+    {
+      "case": "run_war_vehicle_passengers_network",
+      "exit": 0,
+      "seconds": 13.36,
+      "errors": false
+    },
+    {
+      "case": "run_deployment170_network",
+      "exit": 0,
+      "seconds": 9.83,
+      "errors": false
+    }
+  ],
+  "native_pck_ui": {
+    "actual_windows_export": false,
+    "checks": 8,
+    "failures": []
+  },
+  "native_pck_camera": {
+    "checks": 6,
+    "distance_walked": 46.0862309783697,
+    "failures": [],
+    "fpp_frames": 0,
+    "fpp_visible_after_collision_pose": false,
+    "frames": 420,
+    "label": "pack170",
+    "native": true,
+    "yaw_range_degrees": 435.863318700895
+  },
+  "benchmark": {
+    "before": {
+      "average_fps": 60.016785507366,
+      "count": 12,
+      "disconnect_window": {
+        "average_fps": 60.0817111271324,
+        "frame_ms_max": 27.6589999999999,
+        "frame_ms_mean": 16.6440000000001,
+        "frame_ms_p95": 19.3690000000046,
+        "frames": 120,
+        "one_percent_low": 41.9771224682586
+      },
+      "failures": [],
+      "frame_ms_max": 27.6589999999999,
+      "frame_ms_mean": 16.6620053297801,
+      "frame_ms_p95": 18.6400000000049,
+      "frames": 1501,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "invulnerable_fixture": true,
+      "label": "before170-noprof",
+      "max_draw_calls": 1573.0,
+      "max_nodes": 10687.0,
+      "maximum_players": 12,
+      "maximum_projectiles": 61,
+      "memory_mib": 217.809574127197,
+      "one_percent_low": 45.2470773215983,
+      "physics_ms_mean": 4.8888674217189,
+      "real_network_clients": true,
+      "resolution": "(1920, 1080)",
+      "role": "0",
+      "script_frame_ms_mean": 14.6039960026649,
+      "spikes": []
+    },
+    "after": {
+      "average_fps": 59.4706964042544,
+      "count": 12,
+      "disconnect_window": {
+        "average_fps": 60.0984111482551,
+        "frame_ms_max": 30.770000000004,
+        "frame_ms_mean": 16.639375,
+        "frame_ms_p95": 19.3510000000003,
+        "frames": 120,
+        "one_percent_low": 36.4292089397225
+      },
+      "failures": [],
+      "frame_ms_max": 53.5090000000018,
+      "frame_ms_mean": 16.8150040349698,
+      "frame_ms_p95": 19.6329999999989,
+      "frames": 1487,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "invulnerable_fixture": true,
+      "label": "after170-noprof",
+      "max_draw_calls": 1628.0,
+      "max_nodes": 11043.0,
+      "maximum_players": 12,
+      "maximum_projectiles": 62,
+      "memory_mib": 227.362827301025,
+      "one_percent_low": 35.5451079267949,
+      "physics_ms_mean": 5.49197041022187,
+      "real_network_clients": true,
+      "resolution": "(1920, 1080)",
+      "role": "0",
+      "script_frame_ms_mean": 17.3790195023536,
+      "spikes": [
+        {
+          "elapsed": 8.061271,
+          "frame_ms": 53.5090000000018,
+          "projectiles": 3
+        }
+      ]
+    }
+  },
+  "services": [
+    "toque-naval.service active",
+    "toque-pvp.service active",
+    "toque-war.service active"
+  ],
+  "limitations": [
+    "12 clients and server share one PC; synthetic invulnerability fixture; 25-second measured combat window; not a 12-human WAN latency test.",
+    "60 FPS is not guaranteed; after mean59.47FPS,1%low35.55FPS,max53.51ms.",
+    "Computer Use approval expired; that tool did not inspect the game window. Native PCK render tests and captures were used instead.",
+    "External-script attempt on the release Windows exe timed out and was not counted as a successful UI test. Release boot and actual updater installation passed."
+  ]
+}

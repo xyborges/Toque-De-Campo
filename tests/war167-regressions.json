@@ -1,0 +1,17 @@
+[
+  {
+    "case": "combat153",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "multiplayer",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "optics-hud",
+    "exit": 0,
+    "errors": false
+  }
+]

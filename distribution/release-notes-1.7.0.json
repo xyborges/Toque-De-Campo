@@ -1,0 +1,32 @@
+{
+  "version": "1.7.0",
+  "date": "24/10/2026",
+  "title": "Equipamento, implantação e menus",
+  "summary": "Escolha seu equipamento antes de entrar. Pausa e configurações unificadas, menus mais limpos e todas as correções de combate da1.6.10.",
+  "changes": [
+    {
+      "title": "Loadout antes de nascer",
+      "text": "Offline e Deserto recebem seleção pré-spawn. Guerra reúne equipe, classe, equipamento e ponto de entrada, com prévia do personagem. Escolhas de quem está vivo valem para a próxima vida."
+    },
+    {
+      "title": "Só o equipamento escolhido",
+      "text": "Remover uma arma, granada ou equipamento também remove seu slot, munição e atalho daquela vida. As últimas escolhas ficam salvas por conta, modo, equipe e classe; o servidor confere a implantação."
+    },
+    {
+      "title": "Implantação naval",
+      "text": "Confirme a embarcação no lobby antes de iniciar. Todos precisam estar prontos e a sala precisa de pelo menos dois jogadores. Após morrer, escolha quando retornar ao combate."
+    },
+    {
+      "title": "Pausa e configurações",
+      "text": "Áudio, vídeo, sensibilidade, controles e interface acessíveis durante a partida. Mudanças de tela têm10segundos para confirmação. Multiplayer continua ativo enquanto o menu estiver aberto."
+    },
+    {
+      "title": "Interface mais limpa",
+      "text": "Nomes curtos, ícones e slots compatíveis. Detalhes das armas aparecem ao selecionar; mensagens técnicas e explicações repetidas foram retiradas das telas revisadas."
+    },
+    {
+      "title": "Correções publicadas primeiro na1.6.10",
+      "text": "Guarani30mm, tanques com projéteis mais lentos, pequena dispersão da30mm, crédito de dano em explosões, térmica de longo alcance e na câmeraTV, armamento por1/2 e volumes separados."
+    }
+  ]
+}

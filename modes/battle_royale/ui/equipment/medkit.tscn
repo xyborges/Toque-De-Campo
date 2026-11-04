@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="StandardMaterial3D" id="Cloth"]
+albedo_color = Color(0.75, 0.73, 0.58, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Red"]
+albedo_color = Color(0.68, 0.12, 0.09, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="Bag"]
+size = Vector3(0.24, 0.12, 0.18)
+
+[sub_resource type="BoxMesh" id="Stripe"]
+size = Vector3(0.11, 0.004, 0.035)
+
+[node name="MedicalPouch" type="Node3D"]
+metadata/surface = "cloth"
+metadata/loot_prop = true
+
+[node name="Bag" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.06, 0)
+cast_shadow = 0
+mesh = SubResource("Bag")
+material_override = SubResource("Cloth")
+
+[node name="MarkHorizontal" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.122, 0)
+cast_shadow = 0
+mesh = SubResource("Stripe")
+material_override = SubResource("Red")
+
+[node name="MarkVertical" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.123, 0)
+rotation = Vector3(0, 1.5707963, 0)
+cast_shadow = 0
+mesh = SubResource("Stripe")
+material_override = SubResource("Red")

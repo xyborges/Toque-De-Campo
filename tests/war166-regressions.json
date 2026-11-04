@@ -1,0 +1,24 @@
+[
+  {
+    "case": "central-camera",
+    "exit": 0,
+    "script_errors": false
+  },
+  {
+    "case": "optics-hud",
+    "exit": 0,
+    "script_errors": false
+  },
+  {
+    "case": "vehicle-equipment",
+    "exit": 1,
+    "script_errors": false
+  },
+  {
+    "case": "vehicle-equipment-frame-synchronized-rerun",
+    "exit": 0,
+    "script_errors": false,
+    "checks": 72,
+    "reason": "Thermal pixel assertions now await actual frame_post_draw; prior assertion read a stale framebuffer."
+  }
+]

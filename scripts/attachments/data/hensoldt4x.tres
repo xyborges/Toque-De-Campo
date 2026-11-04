@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="GameAttachmentDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/attachments/definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/hensoldt4x.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+id = "hensoldt4x"
+display_name = "Hensoldt ZF 4×24"
+category = "optic"
+required_interfaces = PackedStringArray("tdc_optic_platform")
+tags = PackedStringArray("optic", "scope", "four_power", "hensoldt")
+required_space = Vector3(0.18, 0.25, 0.43)
+weight = 4.0
+scene_reference = ExtResource("2")
+behavior_type = "optical"
+behavior_parameters = {"magnification": 4.0, "lens_radius": 0.032, "viewport_size": 384, "ads_seconds": 0.18, "reticle_shader": "res://shaders/scope_hensoldt4x.gdshader"}
+fittings = {"ak_receiver":{"hide":["ClawClampRear","ClawClampFront","ClawBridge","ClawLegLRear","ClawLegRRear","ClawLegLFront","ClawLegRFront","ClawFootLRear","ClawFootRRear","ClawFootLFront","ClawFootRFront"],"show":["RailBridgeRear","RailBridgeFront","RailFootRear","RailFootFront"],"extra_scene":"res://scenes/weapons/optic_ak_receiver_adapter.tscn","extra_name":"ReceiverAdapter","support_bottoms":{"RailFootRear":-0.046586,"RailFootFront":-0.034478}},"fal_receiver":{"hide":["ClawClampRear","ClawClampFront","ClawBridge","ClawLegLRear","ClawLegRRear","ClawLegLFront","ClawLegRFront","ClawFootLRear","ClawFootRRear","ClawFootLFront","ClawFootRFront"],"show":["RailBridgeRear","RailBridgeFront","RailFootRear","RailFootFront"],"support_bottoms":{"RailFootRear":-0.082899,"RailFootFront":-0.082227}},"precision_receiver":{"hide":["ClawClampRear","ClawClampFront","ClawBridge","ClawLegLRear","ClawLegRRear","ClawLegLFront","ClawLegRFront","ClawFootLRear","ClawFootRRear","ClawFootLFront","ClawFootRFront"],"show":["RailBridgeRear","RailBridgeFront","RailFootRear","RailFootFront"],"support_bottoms":{"RailFootRear":-0.065159,"RailFootFront":-0.068163}},"g3_receiver":{"support_bottoms":{"ClawFootLRear":-0.070865,"ClawFootRRear":-0.070865,"ClawFootLFront":-0.070865,"ClawFootRFront":-0.070865}}}

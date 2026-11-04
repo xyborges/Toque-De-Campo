@@ -1,0 +1,258 @@
+{
+	"artifacts": [
+		{
+			"path": "res://maps/prepared/ukraine/cartography.res",
+			"sha256": "fd32087aabd7548303a1a88923024336466544eca0b9599009818daea00bc807"
+		},
+		{
+			"path": "res://maps/prepared/ukraine/grass.res",
+			"sha256": "3a9d2c1d8bca109f3db7b593dfecfcb48da3555dd096428744fdf196998351a4"
+		},
+		{
+			"path": "res://maps/prepared/ukraine/grass_far_mesh.res",
+			"sha256": "1797c672ec66f2e4a63a3c258808944a96a49aac38680ae7d5afdf181448e981"
+		},
+		{
+			"path": "res://maps/prepared/ukraine/grass_material.res",
+			"sha256": "fdd6792e76faa9f938c1d993221bf29d347611a2534c0add488fbd34ec6730fd"
+		},
+		{
+			"path": "res://maps/prepared/ukraine/grass_mesh.res",
+			"sha256": "714651adec5523db2f6b2486d91aa4813ed7b15358885ef663058ca2af67a244"
+		},
+		{
+			"path": "res://maps/prepared/ukraine/grass_mesh_high.res",
+			"sha256": "49557339711d2b993fe4dac8ffd7fbace1a383572749decae664d6706320c88f"
+		},
+		{
+			"path": "res://maps/prepared/ukraine/grass_mesh_low.res",
+			"sha256": "f4185c7a91b26c516f0d8c2937958920582b36fcf12b35708b901b69b77b79de"
+		},
+		{
+			"path": "res://maps/prepared/ukraine/navigation.res",
+			"sha256": "1e56f50a388e86cf4f791a9fcabc49c0ea4f378f6fff2ea3c2101600476444ca"
+		}
+	],
+	"benchmark": {
+		"median_loss_max_percent": 5.0,
+		"pairs": 5.0,
+		"renderer": "gl_compatibility",
+		"resolution": [
+			1920.0,
+			1080.0
+		],
+		"seconds": 120.0,
+		"vram_limit_mib": 4096.0,
+		"worst_frame_max_ms": 50.0
+	},
+	"bounds": [
+		-1750.0,
+		-1750.0,
+		3500.0,
+		3500.0
+	],
+	"content_hash": "cefdfd7db1f3f45fbbb3a43086016deb610fd6611e826af4d26abac6774bdf72",
+	"grass_approved": false,
+	"grass_enabled": true,
+	"id": "ukraine",
+	"loot": [],
+	"objectives": [
+		{
+			"id": "A",
+			"position": [
+				-625.0,
+				0.0,
+				-430.0
+			]
+		},
+		{
+			"id": "B",
+			"position": [
+				-260.0,
+				0.0,
+				-115.0
+			]
+		},
+		{
+			"id": "C",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			]
+		},
+		{
+			"id": "D",
+			"position": [
+				260.0,
+				0.0,
+				-115.0
+			]
+		},
+		{
+			"id": "E",
+			"position": [
+				795.0,
+				0.0,
+				435.0
+			]
+		}
+	],
+	"reservations": [
+		"roads",
+		"trenches",
+		"bases",
+		"objectives",
+		"authored_terrain"
+	],
+	"source_hash": "b459573183c55a0fd446b4d3d024a3a34c3da561da18c1edcc0a18a17a98128c",
+	"sources": [
+		"res://assets/war/biomes/nova_grama.png",
+		"res://modes/naval/scripts/catalog.gd",
+		"res://modes/war/library/arvore_queimada.tscn",
+		"res://modes/war/library/barreira_concreto.tscn",
+		"res://modes/war/library/cais_8m.tscn",
+		"res://modes/war/library/cais_curva_90.tscn",
+		"res://modes/war/library/cais_rampa_8m.tscn",
+		"res://modes/war/library/caixa_municao.tscn",
+		"res://modes/war/library/canaleta_danificada.tscn",
+		"res://modes/war/library/carga_portuaria.tscn",
+		"res://modes/war/library/carro_carbonizado.tscn",
+		"res://modes/war/library/casa_ruina.tscn",
+		"res://modes/war/library/container_20ft.tscn",
+		"res://modes/war/library/cratera_impacto.tscn",
+		"res://modes/war/library/defensa_portuaria.tscn",
+		"res://modes/war/library/entulho_tijolos.tscn",
+		"res://modes/war/library/escada_4m.tscn",
+		"res://modes/war/library/estrada_12m.tscn",
+		"res://modes/war/library/estrada_cruzamento.tscn",
+		"res://modes/war/library/estrada_curva_90.tscn",
+		"res://modes/war/library/estrada_entroncamento.tscn",
+		"res://modes/war/library/estrada_rampa_12m.tscn",
+		"res://modes/war/library/fachada_atingida.tscn",
+		"res://modes/war/library/fal_referencia.tscn",
+		"res://modes/war/library/glock_referencia.tscn",
+		"res://modes/war/library/grama_baixa_2m.tscn",
+		"res://modes/war/library/guarani_referencia.tscn",
+		"res://modes/war/library/laje_desabada.tscn",
+		"res://modes/war/library/pinheiro.tscn",
+		"res://modes/war/library/soldado_equipe_1.tscn",
+		"res://modes/war/library/soldado_equipe_2.tscn",
+		"res://modes/war/library/trincheira_6m.tscn",
+		"res://modes/war/library/trincheira_escavavel_6m.tscn",
+		"res://modes/war/scenes/detalhamento_190.tscn",
+		"res://modes/war/scenes/east_port.tscn",
+		"res://modes/war/scenes/infraestrutura_190.tscn",
+		"res://modes/war/scenes/map_additions.tscn",
+		"res://modes/war/scripts/afghan_uniform.gd",
+		"res://modes/war/scripts/armor_ballistics.gd",
+		"res://modes/war/scripts/art_style.gd",
+		"res://modes/war/scripts/audio.gd",
+		"res://modes/war/scripts/biome_map.gd",
+		"res://modes/war/scripts/blast.gd",
+		"res://modes/war/scripts/body_mesh.gd",
+		"res://modes/war/scripts/bot_director.gd",
+		"res://modes/war/scripts/bot_transit.gd",
+		"res://modes/war/scripts/city_life.gd",
+		"res://modes/war/scripts/coast.gd",
+		"res://modes/war/scripts/day_night.gd",
+		"res://modes/war/scripts/devastation_factory.gd",
+		"res://modes/war/scripts/districts.gd",
+		"res://modes/war/scripts/drone.gd",
+		"res://modes/war/scripts/effects.gd",
+		"res://modes/war/scripts/game.gd",
+		"res://modes/war/scripts/grass_assets.gd",
+		"res://modes/war/scripts/grass_stream.gd",
+		"res://modes/war/scripts/harbors.gd",
+		"res://modes/war/scripts/human_rig.gd",
+		"res://modes/war/scripts/infrastructure_factory.gd",
+		"res://modes/war/scripts/join_transfer.gd",
+		"res://modes/war/scripts/launcher_details.gd",
+		"res://modes/war/scripts/launcher_models.gd",
+		"res://modes/war/scripts/locomotion.gd",
+		"res://modes/war/scripts/map_content.gd",
+		"res://modes/war/scripts/module_snap.gd",
+		"res://modes/war/scripts/motorbike.gd",
+		"res://modes/war/scripts/objective_bar.gd",
+		"res://modes/war/scripts/operation.gd",
+		"res://modes/war/scripts/outskirts.gd",
+		"res://modes/war/scripts/player.gd",
+		"res://modes/war/scripts/power_grid.gd",
+		"res://modes/war/scripts/power_pole.gd",
+		"res://modes/war/scripts/prefab_factory.gd",
+		"res://modes/war/scripts/projectiles.gd",
+		"res://modes/war/scripts/render_batch.gd",
+		"res://modes/war/scripts/roads.gd",
+		"res://modes/war/scripts/rules.gd",
+		"res://modes/war/scripts/scenery_batch.gd",
+		"res://modes/war/scripts/ship.gd",
+		"res://modes/war/scripts/ship_guide.gd",
+		"res://modes/war/scripts/soundscape.gd",
+		"res://modes/war/scripts/stance.gd",
+		"res://modes/war/scripts/structures.gd",
+		"res://modes/war/scripts/tactical_map.gd",
+		"res://modes/war/scripts/terrain.gd",
+		"res://modes/war/scripts/terrain_edits.gd",
+		"res://modes/war/scripts/thermal.gd",
+		"res://modes/war/scripts/trench_module.gd",
+		"res://modes/war/scripts/tv_guidance.gd",
+		"res://modes/war/scripts/ui.gd",
+		"res://modes/war/scripts/uniform.gd",
+		"res://modes/war/scripts/urban_layout.gd",
+		"res://modes/war/scripts/vegetation.gd",
+		"res://modes/war/scripts/vegetation_visuals.gd",
+		"res://modes/war/scripts/vehicle.gd",
+		"res://modes/war/scripts/vehicle_ground.gd",
+		"res://modes/war/scripts/vehicle_models.gd",
+		"res://modes/war/scripts/vehicle_reticle.gd",
+		"res://modes/war/scripts/vehicle_slots.gd",
+		"res://modes/war/scripts/vehicle_step.gd",
+		"res://modes/war/scripts/vehicle_view.gd",
+		"res://modes/war/scripts/vehicles.gd",
+		"res://modes/war/scripts/weather.gd",
+		"res://modes/war/scripts/world.gd",
+		"res://modes/war/shaders/binocular_view.gdshader",
+		"res://modes/war/shaders/biome_ground.gdshader",
+		"res://modes/war/shaders/grass_field.gdshader",
+		"res://modes/war/shaders/ground.gdshader",
+		"res://modes/war/shaders/heat.gdshader",
+		"res://modes/war/shaders/projectile_core.gdshader",
+		"res://modes/war/shaders/sea.gdshader",
+		"res://modes/war/shaders/smoke.gdshader",
+		"res://modes/war/shaders/tracer.gdshader",
+		"res://scripts/environment/environment_kit.gd",
+		"res://scripts/environment/environment_props.gd",
+		"res://scripts/maps/definition.gd",
+		"res://scripts/maps/grass_data.gd",
+		"res://scripts/maps/navigation_cache.gd",
+		"res://scripts/maps/navigation_data.gd",
+		"res://scripts/offline_director.gd",
+		"res://tools/maps/adapter.gd",
+		"res://tools/maps/pipeline.gd"
+	],
+	"spawns": [
+		[
+			-1160.0,
+			18.1599998474121,
+			70.0
+		],
+		[
+			1160.0,
+			18.1599998474121,
+			-130.0
+		]
+	],
+	"stages": [
+		"concept",
+		"terrain",
+		"navigation",
+		"layout",
+		"biomes",
+		"props",
+		"atmosphere",
+		"budget",
+		"match"
+	],
+	"status": "validation_pending",
+	"version": 14
+}

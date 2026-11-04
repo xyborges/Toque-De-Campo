@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BRLootTable" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://modes/battle_royale/state/loot_table.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+weapon_weights = {"glock":40.0, "ak":26.0, "fal":23.0, "sniper":10.0, "stinger":1.0, "rpg":1.0}
+heal_chance = 0.14
+ammo_chance = 0.33
+grenade_chance = 0.06
+protection_chance = 0.17
+backpack_chance = 0.09
+max_items = 1400

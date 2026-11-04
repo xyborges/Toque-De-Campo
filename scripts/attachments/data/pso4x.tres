@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="GameAttachmentDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/attachments/definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/scope4x_ak.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+id = "pso4x"
+display_name = "PSO 4×"
+category = "optic"
+required_interfaces = PackedStringArray("tdc_optic_platform")
+tags = PackedStringArray("optic", "scope", "four_power")
+required_space = Vector3(0.17, 0.24, 0.43)
+weight = 4.0
+scene_reference = ExtResource("2")
+behavior_type = "optical"
+behavior_parameters = {"magnification": 4.0, "lens_radius": 0.032, "viewport_size": 384, "ads_seconds": 0.18}
+fittings = {"fal_receiver": {"hide": ["SideBracket", "BridgeFront", "BridgeRear", "LockLever"], "show": ["RearMount", "FrontMount"]}, "g3_receiver": {"hide": ["SideBracket", "BridgeFront", "BridgeRear", "LockLever"], "show": ["RearMount", "FrontMount"]}, "precision_receiver": {"hide": ["SideBracket", "BridgeFront", "BridgeRear", "LockLever"], "show": ["RearMount", "FrontMount"]}}

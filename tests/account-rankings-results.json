@@ -1,0 +1,52 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "label": "unauthenticated ranking is rejected"
+    },
+    {
+      "ok": true,
+      "label": "service capability does not expose unrelated user endpoints"
+    },
+    {
+      "ok": true,
+      "label": "first authenticated request creates a server snapshot"
+    },
+    {
+      "ok": true,
+      "label": "four top-ten classifications are generated"
+    },
+    {
+      "ok": true,
+      "label": "money comes from server balance, ignoring client-supplied values"
+    },
+    {
+      "ok": true,
+      "label": "kill/death order uses persistent counters"
+    },
+    {
+      "ok": true,
+      "label": "K/D excludes insufficient participation"
+    },
+    {
+      "ok": true,
+      "label": "no IDs, password hashes or session data are exposed"
+    },
+    {
+      "ok": true,
+      "label": "opening again reuses the hourly cache after account changes"
+    },
+    {
+      "ok": true,
+      "label": "hourly expiry refreshes current persistent balances"
+    },
+    {
+      "ok": true,
+      "label": "zero deaths uses a safe denominator"
+    },
+    {
+      "ok": true,
+      "label": "existing account schema/data is preserved"
+    }
+  ]
+}

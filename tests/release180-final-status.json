@@ -1,0 +1,36 @@
+{
+  "version": "1.8.0",
+  "build": 48,
+  "published": true,
+  "website": "http://192.168.101.24/",
+  "services": {
+    "toque-naval.service": "active",
+    "toque-pvp.service": "active",
+    "toque-war.service": "active",
+    "war_udp_port_3014": "listening"
+  },
+  "checks": {
+    "map_package": {"passed": 54, "failed": 0},
+    "production_pack_inspection": "passed; QA scene excluded; coast, war, naval, combat and UI resources present",
+    "public_download": "passed",
+    "updater_install": "passed; installed 1.8.0",
+    "updater_no_redownload": "passed",
+    "published_executable_boot": "passed",
+    "production_account_tls_auth": "passed for three QA accounts",
+    "production_war_join": "not passed; authenticated clients did not enter the match",
+    "source_network_regression": "21 checks passed in a previous run; latest rerun timed out before client deployment"
+  },
+  "performance": {
+    "render_gpu": "NVIDIA GeForce GTX 1650",
+    "resolution": "1536x864",
+    "load": "12 ENet clients on one computer, one rendered client and 11 headless clients; 4 vehicles, drones, firing, grenades, disconnect and thermal view",
+    "average_fps": 29.43,
+    "one_percent_low_fps": 13.33,
+    "frame_mean_ms": 33.98,
+    "frame_p95_ms": 54.43,
+    "thermal_average_fps": 30.81,
+    "max_draw_calls": 2061,
+    "memory_mib": 367,
+    "target_60fps_met": false
+  }
+}

@@ -1,0 +1,34 @@
+*** Begin Patch
+*** Update File: outputs/campo-cartunesco-godot/scripts/options.gd
+@@
+-	for field in ["fov","fps","aa","scale","hud_opacity"]:
++	for field in ["fov","fps","aa","scale","hud_opacity","war_vegetation"]:
+ 		if values.has(field) and (not (values[field] is float or values[field] is int) or not is_finite(float(values[field]))): values.erase(field)
++	# Numeric preference: the account API intentionally rejects string values.
++	if values.has("war_vegetation"): values.war_vegetation=clampi(int(values.war_vegetation),0,3)
+@@
+ 	if is_instance_valid(world) and values.has("shadows"):
+ 		for light: DirectionalLight3D in world.find_children("*","DirectionalLight3D",true,false):
+ 			light.shadow_enabled=bool(values.shadows);light.directional_shadow_max_distance=clampf(number("shadow_distance",180),60,400)
++	if is_instance_valid(world) and world.is_inside_tree():
++		var vegetation_level:=clampi(int(number("war_vegetation",0)),0,3)
++		for controller in world.get_tree().get_nodes_in_group("war_vegetation_visuals"):
++			if (controller==world or world.is_ancestor_of(controller)) and controller.has_method("apply_level"):
++				controller.call("apply_level",vegetation_level)
+ 	for hud in viewport.get_tree().get_nodes_in_group("game_hud"):
+*** Update File: outputs/campo-cartunesco-godot/scripts/ui/settings_panel.gd
+@@
+ func _refresh_preferences() -> void:
+ 	if is_instance_valid(antialias): antialias.select(clampi(int(GameOptions.number("aa",0)),0,3))
++	if ui_values.has("war_vegetation"): ui_values.war_vegetation.select(clampi(int(GameOptions.number("war_vegetation",0)),0,3))
+ 	if ui_values.has("fov"): ui_values.fov.set_value_no_signal(GameOptions.number("fov",70 if game.get_meta("war_mode",false) else 76))
+@@
+ 	antialias.name="Antialiasing";antialias.select(clampi(int(GameOptions.number("aa",0)),0,3))
++	if game is WarGame:
++		var vegetation:=_choice(column,"Vegetação",["Antiga","Baixo","Médio","Alto"],func(index):
++			GameOptions.set_value("war_vegetation",clampi(index,0,3));_apply();save_timer.start()
++		)
++		vegetation.name="WarVegetationQuality";ui_values.war_vegetation=vegetation
++		vegetation.select(clampi(int(GameOptions.number("war_vegetation",0)),0,3))
+ 	var vsync:=CheckBox.new();vsync.text="V-Sync";vsync.button_pressed=DisplayServer.window_get_vsync_mode()!=DisplayServer.VSYNC_DISABLED;column.add_child(vsync)
+*** End Patch

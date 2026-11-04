@@ -1,0 +1,43 @@
+{
+  "version": "1.6.6",
+  "build": 32,
+  "services": [
+    "active",
+    "active",
+    "active"
+  ],
+  "release": "/opt/toque-de-campo/releases/build-32",
+  "site_notes": true,
+  "validation": [
+    {
+      "case": "exported-camera",
+      "exit": 0,
+      "seconds": 21.79,
+      "script_errors": false
+    },
+    {
+      "case": "deploy",
+      "exit": 0,
+      "seconds": 58.21,
+      "script_errors": false
+    },
+    {
+      "case": "download",
+      "exit": 0,
+      "seconds": 28.59,
+      "script_errors": false
+    },
+    {
+      "case": "central-camera",
+      "exit": 0,
+      "seconds": 24.12,
+      "script_errors": false
+    },
+    {
+      "case": "central-respawn",
+      "exit": 0,
+      "seconds": 22.66,
+      "script_errors": false
+    }
+  ]
+}

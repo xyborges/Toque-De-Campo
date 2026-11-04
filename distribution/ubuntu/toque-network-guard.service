@@ -1,0 +1,13 @@
+[Unit]
+Description=Toque de Campo game UDP rate guard
+After=network-pre.target
+Before=toque-war.service toque-pvp.service toque-naval.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/bin/sh -c '/usr/sbin/nft list table inet toque_game_guard >/dev/null 2>&1 || /usr/sbin/nft add table inet toque_game_guard'
+ExecStart=/usr/sbin/nft -f /etc/toque-de-campo/game-guard.nft
+
+[Install]
+WantedBy=multi-user.target

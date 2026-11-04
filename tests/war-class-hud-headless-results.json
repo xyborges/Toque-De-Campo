@@ -1,0 +1,1 @@
+{"captures":[],"checks":52,"failures":[],"fixture":"Real WarPlayer/WarVehicles actions and a small deterministic floor. No multiplayer transport; online resource replication requires its separate regression.","native_render":false}

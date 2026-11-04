@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="GameAttachmentDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/attachments/definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/precision8x.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+id = "precision8x"
+display_name = "Telescópica 8×"
+category = "optic"
+required_interfaces = PackedStringArray("tdc_optic_platform")
+tags = PackedStringArray("optic", "scope", "eight_power")
+required_space = Vector3(0.19, 0.21, 0.48)
+weight = 5.0
+scene_reference = ExtResource("2")
+behavior_type = "optical"
+behavior_parameters = {"magnification": 8.0, "lens_radius": 0.032, "viewport_size": 384, "ads_seconds": 0.26, "reticle_shader": "res://shaders/scope_precision8x.gdshader"}
+fittings = {"ak_receiver":{"extra_scene":"res://scenes/weapons/optic_ak_receiver_adapter.tscn","extra_name":"ReceiverAdapter","support_bottoms":{"RearMount":-0.044381,"FrontMount":-0.023029}},"precision_receiver":{"support_bottoms":{"RearMount":-0.149791,"FrontMount":-0.055526}},"g3_receiver":{"support_bottoms":{"RearMount":-0.052,"FrontMount":-0.052}},"fal_receiver":{"support_bottoms":{"RearMount":-0.069827,"FrontMount":-0.069106}}}

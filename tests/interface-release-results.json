@@ -1,0 +1,31 @@
+{
+  "tests/ui-standardization-results.json": {
+    "checks": 40,
+    "failures": [],
+    "photographs": 3
+  },
+  "tests/login-ui-results.json": {
+    "account_username": "qa_ui_175c37ad42f5",
+    "average_idle_fps": 60.0024000960037,
+    "checks": 44,
+    "failures": [],
+    "real_server": "192.168.101.24",
+    "timeout_fixture": true
+  },
+  "tests/login-music-results.json": {
+    "checks": 14,
+    "failures": [],
+    "shuffle_selections": 100,
+    "tracks": 5
+  },
+  "tests/ubuntu-distribution-results.json": {
+    "build": 17,
+    "version": "1.4.0",
+    "tls": true,
+    "private_paths_blocked": true,
+    "download_identical": true,
+    "real_launcher_install": true,
+    "no_redownload": true,
+    "production_boot": true
+  }
+}

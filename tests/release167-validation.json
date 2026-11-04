@@ -1,0 +1,44 @@
+[
+  {
+    "case": "prepare",
+    "exit": 0,
+    "seconds": 22.23,
+    "script_errors": false
+  },
+  {
+    "case": "pack-inspection",
+    "exit": 0,
+    "seconds": 1.36,
+    "script_errors": false
+  },
+  {
+    "case": "exported-camera",
+    "exit": 0,
+    "seconds": 9.6,
+    "script_errors": false
+  },
+  {
+    "case": "deploy",
+    "exit": 0,
+    "seconds": 23.79,
+    "script_errors": false
+  },
+  {
+    "case": "download",
+    "exit": 0,
+    "seconds": 20.98,
+    "script_errors": false
+  },
+  {
+    "case": "central-launchers",
+    "exit": 0,
+    "seconds": 6.97,
+    "script_errors": false
+  },
+  {
+    "case": "central-desert",
+    "exit": 1,
+    "seconds": 14.3,
+    "script_errors": false
+  }
+]

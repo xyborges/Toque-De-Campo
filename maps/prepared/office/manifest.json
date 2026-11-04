@@ -1,0 +1,99 @@
+{
+	"artifacts": [
+		{
+			"path": "res://maps/prepared/office/cartography.res",
+			"sha256": "85bc03ecfe45dd2189e571675e779c5c48fbbcbf462da1326031a80c775317c8"
+		},
+		{
+			"path": "res://maps/prepared/office/navigation.res",
+			"sha256": "ee3ed21981e71bd9403fb877f1e800b7defbae5485d053b447427b9667b8d8f9"
+		}
+	],
+	"benchmark": {
+		"median_loss_max_percent": 5.0,
+		"pairs": 5.0,
+		"renderer": "gl_compatibility",
+		"resolution": [
+			1920.0,
+			1080.0
+		],
+		"seconds": 120.0,
+		"vram_limit_mib": 4096.0,
+		"worst_frame_max_ms": 50.0
+	},
+	"bounds": [
+		-15.0,
+		-45.0,
+		30.0,
+		52.0
+	],
+	"content_hash": "1c7bbdb4851d0c74522a84638955f6b9ad88ed9500aaf6b55bf7810dde0ec089",
+	"grass_approved": false,
+	"grass_enabled": false,
+	"id": "office",
+	"loot": [],
+	"objectives": [],
+	"reservations": [
+		"doors",
+		"corridors",
+		"rooms"
+	],
+	"source_hash": "d1d4b7fa8c5cd65931fdb1d4ed46115fd42939b2b0128a37329959b46c02886c",
+	"sources": [
+		"res://scripts/environment/environment_kit.gd",
+		"res://scripts/environment/environment_props.gd",
+		"res://scripts/environment/office_map.gd",
+		"res://scripts/maps/definition.gd",
+		"res://scripts/maps/grass_data.gd",
+		"res://scripts/maps/navigation_cache.gd",
+		"res://scripts/maps/navigation_data.gd",
+		"res://scripts/offline_director.gd",
+		"res://tools/maps/adapter.gd",
+		"res://tools/maps/pipeline.gd"
+	],
+	"spawns": [
+		[
+			-8.19999980926514,
+			0.0,
+			-25.0
+		],
+		[
+			8.19999980926514,
+			0.0,
+			-25.0
+		],
+		[
+			-8.19999980926514,
+			0.0,
+			-13.5
+		],
+		[
+			8.19999980926514,
+			0.0,
+			-13.5
+		],
+		[
+			-7.80000019073486,
+			0.0,
+			-1.20000004768372
+		],
+		[
+			7.80000019073486,
+			0.0,
+			-1.20000004768372
+		]
+	],
+	"stages": [
+		"concept",
+		"terrain",
+		"navigation",
+		"layout",
+		"biomes",
+		"props",
+		"atmosphere",
+		"budget",
+		"match"
+	],
+	"status": "validation_pending",
+	"version": 7
+}

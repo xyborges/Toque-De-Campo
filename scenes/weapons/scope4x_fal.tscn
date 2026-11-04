@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/weapons/scope4x.tscn" id="1"]
+[ext_resource type="ArrayMesh" path="res://scenes/weapons/scope4x_fal_housing.res" id="2"]
+
+[node name="Scope4x" instance=ExtResource("1")]
+metadata/reference = "FAL — óptica prismática compacta de carcaça facetada, base elevada e tambor dianteiro"
+[node name="Tube" parent="." index="0"]
+visible = false
+[node name="RearRing" parent="." index="1"]
+visible = false
+[node name="FrontRing" parent="." index="2"]
+visible = false
+[node name="RearMount" parent="." index="3"]
+visible = false
+[node name="FrontMount" parent="." index="4"]
+visible = false
+[node name="ElevationDial" parent="." index="5"]
+visible = false
+[node name="WindageDial" parent="." index="6"]
+visible = false
+[node name="PrismaticHousing" type="MeshInstance3D" parent="."]
+mesh = ExtResource("2")

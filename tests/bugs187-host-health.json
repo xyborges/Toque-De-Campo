@@ -1,0 +1,23 @@
+{
+  "readlink -f /opt/toque-de-campo/current": {
+    "out": "/opt/toque-de-campo/releases/build-58\n",
+    "err": "",
+    "code": 0
+  },
+  "systemctl show toque-war.service -p MainPID -p CPUUsageNSec -p MemoryCurrent -p ActiveState": {
+    "out": "MainPID=283570\nMemoryCurrent=301207552\nCPUUsageNSec=27544627000\nActiveState=active\n",
+    "err": "",
+    "code": 0
+  },
+  "cat /proc/loadavg": {
+    "out": "0.05 0.05 0.06 1/351 283954\n",
+    "err": "",
+    "code": 0
+  },
+  "systemctl is-active toque-war.service toque-pvp.service toque-naval.service nginx.service php8.3-fpm.service": {
+    "out": "active\nactive\nactive\nactive\nactive\n",
+    "err": "",
+    "code": 0
+  },
+  "war_cpu_one_core_percent": 9.3027920056878
+}

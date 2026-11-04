@@ -1,0 +1,11 @@
+{
+  "reason": "The reused QA folder retained sensitivity profiles from its previous persistence test; new invocations now use isolated data folders. Production preferences were not changed.",
+  "results": [
+    {
+      "case": "aim_settings_168",
+      "exit": 1,
+      "seconds": 4.88,
+      "errors": false
+    }
+  ]
+}

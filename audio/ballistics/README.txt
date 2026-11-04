@@ -1,0 +1,1 @@
+Original procedural sound effects generated for Toque de Campo. Seeded noise, filtered transients and synthesized resonances; not recordings of real firearms. Retain the supplied weapon/explosion recordings in the existing catalog.

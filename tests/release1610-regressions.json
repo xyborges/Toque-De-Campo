@@ -1,0 +1,50 @@
+[
+  {
+    "case": "aim_settings_168",
+    "exit": 0,
+    "seconds": 4.62,
+    "errors": false
+  },
+  {
+    "case": "war_tv168",
+    "exit": 0,
+    "seconds": 4.14,
+    "errors": false
+  },
+  {
+    "case": "war165_equipment",
+    "exit": 0,
+    "seconds": 5.93,
+    "errors": false
+  },
+  {
+    "case": "war_optics",
+    "exit": 0,
+    "seconds": 6.4,
+    "errors": false
+  },
+  {
+    "case": "war_class_hud",
+    "exit": 0,
+    "seconds": 4.38,
+    "errors": false
+  },
+  {
+    "case": "war167_sniper",
+    "exit": 0,
+    "seconds": 4.62,
+    "errors": false
+  },
+  {
+    "case": "combat_153",
+    "exit": 0,
+    "seconds": 4.12,
+    "errors": false
+  },
+  {
+    "case": "run_war_multiplayer",
+    "exit": 1,
+    "seconds": 33.63,
+    "errors": false
+  }
+]

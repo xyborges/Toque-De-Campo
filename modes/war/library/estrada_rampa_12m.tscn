@@ -1,0 +1,105 @@
+[gd_scene format=4]
+
+[ext_resource type="Texture2D" path="res://assets/environment/materials/asphalt-albedo.png" id="1_qh8x7"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/asphalt-normal.png" id="2_cc7hu"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/asphalt-roughness.png" id="3_bf4uv"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/plaster-albedo.png" id="4_7jco7"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/plaster-normal.png" id="5_hh7i0"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/plaster-roughness.png" id="6_2wdp4"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_u02io"]
+points = PackedVector3Array(-3.5, 0, 6, 3.5, 0, 6, 3.5, 1.5, -6, -3.5, 1.5, -6, -3.5, -0.35, 6, 3.5, -0.35, 6, 3.5, -0.35, -6, -3.5, -0.35, -6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_njsre"]
+resource_name = "asphalt"
+albedo_color = Color(0.3254902, 0.3529412, 0.32941177, 1)
+albedo_texture = ExtResource("1_qh8x7")
+metallic_specular = 0.35
+roughness = 0.97
+roughness_texture = ExtResource("3_bf4uv")
+normal_enabled = true
+normal_scale = 0.45
+normal_texture = ExtResource("2_cc7hu")
+uv1_scale = Vector3(0.65, 0.65, 0.65)
+uv1_triplanar = true
+texture_filter = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_djttc"]
+_surfaces = [{
+"aabb": AABB(-3.5, -0.35, -6, 7, 1.85, 12),
+"attribute_data": PackedByteArray("MzMzv5qZmT8zMzM/mpmZvzMzMz+amZk/MzMzv5qZmb8zMzO/mpmZPzMzM7+amZm/MzMzv5qZmb8zMzO/mpmZPzMzMz+amZk/MzMzP5qZmb8zMzM/mpmZvzMzMz+amZk/MzMzv5qZmT8zMzM/mpmZPzMzMz+amZk/MzMzv5qZmT8zMzO/mpmZvzMzMz+amZm/MzMzP5qZmb8zMzO/mpmZvzMzM7+amZk/MzMzP5qZmT8zMzM/mpmZvzMzM7+amZm/"),
+"format": 34359742487,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAAKAAsADAANAA4ADAAOAA8AEAARABIAEAATABEAFAAVABYAFAAWABcA"),
+"material": SubResource("StandardMaterial3D_njsre"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AABgwAAAAAAAAMBAAABgQAAAwD8AAMDAAABgQAAAAAAAAMBAAABgwAAAwD8AAMDAAABgwAAAAAAAAMBAAABgwDMzs74AAMDAAABgwAAAwD8AAMDAAABgwDMzs74AAMBAAABgQAAAAAAAAMBAAABgQAAAwD8AAMDAAABgQDMzs74AAMDAAABgQDMzs74AAMBAAABgwAAAAAAAAMBAAABgQAAAAAAAAMBAAABgQDMzs74AAMBAAABgwDMzs74AAMBAAABgwAAAwD8AAMDAAABgQDMzs74AAMDAAABgQAAAwD8AAMDAAABgwDMzs74AAMDAAABgwDMzs74AAMBAAABgQDMzs74AAMBAAABgQDMzs74AAMDAAABgwDMzs74AAMDA/3/G8ccPHr//f8bxxw8ev/9/xvHHDx6//3/G8ccPHr8AAACA/3//vwAAAID/f/+/AAAAgP9//78AAACA/3//v///AID/f/+///8AgP9//7///wCA/3//v///AID/f/+//3//f/9/AID/f/9//38AgP9//3//fwCA/3//f/9/AID//////38AgP//////fwCA//////9/AID//////38AgACAAAAAAP+/AIAAAAAA/78AgAAAAAD/vwCAAAAAAP+/")
+}]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jp6hk"]
+resource_name = "marking"
+albedo_color = Color(0.7607843, 0.7411765, 0.61960787, 1)
+albedo_texture = ExtResource("4_7jco7")
+metallic_specular = 0.35
+roughness = 0.96
+roughness_texture = ExtResource("6_2wdp4")
+normal_enabled = true
+normal_scale = 0.45
+normal_texture = ExtResource("5_hh7i0")
+uv1_scale = Vector3(0.65, 0.65, 0.65)
+uv1_triplanar = true
+texture_filter = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_jxkpu"]
+_surfaces = [{
+"aabb": AABB(-3.33, 5.4061413e-05, -6.0008683, 6.66, 1.5138919, 12.001737),
+"attribute_data": PackedByteArray("AAAAAAAAAACrqio/AAAAAKuqqj4AAAAAAACAPwAAAAAAAAAAAAAAP6uqKj8AAAA/q6qqPgAAAD8AAIA/AAAAP6uqqj4AAAAAAAAAAAAAAD+rqio/AAAAAKuqqj4AAAA/q6qqPgAAAD8AAAAAAACAP6uqKj8AAAA/q6qqPgAAgD+rqqo+AAAAP6uqKj8AAAA/q6oqPwAAAD8AAIA/AAAAP6uqqj4AAIA/q6oqPwAAgD+rqio/AACAPwAAgD8AAIA/AAAAAAAAAACrqio/AAAAAKuqqj4AAAAAAACAPwAAAAAAAAAAAAAAP6uqKj8AAAA/q6qqPgAAAD8AAIA/AAAAP6uqqj4AAAAAAAAAAAAAAD+rqio/AAAAAKuqqj4AAAA/q6qqPgAAAD8AAAAAAACAP6uqKj8AAAA/q6qqPgAAgD+rqqo+AAAAP6uqKj8AAAA/q6oqPwAAAD8AAIA/AAAAP6uqqj4AAIA/q6oqPwAAgD+rqio/AACAPwAAgD8AAIA/"),
+"format": 34359742487,
+"index_count": 72,
+"index_data": PackedByteArray("AAACAAQAAgAGAAQAAQADAAUAAwAHAAUACAAKAAwACgAOAAwACQALAA0ACwAPAA0AEAASABQAEgAWABQAEQATABUAEwAXABUAGAAaABwAGgAeABwAGQAbAB0AGwAfAB0AIAAiACQAIgAmACQAIQAjACUAIwAnACUAKAAqACwAKgAuACwAKQArAC0AKwAvAC0A"),
+"material": SubResource("StandardMaterial3D_jp6hk"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 48,
+"vertex_data": PackedByteArray("uB5VwMB9ZDwdB8BAUrhOwPzIwT/j+L/AUrhOwMB9ZDwdB8BAuB5VwPzIwT/j+L/AuB5VwADAYjjj+L9AUrhOwMYBwD8dB8DAUrhOwADAYjjj+L9AuB5VwMYBwD8dB8DAUrhOwMB9ZDwdB8BAuB5VwPzIwT/j+L/AUrhOwPzIwT/j+L/AuB5VwMB9ZDwdB8BAUrhOwADAYjjj+L9AuB5VwMYBwD8dB8DAUrhOwMYBwD8dB8DAuB5VwADAYjjj+L9AUrhOwMB9ZDwdB8BAuB5VwADAYjjj+L9AuB5VwMB9ZDwdB8BAUrhOwADAYjjj+L9AUrhOwPzIwT/j+L/AuB5VwMYBwD8dB8DAuB5VwPzIwT/j+L/AUrhOwMYBwD8dB8DAUrhOQMB9ZDwdB8BAuB5VQPzIwT/j+L/AuB5VQMB9ZDwdB8BAUrhOQPzIwT/j+L/AUrhOQADAYjjj+L9AuB5VQMYBwD8dB8DAuB5VQADAYjjj+L9AUrhOQMYBwD8dB8DAuB5VQMB9ZDwdB8BAUrhOQPzIwT/j+L/AuB5VQPzIwT/j+L/AUrhOQMB9ZDwdB8BAuB5VQADAYjjj+L9AUrhOQMYBwD8dB8DAuB5VQMYBwD8dB8DAUrhOQADAYjjj+L9AuB5VQMB9ZDwdB8BAUrhOQADAYjjj+L9AUrhOQMB9ZDwdB8BAuB5VQADAYjjj+L9AuB5VQPzIwT/j+L/AUrhOQMYBwD8dB8DAUrhOQPzIwT/j+L/AuB5VQMYBwD8dB8DA/3/Gcf7//7/G8f//AAD/v/9/xnH+//+/xvH//wAA/7//f8Zx/v//v8bx//8AAP+//3/Gcf7//7/G8f//AAD/v/7/AIDG8f//AAAAgP9/4rj+/wCAxvH//wAAAID/f+K4/v8AgMbx//8AAACA/3/iuP7/AIDG8f//AAAAgP9/4rj/f8bxAAD/vziOAAD+//+//3/G8QAA/784jgAA/v//v/9/xvEAAP+/OI4AAP7//7//f8bxAAD/vziOAAD+//+//3/Gcf7//7/G8f//AAD/v/9/xnH+//+/xvH//wAA/7//f8Zx/v//v8bx//8AAP+//3/Gcf7//7/G8f//AAD/v/7/AIDG8f//AAAAgP9/4rj+/wCAxvH//wAAAID/f+K4/v8AgMbx//8AAACA/3/iuP7/AIDG8f//AAAAgP9/4rj/f8bxAAD/vziOAAD+//+//3/G8QAA/784jgAA/v//v/9/xvEAAP+/OI4AAP7//7//f8bxAAD/vziOAAD+//+/")
+}]
+
+[node name="EstradaRampa12m" type="Node3D" unique_id=1647221612]
+metadata/footprint = Vector2(7, 12)
+metadata/rise = 1.5
+metadata/terrain_grade = true
+metadata/library_id = "estrada_rampa_12m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Corpo" type="StaticBody3D" parent="." unique_id=586865032]
+collision_mask = 0
+metadata/surface = "asphalt"
+
+[node name="Shape" type="CollisionShape3D" parent="Corpo" unique_id=306753452]
+shape = SubResource("ConvexPolygonShape3D_u02io")
+
+[node name="Encaixes" type="Node3D" parent="." unique_id=1670787403]
+
+[node name="Base" type="Marker3D" parent="Encaixes" unique_id=4716980]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 6)
+metadata/profile = "road"
+metadata/width = 7.0
+
+[node name="Topo" type="Marker3D" parent="Encaixes" unique_id=1790461097]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -6)
+metadata/profile = "road"
+metadata/width = 7.0
+
+[node name="RigidDetail_body" type="MeshInstance3D" parent="." unique_id=11014659]
+visibility_range_end = 1200.0
+mesh = SubResource("ArrayMesh_djttc")
+metadata/thermal_region = "body"
+
+[node name="@MeshInstance3D@19" type="MeshInstance3D" parent="." unique_id=1264329704]
+visibility_range_end = 1200.0
+mesh = SubResource("ArrayMesh_jxkpu")
+metadata/thermal_region = "body"

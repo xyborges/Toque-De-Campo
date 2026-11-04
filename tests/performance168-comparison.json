@@ -1,0 +1,102 @@
+{
+  "before168": {
+    "average_fps": 48.198023881021,
+    "one_percent_low": 6.20684156272989,
+    "frame_ms_mean": 20.7477385892116,
+    "frame_ms_p95": 29.3990000000015,
+    "frame_ms_max": 198.643999999998,
+    "memory_mib": 191.687101364136,
+    "maximum_projectiles": 55,
+    "resolution": "(1920, 1080)",
+    "disconnect_window": {
+      "average_fps": 48.2400104636074,
+      "frame_ms_max": 176.955999999997,
+      "frame_ms_mean": 20.7296804123707,
+      "frame_ms_p95": 28.4539999999964,
+      "frames": 97,
+      "one_percent_low": 5.65112231289144
+    }
+  },
+  "after168": {
+    "average_fps": 39.4246887386871,
+    "one_percent_low": 1.92908267681827,
+    "frame_ms_mean": 25.3648166160081,
+    "frame_ms_p95": 33.9670000000005,
+    "frame_ms_max": 853.080000000002,
+    "memory_mib": 197.735945701599,
+    "maximum_projectiles": 81,
+    "resolution": "(1920, 1080)",
+    "disconnect_window": {
+      "average_fps": 50.0687443860416,
+      "frame_ms_max": 150.722000000002,
+      "frame_ms_mean": 19.9725400000002,
+      "frame_ms_p95": 27.1830000000008,
+      "frames": 100,
+      "one_percent_low": 6.63473149241642
+    }
+  },
+  "before168-noprof": {
+    "average_fps": 57.7925001904067,
+    "one_percent_low": 34.8199114181454,
+    "frame_ms_mean": 17.3032832409973,
+    "frame_ms_p95": 22.2929999999977,
+    "frame_ms_max": 32.9320000000024,
+    "memory_mib": 186.992289543152,
+    "maximum_projectiles": 57,
+    "resolution": "(1920, 1080)",
+    "disconnect_window": {
+      "average_fps": 58.5769114847793,
+      "frame_ms_max": 27.9179999999997,
+      "frame_ms_mean": 17.0715726495727,
+      "frame_ms_p95": 21.253999999999,
+      "frames": 117,
+      "one_percent_low": 38.5847127368141
+    }
+  },
+  "after168-pack-noprof": {
+    "average_fps": 57.8502140817738,
+    "one_percent_low": 34.3052388673777,
+    "frame_ms_mean": 17.28602073255,
+    "frame_ms_p95": 21.3970000000003,
+    "frame_ms_max": 34.91,
+    "memory_mib": 191.046622276306,
+    "maximum_projectiles": 54,
+    "resolution": "(1920, 1080)",
+    "disconnect_window": {
+      "average_fps": 58.5512909308574,
+      "frame_ms_max": 28.297000000002,
+      "frame_ms_mean": 17.0790427350422,
+      "frame_ms_p95": 20.7249999999988,
+      "frames": 117,
+      "one_percent_low": 37.6562735351668
+    }
+  },
+  "after168-pack": {
+    "average_fps": 47.1337515633397,
+    "one_percent_low": 5.94614281148502,
+    "frame_ms_mean": 21.2162190963342,
+    "frame_ms_p95": 32.5379999999988,
+    "frame_ms_max": 189.039999999999,
+    "memory_mib": 194.797267913818,
+    "maximum_projectiles": 57,
+    "resolution": "(1920, 1080)",
+    "disconnect_window": {
+      "average_fps": 43.826264627015,
+      "frame_ms_max": 171.896999999994,
+      "frame_ms_mean": 22.8173678160924,
+      "frame_ms_p95": 34.0869999999995,
+      "frames": 87,
+      "one_percent_low": 5.81743718622218
+    }
+  },
+  "method": {
+    "count": 12,
+    "processes_on_one_pc": 13,
+    "gpu": "GTX1650",
+    "resolution": "1920x1080 real fullscreen",
+    "interval": "25 seconds after warmup, fire/4 vehicles/2 drones/explosions/disconnect",
+    "profiler": "Godot --debug --profiling; periodic console serialization included",
+    "source_diagnostic": "after168 uses source; final comparisons use exported PCKs",
+    "stable_60_fps_claim": false
+  }
+}

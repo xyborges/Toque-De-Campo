@@ -1,0 +1,1 @@
+{"checks":13,"dtls":true,"enet_rtt_ms":{"max":36.0,"mean":25.9016393442623,"median":27.0,"n":61,"p95":30.0},"failures":[],"frame_interval_ms":{"max":111.858,"mean":16.7160829741379,"median":16.662,"n":1856,"p95":17.129},"headless":false,"label":"art188","process_ms":{"max":106.171,"mean":16.272375,"median":11.153,"n":1856,"p95":41.092},"role":"host"}

@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="GameAttachmentProfile" load_steps=7 format=3]
+[ext_resource type="Script" path="res://scripts/attachments/weapon_profile.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/attachments/socket.gd" id="2"]
+[sub_resource type="Resource" id="Socket0"]
+script = ExtResource("2")
+id = "optic_top"
+ui_label = "Mira"
+categories = PackedStringArray("optic")
+interfaces = PackedStringArray("tdc_optic_platform")
+available_space = Vector3(0.2, 0.3, 0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.025)
+ui_position = Vector2(0.52, 0.18)
+fitting_tags = PackedStringArray("fal_receiver")
+[sub_resource type="Resource" id="Socket1"]
+script = ExtResource("2")
+id = "muzzle"
+ui_label = "Boca"
+categories = PackedStringArray("muzzle_device")
+interfaces = PackedStringArray("fal_9_16_24_lh")
+available_space = Vector3(0.15, 0.15, 0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, -0.79)
+ui_position = Vector2(0.9, 0.5)
+[sub_resource type="Resource" id="Socket2"]
+script = ExtResource("2")
+id = "magazine"
+ui_label = "Carregador"
+categories = PackedStringArray("magazine")
+interfaces = PackedStringArray("fal_metric_76251")
+available_space = Vector3(0.15, 0.4, 0.25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.095, -0.135)
+ui_position = Vector2(0.48, 0.82)
+[sub_resource type="Resource" id="Socket3"]
+script = ExtResource("2")
+id = "stock"
+ui_label = "Coronha"
+categories = PackedStringArray("stock")
+interfaces = PackedStringArray("fal_fixed_stock")
+available_space = Vector3(0.18, 0.25, 0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0.2)
+ui_position = Vector2(0.12, 0.51)
+[resource]
+script = ExtResource("1")
+weapon_id = "fal"
+tags = PackedStringArray("infantry", "rifle")
+sockets = Array[Resource]([SubResource("Socket0"), SubResource("Socket1"), SubResource("Socket2"), SubResource("Socket3")])
+legacy_optic = "prism4x"

@@ -1,0 +1,32 @@
+{
+  "version": "1.7.1",
+  "date": "25/10/2026",
+  "title": "Balística, traçantes e áudio",
+  "summary": "Sniper mais visível, fumaça gradual, som com propagação e ciclo completo de dia e noite em 14 minutos.",
+  "changes": [
+    {
+      "title": "Sniper",
+      "text": "Projétil 2% mais lento na saída:607,6 m/s. Núcleo mais visível durante o dia e traçante com contraste, mantendo a posição física da munição e a queda."
+    },
+    {
+      "title": "Som à distância",
+      "text": "Disparos e explosões levam tempo para chegar, considerando 343 m/s. Sons próximos, médios e distantes recebem tratamentos diferentes; paredes abafam sem silenciar completamente."
+    },
+    {
+      "title": "Passagem e impactos",
+      "text": "Estalo supersônico separado do disparo e sons de contato por superfície: terra, lama, concreto, metal, madeira, blindados e água. Fontes continuam na posição real do evento."
+    },
+    {
+      "title": "Balística naval",
+      "text": "Resistência progressiva na trajetória das quatro armas. Guia, torretas, renderização e autoridade usam a mesma física, incluindo o movimento do navio."
+    },
+    {
+      "title": "Fumaça e efeitos",
+      "text": "Fumaça de impactos pesados aparece gradualmente e se dissipa mais devagar, com emissão reduzida e pools limitados. Rastro luminoso acompanha o próprio projétil."
+    },
+    {
+      "title": "Dia e noite",
+      "text": "Ciclo completo de 14 minutos nos modos que usam o sistema compartilhado: Offline, Deserto, Guerra e Naval. Sem alterar o tempo da partida."
+    }
+  ]
+}

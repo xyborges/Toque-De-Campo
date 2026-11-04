@@ -1,0 +1,18 @@
+[
+  {
+    "title": "Engine-loop heavy vehicle/tank",
+    "authors": "Nayckron e Iwan “qubodup” Gabovitch",
+    "source": "https://opengameart.org/content/engine-loop-heavy-vehicletank",
+    "license": "CC BY 3.0",
+    "license_url": "https://creativecommons.org/licenses/by/3.0/",
+    "changes": "Mistura com gravação de tanque, equalização, remoção de subgrave, conversão mono22050Hz e crossfade de loop."
+  },
+  {
+    "title": "Tank Engine Loop.flac",
+    "authors": "Iwan “qubodup” Gabovitch",
+    "source": "https://freesound.org/people/qubodup/sounds/200303/",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "changes": "Prévia pública HQ convertida em PCM, equalizada, ajustada por veículo e combinada em loops contínuos. A página descreve fonte de agência do governo dos EUA como domínio público; conservamos atribuição sobCC BY4 exibida na página."
+  }
+]

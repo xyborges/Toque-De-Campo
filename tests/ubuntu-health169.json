@@ -1,0 +1,9 @@
+{
+  "exit": 0,
+  "services": [
+    "active",
+    "active",
+    "active"
+  ],
+  "current": "/opt/toque-de-campo/releases/build-36"
+}

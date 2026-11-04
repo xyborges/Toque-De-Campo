@@ -1,0 +1,118 @@
+extends RefCounted
+class_name WarLocomotion
+
+# Presentation follows distance actually covered, including replicated actors.
+# It never integrates stale network velocity or changes the camera transform.
+var previous := Vector3.ZERO
+var initialized := false
+var life := 0
+var phase := 0.0
+var distance_since_step := 0.0
+var speed := 0.0
+var moving := 0.0
+var sprint := 0.0
+var grounded := false
+var ground_clock := 0.0
+var ground_point := Vector3.ZERO
+var step_sequence := 0
+var local_direction := Vector3.ZERO
+
+func reset(actor: GamePlayer) -> void:
+	previous=actor.global_position;initialized=true;life=actor.life_id
+	phase=0;distance_since_step=0;speed=0;moving=0;sprint=0;grounded=false;ground_clock=0
+	local_direction=Vector3.ZERO
+
+func advance(actor: GamePlayer,delta: float) -> void:
+	if actor.in_water(): reset(actor);return
+	if not initialized or life!=actor.life_id:
+		reset(actor);return
+	var displacement:=actor.global_position-previous
+	previous=actor.global_position
+	var distance:=Vector2(displacement.x,displacement.z).length()
+	if actor.hp<=0 or not actor.deployed or not actor.vehicle_id.is_empty() or distance>maxf(1.0,actor.move_speed*delta*4):
+		reset(actor);return
+	# A teleport, respawn or correction is not a foot contact. Normal remote
+	# interpolation covers real distance and therefore gives the same cadence.
+	var actual_speed:=distance/maxf(delta,.001)
+	speed=actual_speed
+	# Stationary replicated actors can retain a nonzero last velocity. Only
+	# actual displacement starts a gait, and there is no reason to raycast an
+	# unchanged contact every 100 ms. Resume with an immediate ground query.
+	if actual_speed<=.18:
+		moving=move_toward(moving,0,delta*9);sprint=move_toward(sprint,0,delta*7)
+		distance_since_step=0;ground_clock=0
+		if moving==0 and sprint==0: return
+	ground_clock-=delta
+	if actor.is_local or actor.get_meta("war_bot",false):
+		grounded=actor.is_on_floor() and absf(actor.velocity.y)<1.0
+		ground_point=actor.global_position
+	elif ground_clock<=0:
+		ground_clock=.10
+		var ray:=PhysicsRayQueryParameters3D.create(actor.global_position+Vector3.UP*.20,actor.global_position-Vector3.UP*.30,1,[actor.get_rid()])
+		var hit:=actor.get_world_3d().direct_space_state.intersect_ray(ray)
+		grounded=not hit.is_empty() and Vector3(hit.normal).y>.5 and absf(displacement.y/maxf(delta,.001))<2.5
+		ground_point=hit.position if grounded else actor.global_position
+	var active:=grounded and actual_speed>.18
+	var precision:=actor.aiming or actor.iron_sights or actor.crouched or actor.prone or actor.reload_left>0 or actor._grenade_active() or actor.gadget_equipped or actor.fire_cooldown>0
+	var running:=active and actual_speed>actor.move_speed*1.13 and not precision
+	moving=move_toward(moving,1.0 if active else 0.0,delta*9)
+	sprint=move_toward(sprint,1.0 if running else 0.0,delta*7)
+	if distance>.002:
+		local_direction=actor.global_basis.inverse()*displacement.normalized()
+	if not active:
+		distance_since_step=0
+		return
+	var cycle_distance:=lerpf(3.6,4.0,sprint)*(0.70 if actor.crouched else 1.0)
+	phase=fposmod(phase+distance/cycle_distance*TAU,TAU)
+	distance_since_step+=distance
+	if distance_since_step>=cycle_distance*.5:
+		distance_since_step=fmod(distance_since_step,cycle_distance*.5)
+		step_sequence+=1
+		if not actor.prone:
+			var side: float=-1.0 if step_sequence%2==0 else 1.0
+			var point:=ground_point+actor.global_basis*Vector3(side*.14,.035,0)
+			actor.emit_step_sound(step_sequence,point,running)
+
+func pose_body(actor: GamePlayer) -> void:
+	if actor.hp<=0 or not actor.deployed or not actor.vehicle_id.is_empty(): return
+	# The base rig already writes the neutral pose. Rewriting all joints while
+	# idle dirties each attached hitbox in the physics broadphase repeatedly.
+	if moving==0 and sprint==0: return
+	var amount:=moving*(.28 if actor.crouched else lerpf(.36,.67,sprint))
+	var forward:=clampf(-local_direction.z,-1,1)
+	var lateral:=clampf(local_direction.x,-1,1)
+	var stride:=sin(phase)*amount
+	actor.avatar_parts.leg_l.rotation=Vector3(-stride*forward,0,-stride*lateral*.55)
+	actor.avatar_parts.leg_r.rotation=Vector3(stride*forward,0,stride*lateral*.55)
+	actor.avatar_parts.leg_l.rotation.z-=atan2(actor.lean*.04,.78)
+	actor.avatar_parts.leg_r.rotation.z-=atan2(actor.lean*.04,.78)
+	for entry in [["leg_l","legL"],["leg_r","legR"]]:
+		if float(actor.limbs[entry[1]])<=0: actor.avatar_parts[entry[0]].rotation*=.2
+	if not grounded:
+		# A compact jump/fall pose replaces the previous walking in mid-air.
+		actor.avatar_parts.leg_l.rotation=Vector3(-.18,0,0)
+		actor.avatar_parts.leg_r.rotation=Vector3(.12,0,0)
+
+func pose_torso(actor: GamePlayer) -> void:
+	if actor._grenade_active() or (is_instance_valid(actor.melee_rig) and actor.melee_rig.running): return
+	actor.avatar_parts.torso.rotation.x=-.085*sprint*maxf(0,-local_direction.z)
+	actor.avatar_parts.torso.rotation.z=-local_direction.x*.035*moving
+
+func pose_weapon(actor: GamePlayer) -> void:
+	if actor.hp<=0 or not actor.deployed or not actor.vehicle_id.is_empty(): return
+	if moving==0 and sprint==0: return
+	# Aiming, firing, reloads and grenade poses own their complete transform.
+	# The muzzle and both world-space grips move with the actual weapon root.
+	if actor.aiming or actor.iron_sights or actor.reload_left>0 or actor.fire_cooldown>0 or actor._grenade_active() or actor.gadget_equipped: return
+	if is_instance_valid(actor.melee_rig) and actor.melee_rig.running: return
+	var pulse:=sin(phase)
+	var lift:=absf(cos(phase))
+	var weight:=moving*(.38+.62*sprint)
+	var offset:=Vector3(pulse*.012*weight,-.09*sprint-lift*.012*weight,.035*sprint)
+	var rotation_offset:=Vector3(.06*sprint,0,.12*sprint+pulse*.012*weight)
+	actor.weapon_root.position+=Basis(Vector3.RIGHT,actor.pitch)*offset
+	actor.weapon_root.rotation+=rotation_offset
+	if is_instance_valid(actor.view_root):
+		actor.view_root.position+=offset
+		actor.view_root.rotation+=rotation_offset
+

@@ -1,0 +1,1444 @@
+{
+  "completed_at": "2026-10-25T10:13:50.836768-03:00",
+  "version": "1.7.1",
+  "build": 40,
+  "published": true,
+  "download": "http://192.168.101.24/",
+  "war_protocol": 12,
+  "naval_protocol": 6,
+  "desert_deployment_protocol": 2,
+  "services": {
+    "toque-war": "active",
+    "toque-pvp": "active",
+    "toque-naval": "active"
+  },
+  "distribution": {
+    "build": 40,
+    "version": "1.7.1",
+    "tls": true,
+    "private_paths_blocked": true,
+    "download_identical": true,
+    "real_launcher_install": true,
+    "no_redownload": true,
+    "production_boot": true
+  },
+  "reports": {
+    "tests/ballistics171-results.json": {
+      "checks": 39,
+      "failures": [],
+      "samples": {
+        "actual_impact": "(0.0, 13.60643, -999.9)",
+        "distant_rms": 0.00164633276496559,
+        "flight": 1.666,
+        "gun_sound": 2.949
+      }
+    },
+    "tests/tracer171-results.json": {
+      "captures": [
+        "res://work/tracer171-day-70.png",
+        "res://work/tracer171-day-7.png"
+      ],
+      "failures": [],
+      "measurements": [
+        {
+          "distance": 100.0,
+          "fov": 70.0,
+          "tip_error": 0.0,
+          "visible_pixels": 4
+        },
+        {
+          "distance": 600.0,
+          "fov": 70.0,
+          "tip_error": 0.0,
+          "visible_pixels": 4
+        },
+        {
+          "distance": 1000.0,
+          "fov": 70.0,
+          "tip_error": 0.0,
+          "visible_pixels": 4
+        },
+        {
+          "distance": 100.0,
+          "fov": 7.0,
+          "tip_error": 0.0,
+          "visible_pixels": 4
+        },
+        {
+          "distance": 600.0,
+          "fov": 7.0,
+          "tip_error": 0.0,
+          "visible_pixels": 4
+        },
+        {
+          "distance": 1000.0,
+          "fov": 7.0,
+          "tip_error": 0.0,
+          "visible_pixels": 4
+        }
+      ],
+      "method": "Native rendered pixels against a bright daytime background. Tip and trail use shared ballistic positions; no separate tracer simulation."
+    },
+    "tests/explosion-cabin171-results.json": {
+      "bus": "WarCabinWeapons",
+      "failures": [],
+      "gain_db": -17.7650165557861,
+      "operator_optic": true
+    },
+    "tests/war-audio-remote-server.json": {
+      "checks": 3,
+      "failures": [],
+      "measurements": [],
+      "method": "Two independent ENet processes. Headless source uses the ordinary War server shot validator and reliable remote_shot_packet. Native observer waits for343m/s propagation and captures PCM from WeaponShots using unmodified Glock/FAL/sniper WAVs. A small flat acoustic arena and diagnostic all-three-weapon inventory isolate sound; full-map combat, human listening is not asserted; native propagation timing is covered by ballistics171.",
+      "role": "server",
+      "source_events": 58
+    },
+    "tests/war-audio-remote-observer.json": {
+      "checks": 195,
+      "failures": [],
+      "measurements": [
+        {
+          "brightness": 0.1322146792136,
+          "bus": "WeaponShots",
+          "distance": 50.0,
+          "frames": 34987,
+          "left": 0.040331874104394,
+          "mode": "desert",
+          "origin_error": 3.72503361489862e-09,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.040331874104394,
+          "rms": 0.0570378833543582,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.0995910226533871,
+          "bus": "WeaponMid",
+          "distance": 99.9999923706055,
+          "frames": 33622,
+          "left": 0.0173715117654819,
+          "mode": "desert",
+          "origin_error": 7.6293954407447e-06,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.017240948229007,
+          "rms": 0.0244748793021247,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.071260371592403,
+          "bus": "WeaponFar",
+          "distance": 200.000015258789,
+          "frames": 33452,
+          "left": 0.00710395137481589,
+          "mode": "desert",
+          "origin_error": 1.52587890625e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.00691627366195859,
+          "rms": 0.00991468438745534,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.0701771141517908,
+          "bus": "WeaponFar",
+          "distance": 299.999969482422,
+          "frames": 34306,
+          "left": 0.00351384312231337,
+          "mode": "desert",
+          "origin_error": 3.0517578125e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.00342071112059919,
+          "rms": 0.0049039125256085,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.132194552627023,
+          "bus": "WeaponShots",
+          "distance": 50.0000114440918,
+          "frames": 33451,
+          "left": 0.0412422803959545,
+          "mode": "desert",
+          "origin_error": 1.14440927063697e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.0412417255894942,
+          "rms": 0.058324999973062,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.0995936174084806,
+          "bus": "WeaponMid",
+          "distance": 99.9999923706055,
+          "frames": 34134,
+          "left": 0.0172431129874934,
+          "mode": "desert",
+          "origin_error": 7.6293954407447e-06,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.0171133145727952,
+          "rms": 0.0242938362793303,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.0712028733477171,
+          "bus": "WeaponFar",
+          "distance": 200.000015258789,
+          "frames": 33964,
+          "left": 0.00705907684790762,
+          "mode": "desert",
+          "origin_error": 1.52587890625e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.0068728569106239,
+          "rms": 0.00985224482331697,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.0701770877110088,
+          "bus": "WeaponFar",
+          "distance": 299.999969482422,
+          "frames": 33794,
+          "left": 0.0035403623182436,
+          "mode": "desert",
+          "origin_error": 3.0517578125e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.00344652760716035,
+          "rms": 0.00494092277731171,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.121984382084716,
+          "bus": "WeaponShots",
+          "distance": 50.0000114440918,
+          "frames": 33963,
+          "left": 0.138749727066872,
+          "mode": "desert",
+          "origin_error": 1.14447129817563e-05,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.138749733959141,
+          "rms": 0.196221750667106,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.111402440444892,
+          "bus": "WeaponMid",
+          "distance": 100.0,
+          "frames": 34134,
+          "left": 0.062797541987666,
+          "mode": "desert",
+          "origin_error": 1.19219336625065e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0629223930337972,
+          "rms": 0.0888974624204331,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.0999402348150171,
+          "bus": "WeaponFar",
+          "distance": 199.999984741211,
+          "frames": 33452,
+          "left": 0.0279685088400174,
+          "mode": "desert",
+          "origin_error": 1.52592547237873e-05,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.028048642405455,
+          "rms": 0.0396101480371283,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.099548103547002,
+          "bus": "WeaponFar",
+          "distance": 300.0,
+          "frames": 33794,
+          "left": 0.0168139534484426,
+          "mode": "desert",
+          "origin_error": 1.19219336625065e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0168590159844535,
+          "rms": 0.023810406349545,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.122031627362344,
+          "bus": "WeaponShots",
+          "distance": 50.0000114440918,
+          "frames": 33963,
+          "left": 0.138447858607056,
+          "mode": "desert",
+          "origin_error": 1.14447129817563e-05,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.138444523610185,
+          "rms": 0.19579248113891,
+          "view": "tpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.111402448779476,
+          "bus": "WeaponMid",
+          "distance": 100.0,
+          "frames": 33622,
+          "left": 0.0632738705787229,
+          "mode": "desert",
+          "origin_error": 1.19219336625065e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0633996646166753,
+          "rms": 0.0895717598996463,
+          "view": "tpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.0999760749326112,
+          "bus": "WeaponFar",
+          "distance": 199.999984741211,
+          "frames": 33452,
+          "left": 0.0278768647965797,
+          "mode": "desert",
+          "origin_error": 1.52592547237873e-05,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0280023093969038,
+          "rms": 0.0395126425647123,
+          "view": "tpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.0995477582403179,
+          "bus": "WeaponFar",
+          "distance": 300.0,
+          "frames": 34306,
+          "left": 0.0166881022665974,
+          "mode": "desert",
+          "origin_error": 1.19219336625065e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0167328006080361,
+          "rms": 0.0236321681918673,
+          "view": "tpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.188275929341385,
+          "bus": "WeaponShots",
+          "distance": 49.9999885559082,
+          "frames": 32939,
+          "left": 0.0806552794083528,
+          "mode": "desert",
+          "origin_error": 1.14440936158644e-05,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0806601842628014,
+          "rms": 0.114067258324852,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.108543920375417,
+          "bus": "WeaponMid",
+          "distance": 100.000007629395,
+          "frames": 34134,
+          "left": 0.0422719808640071,
+          "mode": "desert",
+          "origin_error": 7.62939725973411e-06,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0423515443812188,
+          "rms": 0.0598378949967438,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.0671127416448348,
+          "bus": "WeaponFar",
+          "distance": 199.999984741211,
+          "frames": 33452,
+          "left": 0.0205613461208873,
+          "mode": "desert",
+          "origin_error": 1.52587890625e-05,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0207322949333174,
+          "rms": 0.0291992638178599,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.0650936966260075,
+          "bus": "WeaponFar",
+          "distance": 300.0,
+          "frames": 33794,
+          "left": 0.0130204268482123,
+          "mode": "desert",
+          "origin_error": 6.36885033600265e-09,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0131301684876342,
+          "rms": 0.018491426116536,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.188259139278049,
+          "bus": "WeaponShots",
+          "distance": 49.9999885559082,
+          "frames": 33963,
+          "left": 0.0794409313887658,
+          "mode": "desert",
+          "origin_error": 1.14440936158644e-05,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.079438437253487,
+          "rms": 0.112344678971417,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.108543895793769,
+          "bus": "WeaponMid",
+          "distance": 100.000007629395,
+          "frames": 34134,
+          "left": 0.0422719932248921,
+          "mode": "desert",
+          "origin_error": 7.62939725973411e-06,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0423515580488154,
+          "rms": 0.0598379134025202,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.0671082314582151,
+          "bus": "WeaponFar",
+          "distance": 199.999984741211,
+          "frames": 33964,
+          "left": 0.0204104572105779,
+          "mode": "desert",
+          "origin_error": 1.52587890625e-05,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0205794030522895,
+          "rms": 0.0289844543425164,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.0650909787662906,
+          "bus": "WeaponFar",
+          "distance": 300.0,
+          "frames": 33794,
+          "left": 0.0130227987468825,
+          "mode": "desert",
+          "origin_error": 6.36885033600265e-09,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0131332849268057,
+          "rms": 0.0184953091396296,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.132198682307596,
+          "bus": "WeaponShots",
+          "distance": 50.0000114440918,
+          "frames": 34987,
+          "left": 0.040328462078896,
+          "mode": "war",
+          "origin_error": 1.14440927063697e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.0403304218808739,
+          "rms": 0.0570344438277277,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.0995909807269044,
+          "bus": "WeaponMid",
+          "distance": 99.9999923706055,
+          "frames": 33622,
+          "left": 0.0173715200213468,
+          "mode": "war",
+          "origin_error": 7.6293954407447e-06,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.0172409555271582,
+          "rms": 0.0244748903029513,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.0712298404038875,
+          "bus": "WeaponFar",
+          "distance": 200.000015258789,
+          "frames": 33452,
+          "left": 0.00710841709346068,
+          "mode": "war",
+          "origin_error": 1.52587890625e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.00692098010845628,
+          "rms": 0.00992116723154345,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.070153238826215,
+          "bus": "WeaponFar",
+          "distance": 299.999969482422,
+          "frames": 34818,
+          "left": 0.00348973654214433,
+          "mode": "war",
+          "origin_error": 3.0517578125e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.00339705424864768,
+          "rms": 0.00487013744178055,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.132201727122672,
+          "bus": "WeaponShots",
+          "distance": 50.0000114440918,
+          "frames": 33451,
+          "left": 0.0412441832430563,
+          "mode": "war",
+          "origin_error": 1.14440927063697e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.041243623239031,
+          "rms": 0.0583276873300318,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.0995936171179494,
+          "bus": "WeaponMid",
+          "distance": 99.9999923706055,
+          "frames": 33622,
+          "left": 0.0173739071371897,
+          "mode": "war",
+          "origin_error": 7.6293954407447e-06,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.0172431242304529,
+          "rms": 0.0244781123136267,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.0712028819435035,
+          "bus": "WeaponFar",
+          "distance": 200.000015258789,
+          "frames": 33452,
+          "left": 0.007112892411422,
+          "mode": "war",
+          "origin_error": 1.52587890625e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.00692525243029815,
+          "rms": 0.00992735411274399,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.0701787214214244,
+          "bus": "WeaponFar",
+          "distance": 299.999969482422,
+          "frames": 34306,
+          "left": 0.00351389929501077,
+          "mode": "war",
+          "origin_error": 3.0517578125e-05,
+          "resource": "res://audio/pistol-109.wav",
+          "right": 0.00342054955346968,
+          "rms": 0.00490384007724751,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "glock"
+        },
+        {
+          "brightness": 0.121984172746554,
+          "bus": "WeaponShots",
+          "distance": 50.0000114440918,
+          "frames": 34987,
+          "left": 0.13670426087373,
+          "mode": "war",
+          "origin_error": 1.14447129817563e-05,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.136704529820204,
+          "rms": 0.193329209935788,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.111402440444372,
+          "bus": "WeaponMid",
+          "distance": 100.0,
+          "frames": 34134,
+          "left": 0.0627975419872614,
+          "mode": "war",
+          "origin_error": 1.19219336625065e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0629223930337972,
+          "rms": 0.0888974624201473,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.099915752892572,
+          "bus": "WeaponFar",
+          "distance": 199.999984741211,
+          "frames": 33964,
+          "left": 0.0278340970316858,
+          "mode": "war",
+          "origin_error": 1.52592547237873e-05,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0279185004910747,
+          "rms": 0.0394230849533549,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.0995481035469618,
+          "bus": "WeaponFar",
+          "distance": 300.0,
+          "frames": 33794,
+          "left": 0.0168139534489322,
+          "mode": "war",
+          "origin_error": 1.19219336625065e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0168590159843289,
+          "rms": 0.0238104063498025,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.12203162929437,
+          "bus": "WeaponShots",
+          "distance": 50.0000114440918,
+          "frames": 33451,
+          "left": 0.139503370140689,
+          "mode": "war",
+          "origin_error": 1.14447129817563e-05,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.13950000679854,
+          "rms": 0.197285179822009,
+          "view": "tpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.111408509094569,
+          "bus": "WeaponMid",
+          "distance": 100.0,
+          "frames": 33622,
+          "left": 0.0631976236784388,
+          "mode": "war",
+          "origin_error": 1.19219336625065e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0633280173402464,
+          "rms": 0.0894671862687551,
+          "view": "tpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.0999398696890289,
+          "bus": "WeaponFar",
+          "distance": 199.999984741211,
+          "frames": 33964,
+          "left": 0.0277571324468396,
+          "mode": "war",
+          "origin_error": 1.52592547237873e-05,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0278365335247486,
+          "rms": 0.0393106982937959,
+          "view": "tpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.0995477582403179,
+          "bus": "WeaponFar",
+          "distance": 300.0,
+          "frames": 34306,
+          "left": 0.0166881022665974,
+          "mode": "war",
+          "origin_error": 1.19219336625065e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0167328006080361,
+          "rms": 0.0236321681918673,
+          "view": "tpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.188266391536301,
+          "bus": "WeaponShots",
+          "distance": 49.9999885559082,
+          "frames": 33963,
+          "left": 0.0794365852102975,
+          "mode": "war",
+          "origin_error": 1.14440936158644e-05,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0794383473181367,
+          "rms": 0.112341542158321,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.108543909894343,
+          "bus": "WeaponMid",
+          "distance": 100.000007629395,
+          "frames": 34134,
+          "left": 0.0422719882844386,
+          "mode": "war",
+          "origin_error": 7.62939725973411e-06,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0423515494134395,
+          "rms": 0.059837903800507,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.0671082426569459,
+          "bus": "WeaponFar",
+          "distance": 199.999984741211,
+          "frames": 33452,
+          "left": 0.0205657047084953,
+          "mode": "war",
+          "origin_error": 1.52587890625e-05,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0207373814246206,
+          "rms": 0.029205944574816,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.0650850484313295,
+          "bus": "WeaponFar",
+          "distance": 300.0,
+          "frames": 33794,
+          "left": 0.0130260335873229,
+          "mode": "war",
+          "origin_error": 6.36885033600265e-09,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0131361169037627,
+          "rms": 0.0184995977882597,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.188256903782923,
+          "bus": "WeaponShots",
+          "distance": 49.9999885559082,
+          "frames": 33963,
+          "left": 0.079442274850839,
+          "mode": "war",
+          "origin_error": 1.14440936158644e-05,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0794390087807531,
+          "rms": 0.112346033083259,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.10854385926378,
+          "bus": "WeaponMid",
+          "distance": 100.000007629395,
+          "frames": 34134,
+          "left": 0.0422719991926223,
+          "mode": "war",
+          "origin_error": 7.62939725973411e-06,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0423515802054087,
+          "rms": 0.0598379333001753,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.0671082181403781,
+          "bus": "WeaponFar",
+          "distance": 199.999984741211,
+          "frames": 33452,
+          "left": 0.0205657102802051,
+          "mode": "war",
+          "origin_error": 1.52587890625e-05,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0207373913207419,
+          "rms": 0.0292059555248397,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.0650912613226372,
+          "bus": "WeaponFar",
+          "distance": 300.0,
+          "frames": 34306,
+          "left": 0.0129254046663499,
+          "mode": "war",
+          "origin_error": 6.36885033600265e-09,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.0130346845303599,
+          "rms": 0.0183567177511369,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.124919281240128,
+          "bus": "WeaponShots",
+          "distance": 41.2310600280762,
+          "frames": 34167,
+          "left": 0.211942212850446,
+          "mode": "desert",
+          "origin_error": 1.14447129817563e-05,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.108928372342111,
+          "rms": 0.238295807535603,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.124947026083527,
+          "bus": "WeaponShots",
+          "distance": 41.2310562133789,
+          "frames": 33655,
+          "left": 0.109603755223648,
+          "mode": "desert",
+          "origin_error": 1.19209289550781e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.213253750648773,
+          "rms": 0.239771026867081,
+          "view": "tpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.115489505910086,
+          "bus": "WeaponShots",
+          "distance": 50.0,
+          "frames": 21451,
+          "left": 0.121974889669783,
+          "mode": "desert",
+          "origin_error": 1.71931867498643e-06,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.121974889669783,
+          "rms": 0.17249854323997,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.0845758976332817,
+          "bus": "WeaponBlocked",
+          "distance": 50.0,
+          "frames": 21963,
+          "left": 0.033961421325188,
+          "mode": "desert",
+          "origin_error": 1.19219336625065e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0338825384450087,
+          "rms": 0.0479729564432341,
+          "view": "tpp",
+          "volume_db": -18.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.124919605375974,
+          "bus": "WeaponShots",
+          "distance": 41.2310562133789,
+          "frames": 34679,
+          "left": 0.210369080155533,
+          "mode": "war",
+          "origin_error": 1.19209289550781e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.108123159840146,
+          "rms": 0.23652857666528,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.124918174159268,
+          "bus": "WeaponShots",
+          "distance": 41.2310562133789,
+          "frames": 34167,
+          "left": 0.108930580854532,
+          "mode": "war",
+          "origin_error": 1.19209289550781e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.211944009629093,
+          "rms": 0.238298415149918,
+          "view": "tpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.116113043711125,
+          "bus": "WeaponShots",
+          "distance": 50.0,
+          "frames": 22987,
+          "left": 0.121839028689763,
+          "mode": "war",
+          "origin_error": 1.71931867498643e-06,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.121839028689763,
+          "rms": 0.172306406799427,
+          "view": "fpp",
+          "volume_db": -10.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.0849799432254719,
+          "bus": "WeaponBlocked",
+          "distance": 50.0,
+          "frames": 22475,
+          "left": 0.0339878951934723,
+          "mode": "war",
+          "origin_error": 1.19219336625065e-07,
+          "resource": "res://audio/ak_fire.wav",
+          "right": 0.0339306543336018,
+          "rms": 0.0480256839950128,
+          "view": "tpp",
+          "volume_db": -18.5,
+          "weapon": "fal"
+        },
+        {
+          "brightness": 0.104172140854445,
+          "bus": "WeaponFar",
+          "distance": 200.0,
+          "frames": 64172,
+          "left": 0.0155101233521031,
+          "mode": "war",
+          "origin_error": 6.36885033600265e-09,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.015509826127837,
+          "rms": 0.0219344166303366,
+          "tail": 2.04877383417512e-06,
+          "view": "fpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        },
+        {
+          "brightness": 0.0670242109084061,
+          "bus": "WeaponFar",
+          "distance": 200.0,
+          "frames": 64172,
+          "left": 0.0148937270311134,
+          "mode": "war",
+          "origin_error": 6.36885033600265e-09,
+          "resource": "res://audio/sound_026.wav",
+          "right": 0.015019395922257,
+          "rms": 0.0211519587449207,
+          "tail": 0.00227970580453645,
+          "view": "tpp",
+          "volume_db": -7.5,
+          "weapon": "sniper"
+        }
+      ],
+      "method": "Two independent ENet processes. Headless source uses the ordinary War server shot validator and reliable remote_shot_packet. Native observer waits for343m/s propagation and captures PCM from WeaponShots using unmodified Glock/FAL/sniper WAVs. A small flat acoustic arena and diagnostic all-three-weapon inventory isolate sound; full-map combat, human listening is not asserted; native propagation timing is covered by ballistics171.",
+      "role": "observer",
+      "source_events": 58
+    },
+    "tests/naval-physics-results.json": {
+      "checks": 15,
+      "failures": []
+    },
+    "tests/naval-arsenal-results.json": {
+      "checks": 100,
+      "compressed_bytes": 1157,
+      "failures": [],
+      "snapshot_bytes": 6252
+    },
+    "tests/war167-sniper-results.json": {
+      "checks": 18,
+      "drag": 0.008,
+      "failures": [],
+      "gravity": 12.0,
+      "measurements": [
+        {
+          "distance": 300.0,
+          "elevation_degrees": 0.203703170520955,
+          "flight_seconds": 0.500000000000001,
+          "impact": "Vector3(299.8, 1.301158, 0)",
+          "lifetime": 5.16912442396313
+        },
+        {
+          "distance": 800.0,
+          "elevation_degrees": 0.721658315213559,
+          "flight_seconds": 1.325,
+          "impact": "Vector3(799.8, 1.3027042, 0)",
+          "lifetime": 5.16912442396313
+        },
+        {
+          "distance": 1200.0,
+          "elevation_degrees": 1.11052846403919,
+          "flight_seconds": 1.99166666666666,
+          "impact": "Vector3(1199.8, 1.3041095, 0)",
+          "lifetime": 5.16912442396313
+        },
+        {
+          "distance": 1800.0,
+          "elevation_degrees": 1.69137812459707,
+          "flight_seconds": 2.99999999999999,
+          "impact": "Vector3(1799.8, 1.3064166, 0)",
+          "lifetime": 5.16912442396313
+        },
+        {
+          "distance": 2000.0,
+          "elevation_degrees": 1.88566758036323,
+          "flight_seconds": 3.34166666666666,
+          "impact": "Vector3(1999.8, 1.3072779, 0)",
+          "lifetime": 5.16912442396313
+        }
+      ],
+      "range": 2200.0,
+      "speed": 607.6
+    },
+    "tests/war1610-corrections-results.json": {
+      "checks": 25,
+      "failures": [],
+      "samples": {
+        "covered_peak": 0.0588235296308994,
+        "long_shot": {
+          "damage": 100.0,
+          "distance": 844.809402227402,
+          "kills": 1,
+          "point": "(0.0, 1.436219, -849.825)",
+          "target_hp": 0.0
+        },
+        "thermal_distance": 1200,
+        "thermal_peak": 0.803921580314636
+      }
+    },
+    "tests/war-tv168-results.json": {
+      "checks": 53,
+      "failures": []
+    },
+    "tests/war165-equipment-results.json": {
+      "checks": 80,
+      "failures": [],
+      "native": true
+    },
+    "tests/ubuntu-war-tv168-operator.json": {
+      "checks": 12,
+      "failures": [],
+      "fixture": "Three real QA accounts and production Ubuntu ENet authority. Coordinated via local stage files only. Infantry approach uses legal 5.8 m/s server_player_state packets; vehicle commands and malicious passenger packets use existing RPCs. No privileged server teleport, test account mode, service token or authority fixture.",
+      "role": "operator",
+      "samples": {}
+    },
+    "tests/ubuntu-war-tv168-opponent.json": {
+      "checks": 6,
+      "failures": [],
+      "fixture": "Three real QA accounts and production Ubuntu ENet authority. Coordinated via local stage files only. Infantry approach uses legal 5.8 m/s server_player_state packets; vehicle commands and malicious passenger packets use existing RPCs. No privileged server teleport, test account mode, service token or authority fixture.",
+      "role": "opponent",
+      "samples": {}
+    },
+    "tests/ubuntu-war-tv168-passenger.json": {
+      "checks": 7,
+      "failures": [],
+      "fixture": "Three real QA accounts and production Ubuntu ENet authority. Coordinated via local stage files only. Infantry approach uses legal 5.8 m/s server_player_state packets; vehicle commands and malicious passenger packets use existing RPCs. No privileged server teleport, test account mode, service token or authority fixture.",
+      "role": "passenger",
+      "samples": {}
+    },
+    "tests/ubuntu-pvp-host.json": {
+      "account_loaded": true,
+      "failures": [],
+      "players": 2,
+      "role": "host",
+      "shots": 1
+    },
+    "tests/ubuntu-pvp-guest.json": {
+      "account_loaded": true,
+      "failures": [],
+      "players": 2,
+      "role": "guest",
+      "shots": 1
+    },
+    "tests/ubuntu-naval170-results.json": {
+      "checks": 10,
+      "failures": [],
+      "source": "production Ubuntu; two signed real QA accounts; no authority fixture or test-account mode"
+    }
+  },
+  "regressions": [
+    {
+      "case": "naval_physics",
+      "exit": 0,
+      "seconds": 9.92,
+      "errors": false
+    },
+    {
+      "case": "naval_arsenal",
+      "exit": 0,
+      "seconds": 3.13,
+      "errors": false
+    },
+    {
+      "case": "war167_sniper",
+      "exit": 0,
+      "seconds": 4.63,
+      "errors": false
+    },
+    {
+      "case": "war_tv168",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "tracer171",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "war165_equipment",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "deployment170_ui",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "deployment170_war",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "ballistics171",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "naval_deployment",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "war_network",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "naval_network",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "desert_network",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "war1610_corrections",
+      "exit": 0,
+      "errors": false
+    },
+    {
+      "case": "explosion_cabin171",
+      "exit": 0,
+      "errors": false
+    }
+  ],
+  "source_changes": [
+    {
+      "path": "scripts/bullet_physics.gd",
+      "new": false,
+      "sha256": "502867de07dfa2bc98294725f1b655a401f80052293b046021329034efbc5dd5"
+    },
+    {
+      "path": "scripts/combat_feedback.gd",
+      "new": false,
+      "sha256": "d9ee9ebd02907f98432ff6df54b1f82c1ff480b71ad40fb5e44ca411d2c5aaf6"
+    },
+    {
+      "path": "scripts/combat_rules.gd",
+      "new": false,
+      "sha256": "b84ec960d159b4cf32d7ca1701502e2b4beeca8e0e390c8a16faaad029fdb1cc"
+    },
+    {
+      "path": "scripts/combat_visuals.gd",
+      "new": false,
+      "sha256": "7a36938b8ac485402aa8c95ae2df53fd2ca0a1f320bec7daf6925ed01c177a1d"
+    },
+    {
+      "path": "scripts/day_night.gd",
+      "new": false,
+      "sha256": "ec44ccd2d9d89b2a2d213b0a33c2af4f9e79eb44882da32da026fab19268cd15"
+    },
+    {
+      "path": "scripts/effect_envelope.gd",
+      "new": true,
+      "sha256": "eaf5b4c82a7bec6944227b22c7065acd24c29077e6c347db82f9a0a8fa59f8fd"
+    },
+    {
+      "path": "scripts/explosion_audio.gd",
+      "new": false,
+      "sha256": "643db0a9f462f0aabe9098d1ed4a0b432b973e8d4b321011b8ca58a23b04e686"
+    },
+    {
+      "path": "scripts/grenades.gd",
+      "new": false,
+      "sha256": "fde8d527e4869d88d4e50871ddc5b10cd2c1d4b9592ffce46609c6bf3e9d7bb5"
+    },
+    {
+      "path": "scripts/impact_surface.gd",
+      "new": true,
+      "sha256": "28e25e9ad778f3f2321ab2c5313aad6569928b55f67817332af6371f73052402"
+    },
+    {
+      "path": "scripts/loadouts.gd",
+      "new": false,
+      "sha256": "103da4d1938a8edafb2a52fe516be66648fdee5b3555d86a5c55a15548f59c3a"
+    },
+    {
+      "path": "scripts/main.gd",
+      "new": false,
+      "sha256": "a6ad1c7b2113bdf9c9ea231d42878370d087ac8fecf204640dcfa99c4a7a9b58"
+    },
+    {
+      "path": "scripts/sound_propagation.gd",
+      "new": true,
+      "sha256": "7f34f31ef9199cbb95a3234e4b2fe9e67ab978a2979aae1e082bddf3b1f840d7"
+    },
+    {
+      "path": "scripts/tracer_style.gd",
+      "new": false,
+      "sha256": "1d72c87ab13e0dee7a17a3123b892bc1a23ba02c8cc28651b784e9a197f26ded"
+    },
+    {
+      "path": "scripts/weapons.gd",
+      "new": false,
+      "sha256": "1f10a9f00b1a58e2fd5e138e9bdf80e90b17218cf52c8e3a9d6cd0b84f15fb87"
+    },
+    {
+      "path": "scripts/weapon_audio.gd",
+      "new": false,
+      "sha256": "46614ba217eb9a2ed571a6bac00529a636df3615b95a5a5bece51e630d73e37a"
+    },
+    {
+      "path": "scripts/environment/environment_kit.gd",
+      "new": false,
+      "sha256": "6b6590bec6d2469dcce7f65aec3e0ff5e3184b3fbc74cc818969667eda4a336f"
+    },
+    {
+      "path": "modes/war/scripts/day_night.gd",
+      "new": false,
+      "sha256": "bf0a6f2bea54d20e017f2b5a334d099e0776cb34a43c715724d0d30726e51ad6"
+    },
+    {
+      "path": "modes/war/scripts/effects.gd",
+      "new": false,
+      "sha256": "b1054d406ba19a8d6efc2458ad4437fe9bb1f43e59b30db5406e542cfff9e9ab"
+    },
+    {
+      "path": "modes/war/scripts/game.gd",
+      "new": false,
+      "sha256": "52911dec95d2e286c056f8556e9902afcbf545928ab87083a354b2bc48ce6567"
+    },
+    {
+      "path": "modes/war/scripts/projectiles.gd",
+      "new": false,
+      "sha256": "aabed38310201e1be2f7ddc5cdc464b025934257e38b7a9a9bb6741b10418d9c"
+    },
+    {
+      "path": "modes/war/scripts/rules.gd",
+      "new": false,
+      "sha256": "f8c344f0b45be57c13e54a1ab456d25e307ffdde6c0d1e0256bf9a8e43e38043"
+    },
+    {
+      "path": "modes/war/scripts/vehicles.gd",
+      "new": false,
+      "sha256": "8cbceb5bdf5bf2641d0505bb8bef8f5a16160aebd4461227907c90c869b585d1"
+    },
+    {
+      "path": "modes/naval/scripts/ballistics.gd",
+      "new": false,
+      "sha256": "76b5ba86a1b49196734c979b883c91b13506a61eb50a9cc821cc97b7d406d5c0"
+    },
+    {
+      "path": "modes/naval/scripts/catalog.gd",
+      "new": false,
+      "sha256": "b494f3796340b2d2a6056a0455454f3b24782b7a5068c31a486887446099cde6"
+    },
+    {
+      "path": "modes/naval/scripts/match.gd",
+      "new": false,
+      "sha256": "7485d3f95516c8cf5baa7424e8faa7dc633c117fdc08e54f5390f426427489fe"
+    },
+    {
+      "path": "modes/naval/scripts/mode.gd",
+      "new": false,
+      "sha256": "a0b9ae4617774a5c97131d9baa516ee3fa3c97380f786ec81b8ffc2ee0ab87dc"
+    },
+    {
+      "path": "modes/naval/scripts/projectile_visual.gd",
+      "new": false,
+      "sha256": "dd7f7f67bd027037b896c064d527017ecedacae34fb649c51a41508ebcd279d6"
+    },
+    {
+      "path": "modes/naval/scripts/world.gd",
+      "new": false,
+      "sha256": "cbac7a6986758e9f3ebfebf832008939c8a4f9b9260d629676f37c9cfa1d7ef5"
+    },
+    {
+      "path": "shaders/projectile_trail.gdshader",
+      "new": true,
+      "sha256": "eb6a15a9eb6dea3ffcf657352072a54b32762790da4b8ccf955b0e962ba720a1"
+    }
+  ],
+  "benchmark": {
+    "before": {
+      "average_fps": 57.9514054036823,
+      "count": 12,
+      "disconnect_window": {
+        "average_fps": 60.221835342552,
+        "frame_ms_max": 23.0719999999991,
+        "frame_ms_mean": 16.6052727272729,
+        "frame_ms_p95": 20.2219999999969,
+        "frames": 121,
+        "one_percent_low": 44.9256480524695
+      },
+      "failures": [],
+      "fixed_daylight": true,
+      "frame_ms_max": 254.696000000003,
+      "frame_ms_mean": 17.2558369039392,
+      "frame_ms_p95": 21.0020000000029,
+      "frames": 1447,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "invulnerable_fixture": true,
+      "label": "before171-thermal-noprof",
+      "max_draw_calls": 1643.0,
+      "max_nodes": 10907.0,
+      "maximum_players": 12,
+      "maximum_projectiles": 63,
+      "memory_mib": 225.130498886108,
+      "one_percent_low": 21.1587072312002,
+      "physics_ms_mean": 5.02838631651698,
+      "real_network_clients": true,
+      "resolution": "(1920, 1080)",
+      "role": "8",
+      "script_frame_ms_mean": 25.924407049067,
+      "spikes": [
+        {
+          "elapsed": 7.925981,
+          "frame_ms": 62.3739999999984,
+          "projectiles": 0
+        },
+        {
+          "elapsed": 8.214899,
+          "frame_ms": 254.696000000003,
+          "projectiles": 4
+        }
+      ],
+      "thermal_window": {
+        "average_fps": 57.5794179536304,
+        "frame_ms_max": 254.696000000003,
+        "frame_ms_mean": 17.367316925734,
+        "frame_ms_p95": 21.4910000000046,
+        "frames": 1158,
+        "one_percent_low": 19.2486297381707
+      }
+    },
+    "after": {
+      "average_fps": 57.2169575868406,
+      "count": 12,
+      "disconnect_window": {
+        "average_fps": 60.3823148683221,
+        "frame_ms_max": 19.5429999999988,
+        "frame_ms_mean": 16.5611404958676,
+        "frame_ms_p95": 18.6139999999995,
+        "frames": 121,
+        "one_percent_low": 52.0250760866822
+      },
+      "failures": [],
+      "fixed_daylight": true,
+      "frame_ms_max": 52.5120000000001,
+      "frame_ms_mean": 17.4773361285814,
+      "frame_ms_p95": 23.2789999999952,
+      "frames": 1431,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "invulnerable_fixture": true,
+      "label": "pack171-final-thermal-noprof",
+      "max_draw_calls": 2499.0,
+      "max_nodes": 10931.0,
+      "maximum_players": 12,
+      "maximum_projectiles": 127,
+      "memory_mib": 230.059196472168,
+      "one_percent_low": 27.7778806588174,
+      "physics_ms_mean": 4.97465828092236,
+      "real_network_clients": true,
+      "resolution": "(1920, 1080)",
+      "role": "8",
+      "script_frame_ms_mean": 19.988777777778,
+      "spikes": [
+        {
+          "elapsed": 7.179703,
+          "frame_ms": 52.5120000000001,
+          "projectiles": 0
+        }
+      ],
+      "thermal_window": {
+        "average_fps": 56.6628765285265,
+        "frame_ms_max": 52.5120000000001,
+        "frame_ms_mean": 17.6482392223162,
+        "frame_ms_p95": 23.8420000000019,
+        "frames": 1183,
+        "one_percent_low": 26.7305824593919
+      }
+    },
+    "method": "PCK vs PCK; GTX1650; 1080p; 60FPS cap; fixed daylight; 12 local ENet clients plus server; one native thermal operator; combat fixture; no GUI Profiler capture",
+    "stable_60_fps_proven": false
+  },
+  "limits": [
+    "Linear drag, not quadratic aerodynamics",
+    "Sound propagation uses source/listener distance at event time, with transport-age estimate where available",
+    "No long-duration 12-human-PC or WAN load test",
+    "Benchmark combat sequence is not a deterministic replay; no statistical performance claim"
+  ],
+  "evidence_logs": [
+    "work/release171-pack-final.log",
+    "work/release171-deploy-final.log",
+    "work/release171-distribution-final.log",
+    "work/release171-production-war-final.log",
+    "work/release171-production-desert-final.log",
+    "work/release171-production-naval-final.log",
+    "work/release171-health-final.log",
+    "work/release171-core-final.log"
+  ]
+}

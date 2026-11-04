@@ -1,0 +1,125 @@
+[gd_scene load_steps=12 format=3]
+
+[sub_resource type="StandardMaterial3D" id="Olive"]
+albedo_color = Color(0.25,0.29,0.21,1)
+roughness = 0.86
+metallic = 0.12
+[sub_resource type="StandardMaterial3D" id="Rubber"]
+albedo_color = Color(0.055,0.064,0.056,1)
+roughness = 0.94
+[sub_resource type="StandardMaterial3D" id="Metal"]
+albedo_color = Color(0.29,0.32,0.30,1)
+metallic = 0.65
+roughness = 0.60
+[sub_resource type="TorusMesh" id="Tire"]
+material = SubResource("Rubber")
+inner_radius = 0.225
+outer_radius = 0.32
+rings = 16
+ring_segments = 12
+[sub_resource type="CylinderMesh" id="Hub"]
+material = SubResource("Metal")
+top_radius = 0.19
+bottom_radius = 0.19
+height = 0.075
+radial_segments = 14
+rings = 1
+[sub_resource type="CylinderMesh" id="Frame"]
+material = SubResource("Metal")
+top_radius = 0.028
+bottom_radius = 0.028
+height = 0.97
+radial_segments = 10
+rings = 1
+[sub_resource type="BoxMesh" id="Engine"]
+material = SubResource("Metal")
+size = Vector3(0.27,0.28,0.30)
+[sub_resource type="BoxMesh" id="Seat"]
+material = SubResource("Rubber")
+size = Vector3(0.31,0.12,0.70)
+[sub_resource type="SphereMesh" id="Tank"]
+material = SubResource("Olive")
+radius = 0.23
+height = 0.40
+radial_segments = 16
+rings = 8
+[sub_resource type="CylinderMesh" id="Bar"]
+material = SubResource("Metal")
+top_radius = 0.023
+bottom_radius = 0.023
+height = 0.69
+radial_segments = 10
+rings = 1
+[sub_resource type="CylinderMesh" id="Fork"]
+material = SubResource("Metal")
+top_radius = 0.029
+bottom_radius = 0.029
+height = 0.65
+radial_segments = 10
+rings = 1
+
+[node name="Motorbike" type="Node3D"]
+metadata/library_id = "moto_transporte"
+metadata/surface = "metal"
+metadata/transport = true
+metadata/dimensions = Vector3(0.70,1.30,2.20)
+[node name="RearWheel" type="Node3D" parent="."]
+position = Vector3(0,0.41,0.74)
+[node name="Tire" type="MeshInstance3D" parent="RearWheel"]
+rotation_degrees = Vector3(0,0,90)
+mesh = SubResource("Tire")
+[node name="Hub" type="MeshInstance3D" parent="RearWheel"]
+rotation_degrees = Vector3(0,0,90)
+mesh = SubResource("Hub")
+[node name="Steering" type="Node3D" parent="."]
+position = Vector3(0,0.41,-0.74)
+[node name="FrontWheel" type="Node3D" parent="Steering"]
+[node name="Tire" type="MeshInstance3D" parent="Steering/FrontWheel"]
+rotation_degrees = Vector3(0,0,90)
+mesh = SubResource("Tire")
+[node name="Hub" type="MeshInstance3D" parent="Steering/FrontWheel"]
+rotation_degrees = Vector3(0,0,90)
+mesh = SubResource("Hub")
+[node name="ForkL" type="MeshInstance3D" parent="Steering"]
+position = Vector3(-0.09,0.32,0.08)
+rotation_degrees = Vector3(13,0,0)
+mesh = SubResource("Fork")
+[node name="ForkR" type="MeshInstance3D" parent="Steering"]
+position = Vector3(0.09,0.32,0.08)
+rotation_degrees = Vector3(13,0,0)
+mesh = SubResource("Fork")
+[node name="Handlebar" type="MeshInstance3D" parent="Steering"]
+position = Vector3(0,0.73,0.14)
+rotation_degrees = Vector3(0,0,90)
+mesh = SubResource("Bar")
+[node name="GripLeft" type="Marker3D" parent="Steering"]
+position = Vector3(-0.30,0.73,0.14)
+[node name="GripRight" type="Marker3D" parent="Steering"]
+position = Vector3(0.30,0.73,0.14)
+[node name="FrameL" type="MeshInstance3D" parent="."]
+position = Vector3(-0.11,0.63,0.05)
+rotation_degrees = Vector3(62,0,0)
+mesh = SubResource("Frame")
+[node name="FrameR" type="MeshInstance3D" parent="."]
+position = Vector3(0.11,0.63,0.05)
+rotation_degrees = Vector3(62,0,0)
+mesh = SubResource("Frame")
+[node name="Seat" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.91,0.25)
+mesh = SubResource("Seat")
+[node name="Tank" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.88,-0.22)
+scale = Vector3(0.77,0.85,1.26)
+mesh = SubResource("Tank")
+[node name="Engine" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.54,-0.02)
+mesh = SubResource("Engine")
+[node name="Footrests" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.29,0.14)
+rotation_degrees = Vector3(0,0,90)
+mesh = SubResource("Bar")
+[node name="Exhaust" type="MeshInstance3D" parent="."]
+position = Vector3(0.19,0.45,0.42)
+rotation_degrees = Vector3(90,0,0)
+scale = Vector3(1.5,0.72,1.5)
+mesh = SubResource("Frame")

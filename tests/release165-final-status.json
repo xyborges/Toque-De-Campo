@@ -1,0 +1,55 @@
+{
+  "version": "1.6.5",
+  "build": 31,
+  "services": [
+    "active",
+    "active",
+    "active"
+  ],
+  "release": "/opt/toque-de-campo/releases/build-31",
+  "site_release_notes": true,
+  "postpublication_cases": [
+    {
+      "case": "distribution",
+      "exit": 0,
+      "seconds": 21.36,
+      "errors": []
+    },
+    {
+      "case": "central-launchers",
+      "exit": 0,
+      "seconds": 7.15,
+      "errors": []
+    },
+    {
+      "case": "central-respawn",
+      "exit": 0,
+      "seconds": 16.95,
+      "errors": []
+    },
+    {
+      "case": "central-passengers",
+      "exit": 0,
+      "seconds": 19.69,
+      "errors": []
+    },
+    {
+      "case": "central-pvp",
+      "exit": 0,
+      "seconds": 13.17,
+      "errors": []
+    },
+    {
+      "case": "central-naval",
+      "exit": 0,
+      "seconds": 9.22,
+      "errors": []
+    },
+    {
+      "case": "central-ranking",
+      "exit": 0,
+      "seconds": 1.44,
+      "errors": []
+    }
+  ]
+}

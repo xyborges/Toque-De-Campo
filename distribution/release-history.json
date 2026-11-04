@@ -1,0 +1,692 @@
+[
+  {
+    "version": "1.10.5",
+    "title": "Áudio e transportes",
+    "additions": [
+      "Voz por proximidade: O alcance passa a ser fixo em 55 metros, seguindo o perfil dos sons dos jogadores. Volume, microfone e silenciamento continuam disponíveis nas configurações.",
+      "Motos no Guerra: Motos destruídas retornam em 15 segundos. Quando abandonadas, retornam à base após 3 minutos; veículos ocupados preservam seus passageiros."
+    ],
+    "fixes": [
+      "Controles de som: Sons de morte, ambiente e tela de login respeitam suas categorias de volume. O volume da música mantém a preferência ao sair do Naval.",
+      "Microfone: Teste e transmissão compartilham a captura de forma exclusiva, com tratamento para mudança de dispositivo e encerramento ao sair da sala.",
+      "Guerra: Preservadas as correções de nascimento, entrada gradual, placar completo, equilíbrio dos 28 bots e ordenação por personagem da versão 1.10.4."
+    ]
+  },
+  {
+    "version": "1.10.3",
+    "title": "Correções do BR e do Guerra",
+    "additions": [
+      "Movimento no Afegão: A entrada online conserva o mapa Afegão durante todas as etapas de preparação e conexão. O personagem usa seus limites e terreno corretos.",
+      "Câmera da moto: A câmera externa permanece ativa ao girar a visão, sem alternar para a apresentação da arma e das mãos a pé. Sair da moto restaura a visão escolhida pelo jogador.",
+      "Desempenho do Guerra: Reduz cálculos repetidos do corpo, das mãos e da recarga, preservando as posições das armas e hitboxes. Corrige também o intervalo de atualização dos bots."
+    ],
+    "fixes": [
+      "Paredes invisíveis perto do centro: Removida a aplicação acidental do limite de 149 metros do pequeno mapa do Deserto ao Battle Royale online.",
+      "Nascimento no céu ou abaixo do terreno: A entrada deixa de usar a altura e a recuperação de posição do terreno de outro modo. A correção foi verificada com clientes independentes no mapa completo.",
+      "Piscada ao girar na moto: Atualizações do mouse e da visão passam a respeitar a câmera da moto também entre os quadros de física.",
+      "Placar do Guerra: O placar exibe os jogadores e bots de ambas as equipes.",
+      "Entrada no Guerra: Os personagens são preparados gradualmente ao entrar na partida.",
+      "Microfone: Melhorado o teste do microfone e a troca de dispositivos durante o chat de voz."
+    ]
+  },
+  {
+    "version": "1.10.2",
+    "title": "Mais vida no campo de batalha",
+    "additions": [
+      "28 bots nas partidas online: Guerra e Battle Royale recebem 28 bots, além dos jogadores. Eles se movimentam, procuram inimigos e combatem. No Guerra, disputam objetivos; no BR, procuram recursos e seguem a zona segura.",
+      "Mais lugares para explorar: O Afegão ganha novas construções, pequenos núcleos rurais, vegetação e detalhes próximos às propriedades. Neblina, iluminação e cores foram revisadas. Os nascimentos ficam mais próximos dos locais de loot.",
+      "Motos no Battle Royale: Motocicletas próximas de casas e estradas ajudam a atravessar o mapa, com som próprio que acompanha a aceleração.",
+      "Cores do personagem: Personalize pele, camisa, calça e botas. O corpo passa a ter proporções padronizadas, com a aparência salva na conta.",
+      "Voz nos modos online: Segure X para falar com jogadores próximos. O áudio acompanha a posição de quem fala, com alcance menor, escolha do dispositivo, volume, silenciamento e teste de microfone nas configurações.",
+      "Novas frentes no Guerra: Os pontos A, B e C ficam mais afastados, abrindo espaço para deslocamentos e disputas em diferentes regiões do mapa.",
+      "Menus em movimento: Painéis e telas recebem transições rápidas de entrada e saída, mantendo os controles responsivos.",
+      "Diagnóstico para suporte: As configurações permitem exportar um ZIP com registros de erros e conexão. O servidor também passa a manter registros separados por jogador. O relatório não inclui senhas nem gravações de voz."
+    ],
+    "fixes": [
+      "Preparação do BR online: A lista mostra os participantes e sua preparação. A partida aguarda a confirmação dos jogadores previstos; falhas e demora na entrada recebem tratamento e uma opção de saída.",
+      "Curativo com a mochila fechada: A aplicação leva quatro segundos e continua após fechar a mochila. O personagem fica parado durante a aplicação e recupera vida gradualmente depois dela. Um pedido atrasado de tiro deixa de cancelar o uso.",
+      "Armas iguais na mochila: Agora é possível carregar duas armas do mesmo tipo, com carregadores e acessórios independentes. Largar e recolher preserva os itens da arma escolhida.",
+      "Corrida, passos e agachamento: O BR usa o balanço de corrida compartilhado com o Guerra. Os passos foram verificados e o volume dos próprios passos aumentou. Ctrl alterna agachar e levantar por clique; Z continua alternando deitar.",
+      "Objetos apoiados no chão: Varais, caixas, lenha, feno e poços verificam a base antes de serem colocados. Pontos de loot das caixas usam a mesma regra de posicionamento.",
+      "Entrada e saída mais estáveis: A entrada com muitos personagens recebe uma carga inicial distribuída. Desconexões limpam o estado da sessão; morrer ou sair de uma moto libera o assento e seus controles.",
+      "X para voz, T para térmica: X deixa de ativar a visão térmica no Guerra e fica reservado à comunicação por voz."
+    ]
+  },
+  {
+    "version": "1.10.1",
+    "title": "Entrada online e novas coberturas",
+    "additions": [
+      "Cobertura no Afegão: Taludes e muros rurais baixos protegem áreas abertas, acompanhados por tamargueiras, capim rasteiro e detalhes de solo. Modelos distantes usam LOD; a cobertura física permanece.",
+      "Prismática 4×: Novo exterior compacto e facetado para distinguir da PSO de tubo longo. As duas lunetas conservam ampliação de 4× e podem ser instaladas em AK e FAL."
+    ],
+    "fixes": [
+      "Battle Royale online: Corrigidos o caminho da conexão de pareamento, a exibição da busca e a abertura das salas pelo servidor protegido. A tela de espera mostra a busca, os participantes e a contagem.",
+      "Arma e punhos: A troca atualiza os modelos imediatamente, sem precisar mirar para a arma aparecer.",
+      "Postura deitado: A arma acompanha a altura dos ombros; braços deixam de esticar acima da cabeça. Recarga da AK preserva os alvos corretos das mãos nas posturas baixas.",
+      "Implantação no Guerra: Proteções ao reconstruir apresentações de armas e acessórios tratam nós já destacados, evitando chamar sua remoção sobre uma referência vazia."
+    ]
+  },
+  {
+    "version": "1.10.0",
+    "title": "Battle Royale no Deserto Afegão",
+    "additions": [
+      "Battle Royale: Partidas individuais com loot, bots, zona progressiva, espectador e resultados. O pareamento dura 30 segundos; partidas iniciadas fecham a entrada e novas buscas formam outro grupo.",
+      "Deserto Afegão: Vilarejos com interiores exploráveis, propriedades muradas, plantações, canais, vegetação e rotas entre os vales. O loot aparece em locais de coleta associados às construções e propriedades.",
+      "Mochila e equipamentos: Clique nos itens para usar, equipar, recarregar ou largar. Dois espaços livres para combinar armas, mochilas de três níveis e coletes e capacetes com proteção e resistência próprias.",
+      "Armas e acessórios: Prismática 4× e PSO 4× podem ser encontradas e instaladas na FAL ou AK. A mochila mostra as armas e seus encaixes; trocar ou largar conserva os acessórios e a munição.",
+      "Corpos saqueáveis: No Battle Royale, o corpo permanece até o fim da rodada. Retirar mochila, colete ou capacete remove a peça do cadáver para todos os jogadores.",
+      "Voz por proximidade: Segure X para falar com jogadores vivos por perto. Configure dispositivo, volume e silêncio nas opções de áudio. Substitua o atualizador antigo pelo novo executável disponível neste site.",
+      "Personagem e combate: Personagem articulado compartilhado entre os modos, socos no Battle Royale, agachar e deitar, ajustes na recarga da AK e aumento do dano das granadas."
+    ],
+    "fixes": [
+      "Construções da Ucrânia: Removida uma cópia deslocada dos detalhes do mapa no porto leste. Fundações e objetos acompanham o terreno ajustado às ruas, corrigindo construções elevadas sobre encostas artificiais.",
+      "Motoristas aliados: Bots em blindados passam a antecipar aliados a pé e veículos à frente, com mais distância para frear e desviar.",
+      "Saque e munição: Trocas com os dois espaços ocupados preservam a arma largada. Pilhas de mochilas grandes, curativos, acessórios e itens dos corpos mantêm suas quantidades ao coletar, trocar ou descartar.",
+      "Câmeras e morte: Ajustes de alinhamento do cano com as ópticas, representação do equipamento e limpeza de estados entre mortes, saídas e novas rodadas."
+    ]
+  },
+  {
+    "version": "1.9.7",
+    "title": "1.9.7 — Ajustes de vídeo",
+    "additions": [
+      "Configurações → Vídeo oferece antisserrilhamento Desligado, MSAA 2×, 4× e 8×. O padrão para uma instalação sem preferência anterior é desligado; os presets gráficos podem mudar esse valor.",
+      "Preferências de vídeo, sensibilidade por equipamento, áudio, atalhos e câmeras são armazenadas por conta no servidor, com cache local separado por conta fora das pastas de versões instaladas. A sincronização ocorre após autenticação e ao salvar alterações.",
+      "Se uma gravação não for concluída, a alteração permanece pendente para outra tentativa.",
+      "Blindados retornam após 15 segundos, com suspensão reiniciada e espaço livre na base; quando a área estiver completamente obstruída, o retorno aguarda até haver espaço.",
+      "As laterais das trincheiras centrais foram suavizadas para permitir que blindados saiam dirigindo, preservando a cobertura do fundo."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.9.6",
+    "title": "1.9.6 — Guerra com bots e Javelin",
+    "additions": [
+      "Guerra online começa com um jogador humano implantado. Bots completam até seis por equipe; jogadores adicionais substituem bots. Os APCs de transporte ficam disponíveis para jogadores, enquanto bots podem operar outros blindados.",
+      "O antigo lançador exibido como Stinger passa a se chamar Javelin. Preserva o modelo anterior e o identificador interno usado por inventário e rede; não é uma nova modelagem. Adquire drones e blindados terrestres inimigos visíveis, sem trava em veículos aliados, embarcações ou alvos cobertos."
+    ],
+    "fixes": [
+      "O servidor confirma a trava no instante do disparo. O projétil persegue o centro do blindado e usa as regras de colisão e dano existentes. Não foi implementado ataque por cima nem modelagem física fiel de uma Javelin real.",
+      "Página de atualizações: versão atual em destaque e histórico das versões documentadas, com adições e correções em colunas separadas. A versão 1.6.2 foi incorporada à 1.6.3 e não teve lançamento separado."
+    ]
+  },
+  {
+    "version": "1.9.5",
+    "title": "1.9.5 — Combate em equipe",
+    "additions": [
+      "Guerra online: dois humanos em equipes opostas iniciam a partida; bots completam até seis por equipe e cedem a vaga para humanos, com reposição ao sair.",
+      "Placar superior com objetivos por cor relativa à equipe e tickets no centro. Ao fim, tela de resultado durante 60 segundos e reinício da operação.",
+      "Pontos capturados reabastecem a equipe que controla o local: infantaria junto à caixa e operador de blindado na área. O uso tem intervalo de 20 segundos.",
+      "Tanques têm cortina de fumaça com intervalo de 45 segundos. Ela encobre a visão de mísseis TV dentro da nuvem, inclusive a térmica; não impede fisicamente um impacto.",
+      "Médico equipa um kit com G e mantém o botão esquerdo pressionado para curar. Aliados à frente a até um metro têm prioridade; sem aliado próximo, o médico cura a si. O tratamento consome cargas.",
+      "Atirador equipa binóculos com G, alterna o zoom com o botão direito e não dispara enquanto usa o equipamento.",
+      "Operador do drone permanece no local, com arma guardada e controle nas mãos; velocidade aumentada em 15% e som mais alto durante movimento. A morte do operador interrompe o controle e o drone cai.",
+      "Bots em blindados identificam veículos adiante, verificam espaço lateral e tentam ultrapassar ou param quando não há passagem."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.9.4",
+    "title": "1.9.4 — Combate e ambientação",
+    "additions": [
+      "Recarga da sniper: movimentos da arma e das duas mãos pelo tempo já replicado de recarga, em primeira e terceira pessoa. A luneta fecha quando a recarga começa. O modelo GLB é uma malha única: não há carregador ou ferrolho separado para animar individualmente. O tempo de recarga e as regras da munição continuam os mesmos.",
+      "Fontes espaciais de armas, impactos e explosões usam separação estéreo mais pronunciada. O ouvinte acompanha a orientação da câmera. Não implica áudio binaural/HRTF.",
+      "Guerra: 61.285 tufos de grama contra 53.237 no cenário de referência, preservando os filtros de implantação, lotes e LOD. 45 segundos de teste isolado com 18 participantes: média 48,51 FPS, 1% low 23,78, pior quadro 59,98 ms. A cena varia e a resolução registrada foi 1954 × 1080; não é comparação idêntica de carga com o ensaio de 75 segundos da 1.9.3.",
+      "Ragdoll ao morrer: força limitada no tronco e no segmento atingido, na direção do impacto, com impulso maior para explosivos e atropelamento. A simulação permanece local como antes. Tiros posteriores em corpos não foram adicionados.",
+      "Atropelamento por blindados no Guerra: contato efetivo no sentido de deslocamento, velocidade mínima 3 m/s e dano progressivo. O servidor valida operador, partida, ocupantes, velocidade e colisão; uma mesma vítima tem intervalo mínimo de um segundo. Fogo amigo usa a penalidade existente."
+    ],
+    "fixes": [
+      "Mira deitada no Guerra: limite de 0,38 radianos para baixo, aplicado ao cliente e à autoridade. Ao levantar, a amplitude anterior é restaurada. O modelo não se adapta automaticamente à inclinação do solo."
+    ]
+  },
+  {
+    "version": "1.9.3",
+    "title": "1.9.3 — Guerra offline, posturas e desempenho",
+    "additions": [
+      "Guerra offline: 18 participantes por padrão (um jogador e 17 bots), nove por equipe. A seleção inicial permite 12 ou 18; a capacidade online continua em 12.",
+      "Grupos escolhem objetivos conforme controle, distância e distribuição dos outros grupos. A infantaria concentra o combate na frente central; a equipe de transporte pode seguir para os portos.",
+      "Ctrl mantém o agachamento. Z alterna entre deitar e levantar. Joelhos articulados, botas, roupa, câmera, arma e regiões de acerto acompanham as posturas. O corpo não é achatado por escala vertical.",
+      "Projéteis de tanque e 30 mm conservam a velocidade inicial e perdem velocidade progressivamente depois do trecho próximo. A integração compartilhada continua aplicando gravidade; a queda é maior quando comparada na mesma distância."
+    ],
+    "fixes": [
+      "Bots utilizam os assentos e controles reais dos blindados, incluindo passageiros, recarga e abandono de uma rota bloqueada. A reserva inicial deixa os blindados aliados disponíveis para o jogador.",
+      "Rajadas com pausas, reação e erro deliberado, sem aquisição de inimigos através de paredes. A seleção de alvos considera o peito real, inclusive em posturas baixas. Cadência e consumo de munição usam a autoridade existente.",
+      "A verificação de espaço impede levantar sob um teto. Todas as posturas compartilham o mesmo plano de apoio; deitar e encostar no chão não impede voltar a levantar.",
+      "Projeção de velocidade sobre uma subida deixa de ser reaplicada como impulso vertical no quadro seguinte. O auxílio de degraus só faz as verificações adicionais quando o movimento realmente encontra uma borda.",
+      "Personagens remotos usam atualizações de pose por distância. Posição e combate continuam na simulação; personagens e cobertura não desaparecem para economizar desenho.",
+      "Blindados parados podem conservar o apoio validado mesmo ocupados; direção, mudanças de apoio e geometria invalidam esse repouso. Torre e recarga continuam sendo atualizadas.",
+      "Grama usa setores visuais maiores e não projeta sombras pequenas. Árvores mantêm os seis volumes da copa no LOD distante; a grama possui uma versão distante opaca. Árvores e colisões continuam presentes.",
+      "O mapa tático reutiliza a textura do território durante mudanças de porcentagem da captura. Os pixels só são refeitos quando o estado visual do território muda; o marcador mantém sua atualização normal."
+    ]
+  },
+  {
+    "version": "1.9.2",
+    "title": "Toque de Campo 1.9.2 — revisão do Guerra",
+    "additions": [
+      "30 mm: dano à infantaria separado do dano à blindagem. Contato direto normalmente elimina; queda do dano por distância e exposição à explosão continuam validadas na autoridade. Guarani: 150 contra infantaria, 52 contra blindagem, raio 4,3 m. BMP-2: 155 / 55, raio 4,5 m.",
+      "Abrams/T-90: recuo visual do cano de 34 cm, retorno mecânico, reação curta da câmera e novo corpo/grave do disparo. A metralhadora coaxial não acompanha o recuo do canhão.",
+      "Explosões pesadas: fumaça maior e mais duradoura usando o pool existente de 256 efeitos; menos cartões à distância e limite de transparências grandes. Não foram acrescentadas centenas de partículas por explosão.",
+      "Alcance sonoro por categoria: granada 900 m, 30 mm 1.800 m, TV/drone/RPG/míssil 3.200 m e tanque/destruição 4.200 m. Distância, atraso de propagação e oclusão continuam atuando.",
+      "Confirmação de eliminação positiva/negativa somente para o responsável, em áudio 2D; deduplicação de eventos e quatro vozes reutilizadas. Sons reais de morte/impacto permanecem separados.",
+      "Mais tentativas de distribuição de grama, com reforço perto dos portos, respeitando lotes e piso. Instanciamento e distância de exibição de 70 m preservados.",
+      "O clima existente agora também pode escolher chuva diurna; não foi criado um segundo sistema climático. Ciclo de dia/noite de 14 minutos preservado.",
+      "Postes destrutíveis existentes recebem impactos de blindados. A parte inferior continua sólida; construções e grandes rochas continuam bloqueando."
+    ],
+    "fixes": [
+      "Disparo sem projétil: O cliente aplica a mesma condição antes da apresentação; a autoridade confirma também os disparos recusados dessa forma. Aviso de espera no HUD.",
+      "Stinger: Mantida a regra, com enquadramento do alvo e progresso de aquisição. Validado míssil e traçante após o travamento real.",
+      "Saída do APC: Apoio no piso de colisão real, mais alternativas ao redor, teste de espaço e percurso; sem teleporte através de paredes.",
+      "Implantação inesperada: O Guerra utiliza sua altura de terreno e recuperação própria. Permanecer vivo no porto não aciona implantação.",
+      "Câmera do blindado: Posição ligada à base da torre; orientação continua acompanhando a óptica. Rajada de metralhadora não acumula deslocamento vertical.",
+      "Mira da torre: Losango de intenção imediato e indicação do cano real; velocidade física da torre e origem do disparo preservadas.",
+      "Ré / pequenos obstáculos: Velocidade ajustada ao deslocamento efetivo, frenagem ao inverter o comando e contenção do impulso vertical após degraus.",
+      "Som próprio: Exclusão do próprio casco/ocupantes, mantendo o orçamento existente de verificações e a oclusão por paredes externas."
+    ]
+  },
+  {
+    "version": "1.9.1",
+    "title": "Atualização 1.9.1 — desempenho, rede e mobilidade",
+    "additions": [
+      "O contato com água é reutilizado dentro do mesmo tick quando posição, terreno, relógio e clima permanecem iguais. Morte, embarque, teleporte e alterações do cenário invalidam o resultado.",
+      "Blindados vazios e estabilizados entram em repouso parcial, mantendo recargas e temporizadores. Apoio alterado, entrada, controle ou teleporte acordam a simulação.",
+      "Guarani, BMP-2, Abrams e T-90 transpõem pequenos obstáculos mediante varreduras do casco completo. Não há redução de colisão nem aumento artificial de velocidade. Paredes, tetos sem folga e outros veículos continuam bloqueando a passagem.",
+      "A suspensão verifica colisões e distingue o plano de uma rampa contínua do topo de um obstáculo alto.",
+      "Poses recebidas são ordenadas por jogador/vida e por veículo. Pacotes antigos não podem fazer a posição, a mira ou o estado de combate regredir.",
+      "Veículos parados reenviam seu estado a cada 500 ms para recuperar uma última atualização perdida. O envio de estados em movimento mantém a taxa nominal de 20 Hz.",
+      "Diagnósticos opcionais separam RTT, chegada de snapshots, gaps do tick e custo do movimento. Desativados nas execuções normais; sem dados de conta nos relatórios."
+    ],
+    "fixes": [
+      "Preferências de FOV/sensibilidade deixam de abrir, escrever e remover um arquivo de prova repetidamente. O diretório do perfil é resolvido uma vez por processo; alterações de configuração continuam salvas.",
+      "A térmica reutiliza o estado dos materiais quando não houve mudança de aparência ou temperatura. Personalização, destruição e restauração dos materiais continuam funcionando.",
+      "Temporizadores de rede preservam o restante do período e toleram o erro de soma de ponto flutuante. O intervalo nominal de 200 ms não deriva para 217 ms, e quadros lentos não geram uma rajada de mensagens de compensação."
+    ]
+  },
+  {
+    "version": "1.9.0",
+    "title": "Atualização 1.9.0 — biblioteca e montagem do Guerra",
+    "additions": [
+      "Diretriz permanente em AGENTS.md: todo novo objeto de cenário é criado primeiro na biblioteca, com materiais, colisão, origem/escala e propriedades apropriadas.",
+      "Sete peças novas, totalizando 16: curva de estrada, cruzamento, T, rampa de estrada, curva de cais, rampa de cais e trincheira escavável.",
+      "Conectores de encaixe, botão Encaixar, inserção e desfazer/refazer no painel Guerra. Encaixar preserva a escala da peça movida.",
+      "Camada infraestrutura190.tscn com 86 instâncias nas duas bases, nos dois portos e no vilarejo oeste. Oito casas antigas são substituídas por cenas da biblioteca; trechos de rua substituídos deixam de ser desenhados pelo gerador anterior.",
+      "Galeria ampliada e instruções em BIBLIOTECA-GUERRA.md.",
+      "Oito objetos adicionais de destruição e infraestrutura, com versões simplificadas à distância: fachada atingida, laje desabada, carro carbonizado, entulho, carga portuária, defensa de cais, canaleta e cratera. Total de 24 peças no catálogo e mais 200 instâncias na camada de detalhamento.",
+      "Arredores dos portos e núcleos urbanos com marcas de destruição, crateras físicas, detritos, materiais menos uniformes e relevo pequeno nas áreas industriais, preservando os acessos e as áreas de circulação.",
+      "Agrupamento de cenário por setor/material, MultiMesh para repetições e detalhes de terreno restritos à proximidade da câmera. Fumaça maior usa seis nuvens de pool, com início/fim suaves e controle de transparência próxima da câmera."
+    ],
+    "fixes": [
+      "Seis módulos de trincheira com profundidade ajustável entre 0,8 e 2,8 m. O chão é escavado e restaurado ao editar a posição; revestimento, geometria e colisão acompanham a alteração.",
+      "Rebaixamento do terreno sob cais e ajuste de fundações/estradas; árvores geradas respeitam essas áreas."
+    ]
+  },
+  {
+    "version": "1.8.9",
+    "title": "1.8.9 — postura e inclinação lateral",
+    "additions": [
+      "Segure Q/E para inclinar à esquerda/direita; soltar retorna ao centro. As teclas podem ser alteradas nas configurações.",
+      "A câmera verifica o volume da cabeça contra obstáculos; a postura recua quando encontra uma parede. Não fica ativa enquanto morto, nadando, em veículo ou com controles bloqueados.",
+      "O Guerra e o Deserto utilizam o mesmo sistema de infantaria. O reabastecimento na caixa do Deserto passa de E para F.",
+      "Protocolos Guerra 21 e infantaria 8. Cliente e servidor devem ser atualizados juntos."
+    ],
+    "fixes": [
+      "Cabeça, tórax e ombros acompanham a mira vertical, com limites distintos para coluna e pescoço. As hitboxes continuam presas às partes correspondentes.",
+      "O posicionamento da arma parte do ombro. O deslocamento antigo era rotacionado a partir da câmera e recuava a empunhadura para dentro do tórax ao olhar para baixo. Os punhos agora permanecem à frente do colete e os cotovelos dobram para fora, mantendo contato com as empunhaduras.",
+      "Inclinação revisada após a primeira captura: removido o deslocamento lateral excessivo do tórax. A cintura permanece sobre a pelve, o quadril desloca apenas 4 cm e as pernas compensam lateralmente para conservar o apoio dos pés. A rotação máxima é de aproximadamente 10 graus, com transição suave.",
+      "A rotação lateral é aplicada ao redor do eixo da mira depois da elevação. Isso evita desviar o cano lateralmente ao inclinar e mirar para cima/baixo."
+    ]
+  },
+  {
+    "version": "1.8.8",
+    "title": "1.8.8 — primeiro conjunto visual e biblioteca Guerra",
+    "additions": [
+      "Braços articulados em ombro, cotovelo e pulso. A mão de apoio acompanha o ponto real da arma em vez de apenas esticar um único braço reto. Geometria própria de luvas: palma, polegar e dedos curvados ao redor do guarda-mão e da empunhadura.",
+      "Hitbox de antebraço ligado ao segmento móvel. Ragdoll mantém dois antebraços adicionais, com articulações e materiais do uniforme. Personalização, equipes e classes permanecem nos sistemas existentes.",
+      "Cabeça com contorno e detalhes faciais mais discretos. Acabamentos comuns para tecido, polímero, metal, pintura, madeira e concreto.",
+      "Novas recargas de FAL e Glock: inclinação controlada, retirada do carregador, busca do novo, inserção e manejo final. O progresso usa o temporizador de recarga existente, com 6 s na FAL e 4 s na Glock. As partes móveis e a mão acompanham o mesmo progresso em FPP, TPP e no personagem remoto. Interromper/retomar mantém a regra anterior; a animação não concede munição.",
+      "Guarani: painéis, fixadores, degraus, conjuntos de faróis protegidos, detalhes de rampa e áreas antiderrapantes. Acabamento diferencia vidro, borracha e metal. Hierarquia da torre, cano, seis rodas, assentos e colisões preservada.",
+      "Nove módulos editáveis com materiais e colisões prontos: pinheiro, árvore queimada, trincheira de 6 m, estrada de 12 m, contêiner, cais, barreira, escada e casa em ruínas. Os pinheiros têm geometria de galhos/folhagem e uma representação distante simplificada.",
+      "Detalhes agrupados por material; a trincheira usa cinco formas de colisão em vez de colidir individualmente com cada tábua e saco.",
+      "As duas bases recebem módulos da biblioteca e o contêiner novo substitui o antigo. O porto leste editado anteriormente não foi sobrescrito."
+    ],
+    "fixes": [
+      "Corrigida a mão de apoio da FAL apontando para baixo. Antebraços e pulsos acompanham a pegada, a inclinação da mira e a recarga. O cálculo é local e usa o mesmo estado de arma replicado; não envia dados adicionais de cada osso.",
+      "FAL com carregador e alavanca de manejo separados. Glock reconstruída com receptor, ferrolho, carregador, guarda-mato, boca do cano e miras tridimensionais. Mantidos atributos, munição, cadência e balística."
+    ]
+  },
+  {
+    "version": "1.8.7",
+    "title": "Toque de Campo 1.8.7",
+    "additions": [
+      "Câmera após morte no APC: reproduzido com a equipe 2. A câmera do veículo era selecionada por uma transição de assento enquanto o personagem estava morto; a devolução só acontecia se estivesse vivo naquele mesmo frame. O respawn passava a permitir combate, mas o viewport podia continuar na câmera antiga.",
+      "Recarga durante o drone: o lançamento não cancelava a recarga no servidor, embora o cliente a cancelasse ao receber a identidade. A física do personagem é suspensa enquanto opera o drone, congelando aquele temporizador. Lançamento e saída agora encerram recarga, golpe, gatilho e mira de maneira consistente e reenviam o inventário. Pedidos de recarga rejeitados também confirmam o inventário real.",
+      "Corpo e drone: proteção de spawn é retirada ao lançar o drone. O corpo mantém hitboxes; tiros e explosões podem atingi-lo. Dano confirmado corta o controle, limpa o assento remoto e inicia queda por gravidade onde o drone realmente está. O estado de queda é replicado. Na colisão, a carga usa o dano em área e as verificações de cobertura existentes. Um drone abatido é destruído imediatamente.",
+      "TV: volume físico esférico de 0,38 m de raio, 25 de vida, somente no servidor, reaproveitado por slot do pool. O próprio míssil exclui seu volume. Tiros e explosões verificam contato e encerram o projétil e sua guiagem ao destruí-lo; a interceptação produz efeito pequeno sem detonar a ogiva inteira contra tropas ao redor.",
+      "Movimento online: o servidor recebia a posição, validava e aguardava o próximo lote de 50 ms. O Guerra agora encaminha a posição no mesmo tick da validação, removendo essa espera adicional. O lote antigo não duplica essas mensagens. Física, limites de velocidade, colisões e autoridade continuam ativos.",
+      "Perfil: uma consulta de perfil que falhe no transporte é repetida uma única vez. Compras, login e recompensas não são repetidos automaticamente. Uma mudança de sessão cancela a repetição."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.8.6",
+    "title": "Toque de Campo 1.8.6 — combate e implantação no Guerra",
+    "additions": [],
+    "fixes": [
+      "Respawn: o servidor agenda a nova implantação antes de gerar o ragdoll. Falhas de apresentação não devem impedir o retorno após oito segundos. A seleção de base ou setor controlado é respeitada; se o setor deixou de pertencer à equipe, o destino passa para a base. O cliente pode solicitar novamente a vida já autorizada quando continuar mostrando o estado de morto.",
+      "Recarga: um cliente que ficou esperando a confirmação final consulta novamente o inventário do próprio jogador. O servidor devolve o estado real, com validação de vida e limite de frequência. O gatilho, o tempo até o próximo tiro e a espera de sincronização são limpos ao iniciar uma nova vida. APCs passam a iniciar a recarga também no último tiro da cinta, assim como os tanques já faziam.",
+      "Modelo em primeira pessoa: a reconstrução da arma agora invalida a cópia de FPP mesmo se o identificador não mudou. Na implantação, o ID podia ser atualizado antes da geometria, deixando uma cópia da AK sob o ID da FAL. Isso foi encontrado na inspeção após o respawn e corrigido.",
+      "Blindados destruídos: deixam o modelo queimado visível, com um breve movimento de assentamento da arma, explosão e os efeitos existentes. O mesmo veículo é restaurado ao fim do timer de 60 segundos. Não foram adicionados fragmentos rígidos ou novas partículas por frame."
+    ]
+  },
+  {
+    "version": "1.8.5",
+    "title": "Toque de Campo 1.8.5 — AK e FAL",
+    "additions": [
+      "Guerra, Equipe 1: FAL para as classes com fuzil.",
+      "Guerra, Equipe 2: AK para as classes com fuzil.",
+      "Offline Escritório, Offline Deserto e PVP Deserto: AK e FAL aparecem como opções de arma principal. As regras de propriedade e seleção continuam em vigor.",
+      "O Naval continua com armamento de embarcações.",
+      "Foto e histórico da FN, fabricante.",
+      "Foto oficial do FAL usada como referência de silhueta.",
+      "FAL padrão, vista esquerda, atribuição à FN Herstal.",
+      "Modelo disponível no Sketchfab, consultado durante a busca. Não foi importado: a geometria adicionada é original do projeto."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.8.4",
+    "title": "Toque de Campo 1.8.4 — portos, navios e movimento",
+    "additions": [],
+    "fixes": [
+      "Escadas e calçadas: CharacterBody3D.moveandslide() não sobe uma face vertical de degrau sozinho. O movimento compartilhado agora verifica espaço acima, à frente e abaixo da cápsula e transpõe degraus de até 42 cm. Jogadores, NPCs comuns e bots do Guerra utilizam a mesma rotina. Paredes altas e tetos baixos continuam bloqueando a passagem; o avanço horizontal não é duplicado.",
+      "Tiros em TPP: o limite antigo de 3,8 m entre câmera e personagem rejeitava a câmera de ombro do Guerra na distância máxima. A validação agora considera o enquadramento permitido nesse modo, verifica posição e direção e mantém a checagem contra paredes. O disparo continua sendo validado pelo servidor.",
+      "Chão do porto: o terreno e o piso do cais ocupavam a mesma altura. O terreno foi rebaixado sob o cais, eliminando a disputa entre superfícies. A malha do terreno recebe maior resolução junto aos portos.",
+      "Blindados nas ladeiras: a orientação anterior considerava principalmente a inclinação longitudinal, com uma caixa inferior maior que a área de apoio. Quatro consultas ao chão agora consideram frente, traseira e laterais, incluindo pontes e rotação parada. A colisão inferior acompanha rodas/esteiras; a parte superior conserva o volume da blindagem.",
+      "Saída dos navios: a busca de desembarque exigia solo seco. Agora prioriza píer livre e, na ausência dele, permite desembarque em água profunda livre para nadar. São verificados espaço para o corpo e trajeto de saída. O servidor libera o assento e promove passageiro quando necessário."
+    ]
+  },
+  {
+    "version": "1.8.3",
+    "title": "1.8.3 — combate",
+    "additions": [],
+    "fixes": [
+      "Disparo automático da FAL, uso da Glock e retorno às armas após equipar ou lançar granada receberam correções.",
+      "Estados de granada e disparo foram limpos nas transições e no respawn."
+    ]
+  },
+  {
+    "version": "1.8.2",
+    "title": "Proteções da versão 1.8.2",
+    "additions": [
+      "Baixar o novo atualizador uma vez: o anterior utilizava HTTP e não acompanha essa troca para HTTPS.",
+      "O jogo/atualizador confiam diretamente na autoridade incluída. O navegador dos amigos precisa confiar na autoridade privada para acessar o site sem alerta. Não desabilitar validação de certificados para contornar isso.",
+      "Guardar com backup restrito a chave de atualização, a chave do PCK e as autoridades/certificados da VM. Nenhuma chave privada deve ir para o site, o manifesto, o ZIP ou logs.",
+      "Todos os participantes precisam atualizar, pois os protocolos das partidas foram alterados."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.8.1",
+    "title": "Revisão e publicação — Toque de Campo 1.8.1",
+    "additions": [],
+    "fixes": [
+      "O aviso usava o histórico de mortes como alternativa ao estado atual. Isso podia exibi-lo indevidamente na implantação de uma nova rodada. Agora depende do estado de respawn daquela vida.",
+      "O tratamento de mouse adicionado anteriormente não encaminhava o movimento para a câmera de um veículo operado por um jogador vivo. O fluxo normal de entrada foi restaurado e validado na janela nativa.",
+      "O cliente podia começar mostrando 9 segundos por diferença entre os relógios. A confirmação confiável de implantação agora inclui o relógio do servidor; a apresentação fica limitada ao intervalo de 8 segundos.",
+      "Pacotes de dano de vidas anteriores são descartados antes de modificar o cronômetro ou a apresentação de morte."
+    ]
+  },
+  {
+    "version": "1.8.0",
+    "title": "Toque de Campo — Guerra costeira 1.8.0",
+    "additions": [
+      "Área jogável de 3.500 × 3.500 m, com ilha, mar ao redor, uma baía a oeste e um porto aberto a leste. Essa medida inclui terra e mar; não são 3,5 km de terra mais um oceano adicional.",
+      "Bases terrestres e objetivos A/B/C preservados. Portos D e E são capturáveis e oferecem implantação conforme o controle da equipe.",
+      "Dez setores urbanos, 60 edifícios modulares de dois/três pavimentos e quatro vilarejos periféricos. Ruas principais, secundárias e acessos de terra conectam bairros, bases e logística; o traçado evita lotes de edifícios.",
+      "Quintais, cercas, anexos, fachadas comerciais, ponto de ônibus, postes, fiação e caixas de telecomunicações. Galpões, tanques industriais, caminhões, tubulações e pátios próximos aos portos.",
+      "Cais, píeres apoiados, guindastes, contêineres, armazéns e quebra-mares. Prédios apresentam estados diferentes de destruição, com paredes, lajes e entulho.",
+      "3.141 árvores na distribuição principal, além dos conjuntos de pinheiros; 31.955 instâncias de vegetação rasteira e dois campos de trigo. A vegetação respeita acessos e áreas de implantação.",
+      "Um navio de assalto e uma fragata por porto, quatro embarcações no total. Reutilizados os cascos, armamentos e física do modo Naval.",
+      "Cada navio tem um operador e seis assentos de passageiros, com bancos no convés. O limite de seis jogadores por equipe continua valendo."
+    ],
+    "fixes": [
+      "As quatro torretas acompanham a mira. Cabine e tropas ocupando os assentos entram na proteção de tiro; o servidor bloqueia disparos ainda obstruídos.",
+      "Ao voltar à terra, a apresentação do equipamento é restaurada. Uma granada já armada cai ao entrar na água, conservando o pavio.",
+      "Geração do mundo antes de abrir a conexão ENet: o carregamento do mapa não deixa uma conexão já iniciada sem responder.",
+      "Colisores estáticos organizados em setores; terreno visual agrupado sem alterar suas superfícies físicas.",
+      "Árvores distantes compartilham LODs por setor até 900 m; posição, escala, rotação e colisão são preservadas. Partes próximas e distantes usam os mesmos limites de troca para evitar buracos entre LODs.",
+      "Navios vazios não resolvem a balística de 16 torretas a cada tick. A resposta dos cascos às ondas permanece ativa.",
+      "Busca espacial das ruas: 13.150 amostras, erro de altura zero; consulta de referência em 612,331 ms e consulta indexada em 53,254 ms. Isso mede a consulta das ruas, não o FPS do jogo."
+    ]
+  },
+  {
+    "version": "1.7.1",
+    "title": "Toque de Campo — atualização 1.7.1",
+    "additions": [
+      "Velocidade inicial da sniper: 620 → 607,6 m/s, redução exata de 2%. Alcance de 2.200 m, gravidade 12 e arrasto 0,008 preservados.",
+      "O rastro usa o segmento percorrido pelo próprio projétil. O blur acompanha sua direção e termina no impacto; não existe uma segunda bala visual com física independente.",
+      "Resistência contínua aplicada também aos caminhos que ainda não a utilizavam: RPG, Stinger, TV e armas navais. Mantidas as velocidades iniciais das outras armas.",
+      "No Naval, solução de mira, guia, colisão, posição visual e simulação do servidor utilizam a mesma integração, incluindo velocidade herdada do navio em X e Z. O tempo de alcance considera o arrasto.",
+      "Disparos e explosões têm atraso por distância, usando 343 m/s. Eventos remotos consideram a idade disponível do evento; isso continua sendo uma aproximação, não propagação acústica completa em um ouvinte móvel.",
+      "Crack supersônico separado do disparo quando a velocidade real supera 343 m/s. Munição mais lenta usa passagem/assobio. Apenas projéteis próximos ao ouvinte acionam esses sons.",
+      "Tratamento próximo, médio, distante, obstruído e interno: filtros e reverberação compartilhados; paredes abafam sem silenciar totalmente. Preservado o abafamento na cabine dos blindados.",
+      "Alcance sonoro por arma: Glock 600 m, FAL 1.200 m, sniper 2.400 m, metralhadoras 1.800 m e armas pesadas até 3.000 m; explosões até 2.400 m. A intensidade cai progressivamente, inclusive perto do limite."
+    ],
+    "fixes": [
+      "Núcleo violeta mais luminoso, contorno e largura ajustada à projeção para continuar perceptível de dia, sem crescer exageradamente com a luneta.",
+      "Impactos de terra, lama, concreto, metal, madeira, veículo e água partem do contato real. O servidor resolve a superfície; transmite um evento, nunca áudio bruto. Novos contatos sintéticos estão em audio/ballistics, com documentação de origem."
+    ]
+  },
+  {
+    "version": "1.7.0",
+    "title": "Toque de Campo — atualização 1.7.0",
+    "additions": [
+      "Loadout antes do primeiro spawn e do respawn no Offline e no PVP Deserto. No Guerra, a tela reúne equipe, classe, equipamento, prévia do personagem e ponto de entrada.",
+      "Armas, granadas e equipamentos removidos da seleção também saem do inventário, munição, atalhos e HUD daquela vida. Não existem slots fictícios para classes incompatíveis.",
+      "O servidor verifica equipe, classe, escolhas e ponto de entrada; o cliente não escolhe sua própria quantidade de munição. Alterar a seleção de um personagem vivo prepara a próxima vida e não substitui o equipamento atual.",
+      "O Naval exige confirmação da embarcação. O dono só inicia com pelo menos dois participantes e todos prontos. Após morrer, o jogador confirma uma nova implantação, respeitando o intervalo do servidor.",
+      "A troca de embarcação durante a vida continua sujeita a integridade completa e 10 segundos sem dano.",
+      "Pausa compartilhada: continuar, configurações, controles, placar, equipamento/frota e saída com confirmação. Offline pausa a simulação; multiplayer permanece ativo.",
+      "Configurações reais de vídeo, áudio, sensibilidade, controles e interface. Naval não apresenta opções de infantaria sem função. Alterações de tela precisam de confirmação em 10 segundos ou são revertidas; janela e tela cheia foram verificadas nativamente.",
+      "Nomes curtos e ícones nas telas revisadas. Removidas explicações de exclusividade, mensagens rotineiras de sincronização e textos sobre validações internas. Estatísticas detalhadas das armas aparecem no painel secundário ao selecionar."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.6.10",
+    "title": "Balística, térmica e áudio de Guerra",
+    "additions": [
+      "Guarani30mm e projéteis: Guarani recebe autocanhão30mm no lugar da.50, com novo cano, carregador e explosão. A30mm usa405m/s, queda e pequena dispersão; os projéteis dos dois tanques estão15% mais lentos.",
+      "Dano e explosões: Dano em blindados agora gera confirmação visual para o atirador. Explosões verificam exposição do corpo, mantêm proteção por paredes e não repetem crédito. Validado um disparo real de tanque a850m.",
+      "Térmica e câmeraTV: Assinaturas e silhuetas dos veículos permanecem disponíveis a longa distância. A câmeraTV herda a térmica da torre; T alterna o sensor. A câmera externa continua normal.",
+      "Armamento dos veículos: 1 seleciona o canhão e2 o armamento secundário. HUD mostra as duas armas, munição e seleção. Teclas sem armamento não fazem troca.",
+      "Áudio menos intrusivo: Vento mais suave, efeitos ambientes mais discretos e fontes fixas no cenário. Volumes geral, música, efeitos, armas, ambiente, veículos, passos e interface podem ser ajustados e salvos durante a partida."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.6.9",
+    "title": "Toque de Campo — 1.6.9",
+    "additions": [
+      "Relevo físico com colinas, vales e ondulações. O levantamento na área central mediu de −11,76 a 33,70 metros, mais de 45 metros de variação. A área jogável continua com 2 km de lado.",
+      "Bases e quinze áreas de construção têm patamares nivelados e transições suaves. Estradas acompanham o terreno longitudinalmente; não são mais faixas rígidas suspensas ou cortes artificiais até a altura zero.",
+      "Mais de 2.200 árvores: bosques nos flancos e árvores queimadas na zona devastada. Foram adicionados 23.848 grupos de capim, com orientação ajustada à superfície.",
+      "Casas e celeiro receberam fundações, empenas e estrutura de sustentação dos telhados. Chaminés começam no piso. Coberturas das trincheiras têm postes que chegam ao solo e ao telhado."
+    ],
+    "fixes": [
+      "A região central usa terreno com resolução de 2 metros, enquanto as áreas externas usam 10 metros. As bordas compartilham a mesma interpolação. Terreno externo prolonga o horizonte, com colisão igual no servidor e nos clientes.",
+      "Cercas, degraus, pranchas, destroços e pequenos abrigos de sacos de areia foram ajustados ao terreno. As colunas de sacos acompanham individualmente o solo, evitando flutuação em declives."
+    ]
+  },
+  {
+    "version": "1.6.8",
+    "title": "Atualização 1.6.8 — blindados, mira e míssil TV",
+    "additions": [
+      "Configurações → Sensibilidade: 28 perfis locais, com sensibilidade normal e multiplicador de mira/zoom. Inclui armas de infantaria, granada, blindados, drone, armas dos blindados, navios e armamento naval. Os multiplicadores de veículo e armamento se combinam; os padrões mantêm os controles anteriores. Dados finitos, limites de5% a300%, salvamento agrupado e persistência fora da pasta da versão.",
+      "Abrams/T-90: coaxial com80 tiros no carregador,400 de reserva, recarga4s e intervalo.10s. Canhão e coaxial têm estados independentes: a metralhadora funciona enquanto o canhão recarrega.",
+      "Guarani/BMP-2: secundário MÍSSIL TV,1 carregado e5 de reserva, recarga/cadência12s. Lançamento no Marker3D do tubo visível. Um projétil ativo por APC.",
+      "A câmera fica no míssil real. O mouse comanda uma direção desejada; o servidor limita o giro a1.35rad/s. C abandona o link e retorna à óptica; o míssil continua balístico. F conserva o procedimento de saída segura do veículo. Térmica não funciona no míssil.",
+      "Enquanto guia, o operador mantém seu assento. O servidor retira aceleração, direção e disparos do casco, que desacelera normalmente, e preserva o alvo da torre. Passageiros não recebem armas, câmera do míssil ou controle do veículo.",
+      "Impacto, fim do voo, morte, saída, desconexão, troca de ocupação e reset encerram a guia/câmera sem criar operador fantasma. Perda de comandos por.65s rompe o link. O cliente não pode reativar um link abandonado.",
+      "Estados do míssil a10Hz com sequência e reconciliação visual. Entrada recente recebe posição/velocidade atuais do míssil. Colisão, explosão, dano, munição e autoridade continuam no servidor; o offline usa os mesmos sistemas."
+    ],
+    "fixes": [
+      "Q alterna principal/secundária nos quatro blindados. R recarrega o armamento selecionado. Não restaura munição ou temporizadores ao trocar.",
+      "Abrams: dano600, raio11m, gravidade17",
+      "T-90: dano570, raio10.5m, gravidade17",
+      "Míssil TV dos APCs: dano320, raio4.5m, velocidade115m/s, alcance1000m, vida8.5s"
+    ]
+  },
+  {
+    "version": "1.6.7",
+    "title": "1.6.7 — desempenho e ópticas",
+    "additions": [
+      "A sniper recebeu maior alcance e velocidade."
+    ],
+    "fixes": [
+      "Fumaça dos disparos de veículos foi otimizada; a visão térmica ficou restrita à óptica do operador."
+    ]
+  },
+  {
+    "version": "1.6.6",
+    "title": "Toque de Campo 1.6.6 — correção da piscada TPP em Guerra",
+    "additions": [
+      "PCK Windows real fora das fontes: 8/8, zero quadros com salto ao ombro e zero clone FPP.",
+      "Download assinado e instalação real: verificados; segunda execução não baixou novamente.",
+      "Câmera online após publicação: 9 verificações entre duas contas, incluindo 420 quadros de movimento do cliente nativo sem saltos/clone FPP.",
+      "Respawn central após publicação: 19/19, mantendo autoridade e preferências de implantação."
+    ],
+    "fixes": [
+      "Removida a atribuição de posição zero da atualização TPP, incluindo chamadas vindas do mouse.",
+      "Preservado o offset resolvido ao executar a atualização herdada da apresentação.",
+      "O SpringArm passa a iniciar com a distância configurada pelo jogador.",
+      "Ao entrar voluntariamente em TPP, a câmera recebe uma posição inicial segura por varredura esférica; depois o SpringArm controla a translação.",
+      "A ocultação por proximidade usa a posição real da câmera; a distância deixa de ser zerada para fingir colisão.",
+      "Mantidos controles, sensibilidade, zoom, mira, balística, hitboxes, regras de combate e multiplayer.",
+      "49 verificações nativas de miras, mãos e saída do cano.",
+      "50 verificações nativas do HUD de classes em duas resoluções."
+    ]
+  },
+  {
+    "version": "1.6.5",
+    "title": "Toque de Campo 1.6.5 — câmeras e lançadores de Guerra",
+    "additions": [
+      "Entrada do operador: óptica fixada à elevação da torre, independente do casco.",
+      "C: óptica ↔ câmera externa, atrás/acima com varredura esférica de colisão.",
+      "Botão direito: zoom persistente 1× → 2× → 4× → 1× na óptica, transição suave de FOV.",
+      "T: visão térmica. X continua como atalho anterior.",
+      "Mouse controla a torre horizontalmente e a elevação vertical; WASD mantém o controle do casco.",
+      "Na câmera externa, o indicador projeta a direção efetiva do cano; não converte o tiro em um raio da câmera.",
+      "Passageiro observa com câmera independente, sem escrever o alvo da torre ou obter zoom/armas/térmica do operador.",
+      "Regras existentes de assentos, promoção, saída segura, morte de todos os ocupantes e retorno do veículo após 60 s foram preservadas."
+    ],
+    "fixes": [
+      "1 — Guarani/Abrams: Aquisição antiaérea contra drone inimigo",
+      "2 — BMP-2/T-90: Disparo direto contra blindados",
+      "Disparo na saída real do cano. Uma obstrução entre culatra e bocal bloqueia o disparo sem gastar munição.",
+      "Métrica do cliente visível: 1.6.5 sem profiling detalhado"
+    ]
+  },
+  {
+    "version": "1.6.4",
+    "title": "Toque de Campo 1.6.4 — fogo amigo e confirmação do respawn",
+    "additions": [
+      "−100 pontos de partida para o autor, uma vez por vítima/vida. A pontuação pode ficar negativa.",
+      "Uma morte para a vítima, inclusive no placar e no registro de mortes online da autoridade.",
+      "Nenhum abate, assistência, dano pontuável ou moeda para o autor por esse ataque.",
+      "Um aviso para o autor: FOGO AMIGO · Você matou [nome]. −100 PONTOS.",
+      "Um aviso para a vítima: FOGO AMIGO · Você foi morto por seu aliado [nome]."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.6.3",
+    "title": "Toque de Campo 1.6.3 — integração final",
+    "additions": [
+      "A escolha explicitamente salva no M é consumida na próxima vida após os quatro segundos da autoridade. O menu mostra classe, equipe e ponto confirmados pelo servidor.",
+      "O botão indica a espera restante. Sem uma escolha salva, o jogador continua no menu para decidir sua próxima implantação; não há seleção automática arbitrária.",
+      "Se o setor escolhido foi perdido, a implantação retorna à base da mesma equipe. Quem já pertence à equipe mantém seu lugar de respawn mesmo após uma desconexão desequilibrar a contagem; novos integrantes continuam sujeitos ao balanceamento.",
+      "Implantação encerra a câmera de morte e devolve a câmera do personagem. Reinício de operação limpa as escolhas anteriores.",
+      "Em TPP, o SpringArm encurtado por um obstáculo não ativa mais o modelo de primeira pessoa. Cabeça/equipamentos que se sobrepõem à câmera são ocultados sem trocar o modo escolhido.",
+      "Recarga, troca de arma e mensagens tardias de recarga não alteram um personagem morto. A granada armada continua caindo com seu pavio original ao morrer.",
+      "Guerra utiliza o relógio já replicado da partida no ciclo compartilhado: 24 horas em 480 segundos. O céu permanece nublado, com ambiente cinza de dia e preenchimento lunar à noite.",
+      "Projéteis pesados receberam núcleo colorido e largura visual compensada pela distância/FOV, com limites. O mesmo pool de 512 projéteis e quatro segmentos por rastro permanece. Não se alteraram velocidade, gravidade, origem ou dano para tornar o desenho visível."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.6.1",
+    "title": "Toque de Campo 1.6.1 — tripulações, corrida e retorno dos blindados",
+    "additions": [
+      "Segurar Shift durante o movimento amplia a passada e abaixa a arma suavemente.",
+      "A animação não acrescenta balanço à câmera nem desloca sua transformação para simular corrida.",
+      "Mira, disparo, recarga e granada preservam suas poses de combate.",
+      "Personagens remotos e bots usam o movimento efetivo; interrupção dos snapshots não mantém uma passada indefinida.",
+      "Passos dependem de deslocamento e contato com o chão. Não tocam parado, no ar, morto ou embarcado.",
+      "Timbre e cadência variam conforme velocidade e regiões de superfície do mapa, como madeira, cascalho, concreto, terra e lama.",
+      "O áudio reutiliza o pool espacial existente de 24 vozes, com distância/volume e filtragem do sistema de Guerra. Não é criado um emissor permanente novo para cada passo."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.6.0",
+    "title": "Toque de Campo 1.6.0 — Guerra chegou",
+    "additions": [
+      "Tiros com origem fixa no mundo, listener no personagem em FPP/TPP, alcance por categoria, filtragem, oclusão e limite de vozes. Recursos e efeitos são reutilizados.",
+      "Slots comuns: 1 pistola, 2 principal, 3 granada e 4 arma branca. Extras aparecem em 5/6/9; RPG/Stinger mantêm 7/8. O HUD mostra munição real, reserva, recarga, vazio e equipamento indisponível.",
+      "G/3 equipa a granada desarmada. Segurar clique inicia cinco segundos; soltar lança. O tempo continua após lançar, com barra na mão e indicador próximo respeitando paredes. A classe Soldado de Guerra usa o mesmo sistema.",
+      "Dano contabiliza HP efetivamente retirado; suporte distingue destinatário/tipo, deduplica antes de acumular frações e limita recompensas. Recompensas online exigem a credencial do servidor; uma conta comum não pode enviá-las."
+    ],
+    "fixes": [
+      "Equipe: Aparência/armamento representado",
+      "1: Casco anfíbio, seis pneus, rampa traseira e estação inspirada na REMAX/M2 .50.",
+      "2: Perfil baixo, esteiras, compartimento traseiro e canhão visual 2A42 de 30 mm.",
+      "1: Torre angular com compartimento traseiro, sete rodas por lado e M256 de 120 mm.",
+      "2: Perfil compacto, módulos externos de proteção, seis rodas por lado e 2A46 de 125 mm."
+    ]
+  },
+  {
+    "version": "1.5.5",
+    "title": "1.5.5 — Dominação individual e granadas",
+    "additions": [
+      "G ou 7: equipa uma granada desarmada, que permanece na mão. Não consome carga e não inicia o pavio.",
+      "Segurar clique esquerdo: arma e inicia os 5 segundos. Soltar lança com o tempo restante. Chegar a zero explode na mão. Morrer ou desconectar solta a mesma granada, com o pavio preservado.",
+      "Lançamento de 18 para 18,9 m/s (+5%). Guia simples até primeiro contato, sem desenhar os quiques posteriores. A velocidade herdada do jogador, gravidade, quique e cobertura continuam compartilhados e validados no servidor.",
+      "Cada jogador por si; mínimo de dois participantes, máximo de seis.",
+      "Permanecer sozinho 6 segundos dentro da casa captura o objetivo. O controlador ganha 1 ponto por segundo enquanto continuar sozinho no interior.",
+      "Dois adversários no interior contestam: captura e pontuação ficam suspensas. Sair sozinho da casa mantém a indicação de controle, mas não gera pontos.",
+      "Telhado, posições enterradas, jogadores mortos e NPCs não contam como ocupantes.",
+      "Saída do controlador remove o controle. Menos de dois participantes pausa o relógio e mostra a espera existente. Não há concessão de moedas enviada pelo cliente a partir da pontuação do objetivo."
+    ],
+    "fixes": [
+      "A referência do braço foi corrigida: o modelo cresce no eixo local -Y; a rotação anterior colocava a mão atrás do torso. A pose agora resolve o braço até um ponto diante do corpo, conforme inclinação e rotação do personagem. Modelo, posição de pegada e ponto de lançamento são comuns a FPP, TPP e apresentação remota.",
+      "Vitória aos 120 pontos ou maior pontuação após 10 minutos; empate se os melhores tiverem o mesmo valor. Intervalo de 12 segundos, novas vidas, munição e reinício da rodada. Abates não substituem pontos de controle.",
+      "Alcance de interação de 2,6 m, dentro da casa, com verificação física de obstáculo. Parede bloqueia a interação. Intervalo de 20 segundos por jogador, no servidor.",
+      "Reabastecer cancela a recarga existente. Não é permitido durante preparo armado ou arremesso de granada. A mesma caixa está disponível no treino offline do Deserto, sem iniciar uma partida de Dominação.",
+      "O cliente podia enviar a posição provisória antes de receber a posição inicial do servidor. Esse envio foi bloqueado até a confirmação. Movimento inclui a vida atual, impedindo pacotes atrasados de desfazer um respawn.",
+      "Pads consideram a altura sob toda a base da cápsula e checam sobreposição com o cenário. Movimentos abaixo do terreno são corrigidos no servidor; há recuperação local para penetração acidental. A versão do mapa passa a 3, obrigando servidor e cliente a usar as mesmas colisões."
+    ]
+  },
+  {
+    "version": "1.5.4",
+    "title": "Atualização 1.5.4 — granadas, efeitos e visibilidade",
+    "additions": [
+      "7 equipa uma granada ainda desarmada. Segure o botão esquerdo e solte para lançar. G continua como atalho direto, sem precisar selecionar o slot.",
+      "O pavio de 8 segundos começa ao armar. A quantidade é descontada uma única vez nesse momento. Arremessar preserva o restante do pavio; segurar até zero explode na mão. Morrer ou desconectar solta a mesma granada armada, sem reiniciar o tempo.",
+      "A guia da granada é um arco simples, grosso e azul petróleo (#155e6b), até o primeiro contato ou o limite curto de previsão. Não desenha a sequência completa de quiques. A granada real mantém colisão, gravidade e quique.",
+      "Continuam duas granadas por vida, raio de seis metros, redução por distância e três amostras de cobertura no servidor. A guia é uma indicação de primeiro contato, não uma promessa do ponto final após quicar ou encontrar objetos em movimento.",
+      "Geometria de baixa complexidade, materiais compartilhados e pool de até 256 apresentações de projétil. O servidor sem renderização não aloca essas apresentações.",
+      "Pequeno clarão e fumaça em quads substituem esfera densa, luz dinâmica e temporizador criados a cada tiro. Efeitos limitados a 64 simultâneos; impacto com sangue mantém cor vermelha.",
+      "Consulta física de cada projétil é reaproveitada; câmera é obtida uma vez por passo. Remover metade dos rastros não remove metade dos tiros.",
+      "Offline, PVP Deserto e Naval usam ciclo de 480 segundos para 24 horas. Nuvens, sol, luz de lua, cores de céu e ambiente acompanham o horário."
+    ],
+    "fixes": [
+      "A arma de fogo sai das mãos durante preparação e arremesso. Disparo, recarga e mira da arma são bloqueados; depois do gesto, volta a arma anterior. Há apresentação em primeira e terceira pessoa e sincronização de seleção, preparação, arremesso, queda e explosão.",
+      "Corpos invisíveis no Deserto: updateview aplicava a ocultação da primeira pessoa também a avatares remotos. Agora essa condição exige islocal. Respawn restaura a apresentação completa de todos os avatares.",
+      "Dano gigante com zoom: o número usava escala que não compensava a projeção da câmera. Agora a escala considera profundidade, altura do viewport e projeção vertical real. Fonte de 18 pixels, vermelha #ef4141, contorno escuro; sem aumento especial para crítico. Continua no mundo 3D, respeitando oclusão, deduplicação e confirmação do dano real pelo servidor.",
+      "A escala do número é aplicada já ao obter o rótulo do pool, evitando um quadro com o tamanho da utilização anterior. Há no máximo 48 rótulos ativos.",
+      "Traçantes com cores saturadas por arma e contorno escuro, com menos emissão branca. A própria bala é a origem do rastro. FAL e metralhadoras mostram um traçante a cada dois tiros; Glock, sniper, míssil e torpedo mantêm todos. Física, acertos, munição, sons e validação continuam em todos os tiros.",
+      "A versão anterior também produziu erro de captura de lambda ao encerrar o benchmark do Escritório. O log foi preservado como evidência histórica. Nenhum erro dessa categoria foi aceito nos testes da versão atual."
+    ]
+  },
+  {
+    "version": "1.5.3",
+    "title": "Atualização 1.5.3 — granadas e feedback de combate",
+    "additions": [
+      "No Arsenal, marque as armas adquiridas que deseja levar. Pelo menos uma permanece selecionada. A arma inicial deve pertencer à seleção.",
+      "Granadas são opcionais no equipamento: duas por vida. Segure G para visualizar a trajetória; solte G para lançar. Morrer, abrir menu ou perder o foco cancela a preparação.",
+      "A granada explode três segundos após o lançamento. Raio de seis metros, dano-base de 120 com redução linear pela distância. A explosão pode atingir o próprio lançador, sem gerar recompensa por suicídio.",
+      "Origem na mão, velocidade herdada nos três eixos, gravidade, colisão esférica e quique são compartilhados pela previsão e pela simulação real. A guia aparece somente na preparação da granada; não foi adicionada às armas de fogo.",
+      "Sniper: velocidade de 105,8 para 160 m/s, gravidade de 8,3385 para 12 m/s² e alcance de 300 m. Na mesma distância, a queda acumulada é aproximadamente 37% menor. Continua superior à queda de Glock e FAL. A luneta fecha ao morrer e não é alterada pela atualização visual de outro avatar.",
+      "Som de passagem próxima ampliado de 2,8 para 6 m. Novo impacto sintetizado de terra, limitado por cadência e reproduzido na posição do impacto.",
+      "Números de dano em 3D acima dos alvos, visíveis somente para o atacante. Mostram a perda efetiva de vida, limitada à vida restante, com confirmação do servidor no multiplayer. Inclui NPCs, infantaria PVP e navios. Eventos repetidos não geram números duplicados. Rótulos respeitam profundidade e têm pool limitado a 48.",
+      "PVP Deserto com menos de dois jogadores apresenta aviso central no tema existente. Movimento e combate aguardam outro participante."
+    ],
+    "fixes": [
+      "A cobertura é calculada no servidor: três consultas físicas entre a explosão e alturas do corpo. Uma parede que bloqueia todas as consultas impede o dano; exposição parcial reduz proporcionalmente o dano. Não há propagação artificial através de paredes.",
+      "Cada acerto produz um pulso na tela que desaparece em 0,34 s. Vida baixa não mantém a tela permanentemente escura. Mesmo componente reutilizado no Naval.",
+      "Traçantes com cores por arma, emissão maior e espessura visual ajustada pela distância. O núcleo e o traçante seguem o mesmo projétil; não foi criada uma segunda munição."
+    ]
+  },
+  {
+    "version": "1.5.2",
+    "title": "Atualização 1.5.2 — áudio de combate",
+    "additions": [
+      "sound109.wav → audio/pistol-109.wav: substitui o disparo da Glock no Offline e PVP Deserto. O catálogo também é utilizado no Guerra em desenvolvimento.",
+      "sound115.wav → audio/explosion-115.wav.",
+      "sound114.wav → audio/explosion-114.wav.",
+      "sound112.wav → audio/explosion-112.wav."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.5.1",
+    "title": "Atualização corretiva 1.5.1",
+    "additions": [
+      "Entrada tardia criava avatar com lifeid=1, mesmo após respawn. Snapshots da vida atual eram descartados. Agora o servidor envia uma referência confiável da vida e estado de cada jogador existente, preservando a rejeição de snapshots antigos.",
+      "FAL tinha quatro vozes para amostra de 2,30 s. Pool por emissor/arma até 24 vozes e 96 globais, reciclando a cauda mais antiga. Áudio local imediato, deduplicado na confirmação. Cadência conserva fração do passo; servidor tolera até 45 ms de variação sem aumentar taxa média.",
+      "Cor e quatro proporções passam ao perfil autenticado. API aceita cor hexadecimal e proporções finitas entre 0,65 e 1,50. Aparência não modifica saldo/compras. Migração inicial do personagem local e isolamento entre contas.",
+      "Míssil 86,52 → 90,846 m/s; torpedo 42 → 44,1 m/s. Mesma configuração na previsão e simulação.",
+      "Sniper 92 → 105,8 m/s; gravidade 9,81 → 8,3385 m/s². Sem impulso para cima ou compensação artificial.",
+      "Sons originais gerados por tools/generatecombatfeedback.py: dano, quase acerto e carregador vazio. Posição 3D e limite de vozes/frequência; disparo próprio não produz quase acerto.",
+      "Traçantes: Glock azul claro, FAL âmbar, sniper rosa claro, avançando com a própria munição.",
+      "Expansão da imagem à proporção da janela remove faixas laterais."
+    ],
+    "fixes": [
+      "Voltar fechava o único painel naval e deixava o fundo cinza. Voltar/Esc agora retornam ao menu; remoção da cena ocorre fora do despacho de entrada. Sessão compartilhada já validada não reabre o login; sessão em disco continua consultando o servidor. Gerações descartam respostas de sessão anterior.",
+      "Timer de respawn, conexão cancelada, referências de áudio/efeitos e controles não podem atravessar a saída da partida.",
+      "Ragdoll testa deslocamento da pose inteira para evitar nascer penetrando paredes além da cápsula de movimento. Limites passivos de velocidade, acessórios e roupa presos às partes físicas."
+    ]
+  },
+  {
+    "version": "1.5.0",
+    "title": "1.5.0 — Extended Look dos mapas",
+    "additions": [
+      "Atualização visual dos mapas existentes com novos detalhes de cenário e ambientação."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.4.1",
+    "title": "Correções 1.4.1 — menus, músicas e disparos navais",
+    "additions": [
+      "Trocar por número ou rolagem preserva um gatilho que já estava pressionado. A arma selecionada e a intenção de disparar seguem juntas no controle sequenciado enviado à autoridade.",
+      "O servidor descarta mensagens antigas de parar fogo, usando a mesma sequência dos controles de movimento/arma. Uma soltura atrasada de um estado anterior não pode cancelar um novo disparo.",
+      "O HUD recebe a espera real de cadência do servidor. Míssil e torpedo, por exemplo, continuam respeitando seus intervalos mesmo ao trocar e voltar à arma; o tempo restante aparece no HUD."
+    ],
+    "fixes": [
+      "A soltura do botão é observada em input, antes de um botão ou painel consumir o evento. Isso evita perder a soltura sobre a interface.",
+      "Sem munição ou durante a recarga, não são criados projéteis nem eventos de tiro. Recarga, bloqueio pelo casco e limites das torretas continuam validados pela autoridade."
+    ]
+  },
+  {
+    "version": "1.4.0",
+    "title": "1.4.0 — interface",
+    "additions": [
+      "Menus, salas e HUD receberam tema visual compartilhado e fotografias nos cartões de modos."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.3.1",
+    "title": "1.3.1 — músicas do login",
+    "additions": [
+      "Cinco faixas adicionadas à seleção musical do login."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.3.0",
+    "title": "1.3.0 — login",
+    "additions": [
+      "Nova interface de login e acesso à conta."
+    ],
+    "fixes": []
+  },
+  {
+    "version": "1.2.1",
+    "title": "1.2.1 — economia",
+    "additions": [
+      "A distribuição inicial de moedas foi removida."
+    ],
+    "fixes": []
+  }
+]

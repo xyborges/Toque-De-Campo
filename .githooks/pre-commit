@@ -1,0 +1,10 @@
+#!/bin/sh
+# Hook compartilhado entre main e worktrees. A verificacao usa somente os arquivos STAGED.
+if command -v python >/dev/null 2>&1; then
+  python tools/git_guard.py
+elif command -v py >/dev/null 2>&1; then
+  py -3 tools/git_guard.py
+else
+  echo "ERRO: Python nao encontrado; commit bloqueado para evitar vazamento." >&2
+  exit 1
+fi

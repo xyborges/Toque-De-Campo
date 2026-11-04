@@ -1,0 +1,1 @@
+{"checks":13,"dtls":true,"enet_rtt_ms":{"max":50.0,"mean":22.4025974025974,"median":21.0,"n":77,"p95":28.0},"failures":["real boarding"],"frame_interval_ms":{"max":47.165,"mean":16.66860950764,"median":16.662,"n":2356,"p95":17.726},"headless":true,"label":"release195","process_ms":{"max":23.689,"mean":4.33601697792873,"median":2.663,"n":2356,"p95":10.819},"role":"host"}

@@ -1,0 +1,124 @@
+[
+  {
+    "case": "deployment170_ui",
+    "exit": 0,
+    "seconds": 7.38,
+    "errors": false
+  },
+  {
+    "case": "deployment170_war",
+    "exit": 0,
+    "seconds": 10.63,
+    "errors": false
+  },
+  {
+    "case": "deployment170_naval_ui",
+    "exit": 0,
+    "seconds": 15.97,
+    "errors": false
+  },
+  {
+    "case": "war1610_corrections",
+    "exit": 0,
+    "seconds": 4.12,
+    "errors": false
+  },
+  {
+    "case": "war165_movement",
+    "exit": 0,
+    "seconds": 14.4,
+    "errors": false
+  },
+  {
+    "case": "aim_settings_168",
+    "exit": 0,
+    "seconds": 4.87,
+    "errors": false
+  },
+  {
+    "case": "war_tv168",
+    "exit": 0,
+    "seconds": 4.66,
+    "errors": false
+  },
+  {
+    "case": "war165_equipment",
+    "exit": 0,
+    "seconds": 5.95,
+    "errors": false
+  },
+  {
+    "case": "war_optics",
+    "exit": 0,
+    "seconds": 6.96,
+    "errors": false
+  },
+  {
+    "case": "war_class_hud",
+    "exit": 1,
+    "seconds": 5.15,
+    "errors": false
+  },
+  {
+    "case": "deployment170_ui",
+    "exit": 0,
+    "seconds": 7.41,
+    "errors": false
+  },
+  {
+    "case": "deployment170_war",
+    "exit": 0,
+    "seconds": 10.62,
+    "errors": false
+  },
+  {
+    "case": "deployment170_naval_ui",
+    "exit": 0,
+    "seconds": 15.74,
+    "errors": false
+  },
+  {
+    "case": "war_class_hud",
+    "exit": 0,
+    "seconds": 4.62,
+    "errors": false
+  },
+  {
+    "case": "war167_sniper",
+    "exit": 0,
+    "seconds": 4.36,
+    "errors": false
+  },
+  {
+    "case": "combat_153",
+    "exit": 1,
+    "seconds": 4.14,
+    "errors": true
+  },
+  {
+    "case": "run_war_multiplayer",
+    "exit": 0,
+    "seconds": 25.97,
+    "errors": false
+  },
+  {
+    "case": "run_war_vehicle_passengers_network",
+    "exit": 0,
+    "seconds": 13.36,
+    "errors": false
+  },
+  {
+    "case": "run_deployment170_network",
+    "exit": 0,
+    "seconds": 9.83,
+    "errors": false
+  },
+  {
+    "case": "combat_153",
+    "exit": 0,
+    "errors": false,
+    "checks": 48,
+    "log": "work/combat_153-native.stdout.log",
+    "note": "Component fixture controls respawn; full new deployment tested separately."
+  }
+]

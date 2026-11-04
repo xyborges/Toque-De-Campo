@@ -1,0 +1,58 @@
+{
+  "audio\\war\\engine-guarani.wav": {
+    "seconds": 5.1,
+    "peak": 0.65,
+    "rms": 0.17107250039393637,
+    "largest_fft_bin_share": 0.0171356771135725,
+    "hash": "0fefba3f724d272eb6b63d3b40cceb8f652ada5c23c1ef20009209dd9cf8c99e"
+  },
+  "audio\\war\\rolling-guarani.wav": {
+    "seconds": 5.1,
+    "peak": 0.65,
+    "rms": 0.15931018713734707,
+    "largest_fft_bin_share": 0.02296785209410901,
+    "hash": "4f999cfc84bc93bb5a7606e607fcc1976814f4918d27926711a3114baafd51fc"
+  },
+  "audio\\war\\engine-bmp2.wav": {
+    "seconds": 5.1,
+    "peak": 0.65,
+    "rms": 0.137722678516025,
+    "largest_fft_bin_share": 0.00845570603818025,
+    "hash": "d82efa83409543902fdbed896d9c7d12cfba18d0e8becfe2d7356e67e5524455"
+  },
+  "audio\\war\\rolling-bmp2.wav": {
+    "seconds": 5.1,
+    "peak": 0.65,
+    "rms": 0.16644707859150554,
+    "largest_fft_bin_share": 0.021811124282252098,
+    "hash": "8ee71af176f01f221af93933ae4c85fde9db040f9bf7957bed3afb0f6f0758c8"
+  },
+  "audio\\war\\engine-abrams.wav": {
+    "seconds": 5.1,
+    "peak": 0.65,
+    "rms": 0.15188819486757382,
+    "largest_fft_bin_share": 0.007825748222121927,
+    "hash": "7feaeacbf5b5b0127c3ac053e0db10f580395f2fa316eee4aaf3182052b4461b"
+  },
+  "audio\\war\\rolling-abrams.wav": {
+    "seconds": 5.1,
+    "peak": 0.65,
+    "rms": 0.16263223509134933,
+    "largest_fft_bin_share": 0.026244767749116445,
+    "hash": "091117c7f294c35c354671d3e0c4f5b5702c2e61cf8a7e24acf91e1f8b1eb3d0"
+  },
+  "audio\\war\\engine-t90.wav": {
+    "seconds": 5.1,
+    "peak": 0.65,
+    "rms": 0.14076464833263308,
+    "largest_fft_bin_share": 0.008942911046212957,
+    "hash": "2c309dadb8391a47873d5c3fd0f04afb28c2593ac23b62b1ddcd3b90ab0f01ca"
+  },
+  "audio\\war\\rolling-t90.wav": {
+    "seconds": 5.1,
+    "peak": 0.65,
+    "rms": 0.16299394952021734,
+    "largest_fft_bin_share": 0.01993842117282212,
+    "hash": "1a035886999aa7bbad6847f9a1e539cb55bbd44382a76a46cff040a42b55ecce"
+  }
+}

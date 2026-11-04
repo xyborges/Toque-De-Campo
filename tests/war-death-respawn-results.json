@@ -1,0 +1,1 @@
+{"checks":16,"failures":[],"note":"Headless authority-path regression including the client damage-replica method; advances the server clock directly for the eight-second boundary."}

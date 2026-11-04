@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Material" path="res://modes/battle_royale/library/materials/stone_v2.tres" id="1"]
+[sub_resource type="PlaneMesh" id="Plane"]
+size = Vector2(2.2, 6)
+material = ExtResource("1")
+
+[node name="IrrigationBed" type="Node3D"]
+metadata/library_id = "irrigation_channel_v3"
+metadata/surface = "dirt"
+metadata/terrain_feature = "irrigation"
+metadata/collision_provider = "shared_terrain"
+
+[node name="Geometry" type="MeshInstance3D" parent="."]
+mesh = SubResource("Plane")
+cast_shadow = 0
+
+[node name="SnapA" type="Marker3D" parent="."]
+position = Vector3(0,0,-3)
+[node name="SnapB" type="Marker3D" parent="."]
+position = Vector3(0,0,3)

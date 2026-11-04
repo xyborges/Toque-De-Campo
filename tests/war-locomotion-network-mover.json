@@ -1,0 +1,1 @@
+{"checks":1,"failures":[],"fixture":"Real ENet server, headless legal-position mover and native observer. The mover sends 8.4 m/s positions through server_player_state every 50 ms; after motion the fixture pauses periodic server snapshots to test stale velocity without disconnecting transport.","role":"mover","samples":{}}

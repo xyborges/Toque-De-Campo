@@ -1,0 +1,1 @@
+{"checks":15,"dtls":true,"enet_rtt_ms":{"max":24.0,"mean":21.8387096774194,"median":21.0,"n":62,"p95":24.0},"failures":[],"frame_interval_ms":{"max":51.169,"mean":16.6702628479658,"median":16.662,"n":1868,"p95":17.098},"headless":true,"label":"release193","process_ms":{"max":13.155,"mean":3.27511563169164,"median":2.349,"n":1868,"p95":7.961},"role":"host"}

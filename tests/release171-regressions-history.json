@@ -1,0 +1,92 @@
+[
+  {
+    "case": "naval_physics",
+    "exit": 1,
+    "seconds": 2.18,
+    "errors": true
+  },
+  {
+    "case": "naval_physics",
+    "exit": 0,
+    "seconds": 9.92,
+    "errors": false
+  },
+  {
+    "case": "naval_arsenal",
+    "exit": 0,
+    "seconds": 3.13,
+    "errors": false
+  },
+  {
+    "case": "war167_sniper",
+    "exit": 0,
+    "seconds": 4.63,
+    "errors": false
+  },
+  {
+    "case": "war_tv168",
+    "exit": 1,
+    "seconds": 4.38,
+    "errors": false
+  },
+  {
+    "case": "tracer171",
+    "exit": 1,
+    "errors": true
+  },
+  {
+    "case": "tracer171",
+    "exit": 1,
+    "errors": false
+  },
+  {
+    "case": "tracer171",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "war_tv168",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "war165_equipment",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "deployment170_ui",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "deployment170_war",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "ballistics171",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "naval_deployment",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "war_network",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "naval_network",
+    "exit": 0,
+    "errors": false
+  },
+  {
+    "case": "desert_network",
+    "exit": 0,
+    "errors": false
+  }
+]

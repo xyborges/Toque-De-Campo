@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="PackedScene" path="res://scenes/weapons/scope4x.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/attachments/precision_detail.gd" id="2"]
+[sub_resource type="StandardMaterial3D" id="Metal"]
+albedo_color = Color(0.13, 0.145, 0.135, 1)
+metallic = 0.59
+roughness = 0.61
+[sub_resource type="BoxMesh" id="Mount"]
+material = SubResource("Metal")
+size = Vector3(0.044, 0.030, 0.038)
+[node name="Scope4x" instance=ExtResource("1")]
+metadata/reference = "Precisão 8x — telescópio longo de alta ampliação; mesma câmera ótica e encaixe modular"
+[node name="OpticMachining" type="Node3D" parent="."]
+script = ExtResource("2")
+[node name="Tube" parent="." index="0"]
+visible = false
+[node name="RearRing" parent="." index="1"]
+visible = false
+[node name="FrontRing" parent="." index="2"]
+visible = false
+[node name="RearMount" parent="." index="3"]
+position = Vector3(0, -0.055, 0.079)
+mesh = SubResource("Mount")
+[node name="FrontMount" parent="." index="4"]
+position = Vector3(0, -0.055, -0.099)
+mesh = SubResource("Mount")
+[node name="ElevationDial" parent="." index="5"]
+visible = false
+[node name="WindageDial" parent="." index="6"]
+visible = false
+[node name="Lens" parent="." index="7"]
+position = Vector3(0, 0, 0.210)
+[node name="Eye" parent="." index="8"]
+position = Vector3(0, 0, 0.376)
+[node name="MountReference" parent="." index="9"]
+position = Vector3(0, -0.067, 0)

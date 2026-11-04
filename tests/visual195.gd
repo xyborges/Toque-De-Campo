@@ -1,0 +1,20 @@
+extends SceneTree
+func _initialize() -> void: run.call_deferred()
+func capture(name_value: String) -> void:
+	await process_frame;await process_frame;RenderingServer.force_draw(false)
+	root.get_texture().get_image().save_png("res://work/visual195-"+name_value+".png")
+func run() -> void:
+	var game:=load("res://tests/war_optics_fixture.gd").new() as WarGame;root.add_child(game)
+	var actor:=game.local_player as WarPlayer;actor.set_physics_process(true)
+	game.vehicle_system.launch_drone(actor.peer_id)
+	game.vehicle_system.set_process(false)
+	var observer:=Camera3D.new();game.world_root.add_child(observer);observer.position=Vector3(2.1,1.65,-3.2);observer.look_at(Vector3(0,1.1,0));observer.make_current()
+	await create_timer(.4).timeout;await capture("drone")
+	game.vehicle_system.release(actor.peer_id,true);actor.set_physics_process(false);actor.drone_controller.hide();actor.global_position=Vector3.ZERO;actor.body_root.show();actor.apply_identity(0,"medic");actor.set_utility("medic");actor._utility_pose()
+	await create_timer(.3).timeout;await capture("medic")
+	actor.apply_identity(0,"marksman");actor.set_utility("binoculars");actor._utility_pose()
+	await create_timer(.3).timeout;await capture("binoculars")
+	game.war_ui.set_process(false)
+	game.war_ui.objective_bar.update_state(0,[260,210],{"A":{"owner":0},"B":{"owner":1},"C":{"owner":-1},"D":{"owner":0},"E":{"owner":1}},1024)
+	await capture("hud")
+	game.show_menu();game.queue_free();await process_frame;quit()

@@ -1,0 +1,4 @@
+Photographs used as mode artwork in Toque de Campo.
+Source and authors in credits.json.
+Unsplash License: https://unsplash.com/license
+Downloaded 2026-10-23. Images bundled locally; no runtime network download.

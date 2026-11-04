@@ -1,0 +1,34 @@
+{
+  "version": "1.13.2",
+  "date": "04/11/2026",
+  "title": "G3 refinado, lunetas reconstruídas e mira mais consistente",
+  "summary": "Revisão visual e funcional do G3, da Hensoldt 4× e da Telescópica 8×, com suportes ajustados, geometria mais sólida, apresentação de mira da sniper corrigida e ampliação testada em quatro fuzis.",
+  "changes": [
+    {
+      "title": "G3 com detalhes mais fiéis",
+      "text": "Refinamentos da coronha, guarda-mão e receptor. Dioptro traseiro alinhado à massa dianteira; o aro frontal permanece presente mesmo com a óptica instalada."
+    },
+    {
+      "title": "Hensoldt 4× e Telescópica 8× reconstruídas",
+      "text": "Suportes aproximados das armas, anéis e ocular da 8× fechados e torres da Hensoldt detalhadas. Pontos de contato revisados na sniper, G3, AK e FAL."
+    },
+    {
+      "title": "Ampliação real das lunetas",
+      "text": "A lente 8× mostra o alvo com aproximadamente o dobro da largura da 4× no teste renderizado. A ampliação foi conferida na sniper, G3, AK e FAL."
+    },
+    {
+      "title": "Transições de mira da sniper",
+      "text": "A arma permanece visível ao mirar; entrada e saída do ADS ajustadas de acordo com a óptica: 0,18 s na 4× e 0,26 s na 8×."
+    }
+  ],
+  "fixes": [
+    {
+      "title": "Frestas na luneta 8×",
+      "text": "Corpo, bordas e junções da lente com as torres remodelados para reduzir aberturas visuais, inclusive na vista lateral."
+    },
+    {
+      "title": "Apresentação de mira da sniper",
+      "text": "Corrigida a antiga ocultação da arma em ADS, preservando o modelo e as lentes durante a transição visual."
+    }
+  ]
+}

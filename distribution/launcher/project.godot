@@ -1,0 +1,21 @@
+config_version=5
+
+[application]
+config/icon="res://game-icon.png"
+config/name="Toque de Campo Launcher"
+run/main_scene="res://main.tscn"
+config/version="1.1.0"
+
+[display]
+window/size/viewport_width=960
+window/size/viewport_height=760
+window/size/window_width_override=960
+window/size/window_height_override=760
+window/size/resizable=true
+window/size/min_width=680
+window/size/min_height=560
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.025,0.065,0.075,1)

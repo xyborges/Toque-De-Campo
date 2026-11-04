@@ -1,0 +1,5 @@
+{
+  "exit": 1,
+  "out": "",
+  "error": "Traceback (most recent call last):\n  File \"/usr/local/sbin/toque-deploy\", line 414, in <module>\n    main()\n  File \"/usr/local/sbin/toque-deploy\", line 410, in main\n    deploy()\n  File \"/usr/local/sbin/toque-deploy\", line 377, in deploy\n    raise ValueError('Release must increase the build number')\nValueError: Release must increase the build number\n"
+}

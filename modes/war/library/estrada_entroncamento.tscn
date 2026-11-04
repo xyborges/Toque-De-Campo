@@ -1,0 +1,121 @@
+[gd_scene format=4]
+
+[ext_resource type="Texture2D" path="res://assets/environment/materials/asphalt-albedo.png" id="1_b2fsf"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/asphalt-normal.png" id="2_8kco4"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/asphalt-roughness.png" id="3_mqx7k"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/plaster-albedo.png" id="4_rr1op"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/plaster-normal.png" id="5_d3a84"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/plaster-roughness.png" id="6_66eye"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_x65yw"]
+size = Vector3(7, 0.26, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ftxh6"]
+size = Vector3(6, 0.26, 7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_njsre"]
+resource_name = "asphalt"
+albedo_color = Color(0.3254902, 0.3529412, 0.32941177, 1)
+albedo_texture = ExtResource("1_b2fsf")
+metallic_specular = 0.35
+roughness = 0.97
+roughness_texture = ExtResource("3_mqx7k")
+normal_enabled = true
+normal_scale = 0.45
+normal_texture = ExtResource("2_8kco4")
+uv1_scale = Vector3(0.65, 0.65, 0.65)
+uv1_triplanar = true
+texture_filter = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_dj3w3"]
+_surfaces = [{
+"aabb": AABB(-3.5, 0, -6, 9.5, 1e-05, 12),
+"attribute_data": PackedByteArray("MzMzv5qZmT8zMzO/mpmZvzMzMz+amZm/MzMzPzMzM7+amZk/MzMzv5qZmT8zMzM/MzMzPzMzMz8zMzM/mpmZPw=="),
+"format": 34359742487,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAAACAAIAAwAEAAUAAwAFAAUABgAHAAAABgAAAAAAAAACAAMAAAADAAMAAwAFAAYAAwAGAAYABgAAAAMABgADAAMA"),
+"material": SubResource("StandardMaterial3D_njsre"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AABgwAAAAAAAAMBAAABgwAAAAAAAAMDAAABgQAAAAAAAAMDAAABgQAAAAAAAAGDAAADAQAAAAAAAAGDAAADAQAAAAAAAAGBAAABgQAAAAAAAAGBAAABgQAAAAAAAAMBAAID//wAA/78AgP//AAD/vwCA//8AAP+/AID//wAA/78AgP//AAD/vwCA//8AAP+/AID//wAA/78AgP//AAD/vw==")
+}]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jp6hk"]
+resource_name = "marking"
+albedo_color = Color(0.7607843, 0.7411765, 0.61960787, 1)
+albedo_texture = ExtResource("4_rr1op")
+metallic_specular = 0.35
+roughness = 0.96
+roughness_texture = ExtResource("6_66eye")
+normal_enabled = true
+normal_scale = 0.45
+normal_texture = ExtResource("5_d3a84")
+uv1_scale = Vector3(0.65, 0.65, 0.65)
+uv1_triplanar = true
+texture_filter = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_2pkc0"]
+_surfaces = [{
+"aabb": AABB(-3.19, 0, -6, 6.38, 0.012, 12),
+"attribute_data": PackedByteArray("AAAAAAAAAACrqio/AAAAAKuqqj4AAAAAAACAPwAAAAAAAAAAAAAAP6uqKj8AAAA/q6qqPgAAAD8AAIA/AAAAP6uqqj4AAAAAAAAAAAAAAD+rqio/AAAAAKuqqj4AAAA/q6qqPgAAAD8AAAAAAACAP6uqKj8AAAA/q6qqPgAAgD+rqqo+AAAAP6uqKj8AAAA/q6oqPwAAAD8AAIA/AAAAP6uqqj4AAIA/q6oqPwAAgD+rqio/AACAPwAAgD8AAIA/AAAAAAAAAACrqio/AAAAAKuqqj4AAAAAAACAPwAAAAAAAAAAAAAAP6uqKj8AAAA/q6qqPgAAAD8AAIA/AAAAP6uqqj4AAAAAAAAAAAAAAD+rqio/AAAAAKuqqj4AAAA/q6qqPgAAAD8AAAAAAACAP6uqKj8AAAA/q6qqPgAAgD+rqqo+AAAAP6uqKj8AAAA/q6oqPwAAAD8AAIA/AAAAP6uqqj4AAIA/q6oqPwAAgD+rqio/AACAPwAAgD8AAIA/AAAAAAAAAACrqio/AAAAAKuqqj4AAAAAAACAPwAAAAAAAAAAAAAAP6uqKj8AAAA/q6qqPgAAAD8AAIA/AAAAP6uqqj4AAAAAAAAAAAAAAD+rqio/AAAAAKuqqj4AAAA/q6qqPgAAAD8AAAAAAACAP6uqKj8AAAA/q6qqPgAAgD+rqqo+AAAAP6uqKj8AAAA/q6oqPwAAAD8AAIA/AAAAP6uqqj4AAIA/q6oqPwAAgD+rqio/AACAPwAAgD8AAIA/AAAAAAAAAACrqio/AAAAAKuqqj4AAAAAAACAPwAAAAAAAAAAAAAAP6uqKj8AAAA/q6qqPgAAAD8AAIA/AAAAP6uqqj4AAAAAAAAAAAAAAD+rqio/AAAAAKuqqj4AAAA/q6qqPgAAAD8AAAAAAACAP6uqKj8AAAA/q6qqPgAAgD+rqqo+AAAAP6uqKj8AAAA/q6oqPwAAAD8AAIA/AAAAP6uqqj4AAIA/q6oqPwAAgD+rqio/AACAPwAAgD8AAIA/"),
+"format": 34359742487,
+"index_count": 144,
+"index_data": PackedByteArray("AAACAAQAAgAGAAQAAQADAAUAAwAHAAUACAAKAAwACgAOAAwACQALAA0ACwAPAA0AEAASABQAEgAWABQAEQATABUAEwAXABUAGAAaABwAGgAeABwAGQAbAB0AGwAfAB0AIAAiACQAIgAmACQAIQAjACUAIwAnACUAKAAqACwAKgAuACwAKQArAC0AKwAvAC0AMAAyADQAMgA2ADQAMQAzADUAMwA3ADUAOAA6ADwAOgA+ADwAOQA7AD0AOwA/AD0AQABCAEQAQgBGAEQAQQBDAEUAQwBHAEUASABKAEwASgBOAEwASQBLAE0ASwBPAE0AUABSAFQAUgBWAFQAUQBTAFUAUwBXAFUAWABaAFwAWgBeAFwAWQBbAF0AWwBfAF0A"),
+"material": SubResource("StandardMaterial3D_jp6hk"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 96,
+"vertex_data": PackedByteArray("9ihMwKabRDzMzGzAkMJFwKabRDwAAMDAkMJFwKabRDzMzGzA9ihMwKabRDwAAMDA9ihMwAAAAADMzGzAkMJFwAAAAAAAAMDAkMJFwAAAAADMzGzA9ihMwAAAAAAAAMDAkMJFwKabRDzMzGzA9ihMwKabRDwAAMDAkMJFwKabRDwAAMDA9ihMwKabRDzMzGzAkMJFwAAAAADMzGzA9ihMwAAAAAAAAMDAkMJFwAAAAAAAAMDA9ihMwAAAAADMzGzAkMJFwKabRDzMzGzA9ihMwAAAAADMzGzA9ihMwKabRDzMzGzAkMJFwAAAAADMzGzAkMJFwKabRDwAAMDA9ihMwAAAAAAAAMDA9ihMwKabRDwAAMDAkMJFwAAAAAAAAMDA9ihMwKabRDwAAMBAkMJFwKabRDzMzGxAkMJFwKabRDwAAMBA9ihMwKabRDzMzGxA9ihMwAAAAAAAAMBAkMJFwAAAAADMzGxAkMJFwAAAAAAAAMBA9ihMwAAAAADMzGxAkMJFwKabRDwAAMBA9ihMwKabRDzMzGxAkMJFwKabRDzMzGxA9ihMwKabRDwAAMBAkMJFwAAAAAAAAMBA9ihMwAAAAADMzGxAkMJFwAAAAADMzGxA9ihMwAAAAAAAAMBAkMJFwKabRDwAAMBA9ihMwAAAAAAAAMBA9ihMwKabRDwAAMBAkMJFwAAAAAAAAMBAkMJFwKabRDzMzGxA9ihMwAAAAADMzGxA9ihMwKabRDzMzGxAkMJFwAAAAADMzGxAkMJFQKabRDzMzGzA9ihMQKabRDwAAMDA9ihMQKabRDzMzGzAkMJFQKabRDwAAMDAkMJFQAAAAADMzGzA9ihMQAAAAAAAAMDA9ihMQAAAAADMzGzAkMJFQAAAAAAAAMDA9ihMQKabRDzMzGzAkMJFQKabRDwAAMDA9ihMQKabRDwAAMDAkMJFQKabRDzMzGzA9ihMQAAAAADMzGzAkMJFQAAAAAAAAMDA9ihMQAAAAAAAAMDAkMJFQAAAAADMzGzA9ihMQKabRDzMzGzAkMJFQAAAAADMzGzAkMJFQKabRDzMzGzA9ihMQAAAAADMzGzA9ihMQKabRDwAAMDAkMJFQAAAAAAAAMDAkMJFQKabRDwAAMDA9ihMQAAAAAAAAMDAkMJFQKabRDwAAMBA9ihMQKabRDzMzGxA9ihMQKabRDwAAMBAkMJFQKabRDzMzGxAkMJFQAAAAAAAAMBA9ihMQAAAAADMzGxA9ihMQAAAAAAAAMBAkMJFQAAAAADMzGxA9ihMQKabRDwAAMBAkMJFQKabRDzMzGxA9ihMQKabRDzMzGxAkMJFQKabRDwAAMBA9ihMQAAAAAAAAMBAkMJFQAAAAADMzGxA9ihMQAAAAADMzGxAkMJFQAAAAAAAAMBA9ihMQKabRDwAAMBAkMJFQAAAAAAAAMBAkMJFQKabRDwAAMBA9ihMQAAAAAAAAMBA9ihMQKabRDzMzGxAkMJFQAAAAADMzGxAkMJFQKabRDzMzGxA9ihMQAAAAADMzGxA/3//f////7//////AAD/v/9//3////+//////wAA/7//f/9/////v/////8AAP+//3//f////7//////AAD/v///AID/////AAAAgP9//7///wCA/////wAAAID/f/+///8AgP////8AAACA/3//v///AID/////AAAAgP9//78AgP//AAD/vwCAAAD///+/AID//wAA/78AgAAA////vwCA//8AAP+/AIAAAP///78AgP//AAD/vwCAAAD///+//3//f////7//////AAD/v/9//3////+//////wAA/7//f/9/////v/////8AAP+//3//f////7//////AAD/v///AID/////AAAAgP9//7///wCA/////wAAAID/f/+///8AgP////8AAACA/3//v///AID/////AAAAgP9//78AgP//AAD/vwCAAAD///+/AID//wAA/78AgAAA////vwCA//8AAP+/AIAAAP///78AgP//AAD/vwCAAAD///+//3//f////7//////AAD/v/9//3////+//////wAA/7//f/9/////v/////8AAP+//3//f////7//////AAD/v///AID/////AAAAgP9//7///wCA/////wAAAID/f/+///8AgP////8AAACA/3//v///AID/////AAAAgP9//78AgP//AAD/vwCAAAD///+/AID//wAA/78AgAAA////vwCA//8AAP+/AIAAAP///78AgP//AAD/vwCAAAD///+//3//f////7//////AAD/v/9//3////+//////wAA/7//f/9/////v/////8AAP+//3//f////7//////AAD/v///AID/////AAAAgP9//7///wCA/////wAAAID/f/+///8AgP////8AAACA/3//v///AID/////AAAAgP9//78AgP//AAD/vwCAAAD///+/AID//wAA/78AgAAA////vwCA//8AAP+/AIAAAP///78AgP//AAD/vwCAAAD///+/")
+}]
+
+[node name="EstradaEntroncamento" type="Node3D" unique_id=2124083820]
+metadata/footprint = Vector2(12, 12)
+metadata/terrain_grade = true
+metadata/library_id = "estrada_entroncamento"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="ViaPrincipal" type="StaticBody3D" parent="." unique_id=695461808]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.13, 0)
+collision_mask = 0
+metadata/surface = "asphalt"
+
+[node name="Shape" type="CollisionShape3D" parent="ViaPrincipal" unique_id=1420546249]
+shape = SubResource("BoxShape3D_x65yw")
+
+[node name="ViaTransversal" type="StaticBody3D" parent="." unique_id=830648257]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.13, 0)
+collision_mask = 0
+metadata/surface = "asphalt"
+
+[node name="Shape" type="CollisionShape3D" parent="ViaTransversal" unique_id=1041650761]
+shape = SubResource("BoxShape3D_ftxh6")
+
+[node name="Encaixes" type="Node3D" parent="." unique_id=2064279666]
+
+[node name="Entrada" type="Marker3D" parent="Encaixes" unique_id=647407861]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 6)
+metadata/profile = "road"
+metadata/width = 7.0
+
+[node name="Saida" type="Marker3D" parent="Encaixes" unique_id=1814789028]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
+metadata/profile = "road"
+metadata/width = 7.0
+
+[node name="Direita" type="Marker3D" parent="Encaixes" unique_id=9508131]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 6, 0, 0)
+metadata/profile = "road"
+metadata/width = 7.0
+
+[node name="RigidDetail_body" type="MeshInstance3D" parent="." unique_id=2009155346]
+visibility_range_end = 1200.0
+mesh = SubResource("ArrayMesh_dj3w3")
+metadata/thermal_region = "body"
+
+[node name="@MeshInstance3D@17" type="MeshInstance3D" parent="." unique_id=1181989855]
+visibility_range_end = 1200.0
+mesh = SubResource("ArrayMesh_2pkc0")
+metadata/thermal_region = "body"

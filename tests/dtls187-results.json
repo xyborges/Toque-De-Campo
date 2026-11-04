@@ -1,0 +1,1 @@
+{"dtls":{"mean_ms":13.793335,"n":600,"p95_ms":13.943,"poll_cpu_ms_per_exchange":0.197787692307692,"received":650,"sent":650},"plain_loopback_control":{"mean_ms":13.7924583333333,"n":600,"p95_ms":13.924,"poll_cpu_ms_per_exchange":0.161430769230769,"received":650,"sent":650}}

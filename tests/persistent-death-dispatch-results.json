@@ -1,0 +1,1 @@
+{"checks":10,"failures":[],"fixture":"Real dispatch/authority guards; API transport is recorded locally. Real PHP/SQLite idempotency is tested separately."}

@@ -1,0 +1,42 @@
+[
+  {
+    "file": "tests/bugs187-network-server.json",
+    "checks": 8,
+    "failures": []
+  },
+  {
+    "file": "tests/bugs187-network-alpha.json",
+    "checks": 24,
+    "failures": []
+  },
+  {
+    "file": "tests/bugs187-network-bravo.json",
+    "checks": 8,
+    "failures": []
+  },
+  {
+    "file": "tests/bugs187-air-results.json",
+    "checks": 15,
+    "failures": []
+  },
+  {
+    "file": "tests/bugs187-accounts-results.json",
+    "checks": 5,
+    "failures": []
+  },
+  {
+    "file": "tests/ubuntu-war187-updated-host.json",
+    "checks": 13,
+    "failures": []
+  },
+  {
+    "file": "tests/ubuntu-war187-updated-guest.json",
+    "checks": 6,
+    "failures": []
+  },
+  {
+    "file": "tests/ubuntu-distribution-results.json",
+    "checks": null,
+    "failures": []
+  }
+]

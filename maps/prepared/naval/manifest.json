@@ -1,0 +1,148 @@
+{
+	"artifacts": [
+		{
+			"path": "res://maps/prepared/naval/cartography_0.res",
+			"sha256": "5cf87239f97e578f544f0bbad3f08aeed1cfab313ed81a0cab00f8c90c664ba4"
+		},
+		{
+			"path": "res://maps/prepared/naval/cartography_1.res",
+			"sha256": "88a904f01a5ace5b709569ec5d17fbbd966b84b196797f70f00e6bfda8e34026"
+		},
+		{
+			"path": "res://maps/prepared/naval/cartography_2.res",
+			"sha256": "ff4a2f02018d855c794809b4c11a4c26dffb7d10556875dc989270e05e088517"
+		},
+		{
+			"path": "res://maps/prepared/naval/cartography_3.res",
+			"sha256": "ccb666b87dc7d3747e2d41cec4bbfa819b18142aa6955666903b56eeb68f3839"
+		},
+		{
+			"path": "res://maps/prepared/naval/cartography_4.res",
+			"sha256": "f8c7ad7bff1067e510a984db7cdaed4d7edf304ffd3f8393a9d668927f67fe72"
+		},
+		{
+			"path": "res://maps/prepared/naval/islands_0.res",
+			"sha256": "35c1ff3403287d61d7cedf153dcaec5b05fb7747b6490db5631ece646789a252"
+		},
+		{
+			"path": "res://maps/prepared/naval/islands_1.res",
+			"sha256": "ef2b34a9d2b6e4e81dc1624fa2808d4e9fc787feff211976bd207c70e398f5c9"
+		},
+		{
+			"path": "res://maps/prepared/naval/islands_2.res",
+			"sha256": "dad7d32555366331d160b2e280f892a588a45bd43e153db33acc8fc9b4a6d866"
+		},
+		{
+			"path": "res://maps/prepared/naval/islands_3.res",
+			"sha256": "68a95fea2880fc54485fe430af466f1b67a8b6396bbf4637cf1f30cadb435e87"
+		},
+		{
+			"path": "res://maps/prepared/naval/islands_4.res",
+			"sha256": "1bc7ecb7de5c3e4ae8bbaa1030823ef037684bc84371e79bca298989aa1f2dc1"
+		}
+	],
+	"benchmark": {
+		"median_loss_max_percent": 5.0,
+		"pairs": 5.0,
+		"renderer": "gl_compatibility",
+		"resolution": [
+			1920.0,
+			1080.0
+		],
+		"seconds": 120.0,
+		"vram_limit_mib": 4096.0,
+		"worst_frame_max_ms": 50.0
+	},
+	"bounds": [
+		-980.0,
+		-980.0,
+		1960.0,
+		1960.0
+	],
+	"content_hash": "5e0894b0cbe0b04cc361a69595690a875b6ebd2058bcb300eb9ffef0ebcdc976",
+	"grass_approved": false,
+	"grass_enabled": false,
+	"id": "naval",
+	"loot": [],
+	"objectives": [],
+	"reservations": [
+		"islands",
+		"ports",
+		"water_lanes"
+	],
+	"source_hash": "b5acf114f715c8586aa20edf033c532fe487f3c3dca0273d90baed20b302a249",
+	"sources": [
+		"res://modes/naval/scripts/catalog.gd",
+		"res://modes/naval/shaders/clouds.gdshader",
+		"res://modes/naval/shaders/ocean.gdshader",
+		"res://scripts/environment/environment_kit.gd",
+		"res://scripts/environment/environment_props.gd",
+		"res://scripts/environment/naval_islands.gd",
+		"res://scripts/maps/definition.gd",
+		"res://scripts/maps/grass_data.gd",
+		"res://scripts/maps/navigation_cache.gd",
+		"res://scripts/maps/navigation_data.gd",
+		"res://tools/maps/adapter.gd",
+		"res://tools/maps/pipeline.gd"
+	],
+	"spawns": [
+		[
+			-800.0,
+			0.0,
+			-800.0
+		],
+		[
+			-800.0,
+			0.0,
+			0.0
+		],
+		[
+			-800.0,
+			0.0,
+			800.0
+		],
+		[
+			0.0,
+			0.0,
+			-800.0
+		],
+		[
+			0.0,
+			0.0,
+			0.0
+		],
+		[
+			0.0,
+			0.0,
+			800.0
+		],
+		[
+			800.0,
+			0.0,
+			-800.0
+		],
+		[
+			800.0,
+			0.0,
+			0.0
+		],
+		[
+			800.0,
+			0.0,
+			800.0
+		]
+	],
+	"stages": [
+		"concept",
+		"terrain",
+		"navigation",
+		"layout",
+		"biomes",
+		"props",
+		"atmosphere",
+		"budget",
+		"match"
+	],
+	"status": "validation_pending",
+	"version": 7
+}

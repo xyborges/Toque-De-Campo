@@ -1,0 +1,19 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/environment/materials/fabric-albedo.png" id="1_rreab"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/fabric-normal.png" id="2_q8tp2"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/fabric-roughness.png" id="3_b2l52"]
+
+[resource]
+resource_name = "leaf"
+albedo_color = Color(0.3372549, 0.3882353, 0.2627451, 1)
+albedo_texture = ExtResource("1_rreab")
+metallic_specular = 0.35
+roughness = 0.95
+roughness_texture = ExtResource("3_b2l52")
+normal_enabled = true
+normal_scale = 0.45
+normal_texture = ExtResource("2_q8tp2")
+uv1_scale = Vector3(0.65, 0.65, 0.65)
+uv1_triplanar = true
+texture_filter = 5

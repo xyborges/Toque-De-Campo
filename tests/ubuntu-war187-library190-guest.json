@@ -1,0 +1,1 @@
+{"checks":9,"dtls":true,"enet_rtt_ms":{"max":27.0,"mean":24.5566037735849,"median":24.0,"n":106,"p95":27.0},"failures":[],"frame_interval_ms":{"max":27.521,"mean":16.6656488668115,"median":16.665,"n":3221,"p95":17.09},"headless":true,"label":"library190","process_ms":{"max":8.787,"mean":2.2696761875194,"median":1.636,"n":3221,"p95":5.432},"role":"guest"}

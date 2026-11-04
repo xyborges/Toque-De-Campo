@@ -1,0 +1,24 @@
+{
+  "version": "1.8.5",
+  "date": "26/10/2026",
+  "title": "AK e FAL: armas independentes",
+  "summary": "AK identificada corretamente e FAL com modelo próprio, mira de ferro e áudio novo.",
+  "changes": [
+    {
+      "title": "AK",
+      "text": "O fuzil antes chamado FAL passa a ser AK em todo o arsenal, HUD e configurações, preservando seus 30 tiros e disparo automático."
+    },
+    {
+      "title": "FAL",
+      "text": "Novo modelo com coronha fixa, guarda-mão, carregador de 20 tiros, mira de ferro 3D e som próprio. Tiros saem da extremidade do cano."
+    },
+    {
+      "title": "Loadout por equipe",
+      "text": "No Guerra, a Equipe 1 recebe FAL e a Equipe 2 recebe AK. Nos modos de infantaria Offline e Deserto, ambas são opções de arma principal."
+    },
+    {
+      "title": "Saves preservados",
+      "text": "Seleções e sensibilidade da arma antiga passam para a AK. Quem possuía o fuzil mantém acesso à AK e à nova FAL. Armas, munição e recarga são sincronizadas separadamente."
+    }
+  ]
+}

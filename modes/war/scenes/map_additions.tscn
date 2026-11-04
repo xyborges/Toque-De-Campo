@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://modes/war/library/trincheira_6m.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://modes/war/library/barreira_concreto.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://modes/war/library/pinheiro.tscn" id="3"]
+
+[ext_resource type="PackedScene" path="res://modes/war/scenes/infraestrutura_190.tscn" id="infra190"]
+[ext_resource type="PackedScene" path="res://modes/war/scenes/detalhamento_190.tscn" id="details190"]
+
+[node name="ObjetosDoMapa" type="Node3D"]
+
+[node name="BaseOeste" type="Node3D" parent="."]
+position = Vector3(-1160, 18, 100)
+
+[node name="AbrigoDeInstrucao" parent="BaseOeste" instance=ExtResource("1")]
+position = Vector3(-44, 0, -24)
+
+[node name="BarreiraDoPatio" parent="BaseOeste" instance=ExtResource("2")]
+position = Vector3(-18, 0, -12)
+
+[node name="Pinheiro" parent="BaseOeste" instance=ExtResource("3")]
+position = Vector3(57, 0, 25)
+
+[node name="BaseLeste" type="Node3D" parent="."]
+position = Vector3(1160, 18, -100)
+
+[node name="AbrigoDeInstrucao" parent="BaseLeste" instance=ExtResource("1")]
+position = Vector3(44, 0, 24)
+
+[node name="BarreiraDoPatio" parent="BaseLeste" instance=ExtResource("2")]
+position = Vector3(18, 0, -12)
+
+[node name="Pinheiro" parent="BaseLeste" instance=ExtResource("3")]
+position = Vector3(-57, 0, -25)
+
+[node name="Centro" type="Node3D" parent="."]
+
+[node name="PortoOeste" type="Node3D" parent="."]
+
+[node name="Arredores" type="Node3D" parent="."]
+
+[node name="Infraestrutura" parent="." instance=ExtResource("infra190")]
+
+[node name="Detalhamento" parent="." instance=ExtResource("details190")]

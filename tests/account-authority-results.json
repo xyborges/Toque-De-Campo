@@ -1,0 +1,660 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "label": "preferences require authentication"
+    },
+    {
+      "ok": true,
+      "label": "game service cannot read player preferences"
+    },
+    {
+      "ok": true,
+      "label": "new account starts with no cloud preferences"
+    },
+    {
+      "ok": true,
+      "label": "authenticated player stores settings"
+    },
+    {
+      "ok": true,
+      "label": "settings are returned to the same account"
+    },
+    {
+      "ok": true,
+      "label": "another account cannot read those settings"
+    },
+    {
+      "ok": true,
+      "label": "second account stores separate settings"
+    },
+    {
+      "ok": true,
+      "label": "second account cannot overwrite first account"
+    },
+    {
+      "ok": true,
+      "label": "updating one category preserves others"
+    },
+    {
+      "ok": true,
+      "label": "unknown preference category is rejected"
+    },
+    {
+      "ok": true,
+      "label": "non-numeric preference data is rejected"
+    },
+    {
+      "ok": true,
+      "label": "match authority requires authentication"
+    },
+    {
+      "ok": true,
+      "label": "incorrect service capability is rejected"
+    },
+    {
+      "ok": true,
+      "label": "naval: normal account cannot call match_register"
+    },
+    {
+      "ok": true,
+      "label": "naval: normal account cannot call reward"
+    },
+    {
+      "ok": true,
+      "label": "naval: normal account cannot call match_wallet"
+    },
+    {
+      "ok": true,
+      "label": "infantry: normal account cannot call match_register"
+    },
+    {
+      "ok": true,
+      "label": "infantry: normal account cannot call reward"
+    },
+    {
+      "ok": true,
+      "label": "infantry: normal account cannot call match_wallet"
+    },
+    {
+      "ok": true,
+      "label": "war: normal account cannot call match_register"
+    },
+    {
+      "ok": true,
+      "label": "war: normal account cannot call reward"
+    },
+    {
+      "ok": true,
+      "label": "war: normal account cannot call match_wallet"
+    },
+    {
+      "ok": true,
+      "label": "rejected client requests do not create matches, kills or money"
+    },
+    {
+      "ok": true,
+      "label": "service remains restricted from user action profile"
+    },
+    {
+      "ok": true,
+      "label": "service remains restricted from user action rankings"
+    },
+    {
+      "ok": true,
+      "label": "service remains restricted from user action buy"
+    },
+    {
+      "ok": true,
+      "label": "service remains restricted from user action select"
+    },
+    {
+      "ok": true,
+      "label": "service remains restricted from user action appearance"
+    },
+    {
+      "ok": true,
+      "label": "service remains restricted from user action logout"
+    },
+    {
+      "ok": true,
+      "label": "naval: dedicated service registers the match"
+    },
+    {
+      "ok": true,
+      "label": "naval: registering the same roster is idempotent"
+    },
+    {
+      "ok": true,
+      "label": "naval: registered rules cannot be changed to another payout mode"
+    },
+    {
+      "ok": true,
+      "label": "naval: wallet access requires actual match participation"
+    },
+    {
+      "ok": true,
+      "label": "naval: bearer remains rejected for a genuine server match (match_register)"
+    },
+    {
+      "ok": true,
+      "label": "naval: bearer remains rejected for a genuine server match (reward)"
+    },
+    {
+      "ok": true,
+      "label": "naval: bearer remains rejected for a genuine server match (match_wallet)"
+    },
+    {
+      "ok": true,
+      "label": "naval: valid server death awards a reward"
+    },
+    {
+      "ok": true,
+      "label": "naval: exact server-controlled payout is persisted"
+    },
+    {
+      "ok": true,
+      "label": "naval: duplicate death never adds money, kills, deaths or revision"
+    },
+    {
+      "ok": true,
+      "label": "naval: rapid repeat-victim farming is rejected"
+    },
+    {
+      "ok": true,
+      "label": "naval: dedicated server receives the confirmed wallet"
+    },
+    {
+      "ok": true,
+      "label": "naval: expired match cannot reward or read wallets"
+    },
+    {
+      "ok": true,
+      "label": "infantry: dedicated service registers the match"
+    },
+    {
+      "ok": true,
+      "label": "infantry: registering the same roster is idempotent"
+    },
+    {
+      "ok": true,
+      "label": "infantry: registered rules cannot be changed to another payout mode"
+    },
+    {
+      "ok": true,
+      "label": "infantry: wallet access requires actual match participation"
+    },
+    {
+      "ok": true,
+      "label": "infantry: bearer remains rejected for a genuine server match (match_register)"
+    },
+    {
+      "ok": true,
+      "label": "infantry: bearer remains rejected for a genuine server match (reward)"
+    },
+    {
+      "ok": true,
+      "label": "infantry: bearer remains rejected for a genuine server match (match_wallet)"
+    },
+    {
+      "ok": true,
+      "label": "infantry: valid server death awards a reward"
+    },
+    {
+      "ok": true,
+      "label": "infantry: exact server-controlled payout is persisted"
+    },
+    {
+      "ok": true,
+      "label": "infantry: duplicate death never adds money, kills, deaths or revision"
+    },
+    {
+      "ok": true,
+      "label": "infantry: rapid repeat-victim farming is rejected"
+    },
+    {
+      "ok": true,
+      "label": "infantry: dedicated server receives the confirmed wallet"
+    },
+    {
+      "ok": true,
+      "label": "infantry: expired match cannot reward or read wallets"
+    },
+    {
+      "ok": true,
+      "label": "war: dedicated service registers the match"
+    },
+    {
+      "ok": true,
+      "label": "war: registering the same roster is idempotent"
+    },
+    {
+      "ok": true,
+      "label": "war: registered rules cannot be changed to another payout mode"
+    },
+    {
+      "ok": true,
+      "label": "war: wallet access requires actual match participation"
+    },
+    {
+      "ok": true,
+      "label": "war: bearer remains rejected for a genuine server match (match_register)"
+    },
+    {
+      "ok": true,
+      "label": "war: bearer remains rejected for a genuine server match (reward)"
+    },
+    {
+      "ok": true,
+      "label": "war: bearer remains rejected for a genuine server match (match_wallet)"
+    },
+    {
+      "ok": true,
+      "label": "war: valid server death awards a reward"
+    },
+    {
+      "ok": true,
+      "label": "war: exact server-controlled payout is persisted"
+    },
+    {
+      "ok": true,
+      "label": "war: duplicate death never adds money, kills, deaths or revision"
+    },
+    {
+      "ok": true,
+      "label": "war: rapid repeat-victim farming is rejected"
+    },
+    {
+      "ok": true,
+      "label": "war: dedicated server receives the confirmed wallet"
+    },
+    {
+      "ok": true,
+      "label": "war: expired match cannot reward or read wallets"
+    },
+    {
+      "ok": true,
+      "label": "only the three authoritative deaths affect lifetime statistics"
+    },
+    {
+      "ok": true,
+      "label": "death-only persistence requires authentication"
+    },
+    {
+      "ok": true,
+      "label": "death-only persistence rejects an invalid service capability"
+    },
+    {
+      "ok": true,
+      "label": "naval: service registers a death-only test match"
+    },
+    {
+      "ok": true,
+      "label": "naval: bearer cannot persist a death even in a genuine server match"
+    },
+    {
+      "ok": true,
+      "label": "naval: death victim must be an actual match participant"
+    },
+    {
+      "ok": true,
+      "label": "naval: refused death events do not change money, statistics or revision"
+    },
+    {
+      "ok": true,
+      "label": "naval: environment death increments only the victim death and revision"
+    },
+    {
+      "ok": true,
+      "label": "naval: duplicate environment death changes no counter, wallet or revision"
+    },
+    {
+      "ok": true,
+      "label": "naval: environment death has one durable server event"
+    },
+    {
+      "ok": true,
+      "label": "naval: self death increments only the victim death and revision"
+    },
+    {
+      "ok": true,
+      "label": "naval: duplicate self death changes no counter, wallet or revision"
+    },
+    {
+      "ok": true,
+      "label": "naval: self death has one durable server event"
+    },
+    {
+      "ok": true,
+      "label": "naval: reusing a death event for a different victim is rejected atomically"
+    },
+    {
+      "ok": true,
+      "label": "naval: a conflicting reward cannot redirect an already recorded death"
+    },
+    {
+      "ok": true,
+      "label": "naval: expired match cannot persist a death"
+    },
+    {
+      "ok": true,
+      "label": "naval: service registers death-first test match"
+    },
+    {
+      "ok": true,
+      "label": "naval: death-first accepts the first authoritative event"
+    },
+    {
+      "ok": true,
+      "label": "naval: early death does not pre-award a kill or coins"
+    },
+    {
+      "ok": true,
+      "label": "naval: death-first records exactly one death, kill and payout"
+    },
+    {
+      "ok": true,
+      "label": "naval: retries of both death-first messages do not change revision or totals"
+    },
+    {
+      "ok": true,
+      "label": "naval: death-first uses one durable death and one durable reward record"
+    },
+    {
+      "ok": true,
+      "label": "naval: service registers reward-first test match"
+    },
+    {
+      "ok": true,
+      "label": "naval: reward-first accepts the first authoritative event"
+    },
+    {
+      "ok": true,
+      "label": "naval: reward-first records exactly one death, kill and payout"
+    },
+    {
+      "ok": true,
+      "label": "naval: retries of both reward-first messages do not change revision or totals"
+    },
+    {
+      "ok": true,
+      "label": "naval: reward-first uses one durable death and one durable reward record"
+    },
+    {
+      "ok": true,
+      "label": "naval: service registers historical-reward migration fixture"
+    },
+    {
+      "ok": true,
+      "label": "naval: migrating a historical rewarded death never counts it again"
+    },
+    {
+      "ok": true,
+      "label": "naval: historical death/reward retries preserve counters and revision"
+    },
+    {
+      "ok": true,
+      "label": "naval: historical death is added to deduplication storage without a second increment"
+    },
+    {
+      "ok": true,
+      "label": "infantry: service registers a death-only test match"
+    },
+    {
+      "ok": true,
+      "label": "infantry: bearer cannot persist a death even in a genuine server match"
+    },
+    {
+      "ok": true,
+      "label": "infantry: death victim must be an actual match participant"
+    },
+    {
+      "ok": true,
+      "label": "infantry: refused death events do not change money, statistics or revision"
+    },
+    {
+      "ok": true,
+      "label": "infantry: environment death increments only the victim death and revision"
+    },
+    {
+      "ok": true,
+      "label": "infantry: duplicate environment death changes no counter, wallet or revision"
+    },
+    {
+      "ok": true,
+      "label": "infantry: environment death has one durable server event"
+    },
+    {
+      "ok": true,
+      "label": "infantry: self death increments only the victim death and revision"
+    },
+    {
+      "ok": true,
+      "label": "infantry: duplicate self death changes no counter, wallet or revision"
+    },
+    {
+      "ok": true,
+      "label": "infantry: self death has one durable server event"
+    },
+    {
+      "ok": true,
+      "label": "infantry: reusing a death event for a different victim is rejected atomically"
+    },
+    {
+      "ok": true,
+      "label": "infantry: a conflicting reward cannot redirect an already recorded death"
+    },
+    {
+      "ok": true,
+      "label": "infantry: expired match cannot persist a death"
+    },
+    {
+      "ok": true,
+      "label": "infantry: service registers death-first test match"
+    },
+    {
+      "ok": true,
+      "label": "infantry: death-first accepts the first authoritative event"
+    },
+    {
+      "ok": true,
+      "label": "infantry: early death does not pre-award a kill or coins"
+    },
+    {
+      "ok": true,
+      "label": "infantry: death-first records exactly one death, kill and payout"
+    },
+    {
+      "ok": true,
+      "label": "infantry: retries of both death-first messages do not change revision or totals"
+    },
+    {
+      "ok": true,
+      "label": "infantry: death-first uses one durable death and one durable reward record"
+    },
+    {
+      "ok": true,
+      "label": "infantry: service registers reward-first test match"
+    },
+    {
+      "ok": true,
+      "label": "infantry: reward-first accepts the first authoritative event"
+    },
+    {
+      "ok": true,
+      "label": "infantry: reward-first records exactly one death, kill and payout"
+    },
+    {
+      "ok": true,
+      "label": "infantry: retries of both reward-first messages do not change revision or totals"
+    },
+    {
+      "ok": true,
+      "label": "infantry: reward-first uses one durable death and one durable reward record"
+    },
+    {
+      "ok": true,
+      "label": "infantry: service registers historical-reward migration fixture"
+    },
+    {
+      "ok": true,
+      "label": "infantry: migrating a historical rewarded death never counts it again"
+    },
+    {
+      "ok": true,
+      "label": "infantry: historical death/reward retries preserve counters and revision"
+    },
+    {
+      "ok": true,
+      "label": "infantry: historical death is added to deduplication storage without a second increment"
+    },
+    {
+      "ok": true,
+      "label": "war: service registers a death-only test match"
+    },
+    {
+      "ok": true,
+      "label": "war: bearer cannot persist a death even in a genuine server match"
+    },
+    {
+      "ok": true,
+      "label": "war: death victim must be an actual match participant"
+    },
+    {
+      "ok": true,
+      "label": "war: refused death events do not change money, statistics or revision"
+    },
+    {
+      "ok": true,
+      "label": "war: environment death increments only the victim death and revision"
+    },
+    {
+      "ok": true,
+      "label": "war: duplicate environment death changes no counter, wallet or revision"
+    },
+    {
+      "ok": true,
+      "label": "war: environment death has one durable server event"
+    },
+    {
+      "ok": true,
+      "label": "war: self death increments only the victim death and revision"
+    },
+    {
+      "ok": true,
+      "label": "war: duplicate self death changes no counter, wallet or revision"
+    },
+    {
+      "ok": true,
+      "label": "war: self death has one durable server event"
+    },
+    {
+      "ok": true,
+      "label": "war: reusing a death event for a different victim is rejected atomically"
+    },
+    {
+      "ok": true,
+      "label": "war: a conflicting reward cannot redirect an already recorded death"
+    },
+    {
+      "ok": true,
+      "label": "war: expired match cannot persist a death"
+    },
+    {
+      "ok": true,
+      "label": "war: service registers death-first test match"
+    },
+    {
+      "ok": true,
+      "label": "war: death-first accepts the first authoritative event"
+    },
+    {
+      "ok": true,
+      "label": "war: early death does not pre-award a kill or coins"
+    },
+    {
+      "ok": true,
+      "label": "war: death-first records exactly one death, kill and payout"
+    },
+    {
+      "ok": true,
+      "label": "war: retries of both death-first messages do not change revision or totals"
+    },
+    {
+      "ok": true,
+      "label": "war: death-first uses one durable death and one durable reward record"
+    },
+    {
+      "ok": true,
+      "label": "war: service registers reward-first test match"
+    },
+    {
+      "ok": true,
+      "label": "war: reward-first accepts the first authoritative event"
+    },
+    {
+      "ok": true,
+      "label": "war: reward-first records exactly one death, kill and payout"
+    },
+    {
+      "ok": true,
+      "label": "war: retries of both reward-first messages do not change revision or totals"
+    },
+    {
+      "ok": true,
+      "label": "war: reward-first uses one durable death and one durable reward record"
+    },
+    {
+      "ok": true,
+      "label": "war: service registers historical-reward migration fixture"
+    },
+    {
+      "ok": true,
+      "label": "war: migrating a historical rewarded death never counts it again"
+    },
+    {
+      "ok": true,
+      "label": "war: historical death/reward retries preserve counters and revision"
+    },
+    {
+      "ok": true,
+      "label": "war: historical death is added to deduplication storage without a second increment"
+    },
+    {
+      "ok": true,
+      "label": "legacy account-owned match does not bypass dedicated authority"
+    },
+    {
+      "ok": true,
+      "label": "normal profile and signed ticket remain available"
+    },
+    {
+      "ok": true,
+      "label": "normal ship purchase remains available with exact server price"
+    },
+    {
+      "ok": true,
+      "label": "normal repeated purchase remains idempotent"
+    },
+    {
+      "ok": true,
+      "label": "normal ship selection remains available"
+    },
+    {
+      "ok": true,
+      "label": "normal character proportions remain persistent"
+    },
+    {
+      "ok": true,
+      "label": "normal ranking remains available and uses persistent server balances"
+    },
+    {
+      "ok": true,
+      "label": "password and device-proof login remain functional"
+    },
+    {
+      "ok": true,
+      "label": "normal logout revokes the authenticated session"
+    }
+  ]
+}

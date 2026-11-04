@@ -1,0 +1,129 @@
+[gd_scene load_steps=14 format=3]
+[ext_resource type="PackedScene" path="res://scenes/weapons/scope4x.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/attachments/hensoldt_detail.gd" id="2"]
+[sub_resource type="StandardMaterial3D" id="BlackSteel"]
+albedo_color = Color(0.12, 0.14, 0.13, 1)
+metallic = 0.62
+roughness = 0.61
+[sub_resource type="StandardMaterial3D" id="Rubber"]
+albedo_color = Color(0.027, 0.034, 0.031, 1)
+roughness = 0.91
+[sub_resource type="CylinderMesh" id="Tube"]
+material = SubResource("BlackSteel")
+top_radius = 0.028
+bottom_radius = 0.028
+height = 0.302
+radial_segments = 16
+cap_top = false
+cap_bottom = false
+[sub_resource type="CylinderMesh" id="Bell"]
+material = SubResource("BlackSteel")
+top_radius = 0.029
+bottom_radius = 0.036
+height = 0.056
+radial_segments = 16
+cap_top = false
+cap_bottom = false
+[sub_resource type="CylinderMesh" id="Adjustment"]
+material = SubResource("BlackSteel")
+top_radius = 0.020
+bottom_radius = 0.020
+height = 0.022
+radial_segments = 14
+[sub_resource type="BoxMesh" id="ClawBridge"]
+material = SubResource("BlackSteel")
+size = Vector3(0.075, 0.016, 0.192)
+[sub_resource type="BoxMesh" id="ClawLeg"]
+material = SubResource("BlackSteel")
+size = Vector3(0.014, 0.035, 0.022)
+[sub_resource type="BoxMesh" id="ClawFoot"]
+material = SubResource("BlackSteel")
+size = Vector3(0.033, 0.014, 0.032)
+[sub_resource type="BoxMesh" id="RailMount"]
+material = SubResource("BlackSteel")
+size = Vector3(0.070, 0.028, 0.040)
+[sub_resource type="BoxMesh" id="TubeClamp"]
+material = SubResource("BlackSteel")
+size = Vector3(0.048, 0.050, 0.024)
+[sub_resource type="BoxMesh" id="TallBridge"]
+material = SubResource("BlackSteel")
+size = Vector3(0.047, 0.040, 0.025)
+[node name="Scope4x" instance=ExtResource("1")]
+metadata/reference = "Hensoldt 4x24 ZF — tubo compacto, torres e montagem claw/adapter"
+[node name="OpticMachining" type="Node3D" parent="."]
+script = ExtResource("2")
+[node name="Tube" parent="." index="0"]
+mesh = SubResource("Tube")
+[node name="RearRing" parent="." index="1"]
+position = Vector3(0, 0, 0.150)
+[node name="FrontRing" parent="." index="2"]
+position = Vector3(0, 0, -0.150)
+[node name="RearMount" parent="." index="3"]
+visible = false
+[node name="FrontMount" parent="." index="4"]
+visible = false
+[node name="ElevationDial" parent="." index="5"]
+position = Vector3(0, 0.041, 0)
+mesh = SubResource("Adjustment")
+[node name="WindageDial" parent="." index="6"]
+position = Vector3(0.042, 0, 0)
+mesh = SubResource("Adjustment")
+[node name="Lens" parent="." index="7"]
+position = Vector3(0, 0, 0.154)
+[node name="Eye" parent="." index="8"]
+position = Vector3(0, 0, 0.320)
+[node name="MountReference" parent="." index="9"]
+position = Vector3(0, -0.080, 0)
+[node name="ObjectiveBell" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0, -0.161)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Bell")
+[node name="ClawClampRear" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.035, 0.075)
+mesh = SubResource("TubeClamp")
+[node name="ClawClampFront" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.035, -0.075)
+mesh = SubResource("TubeClamp")
+[node name="RailBridgeRear" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, -0.050, 0.078)
+mesh = SubResource("TallBridge")
+[node name="RailBridgeFront" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, -0.050, -0.078)
+mesh = SubResource("TallBridge")
+[node name="ClawBridge" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.060, 0)
+mesh = SubResource("ClawBridge")
+[node name="ClawLegLRear" type="MeshInstance3D" parent="."]
+position = Vector3(-0.033, -0.071, 0.076)
+mesh = SubResource("ClawLeg")
+[node name="ClawLegRRear" type="MeshInstance3D" parent="."]
+position = Vector3(0.033, -0.071, 0.076)
+mesh = SubResource("ClawLeg")
+[node name="ClawLegLFront" type="MeshInstance3D" parent="."]
+position = Vector3(-0.033, -0.071, -0.076)
+mesh = SubResource("ClawLeg")
+[node name="ClawLegRFront" type="MeshInstance3D" parent="."]
+position = Vector3(0.033, -0.071, -0.076)
+mesh = SubResource("ClawLeg")
+[node name="ClawFootLRear" type="MeshInstance3D" parent="."]
+position = Vector3(-0.033, -0.090, 0.076)
+mesh = SubResource("ClawFoot")
+[node name="ClawFootRRear" type="MeshInstance3D" parent="."]
+position = Vector3(0.033, -0.090, 0.076)
+mesh = SubResource("ClawFoot")
+[node name="ClawFootLFront" type="MeshInstance3D" parent="."]
+position = Vector3(-0.033, -0.090, -0.076)
+mesh = SubResource("ClawFoot")
+[node name="ClawFootRFront" type="MeshInstance3D" parent="."]
+position = Vector3(0.033, -0.090, -0.076)
+mesh = SubResource("ClawFoot")
+[node name="RailFootRear" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, -0.075, 0.083)
+mesh = SubResource("RailMount")
+[node name="RailFootFront" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, -0.075, -0.083)
+mesh = SubResource("RailMount")

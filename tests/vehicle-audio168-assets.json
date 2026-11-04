@@ -1,0 +1,62 @@
+{
+  "audio\\war\\engine-guarani.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "97a1ff6671dd3d598e7bfc82ad8bc5e86b007c580dc8cc1c014e374fbfc893be"
+  },
+  "audio\\war\\rolling-guarani.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "b84b8d4e120b739fcaae584e9cd15655af80037a127a80e4775b2b084dc79b21"
+  },
+  "audio\\war\\servo-guarani.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "90ee2c19806f6253d9a5dfc0ff7631f26e017bd336bd568f4a78faad26eda8c5"
+  },
+  "audio\\war\\engine-bmp2.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "b4fb9c5eb8215bcc88d0da134b75a02c4b8e8d5a23bf51f627ab4cb3915517ad"
+  },
+  "audio\\war\\rolling-bmp2.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "9902c4af7ed5511e0167c8dc1d6447a1a214220151ec98aada9062c20fc55dd4"
+  },
+  "audio\\war\\servo-bmp2.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "9982e51801b9c9ac9ca8099cb80fa87d9e883e15898f3fb1f01b024338187929"
+  },
+  "audio\\war\\engine-abrams.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "cb791e3bdc17acca3496200b620c0b0841d77bbf5404abaf4cc08bd5771b8d13"
+  },
+  "audio\\war\\rolling-abrams.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "e2b4735a6aedf73fc95729649804919d8f22c76c289dd38e005143234bd28554"
+  },
+  "audio\\war\\servo-abrams.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "836fb6e64e387d3a67e12f483b1635e0a6d0a0230ee3d6ceadddb3aa7dad1c2d"
+  },
+  "audio\\war\\engine-t90.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "16b46e0053f09b358a488a5a8eb2e37542a667bf477443450375a7f551ba778a"
+  },
+  "audio\\war\\rolling-t90.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "ee879f358bf1a6af08948c54a1c57b3a2516c369e395913cfd6f8b9237e108eb"
+  },
+  "audio\\war\\servo-t90.wav": {
+    "peak": 0.7,
+    "duration": 2,
+    "hash": "8837c8da47225232e7b131876ea842999a74e8872944647051bd44a6720f05a9"
+  }
+}

@@ -1,0 +1,136 @@
+{
+	"artifacts": [
+		{
+			"path": "res://maps/prepared/desert/cartography.res",
+			"sha256": "7da0024da3b0d288ef86f3cba6c879d28428ad27f7e23f4bc95e61219ca190a8"
+		},
+		{
+			"path": "res://maps/prepared/desert/grass.res",
+			"sha256": "52cbb8ba9094233d6fe4c6dc07256eb75f589b892c1de3343508ccc78e435e4c"
+		},
+		{
+			"path": "res://maps/prepared/desert/grass_far_mesh.res",
+			"sha256": "933997c3e1fad4704a1c5e649c3acdf79096195dbbaf2b1e1e32f9cbe3f33db9"
+		},
+		{
+			"path": "res://maps/prepared/desert/grass_material.res",
+			"sha256": "ecfba07d2122b6e8603eb5b1887bcf011738e29cee692baea3e13c758c254c29"
+		},
+		{
+			"path": "res://maps/prepared/desert/grass_mesh.res",
+			"sha256": "4ef43f97f2fef9c71c7d8792da241afaee4e634a33759a145d1f165f18461108"
+		},
+		{
+			"path": "res://maps/prepared/desert/grass_mesh_high.res",
+			"sha256": "e381d5951b22a760d4b24b1606286f566301640aaa0a70514d9afc810c60f420"
+		},
+		{
+			"path": "res://maps/prepared/desert/grass_mesh_low.res",
+			"sha256": "a3091a82badc668f22b7f3a9d0615c1d8a2b5f0fba4f03b909fa55d475d4d932"
+		},
+		{
+			"path": "res://maps/prepared/desert/navigation.res",
+			"sha256": "4d2d10cb236623b0d4142b638d0d6ec265c0d82e7d462ef04b95de5f2482c114"
+		}
+	],
+	"benchmark": {
+		"median_loss_max_percent": 5.0,
+		"pairs": 5.0,
+		"renderer": "gl_compatibility",
+		"resolution": [
+			1920.0,
+			1080.0
+		],
+		"seconds": 120.0,
+		"vram_limit_mib": 4096.0,
+		"worst_frame_max_ms": 50.0
+	},
+	"bounds": [
+		-150.0,
+		-150.0,
+		300.0,
+		300.0
+	],
+	"content_hash": "a4dd3c2cafea4af1dcd23aa59a4d7f1a71638ef746c3fffe02529a0449b79dea",
+	"grass_approved": false,
+	"grass_enabled": true,
+	"id": "desert",
+	"loot": [],
+	"objectives": [],
+	"reservations": [
+		"outpost",
+		"spawn_pads",
+		"approaches"
+	],
+	"source_hash": "904220b3c12160590df8a96563ecc04e9b4770863de24ba8e0f7c0db3e135ca9",
+	"sources": [
+		"res://modes/war/scripts/grass_assets.gd",
+		"res://modes/war/shaders/grass_field.gdshader",
+		"res://scripts/environment/desert_map.gd",
+		"res://scripts/environment/desert_terrain.gd",
+		"res://scripts/environment/environment_kit.gd",
+		"res://scripts/environment/environment_props.gd",
+		"res://scripts/maps/definition.gd",
+		"res://scripts/maps/grass_data.gd",
+		"res://scripts/maps/navigation_cache.gd",
+		"res://scripts/maps/navigation_data.gd",
+		"res://scripts/offline_director.gd",
+		"res://tools/maps/adapter.gd",
+		"res://tools/maps/pipeline.gd"
+	],
+	"spawns": [
+		[
+			-58.0,
+			-1.24120712280273,
+			-52.0
+		],
+		[
+			58.0,
+			1.6811671257019,
+			-52.0
+		],
+		[
+			-62.0,
+			2.36539816856384,
+			52.0
+		],
+		[
+			62.0,
+			-0.636734306812286,
+			52.0
+		],
+		[
+			0.0,
+			-1.60658633708954,
+			71.0
+		],
+		[
+			0.0,
+			0.242302611470222,
+			-75.0
+		],
+		[
+			-83.0,
+			-0.166654482483864,
+			7.0
+		],
+		[
+			83.0,
+			1.97857093811035,
+			-8.0
+		]
+	],
+	"stages": [
+		"concept",
+		"terrain",
+		"navigation",
+		"layout",
+		"biomes",
+		"props",
+		"atmosphere",
+		"budget",
+		"match"
+	],
+	"status": "validation_pending",
+	"version": 7
+}

@@ -1,0 +1,59 @@
+[gd_scene format=4]
+
+[ext_resource type="Material" path="res://modes/battle_royale/library/materials/adobe_v2.tres" id="1_cx8um"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_uqo7r"]
+points = PackedVector3Array(-4.2, -0.22, -1.4, 4.2, -0.22, -1.4, 4.2, -0.22, 1.4, -4.2, -0.22, 1.4, -3.65, 1.12, -0.48, 3.35, 1.35, -0.43, 3.35, 1.35, 0.43, -3.65, 1.12, 0.48)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_bnwul"]
+_surfaces = [{
+"aabb": AABB(-4.2, -0.22, -1.4, 8.4, 1.57, 2.8),
+"attribute_data": PackedByteArray("1syy/2ZmhsApXM+/1syy/2ZmhkApXM+/1syy/2ZmVkAfhWs/1syy/5qZacAK1yM/1syy/2ZmhkA9Cpc/1syy/2ZmVkAK1+M/1syy/2ZmhsA9Cpc/1syy/5qZacDNzMw/"),
+"format": 34359742495,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAQAEAAUAAQAFAAIABAAGAAcABAAHAAUABgAAAAMABgADAAcAAwACAAUAAwAFAAcABgAEAAEABgABAAAA"),
+"lods": [6.2425256, PackedByteArray("AAABAAIAAQAEAAIABAAGAAAABAAAAAIABgAEAAEABgABAAAA")],
+"material": ExtResource("1_cx8um"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("ZmaGwK5HYb4zM7O/ZmaGQK5HYb4zM7O/ZmZWQM3MrD/2KNy+mplpwClcjz+PwvW+ZmaGQK5HYb4zM7M/ZmZWQM3MrD/2KNw+ZmaGwK5HYb4zM7M/mplpwClcjz+PwvU+sxMV2SpTe5en6uJHdJiVry+/+urXCDmjE0Zh19sxGqq+ozCX1lhUptWj+skzOWjNRjk3ZmaeEsi9Z729SVllqQ==")
+}]
+blend_shape_mode = 0
+
+[node name="field_bank_v10" type="StaticBody3D" unique_id=1763975453]
+collision_mask = 0
+metadata/library_id = "field_bank_v10"
+metadata/br_library = true
+metadata/surface = "dirt"
+metadata/footprint = Vector2(8.4, 2.8)
+metadata/height_m = 1.35
+metadata/decorative = false
+metadata/collision_persistent = true
+metadata/resistance = "earthwork"
+metadata/lod_profile = "physical_cover"
+metadata/lod_near_end = 3000.0
+metadata/lod_far_end = 3000.0
+metadata/individual_shadows = false
+
+[node name="GroundAnchor" type="Marker3D" parent="." unique_id=429368390]
+
+[node name="@CollisionShape3D@3" type="CollisionShape3D" parent="." unique_id=1765496407]
+shape = SubResource("ConvexPolygonShape3D_uqo7r")
+
+[node name="Encaixes" type="Node3D" parent="." unique_id=1019367368]
+
+[node name="Entrada" type="Marker3D" parent="Encaixes" unique_id=1305453305]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -4.2, 0, 0)
+metadata/profile = "rural_bank"
+metadata/width = 2.8
+
+[node name="Saida" type="Marker3D" parent="Encaixes" unique_id=457296062]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 4.2, 0, 0)
+metadata/profile = "rural_bank"
+metadata/width = 2.8
+
+[node name="Geometry" type="MeshInstance3D" parent="." unique_id=458793573]
+cast_shadow = 0
+visibility_range_end = 3000.0
+mesh = SubResource("ArrayMesh_bnwul")

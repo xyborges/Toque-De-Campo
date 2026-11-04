@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/war/ukraine-camo.png" id="1_3pi7k"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/fabric-normal.png" id="2_105hi"]
+
+[resource]
+albedo_texture = ExtResource("1_3pi7k")
+roughness = 0.94
+normal_enabled = true
+normal_scale = 0.25
+normal_texture = ExtResource("2_105hi")
+uv1_scale = Vector3(1.8, 1.8, 1.8)
+uv1_triplanar = true

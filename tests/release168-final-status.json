@@ -1,0 +1,90 @@
+{
+  "version": "1.6.8",
+  "build": 34,
+  "war_protocol": 7,
+  "published": true,
+  "services_active": true,
+  "first_corrections_release": "1.6.7/build33",
+  "download_verified": true,
+  "no_redownload": true,
+  "native_exported_tpp_checks": 8,
+  "exported_tpp_fpp_frames": 0,
+  "sensitivity_checks": 38,
+  "tv_local_checks": 53,
+  "tv_cover_checks": 3,
+  "tv_local_enet_checks": 17,
+  "vehicle_audio_checks": 45,
+  "passenger_checks": 91,
+  "passenger_network_checks": 24,
+  "production_tv_real_accounts": 3,
+  "production_tv_checks": 25,
+  "production_tv_failures": [],
+  "production_desert_real_accounts": 2,
+  "production_desert_shots_and_cooked_grenades": true,
+  "naval_impaired_transport": true,
+  "regressions": [
+    {
+      "case": "aim_settings_168",
+      "exit": 0,
+      "seconds": 5.94,
+      "errors": false
+    },
+    {
+      "case": "war_tv168",
+      "exit": 0,
+      "seconds": 5.44,
+      "errors": false
+    },
+    {
+      "case": "war165_equipment",
+      "exit": 0,
+      "seconds": 7.29,
+      "errors": false
+    },
+    {
+      "case": "war_optics",
+      "exit": 0,
+      "seconds": 7.79,
+      "errors": false
+    },
+    {
+      "case": "war_class_hud",
+      "exit": 0,
+      "seconds": 5.98,
+      "errors": false
+    },
+    {
+      "case": "war167_sniper",
+      "exit": 0,
+      "seconds": 5.46,
+      "errors": false
+    },
+    {
+      "case": "combat_153",
+      "exit": 0,
+      "seconds": 5.49,
+      "errors": false
+    },
+    {
+      "case": "run_war_multiplayer",
+      "exit": 0,
+      "seconds": 33.51,
+      "errors": false
+    },
+    {
+      "case": "run_war_vehicle_passengers_network",
+      "exit": 0,
+      "seconds": 14.08,
+      "errors": false
+    }
+  ],
+  "performance_report": "tests/performance168-comparison.json",
+  "performance_12_clients_one_pc": {
+    "before_fps": 57.7925,
+    "after_fps": 57.8502,
+    "after_1_percent_low": 34.3052,
+    "after_max_frame_ms": 34.91,
+    "stable_60_target_met": false
+  },
+  "remaining_required_work": []
+}

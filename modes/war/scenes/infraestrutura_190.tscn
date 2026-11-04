@@ -1,0 +1,829 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://modes/war/library/estrada_12m.tscn" id="1_rh233"]
+[ext_resource type="PackedScene" path="res://modes/war/library/estrada_cruzamento.tscn" id="2_o550b"]
+[ext_resource type="PackedScene" path="res://modes/war/library/estrada_rampa_12m.tscn" id="3_i1q2t"]
+[ext_resource type="PackedScene" path="res://modes/war/library/cais_8m.tscn" id="4_eb511"]
+[ext_resource type="PackedScene" path="res://modes/war/library/container_20ft.tscn" id="5_elddg"]
+[ext_resource type="PackedScene" path="res://modes/war/library/estrada_curva_90.tscn" id="6_o0fyh"]
+[ext_resource type="PackedScene" path="res://modes/war/library/trincheira_escavavel_6m.tscn" id="7_sgjs3"]
+[ext_resource type="Script" path="res://modes/war/scripts/trench_module.gd" id="8_e5w7v"]
+[ext_resource type="PackedScene" path="res://modes/war/library/casa_ruina.tscn" id="9_1pok3"]
+[ext_resource type="PackedScene" path="res://modes/war/library/barreira_concreto.tscn" id="10_f5tfi"]
+[ext_resource type="PackedScene" path="res://modes/war/library/arvore_queimada.tscn" id="11_4v3k1"]
+[ext_resource type="PackedScene" path="res://modes/war/library/cais_curva_90.tscn" id="12_56nko"]
+[ext_resource type="PackedScene" path="res://modes/war/library/cais_rampa_8m.tscn" id="13_g0k6d"]
+
+[node name="InfraestruturaModular" type="Node3D" unique_id=15733198]
+
+[node name="AcessosBase1" type="Node3D" parent="." unique_id=92773446]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1160, 18.07, 100)
+
+[node name="Estrada12m0" type="Node3D" parent="AcessosBase1" unique_id=1909206980 instance=ExtResource("1_rh233")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 6, 0, 0)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m1" type="Node3D" parent="AcessosBase1" unique_id=1348051097 instance=ExtResource("1_rh233")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 18, 0, 0)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m2" type="Node3D" parent="AcessosBase1" unique_id=447019498 instance=ExtResource("1_rh233")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 30, 0, 0)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m3" type="Node3D" parent="AcessosBase1" unique_id=1061869355 instance=ExtResource("1_rh233")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 54, 0, 0)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaCruzamento4" type="Node3D" parent="AcessosBase1" unique_id=2064490685 instance=ExtResource("2_o550b")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 42, 0, 0)
+metadata/footprint = Vector2(12, 12)
+metadata/terrain_grade = true
+metadata/library_id = "estrada_cruzamento"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="TrechoSubstituido" type="Node3D" parent="AcessosBase1" unique_id=373010872]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 0)
+metadata/replace_road = Vector2(60, 9)
+
+[node name="Estrada12m5" type="Node3D" parent="AcessosBase1" unique_id=44325221 instance=ExtResource("1_rh233")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 42, 0, 12)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaRampa12m6" type="Node3D" parent="AcessosBase1" unique_id=1647221612 instance=ExtResource("3_i1q2t")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 42, 0, 24)
+metadata/footprint = Vector2(7, 12)
+metadata/rise = 1.5
+metadata/terrain_grade = true
+metadata/library_id = "estrada_rampa_12m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m7" type="Node3D" parent="AcessosBase1" unique_id=1069730974 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 1.5, 34)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Container20Ft8" type="Node3D" parent="AcessosBase1" unique_id=822156132 instance=ExtResource("5_elddg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 1.5, 35)
+metadata/footprint = Vector2(2.44, 6.06)
+metadata/library_id = "container_20ft"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaCurva909" type="Node3D" parent="AcessosBase1" unique_id=272531807 instance=ExtResource("6_o0fyh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 0, -6)
+metadata/footprint = Vector2(20, 20)
+metadata/grade_centre = Vector2(6, -6)
+metadata/terrain_grade = true
+metadata/library_id = "estrada_curva_90"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m10" type="Node3D" parent="AcessosBase1" unique_id=656662938 instance=ExtResource("1_rh233")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 60, 0, -18)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Container20Ft11" type="Node3D" parent="AcessosBase1" unique_id=69049596 instance=ExtResource("5_elddg")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 64, 0, -27)
+metadata/footprint = Vector2(2.44, 6.06)
+metadata/library_id = "container_20ft"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="TrincheiraEscavavel6m12" type="Node3D" parent="." unique_id=1921876178 instance=ExtResource("7_sgjs3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1079, 18.505196, 135)
+script = ExtResource("8_e5w7v")
+metadata/footprint = Vector2(3.4, 6)
+metadata/terrain_cut = true
+metadata/library_id = "trincheira_escavavel_6m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="TrincheiraEscavavel6m13" type="Node3D" parent="." unique_id=1516663138 instance=ExtResource("7_sgjs3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1079, 18.736176, 141)
+script = ExtResource("8_e5w7v")
+metadata/footprint = Vector2(3.4, 6)
+metadata/terrain_cut = true
+metadata/library_id = "trincheira_escavavel_6m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="TrincheiraEscavavel6m14" type="Node3D" parent="." unique_id=1968485077 instance=ExtResource("7_sgjs3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1079, 19.025557, 147)
+script = ExtResource("8_e5w7v")
+metadata/footprint = Vector2(3.4, 6)
+metadata/terrain_cut = true
+metadata/library_id = "trincheira_escavavel_6m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="AcessosBase2" type="Node3D" parent="." unique_id=1491621451]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1160, 18.07, -100)
+
+[node name="Estrada12m15" type="Node3D" parent="AcessosBase2" unique_id=876972739 instance=ExtResource("1_rh233")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 6, 0, 0)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m16" type="Node3D" parent="AcessosBase2" unique_id=2062467086 instance=ExtResource("1_rh233")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 18, 0, 0)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m17" type="Node3D" parent="AcessosBase2" unique_id=1362873657 instance=ExtResource("1_rh233")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 30, 0, 0)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m18" type="Node3D" parent="AcessosBase2" unique_id=583428335 instance=ExtResource("1_rh233")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 54, 0, 0)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaCruzamento19" type="Node3D" parent="AcessosBase2" unique_id=232787518 instance=ExtResource("2_o550b")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 42, 0, 0)
+metadata/footprint = Vector2(12, 12)
+metadata/terrain_grade = true
+metadata/library_id = "estrada_cruzamento"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="TrechoSubstituido" type="Node3D" parent="AcessosBase2" unique_id=125990524]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 0)
+metadata/replace_road = Vector2(60, 9)
+
+[node name="Estrada12m20" type="Node3D" parent="AcessosBase2" unique_id=413026356 instance=ExtResource("1_rh233")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 42, 0, 12)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaRampa12m21" type="Node3D" parent="AcessosBase2" unique_id=1700022081 instance=ExtResource("3_i1q2t")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 42, 0, 24)
+metadata/footprint = Vector2(7, 12)
+metadata/rise = 1.5
+metadata/terrain_grade = true
+metadata/library_id = "estrada_rampa_12m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m22" type="Node3D" parent="AcessosBase2" unique_id=524101230 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 1.5, 34)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Container20Ft23" type="Node3D" parent="AcessosBase2" unique_id=1496738352 instance=ExtResource("5_elddg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 1.5, 35)
+metadata/footprint = Vector2(2.44, 6.06)
+metadata/library_id = "container_20ft"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaCurva9024" type="Node3D" parent="AcessosBase2" unique_id=313641715 instance=ExtResource("6_o0fyh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 0, -6)
+metadata/footprint = Vector2(20, 20)
+metadata/grade_centre = Vector2(6, -6)
+metadata/terrain_grade = true
+metadata/library_id = "estrada_curva_90"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m25" type="Node3D" parent="AcessosBase2" unique_id=692431292 instance=ExtResource("1_rh233")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 60, 0, -18)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Container20Ft26" type="Node3D" parent="AcessosBase2" unique_id=332921983 instance=ExtResource("5_elddg")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 64, 0, -27)
+metadata/footprint = Vector2(2.44, 6.06)
+metadata/library_id = "container_20ft"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="TrincheiraEscavavel6m27" type="Node3D" parent="." unique_id=96314717 instance=ExtResource("7_sgjs3")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1079, 18.260363, -135)
+script = ExtResource("8_e5w7v")
+metadata/footprint = Vector2(3.4, 6)
+metadata/terrain_cut = true
+metadata/library_id = "trincheira_escavavel_6m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="TrincheiraEscavavel6m28" type="Node3D" parent="." unique_id=1884137899 instance=ExtResource("7_sgjs3")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1079, 18.51521, -141)
+script = ExtResource("8_e5w7v")
+metadata/footprint = Vector2(3.4, 6)
+metadata/terrain_cut = true
+metadata/library_id = "trincheira_escavavel_6m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="TrincheiraEscavavel6m29" type="Node3D" parent="." unique_id=2118206585 instance=ExtResource("7_sgjs3")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1079, 18.949125, -147)
+script = ExtResource("8_e5w7v")
+metadata/footprint = Vector2(3.4, 6)
+metadata/terrain_cut = true
+metadata/library_id = "trincheira_escavavel_6m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="VilarejoOeste" type="Node3D" parent="." unique_id=1935060483]
+
+[node name="Lote00" type="Node3D" parent="VilarejoOeste" unique_id=871977923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -668, 19.812702, 578)
+metadata/replace_lot = true
+
+[node name="CasaRuina30" type="Node3D" parent="VilarejoOeste/Lote00" unique_id=1020536876 instance=ExtResource("9_1pok3")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+metadata/footprint = Vector2(9, 7)
+metadata/library_id = "casa_ruina"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="BarreiraConcreto31" type="Node3D" parent="VilarejoOeste/Lote00" unique_id=1353393191 instance=ExtResource("10_f5tfi")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 0)
+metadata/footprint = Vector2(0.7, 3)
+metadata/library_id = "barreira_concreto"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="ArvoreQueimada32" type="Node3D" parent="VilarejoOeste" unique_id=2100842075 instance=ExtResource("11_4v3k1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -679, 20.605677, 571)
+metadata/footprint = Vector2(4.6, 4.6)
+metadata/library_id = "arvore_queimada"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Lote01" type="Node3D" parent="VilarejoOeste" unique_id=1909349107]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -629, 21.06943, 578)
+metadata/replace_lot = true
+
+[node name="CasaRuina33" type="Node3D" parent="VilarejoOeste/Lote01" unique_id=310196469 instance=ExtResource("9_1pok3")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+metadata/footprint = Vector2(9, 7)
+metadata/library_id = "casa_ruina"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="BarreiraConcreto34" type="Node3D" parent="VilarejoOeste/Lote01" unique_id=217332525 instance=ExtResource("10_f5tfi")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 0)
+metadata/footprint = Vector2(0.7, 3)
+metadata/library_id = "barreira_concreto"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Lote02" type="Node3D" parent="VilarejoOeste" unique_id=743262120]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -590, 20.534428, 578)
+metadata/replace_lot = true
+
+[node name="CasaRuina35" type="Node3D" parent="VilarejoOeste/Lote02" unique_id=440729769 instance=ExtResource("9_1pok3")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+metadata/footprint = Vector2(9, 7)
+metadata/library_id = "casa_ruina"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="BarreiraConcreto36" type="Node3D" parent="VilarejoOeste/Lote02" unique_id=1235658688 instance=ExtResource("10_f5tfi")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 0)
+metadata/footprint = Vector2(0.7, 3)
+metadata/library_id = "barreira_concreto"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="ArvoreQueimada37" type="Node3D" parent="VilarejoOeste" unique_id=1315849473 instance=ExtResource("11_4v3k1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -601, 21.30884, 571)
+metadata/footprint = Vector2(4.6, 4.6)
+metadata/library_id = "arvore_queimada"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Lote03" type="Node3D" parent="VilarejoOeste" unique_id=1099134570]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -551, 20.761377, 578)
+metadata/replace_lot = true
+
+[node name="CasaRuina38" type="Node3D" parent="VilarejoOeste/Lote03" unique_id=907024636 instance=ExtResource("9_1pok3")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+metadata/footprint = Vector2(9, 7)
+metadata/library_id = "casa_ruina"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="BarreiraConcreto39" type="Node3D" parent="VilarejoOeste/Lote03" unique_id=1912818937 instance=ExtResource("10_f5tfi")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 0)
+metadata/footprint = Vector2(0.7, 3)
+metadata/library_id = "barreira_concreto"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Lote04" type="Node3D" parent="VilarejoOeste" unique_id=702775085]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -668, 15.834052, 643)
+metadata/replace_lot = true
+
+[node name="CasaRuina40" type="Node3D" parent="VilarejoOeste/Lote04" unique_id=591308350 instance=ExtResource("9_1pok3")]
+metadata/footprint = Vector2(9, 7)
+metadata/library_id = "casa_ruina"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="BarreiraConcreto41" type="Node3D" parent="VilarejoOeste/Lote04" unique_id=1775832152 instance=ExtResource("10_f5tfi")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 0)
+metadata/footprint = Vector2(0.7, 3)
+metadata/library_id = "barreira_concreto"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="ArvoreQueimada42" type="Node3D" parent="VilarejoOeste" unique_id=776037473 instance=ExtResource("11_4v3k1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -679, 16.446997, 636)
+metadata/footprint = Vector2(4.6, 4.6)
+metadata/library_id = "arvore_queimada"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Lote05" type="Node3D" parent="VilarejoOeste" unique_id=210974691]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -629, 18.105955, 643)
+metadata/replace_lot = true
+
+[node name="CasaRuina43" type="Node3D" parent="VilarejoOeste/Lote05" unique_id=1093743539 instance=ExtResource("9_1pok3")]
+metadata/footprint = Vector2(9, 7)
+metadata/library_id = "casa_ruina"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="BarreiraConcreto44" type="Node3D" parent="VilarejoOeste/Lote05" unique_id=329714465 instance=ExtResource("10_f5tfi")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 0)
+metadata/footprint = Vector2(0.7, 3)
+metadata/library_id = "barreira_concreto"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Lote06" type="Node3D" parent="VilarejoOeste" unique_id=1816820296]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -590, 19.23079, 643)
+metadata/replace_lot = true
+
+[node name="CasaRuina45" type="Node3D" parent="VilarejoOeste/Lote06" unique_id=407464813 instance=ExtResource("9_1pok3")]
+metadata/footprint = Vector2(9, 7)
+metadata/library_id = "casa_ruina"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="BarreiraConcreto46" type="Node3D" parent="VilarejoOeste/Lote06" unique_id=1424084487 instance=ExtResource("10_f5tfi")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 0)
+metadata/footprint = Vector2(0.7, 3)
+metadata/library_id = "barreira_concreto"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="ArvoreQueimada47" type="Node3D" parent="VilarejoOeste" unique_id=1911423330 instance=ExtResource("11_4v3k1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -601, 19.421135, 636)
+metadata/footprint = Vector2(4.6, 4.6)
+metadata/library_id = "arvore_queimada"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Lote07" type="Node3D" parent="VilarejoOeste" unique_id=2038053310]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -551, 20.910204, 643)
+metadata/replace_lot = true
+
+[node name="CasaRuina48" type="Node3D" parent="VilarejoOeste/Lote07" unique_id=391447281 instance=ExtResource("9_1pok3")]
+metadata/footprint = Vector2(9, 7)
+metadata/library_id = "casa_ruina"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="BarreiraConcreto49" type="Node3D" parent="VilarejoOeste/Lote07" unique_id=299448909 instance=ExtResource("10_f5tfi")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 0)
+metadata/footprint = Vector2(0.7, 3)
+metadata/library_id = "barreira_concreto"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m50" type="Node3D" parent="VilarejoOeste" unique_id=1168674721 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.029135887, -1, 0, 0.9995755, -0.029148262, 1, 0, 0, -674, 17.8872, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m51" type="Node3D" parent="VilarejoOeste" unique_id=1397329995 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.0356235, -0.99999994, 0, 0.9993653, -0.035646122, 1, 0, 0, -662, 18.275967, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m52" type="Node3D" parent="VilarejoOeste" unique_id=1199572070 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.031120002, -1.0000001, 0, 0.9995157, -0.031135082, 1, 0, 0, -650, 18.676655, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m53" type="Node3D" parent="VilarejoOeste" unique_id=475014463 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.018948968, -1.0000001, 0, 0.9998205, -0.018952373, 1, 0, 0, -638, 18.977179, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m54" type="Node3D" parent="VilarejoOeste" unique_id=1771573920 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.0069169933, -1, 0, 0.9999761, -0.006917159, 1, 0, 0, -626, 19.132397, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="EstradaCruzamento55" type="Node3D" parent="VilarejoOeste" unique_id=1364689261 instance=ExtResource("2_o550b")]
+transform = Transform3D(0, -0.0038582198, -1, 0, 0.9999926, -0.0038582482, 1, 0, 0, -614, 19.197048, 610)
+metadata/footprint = Vector2(12, 12)
+metadata/terrain_grade = true
+metadata/library_id = "estrada_cruzamento"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m56" type="Node3D" parent="VilarejoOeste" unique_id=1613767043 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.012967769, -1, 0, 0.99991596, -0.012968859, 1, 0, 0, -602, 19.298012, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m57" type="Node3D" parent="VilarejoOeste" unique_id=1725465937 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.027206678, -1.0000001, 0, 0.99962986, -0.027216755, 1, 0, 0, -590, 19.539124, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m58" type="Node3D" parent="VilarejoOeste" unique_id=1799192603 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.038135424, -1.0000001, 0, 0.9992726, -0.03816319, 1, 0, 0, -578, 19.931404, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m59" type="Node3D" parent="VilarejoOeste" unique_id=1958088185 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.039164674, -1, 0, 0.99923277, -0.039194744, 1, 0, 0, -566, 20.395552, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m60" type="Node3D" parent="VilarejoOeste" unique_id=427162708 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.027105382, -1, 0, 0.9996326, -0.027115343, 1, 0, 0, -554, 20.793411, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m61" type="Node3D" parent="VilarejoOeste" unique_id=1833550492 instance=ExtResource("1_rh233")]
+transform = Transform3D(0, -0.012420809, -1, 0, 0.9999229, -0.012421767, 1, 0, 0, -542, 21.030636, 610)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="TrechoSubstituido" type="Node3D" parent="VilarejoOeste" unique_id=706648776]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -608, 0, 610)
+metadata/replace_road = Vector2(144, 15)
+
+[node name="Estrada12m62" type="Node3D" parent="VilarejoOeste" unique_id=1617101444 instance=ExtResource("1_rh233")]
+transform = Transform3D(1, 0, 0, 0, 0.9969645, -0.07809465, 0, 0.07785759, 1, -614, 20.013092, 598)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m63" type="Node3D" parent="VilarejoOeste" unique_id=1125917213 instance=ExtResource("1_rh233")]
+transform = Transform3D(1, 0, 0, 0, 0.99804443, -0.06263129, 0, 0.06250881, 1, -614, 20.857447, 586)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m64" type="Node3D" parent="VilarejoOeste" unique_id=929216444 instance=ExtResource("1_rh233")]
+transform = Transform3D(-1, 0, 0, 0, 0.99999994, 0.00031439462, 0, 0.0003143946, -1, -614, 19.037508, 622)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Estrada12m65" type="Node3D" parent="VilarejoOeste" unique_id=2026131043 instance=ExtResource("1_rh233")]
+transform = Transform3D(-1, 0, 0, 0, 0.9999895, -0.004585266, 0, -0.004585218, -1, -614, 19.063133, 634)
+metadata/footprint = Vector2(8.25, 12)
+metadata/snap_grid = 12.0
+metadata/library_id = "estrada_12m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CaisModular1" type="Node3D" parent="." unique_id=970272443]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -820, 4, -430)
+
+[node name="Cais8m66" type="Node3D" parent="CaisModular1" unique_id=849103576 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, 0)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m67" type="Node3D" parent="CaisModular1" unique_id=1644864809 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -53, 0, 0)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m68" type="Node3D" parent="CaisModular1" unique_id=1930225598 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61, 0, 0)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m69" type="Node3D" parent="CaisModular1" unique_id=1831211867 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69, 0, 0)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CaisCurva9070" type="Node3D" parent="CaisModular1" unique_id=1378841127 instance=ExtResource("12_56nko")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -73, 0, 0)
+metadata/footprint = Vector2(20, 20)
+metadata/grade_centre = Vector2(6, -6)
+metadata/library_id = "cais_curva_90"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m71" type="Node3D" parent="CaisModular1" unique_id=716369528 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -85, 0, -16)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m72" type="Node3D" parent="CaisModular1" unique_id=1525642029 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -85, 0, -24)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CaisRampa8m73" type="Node3D" parent="CaisModular1" unique_id=797548321 instance=ExtResource("13_g0k6d")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -85, -1.2, -32)
+metadata/footprint = Vector2(8, 8)
+metadata/rise = 1.2
+metadata/library_id = "cais_rampa_8m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m74" type="Node3D" parent="CaisModular1" unique_id=1853889304 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -85, -1.2, -40)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Container20Ft75" type="Node3D" parent="CaisModular1" unique_id=584287134 instance=ExtResource("5_elddg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, 1.3)
+metadata/footprint = Vector2(2.44, 6.06)
+metadata/library_id = "container_20ft"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CaisModular2" type="Node3D" parent="." unique_id=1705296945]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1190, 4, 470)
+
+[node name="Cais8m76" type="Node3D" parent="CaisModular2" unique_id=946007747 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, 0)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m77" type="Node3D" parent="CaisModular2" unique_id=1916232777 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53, 0, 0)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m78" type="Node3D" parent="CaisModular2" unique_id=1707677214 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61, 0, 0)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m79" type="Node3D" parent="CaisModular2" unique_id=523477928 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 0, 0)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CaisCurva9080" type="Node3D" parent="CaisModular2" unique_id=666019806 instance=ExtResource("12_56nko")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 73, 0, 0)
+metadata/footprint = Vector2(20, 20)
+metadata/grade_centre = Vector2(6, -6)
+metadata/library_id = "cais_curva_90"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m81" type="Node3D" parent="CaisModular2" unique_id=1860949414 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 85, 0, 16)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m82" type="Node3D" parent="CaisModular2" unique_id=1107364431 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 85, 0, 24)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="CaisRampa8m83" type="Node3D" parent="CaisModular2" unique_id=598310523 instance=ExtResource("13_g0k6d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 85, -1.2, 32)
+metadata/footprint = Vector2(8, 8)
+metadata/rise = 1.2
+metadata/library_id = "cais_rampa_8m"
+metadata/asset_revision = 190
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Cais8m84" type="Node3D" parent="CaisModular2" unique_id=295098704 instance=ExtResource("4_eb511")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 85, -1.2, 40)
+metadata/footprint = Vector2(8, 8)
+metadata/snap_grid = 8.0
+metadata/library_id = "cais_8m"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"
+
+[node name="Container20Ft85" type="Node3D" parent="CaisModular2" unique_id=1986247077 instance=ExtResource("5_elddg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, 1.3)
+metadata/footprint = Vector2(2.44, 6.06)
+metadata/library_id = "container_20ft"
+metadata/asset_revision = 188
+metadata/origin = "ground"
+metadata/forward = "-Z"

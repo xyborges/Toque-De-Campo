@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="GameAttachmentProfile" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/attachments/weapon_profile.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/attachments/socket.gd" id="2"]
+[resource]
+script = ExtResource("1")
+weapon_id = "rpg"
+tags = PackedStringArray("infantry", "launcher")
+sockets = Array[Resource]([])

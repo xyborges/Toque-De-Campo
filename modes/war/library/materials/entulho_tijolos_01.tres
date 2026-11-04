@@ -1,0 +1,19 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/environment/materials/sand-albedo.png" id="1_34a4v"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/sand-normal.png" id="2_cn2y1"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/sand-roughness.png" id="3_1qela"]
+
+[resource]
+resource_name = "earth"
+albedo_color = Color(0.41960785, 0.38431373, 0.3137255, 1)
+albedo_texture = ExtResource("1_34a4v")
+metallic_specular = 0.35
+roughness = 0.99
+roughness_texture = ExtResource("3_1qela")
+normal_enabled = true
+normal_scale = 0.45
+normal_texture = ExtResource("2_cn2y1")
+uv1_scale = Vector3(0.65, 0.65, 0.65)
+uv1_triplanar = true
+texture_filter = 5

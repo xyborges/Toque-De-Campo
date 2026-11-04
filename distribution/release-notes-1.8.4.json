@@ -1,0 +1,36 @@
+{
+  "version": "1.8.4",
+  "date": "26/10/2026",
+  "title": "Portos, navios e movimento no Guerra",
+  "summary": "Revisão dos portos, câmera naval em terceira pessoa, postes quebráveis, passos por superfície e correções de movimento em escadas e ladeiras.",
+  "changes": [
+    {
+      "title": "Navios em terceira pessoa",
+      "text": "Os navios do Guerra usam a câmera do Naval, com zoom por clique e térmica. Informações de vida, velocidade, armas e munição permanecem; a óptica em primeira pessoa foi retirada."
+    },
+    {
+      "title": "Entrada e saída dos navios",
+      "text": "É possível desembarcar em água livre para nadar quando não houver um píer seguro. O servidor libera os assentos e promove um passageiro ao posto de operador quando necessário."
+    },
+    {
+      "title": "Portos e baía",
+      "text": "Corrigido o chão que piscava. O oeste recebe uma baía mais definida e cais curvo, silos e transportadores; o leste ganha terminal de contêineres, ferrovia e cena própria para edição no Godot. Guindastes e circulação foram revistos."
+    },
+    {
+      "title": "Escadas e calçadas",
+      "text": "Jogadores e NPCs conseguem subir degraus pequenos com checagem de espaço e colisão, mantendo paredes altas e passagens sem altura suficiente bloqueadas."
+    },
+    {
+      "title": "Blindados nas ladeiras",
+      "text": "Tanques e APCs apoiam a área de rodas ou esteiras considerando os dois eixos do terreno, incluindo a rotação parada sobre encostas e o piso de pontes."
+    },
+    {
+      "title": "Noite e rede elétrica",
+      "text": "Iluminação noturna mais legível e postes conectados por cabos. Tiros e explosões podem quebrar o poste no meio, derrubar sua parte superior e cortar a energia adiante. Peças e fios ficam no cenário e são sincronizados."
+    },
+    {
+      "title": "Passos e combate em TPP",
+      "text": "Passos distintos para grama, barro, asfalto e pedra. Corrigida a recusa de tiros com a câmera de ombro na distância máxima, preservando as verificações contra paredes."
+    }
+  ]
+}

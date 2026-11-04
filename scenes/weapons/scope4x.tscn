@@ -1,0 +1,74 @@
+[gd_scene load_steps=9 format=3]
+
+[sub_resource type="StandardMaterial3D" id="Housing"]
+albedo_color = Color(0.09, 0.115, 0.10, 1)
+metallic = 0.45
+roughness = 0.64
+[sub_resource type="StandardMaterial3D" id="Rubber"]
+albedo_color = Color(0.025, 0.035, 0.028, 1)
+roughness = 0.95
+[sub_resource type="StandardMaterial3D" id="Glass"]
+albedo_color = Color(0.10, 0.22, 0.23, 1)
+roughness = 0.18
+metallic = 0.35
+[sub_resource type="CylinderMesh" id="Tube"]
+material = SubResource("Housing")
+top_radius = 0.038
+bottom_radius = 0.038
+height = 0.23
+radial_segments = 24
+cap_top = false
+cap_bottom = false
+[sub_resource type="TorusMesh" id="Ring"]
+material = SubResource("Rubber")
+inner_radius = 0.032
+outer_radius = 0.044
+rings = 24
+ring_segments = 8
+[sub_resource type="BoxMesh" id="Mount"]
+material = SubResource("Housing")
+size = Vector3(0.044, 0.058, 0.085)
+[sub_resource type="CylinderMesh" id="Dial"]
+material = SubResource("Rubber")
+top_radius = 0.022
+bottom_radius = 0.022
+height = 0.023
+radial_segments = 16
+[sub_resource type="QuadMesh" id="Lens"]
+material = SubResource("Glass")
+size = Vector2(0.064, 0.064)
+
+[node name="Scope4x" type="Node3D"]
+metadata/attachment = "scope4x"
+[node name="Tube" type="MeshInstance3D" parent="."]
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Tube")
+[node name="RearRing" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0, 0.116)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Ring")
+[node name="FrontRing" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0, -0.116)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Ring")
+[node name="RearMount" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.050, 0.062)
+mesh = SubResource("Mount")
+[node name="FrontMount" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.050, -0.065)
+mesh = SubResource("Mount")
+[node name="ElevationDial" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.043, 0)
+mesh = SubResource("Dial")
+[node name="WindageDial" type="MeshInstance3D" parent="."]
+position = Vector3(0.043, 0, 0)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("Dial")
+[node name="Lens" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0, 0.118)
+mesh = SubResource("Lens")
+cast_shadow = 0
+[node name="Eye" type="Marker3D" parent="."]
+position = Vector3(0, 0, 0.25)
+[node name="MountReference" type="Marker3D" parent="."]
+position = Vector3(0, -0.08, 0)

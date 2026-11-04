@@ -1,0 +1,85 @@
+{
+  "version": "1.8.1",
+  "build": 49,
+  "published": true,
+  "website": "http://192.168.101.24/",
+  "services": {
+    "toque-war": "active",
+    "toque-pvp": "active",
+    "toque-naval": "active",
+    "nginx": "active",
+    "php8.3-fpm": "active"
+  },
+  "checks": {
+    "death_respawn": {
+      "checks": 16,
+      "failures": [],
+      "note": "Headless authority-path regression including the client damage-replica method; advances the server clock directly for the eight-second boundary."
+    },
+    "local_enet": [
+      {
+        "checks": 8,
+        "failures": [],
+        "measurements": {
+          "respawn_seconds": 7.999
+        },
+        "network": "ENet localhost, actual authority and two clients",
+        "role": "server"
+      },
+      {
+        "checks": 12,
+        "failures": [],
+        "measurements": {
+          "initial_countdown": 7.95
+        },
+        "network": "ENet localhost, actual authority and two clients",
+        "role": "hero"
+      },
+      {
+        "checks": 2,
+        "failures": [],
+        "measurements": {},
+        "network": "ENet localhost, actual authority and two clients",
+        "role": "enemy"
+      }
+    ],
+    "central_accounts": [
+      {
+        "checks": 15,
+        "failures": [],
+        "measurements": {
+          "held_fuse_seconds": 5.011,
+          "respawn_seconds": 8.043
+        },
+        "role": "host",
+        "test_bypass": false
+      },
+      {
+        "checks": 7,
+        "failures": [],
+        "measurements": {},
+        "role": "guest",
+        "test_bypass": false
+      }
+    ],
+    "distribution": {
+      "build": 49,
+      "version": "1.8.1",
+      "tls": true,
+      "private_paths_blocked": true,
+      "download_identical": true,
+      "real_launcher_install": true,
+      "no_redownload": true,
+      "production_boot": true
+    },
+    "performance_regression": {
+      "checks": 19,
+      "failures": []
+    },
+    "deployment_policy_tests": {
+      "passed": 14,
+      "failed": 0
+    }
+  },
+  "performance_note": "Previous benchmark results remain in RELATORIO-BENCHMARK-1.8.1.md. This review does not prove stable 60 FPS."
+}

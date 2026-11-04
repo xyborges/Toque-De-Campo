@@ -1,0 +1,9 @@
+{
+  "version": "1.6.7",
+  "build": 33,
+  "published": true,
+  "download_verified": true,
+  "central_launchers": true,
+  "central_desert_native": true,
+  "note": "The first Desert probe was run headless; repeat in the native display/input mode passed. Its initial report is retained."
+}

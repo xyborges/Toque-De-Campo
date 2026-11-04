@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="GameAttachmentDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/attachments/definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/scope4x_fal.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+id = "prism4x"
+display_name = "Prismática 4×"
+category = "optic"
+required_interfaces = PackedStringArray("tdc_optic_platform")
+tags = PackedStringArray("optic", "scope", "four_power")
+required_space = Vector3(0.12, 0.13, 0.27)
+weight = 4.0
+scene_reference = ExtResource("2")
+behavior_type = "optical"
+behavior_parameters = {"magnification": 4.0, "lens_radius": 0.032, "viewport_size": 384, "ads_seconds": 0.18}
+fittings = {"ak_receiver": {"extra_scene": "res://scenes/weapons/optic_ak_receiver_adapter.tscn", "extra_name": "ReceiverAdapter"}}

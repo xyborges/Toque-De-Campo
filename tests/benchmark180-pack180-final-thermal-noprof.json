@@ -1,0 +1,769 @@
+[
+  {
+    "average_fps": 50.9021073153542,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 53.8260074309823,
+      "frame_ms_max": 38.9100000000013,
+      "frame_ms_mean": 18.5783796296286,
+      "frame_ms_p95": 30.5099999999925,
+      "frames": 108,
+      "one_percent_low": 27.4100265877228
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 198.008000000002,
+    "frame_ms_mean": 19.6455520751762,
+    "frame_ms_p95": 35.1659999999896,
+    "frames": 1277,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 19777.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 55,
+    "memory_mib": 275.346167564392,
+    "one_percent_low": 7.13246803694174,
+    "physics_ms_mean": 32.099643696163,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "server",
+    "script_frame_ms_mean": 8.28684181675799,
+    "spikes": [
+      {
+        "elapsed": 3.014487,
+        "frame_ms": 124.254000000001,
+        "projectiles": 42
+      },
+      {
+        "elapsed": 3.163146,
+        "frame_ms": 148.651000000001,
+        "projectiles": 45
+      },
+      {
+        "elapsed": 3.297909,
+        "frame_ms": 134.761999999995,
+        "projectiles": 48
+      },
+      {
+        "elapsed": 3.46267,
+        "frame_ms": 164.69,
+        "projectiles": 50
+      },
+      {
+        "elapsed": 3.61938,
+        "frame_ms": 156.578000000003,
+        "projectiles": 50
+      },
+      {
+        "elapsed": 3.743055,
+        "frame_ms": 123.879000000002,
+        "projectiles": 44
+      },
+      {
+        "elapsed": 3.871004,
+        "frame_ms": 127.943000000002,
+        "projectiles": 41
+      },
+      {
+        "elapsed": 4.01116099999999,
+        "frame_ms": 140.159000000004,
+        "projectiles": 37
+      },
+      {
+        "elapsed": 4.12020399999999,
+        "frame_ms": 109.047000000004,
+        "projectiles": 25
+      },
+      {
+        "elapsed": 4.212528,
+        "frame_ms": 92.3170000000013,
+        "projectiles": 16
+      },
+      {
+        "elapsed": 4.271896,
+        "frame_ms": 59.3629999999976,
+        "projectiles": 12
+      },
+      {
+        "elapsed": 4.323837,
+        "frame_ms": 51.9439999999989,
+        "projectiles": 7
+      },
+      {
+        "elapsed": 8.241976,
+        "frame_ms": 188.958,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 8.33375,
+        "frame_ms": 91.7850000000016,
+        "projectiles": 2
+      },
+      {
+        "elapsed": 8.403597,
+        "frame_ms": 69.8490000000049,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 13.180678,
+        "frame_ms": 75.4249999999956,
+        "projectiles": 41
+      },
+      {
+        "elapsed": 13.258138,
+        "frame_ms": 77.5080000000088,
+        "projectiles": 35
+      },
+      {
+        "elapsed": 13.319394,
+        "frame_ms": 61.2289999999973,
+        "projectiles": 32
+      },
+      {
+        "elapsed": 13.385312,
+        "frame_ms": 65.9260000000046,
+        "projectiles": 25
+      },
+      {
+        "elapsed": 13.440164,
+        "frame_ms": 54.8760000000073,
+        "projectiles": 17
+      },
+      {
+        "elapsed": 18.304496,
+        "frame_ms": 63.328999999996,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 18.35687,
+        "frame_ms": 52.3930000000092,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 18.55488,
+        "frame_ms": 198.008000000002,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 18.668248,
+        "frame_ms": 113.405,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 18.759919,
+        "frame_ms": 91.6660000000036,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 18.836295,
+        "frame_ms": 76.3699999999972,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 18.89426,
+        "frame_ms": 57.9120000000017,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 18.94517,
+        "frame_ms": 50.9599999999892,
+        "projectiles": 1
+      },
+      {
+        "elapsed": 19.492495,
+        "frame_ms": 54.2159999999967,
+        "projectiles": 18
+      },
+      {
+        "elapsed": 19.551383,
+        "frame_ms": 58.8499999999925,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 19.609766,
+        "frame_ms": 58.3829999999921,
+        "projectiles": 23
+      },
+      {
+        "elapsed": 19.748589,
+        "frame_ms": 52.109999999999,
+        "projectiles": 25
+      },
+      {
+        "elapsed": 19.801024,
+        "frame_ms": 52.5300000000044,
+        "projectiles": 27
+      },
+      {
+        "elapsed": 19.865173,
+        "frame_ms": 64.1009999999937,
+        "projectiles": 26
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 59.9284297032319,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.4383830684635,
+      "frame_ms_max": 23.2839999999896,
+      "frame_ms_mean": 16.5457768595036,
+      "frame_ms_p95": 19.3380000000047,
+      "frames": 121,
+      "one_percent_low": 45.3001132502957
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 72.6530000000025,
+    "frame_ms_mean": 16.686571047365,
+    "frame_ms_p95": 18.8550000000021,
+    "frames": 1499,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 19789.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 53,
+    "memory_mib": 277.096563339233,
+    "one_percent_low": 33.7807404738338,
+    "physics_ms_mean": 6.1053262174783,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "0",
+    "script_frame_ms_mean": 7.93628418945958,
+    "spikes": [
+      {
+        "elapsed": 18.303608,
+        "frame_ms": 72.6530000000025,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 59.9124845491226,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.2292929181378,
+      "frame_ms_max": 23.9250000000055,
+      "frame_ms_mean": 16.6032166666671,
+      "frame_ms_p95": 19.4100000000077,
+      "frames": 120,
+      "one_percent_low": 45.260132612171
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 64.9379999999979,
+    "frame_ms_mean": 16.6910120240481,
+    "frame_ms_p95": 18.8140000000061,
+    "frames": 1497,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 20139.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 53,
+    "memory_mib": 278.735991477966,
+    "one_percent_low": 33.3516396777797,
+    "physics_ms_mean": 8.50033266533061,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "1",
+    "script_frame_ms_mean": 5.4570280561122,
+    "spikes": [
+      {
+        "elapsed": 18.301773,
+        "frame_ms": 64.9379999999979,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 59.9487850086095,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.2198871947146,
+      "frame_ms_max": 19.3929999999938,
+      "frame_ms_mean": 16.6058099173552,
+      "frame_ms_p95": 18.5649999999953,
+      "frames": 121,
+      "one_percent_low": 51.9440043633078
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 55.4300000000012,
+    "frame_ms_mean": 16.6809052069426,
+    "frame_ms_p95": 18.8729999999993,
+    "frames": 1498,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 19789.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 53,
+    "memory_mib": 276.884939193726,
+    "one_percent_low": 34.4020127470933,
+    "physics_ms_mean": 6.63422696929239,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "2",
+    "script_frame_ms_mean": 6.52639919893189,
+    "spikes": [
+      {
+        "elapsed": 18.353605,
+        "frame_ms": 55.4300000000012,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 59.887093027298,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0994345144067,
+      "frame_ms_max": 18.9269999999908,
+      "frame_ms_mean": 16.6390916666659,
+      "frame_ms_p95": 18.644000000009,
+      "frames": 120,
+      "one_percent_low": 52.9562845870701
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 70.4730000000069,
+    "frame_ms_mean": 16.6980888443554,
+    "frame_ms_p95": 19.0139999999985,
+    "frames": 1497,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 19789.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 53,
+    "memory_mib": 277.087366104126,
+    "one_percent_low": 30.7245462496596,
+    "physics_ms_mean": 7.31960988643962,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "3",
+    "script_frame_ms_mean": 9.44102204408807,
+    "spikes": [
+      {
+        "elapsed": 18.289479,
+        "frame_ms": 70.4730000000069,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 18.357759,
+        "frame_ms": 57.1800000000025,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 59.9383267427843,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0414931376553,
+      "frame_ms_max": 29.941000000008,
+      "frame_ms_mean": 16.6551487603303,
+      "frame_ms_p95": 18.9049999999895,
+      "frames": 121,
+      "one_percent_low": 40.0584853886587
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 57.1759999999983,
+    "frame_ms_mean": 16.6838157543393,
+    "frame_ms_p95": 18.9440000000047,
+    "frames": 1498,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 19999.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 53,
+    "memory_mib": 278.068907737732,
+    "one_percent_low": 35.2803375622665,
+    "physics_ms_mean": 7.33924299065414,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "4",
+    "script_frame_ms_mean": 8.09938451268361,
+    "spikes": [
+      {
+        "elapsed": 18.354707,
+        "frame_ms": 57.1759999999983,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 59.9152259547965,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.6824417611565,
+      "frame_ms_max": 21.1909999999875,
+      "frame_ms_mean": 16.4792314049582,
+      "frame_ms_p95": 18.8969999999955,
+      "frames": 121,
+      "one_percent_low": 48.8269329362296
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 66.5309999999977,
+    "frame_ms_mean": 16.690248331108,
+    "frame_ms_p95": 18.7590000000029,
+    "frames": 1498,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 20069.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 53,
+    "memory_mib": 278.388419151306,
+    "one_percent_low": 32.2552205074392,
+    "physics_ms_mean": 8.72406875834448,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "5",
+    "script_frame_ms_mean": 7.30511815754351,
+    "spikes": [
+      {
+        "elapsed": 18.292558,
+        "frame_ms": 66.5309999999977,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 18.356701,
+        "frame_ms": 50.4219999999975,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 59.9075488150542,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0356542323397,
+      "frame_ms_max": 39.6220000000085,
+      "frame_ms_mean": 16.6567685950414,
+      "frame_ms_p95": 18.8890000000015,
+      "frames": 121,
+      "one_percent_low": 32.9896907216408
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 67.9050000000103,
+    "frame_ms_mean": 16.6923871829106,
+    "frame_ms_p95": 19.1480000000013,
+    "frames": 1498,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 20209.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 53,
+    "memory_mib": 279.127673149109,
+    "one_percent_low": 30.7008387469151,
+    "physics_ms_mean": 9.29855941255005,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "6",
+    "script_frame_ms_mean": 7.58720293724965,
+    "spikes": [
+      {
+        "elapsed": 18.326473,
+        "frame_ms": 67.9050000000103,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 59.7405531399027,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.3015075376912,
+      "frame_ms_max": 20.4639999999898,
+      "frame_ms_mean": 16.5833333333326,
+      "frame_ms_p95": 18.3080000000047,
+      "frames": 120,
+      "one_percent_low": 50.5471731493712
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 147.817000000003,
+    "frame_ms_mean": 16.7390482250501,
+    "frame_ms_p95": 18.9820000000012,
+    "frames": 1493,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 20279.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 53,
+    "memory_mib": 279.454489707947,
+    "one_percent_low": 28.7211615603624,
+    "physics_ms_mean": 7.95904889484259,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "7",
+    "script_frame_ms_mean": 10.5071239115875,
+    "spikes": [
+      {
+        "elapsed": 18.401856,
+        "frame_ms": 147.817000000003,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 50.2466606973426,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 49.3264175682557,
+      "frame_ms_max": 33.2420000000013,
+      "frame_ms_mean": 20.2731122448989,
+      "frame_ms_p95": 27.9660000000064,
+      "frames": 98,
+      "one_percent_low": 30.0824258468191
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 108.870000000003,
+    "frame_ms_mean": 19.901820063694,
+    "frame_ms_p95": 27.9449999999954,
+    "frames": 1256,
+    "gpu": "NVIDIA GeForce GTX 1650",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 2983.0,
+    "max_nodes": 27954.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 214,
+    "memory_mib": 373.537650108337,
+    "one_percent_low": 14.8847689883855,
+    "physics_ms_mean": 4.9405541401274,
+    "real_network_clients": true,
+    "resolution": "(1920, 1080)",
+    "role": "8",
+    "script_frame_ms_mean": 25.2770660828023,
+    "spikes": [
+      {
+        "elapsed": 4.063965,
+        "frame_ms": 74.9549999999957,
+        "projectiles": 131
+      },
+      {
+        "elapsed": 4.12961,
+        "frame_ms": 65.6540000000021,
+        "projectiles": 128
+      },
+      {
+        "elapsed": 4.238471,
+        "frame_ms": 108.870000000003,
+        "projectiles": 211
+      },
+      {
+        "elapsed": 4.328361,
+        "frame_ms": 89.8869999999974,
+        "projectiles": 214
+      },
+      {
+        "elapsed": 4.418514,
+        "frame_ms": 90.0619999999961,
+        "projectiles": 212
+      },
+      {
+        "elapsed": 4.503158,
+        "frame_ms": 84.7189999999998,
+        "projectiles": 155
+      },
+      {
+        "elapsed": 4.563197,
+        "frame_ms": 60.0379999999987,
+        "projectiles": 114
+      },
+      {
+        "elapsed": 4.613879,
+        "frame_ms": 50.6829999999994,
+        "projectiles": 114
+      },
+      {
+        "elapsed": 7.989923,
+        "frame_ms": 61.9170000000011,
+        "projectiles": 4
+      },
+      {
+        "elapsed": 8.041593,
+        "frame_ms": 60.1520000000022,
+        "projectiles": 4
+      }
+    ],
+    "thermal_window": {
+      "average_fps": 51.331977691153,
+      "frame_ms_max": 61.9170000000011,
+      "frame_ms_mean": 19.4810339476234,
+      "frame_ms_p95": 27.4980000000085,
+      "frames": 1031,
+      "one_percent_low": 25.4001094513814
+    }
+  },
+  {
+    "average_fps": 59.8751309543508,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0598496401698,
+      "frame_ms_max": 21.0030000000074,
+      "frame_ms_mean": 16.6500583333324,
+      "frame_ms_p95": 18.6290000000042,
+      "frames": 120,
+      "one_percent_low": 49.8392683595313
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 59.1679999999997,
+    "frame_ms_mean": 16.7014248496994,
+    "frame_ms_p95": 18.8699999999926,
+    "frames": 1497,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 20349.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 53,
+    "memory_mib": 279.686694145203,
+    "one_percent_low": 30.8991657225277,
+    "physics_ms_mean": 7.79896392785558,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "9",
+    "script_frame_ms_mean": 6.45322311289251,
+    "spikes": [
+      {
+        "elapsed": 18.206112,
+        "frame_ms": 59.1679999999997,
+        "projectiles": 0
+      },
+      {
+        "elapsed": 18.290607,
+        "frame_ms": 55.0069999999891,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 59.789527266404,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.0555814406246,
+      "frame_ms_max": 20.6019999999967,
+      "frame_ms_mean": 16.6512416666663,
+      "frame_ms_p95": 18.4719999999885,
+      "frames": 120,
+      "one_percent_low": 49.8318176155571
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 62.2909999999948,
+    "frame_ms_mean": 16.7253371237458,
+    "frame_ms_p95": 18.6700000000002,
+    "frames": 1495,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 20419.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 190,
+    "memory_mib": 280.175854682922,
+    "one_percent_low": 27.8088825278643,
+    "physics_ms_mean": 8.40568093645486,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "10",
+    "script_frame_ms_mean": 11.18614180602,
+    "spikes": [
+      {
+        "elapsed": 3.116789,
+        "frame_ms": 62.2909999999948,
+        "projectiles": 125
+      },
+      {
+        "elapsed": 3.382917,
+        "frame_ms": 50.2729999999971,
+        "projectiles": 180
+      },
+      {
+        "elapsed": 18.310787,
+        "frame_ms": 54.8900000000003,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  },
+  {
+    "average_fps": 59.6954778434952,
+    "count": 12,
+    "disconnect_window": {
+      "average_fps": 60.052906610724,
+      "frame_ms_max": 19.2720000000008,
+      "frame_ms_mean": 16.6519833333333,
+      "frame_ms_p95": 16.8330000000054,
+      "frames": 120,
+      "one_percent_low": 55.1450314326575
+    },
+    "failures": [],
+    "fixed_daylight": true,
+    "frame_ms_max": 91.6270000000026,
+    "frame_ms_mean": 16.7516876675603,
+    "frame_ms_p95": 18.4720000000027,
+    "frames": 1492,
+    "gpu": "",
+    "invulnerable_fixture": true,
+    "label": "pack180-final-thermal-noprof",
+    "max_draw_calls": 0.0,
+    "max_nodes": 20489.0,
+    "maximum_players": 12,
+    "maximum_projectiles": 125,
+    "memory_mib": 280.848553657532,
+    "one_percent_low": 27.5472481217353,
+    "physics_ms_mean": 6.53104289544241,
+    "real_network_clients": true,
+    "resolution": "headless",
+    "role": "11",
+    "script_frame_ms_mean": 9.78820643431614,
+    "spikes": [
+      {
+        "elapsed": 3.269205,
+        "frame_ms": 74.7269999999958,
+        "projectiles": 125
+      },
+      {
+        "elapsed": 18.367187,
+        "frame_ms": 91.6270000000026,
+        "projectiles": 0
+      }
+    ],
+    "thermal_window": {}
+  }
+]

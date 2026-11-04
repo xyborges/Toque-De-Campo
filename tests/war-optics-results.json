@@ -1,0 +1,31 @@
+{
+	"checks": 49,
+	"failures": [],
+	"measurements": {
+		"dot_contrast": 0.304534107446671,
+		"rpg": {
+			"direction": "Vector3(-0.5806521, 0.16918235, -0.7963796)",
+			"left_hand_error": 0.0000000596046447753906,
+			"muzzle": "Vector3(-0.6702186, 1.652396, -1.3605402)",
+			"right_hand_error": 0.0581094399094582
+		},
+		"scope_false": {
+			"deep_ratio": 0.12,
+			"first_ratio": 0.25,
+			"normal_delta": 0.046,
+			"pixels_per_mrad": 7.35743741672416
+		},
+		"scope_true": {
+			"deep_ratio": 0.12,
+			"first_ratio": 0.25,
+			"normal_delta": 0.046,
+			"pixels_per_mrad": 7.35743741672416
+		},
+		"stinger": {
+			"direction": "Vector3(-0.5806521, 0.16918235, -0.7963796)",
+			"left_hand_error": 0.0000000596046447753906,
+			"muzzle": "Vector3(-0.55475116, 1.6238257, -1.2021734)",
+			"right_hand_error": 0.106764316558838
+		}
+	}
+}

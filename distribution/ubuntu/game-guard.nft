@@ -1,0 +1,9 @@
+delete table inet toque_game_guard
+table inet toque_game_guard {
+    chain input {
+        type filter hook input priority -10; policy accept;
+        udp dport { 3010, 3012, 3014 } limit rate over 6000/second burst 12000 packets counter drop
+        udp dport { 3010, 3012, 3014 } meter game_v4 size 4096 { ip saddr timeout 1m limit rate over 1000/second burst 2000 packets } counter drop
+        udp dport { 3010, 3012, 3014 } meter game_v6 size 4096 { ip6 saddr timeout 1m limit rate over 1000/second burst 2000 packets } counter drop
+    }
+}

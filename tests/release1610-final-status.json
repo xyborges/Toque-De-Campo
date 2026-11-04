@@ -1,0 +1,59 @@
+{
+  "version": "1.6.10",
+  "build": 37,
+  "war_protocol": 9,
+  "published": true,
+  "core_checks": {
+    "checks": 25,
+    "failures": [],
+    "samples": {
+      "covered_peak": 0.0588235296308994,
+      "long_shot": {
+        "damage": 100.0,
+        "distance": 844.809402227402,
+        "kills": 1,
+        "point": "(0.0, 1.436219, -849.825)",
+        "target_hp": 0.0
+      },
+      "thermal_distance": 1200,
+      "thermal_peak": 0.803921580314636
+    }
+  },
+  "production": {
+    "operator": {
+      "checks": 12,
+      "failures": [],
+      "fixture": "Three real QA accounts and production Ubuntu ENet authority. Coordinated via local stage files only. Infantry approach uses legal 5.8 m/s server_player_state packets; vehicle commands and malicious passenger packets use existing RPCs. No privileged server teleport, test account mode, service token or authority fixture.",
+      "role": "operator",
+      "samples": {}
+    },
+    "opponent": {
+      "checks": 6,
+      "failures": [],
+      "fixture": "Three real QA accounts and production Ubuntu ENet authority. Coordinated via local stage files only. Infantry approach uses legal 5.8 m/s server_player_state packets; vehicle commands and malicious passenger packets use existing RPCs. No privileged server teleport, test account mode, service token or authority fixture.",
+      "role": "opponent",
+      "samples": {}
+    },
+    "passenger": {
+      "checks": 7,
+      "failures": [],
+      "fixture": "Three real QA accounts and production Ubuntu ENet authority. Coordinated via local stage files only. Infantry approach uses legal 5.8 m/s server_player_state packets; vehicle commands and malicious passenger packets use existing RPCs. No privileged server teleport, test account mode, service token or authority fixture.",
+      "role": "passenger",
+      "samples": {}
+    }
+  },
+  "download": {
+    "build": 37,
+    "version": "1.6.10",
+    "tls": true,
+    "private_paths_blocked": true,
+    "download_identical": true,
+    "real_launcher_install": true,
+    "no_redownload": true,
+    "production_boot": true
+  },
+  "network": "work/core1610-network.log",
+  "passengers": "work/core1610-passengers.log",
+  "audio_checks": 45,
+  "native_tv_checks": 53
+}

@@ -1,0 +1,27 @@
+[Unit]
+Description=Toque de Campo - Battle Royale matchmaking
+After=network-online.target nginx.service php8.3-fpm.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=toque-server
+Group=toque-server
+WorkingDirectory=/opt/toque-de-campo/current
+ExecStart=/opt/toque-de-campo/current/ToqueDeCampo.x86_64 --headless --max-fps 20 --log-file /var/lib/toque-de-campo/game/br-broker.log -- --br-server --br-max-rooms=2 --naval-data=/var/lib/toque-de-campo/game --accounts-service-token=/etc/toque-de-campo/service-token
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+KillMode=control-group
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/toque-de-campo/game
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=4G
+TasksMax=512
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
