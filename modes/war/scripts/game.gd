@@ -35,9 +35,11 @@ var received_snapshot_generation:=-2
 var received_snapshot_time:=-INF
 const STATE_STALE_USEC:=550000
 const STATE_RECOVERY_INTERVAL_USEC:=500000
+const STATE_RECOVERY_REPLY_TIMEOUT_USEC:=1000000
 var state_recovery_sessions: Dictionary={}
 var state_recovery_serial:=0
 var state_recovery_pending:=0
+var state_recovery_reply_deadline:=0
 var state_recovery_check_at:=0
 var state_recovery_request_at:=0
 var state_recovery_started_at:=0
@@ -528,7 +530,7 @@ func war_baseline_complete(transfer: String) -> void:
 	if not baseline_loading or transfer!=baseline_transfer:return
 	_set_loading_timeout(1,false)
 	baseline_loading=false;join_ready=true;loading_screen.hide();ui_focus.close_all()
-	state_recovery_serial=0;state_recovery_pending=0
+	state_recovery_serial=0;state_recovery_pending=0;state_recovery_reply_deadline=0
 	state_recovery_started_at=Time.get_ticks_usec()
 	state_recovery_request_at=0;state_recovery_check_at=0
 	if not is_instance_valid(local_player) or not local_player.deployed:ui_focus.open(war_ui.deployment)
@@ -976,8 +978,14 @@ func _step_state_recovery() -> void:
 	# still arrive. Recover only current, stale state; never queue movement history.
 	if not online or closing or multiplayer.is_server() or not join_ready or baseline_loading or state_recovery_started_at==0:return
 	var now:=Time.get_ticks_usec()
-	if now<state_recovery_check_at or state_recovery_pending!=0:return
+	if now<state_recovery_check_at:return
 	state_recovery_check_at=now+200000
+	if state_recovery_pending!=0:
+		if now<state_recovery_reply_deadline:return
+		# A rejected request has no reply. Allow one fresh request if the
+		# state is still stale, and keep rejecting any reply to the old serial.
+		state_recovery_pending=0
+		state_recovery_reply_deadline=0
 	if now-state_recovery_started_at<STATE_STALE_USEC or now<state_recovery_request_at:return
 	var stale: Array[int]=[]
 	for key in players:
@@ -988,6 +996,7 @@ func _step_state_recovery() -> void:
 	if stale.is_empty() and now-operation_received_at<STATE_STALE_USEC:return
 	state_recovery_serial+=1;state_recovery_pending=state_recovery_serial
 	state_recovery_request_at=now+STATE_RECOVERY_INTERVAL_USEC
+	state_recovery_reply_deadline=now+STATE_RECOVERY_REPLY_TIMEOUT_USEC
 	rpc_id(1,"server_war_state_recovery",baseline_transfer,state_recovery_pending,stale)
 
 func _state_recovery_payload(id: int,token: String,sequence: int,ids: Array) -> Array:
@@ -1018,7 +1027,7 @@ func server_war_state_recovery(token: String,sequence: int,ids: Array) -> void:
 @rpc("authority","call_remote","reliable")
 func war_state_recovery(token: String,sequence: int,operation: Array,poses: Array) -> void:
 	if closing or baseline_loading or not join_ready or token!=baseline_transfer or sequence!=state_recovery_pending or sequence<=0:return
-	state_recovery_pending=0
+	state_recovery_pending=0;state_recovery_reply_deadline=0
 	if operation.size()!=9 or poses.size()>WarRules.CAPACITY:return
 	# The usual generation/life/sequence checks also apply to reliable recovery.
 	# An old response must not rewind a newer unreliable update or revive a corpse.
