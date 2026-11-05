@@ -6,7 +6,7 @@
 		},
 		{
 			"path": "res://maps/prepared/ukraine/grass.res",
-			"sha256": "2a34b8229ffa35e91d6fff1447f13886ad34fc862472c6ff3fa704a12cc3c3d5"
+			"sha256": "01335f485a3a38061ad64845c8fcc914e28fd0d24479087facf7177d58a8ecd0"
 		},
 		{
 			"path": "res://maps/prepared/ukraine/grass_far_mesh.res",
@@ -30,7 +30,7 @@
 		},
 		{
 			"path": "res://maps/prepared/ukraine/navigation.res",
-			"sha256": "385f31c12d313d486548986e94e5295027efa8d900fe272d1edd91353e15c9cf"
+			"sha256": "8e2062e55fe62c2a998d01ce3b9ef2e92f973975e605fb04907d81409c800751"
 		}
 	],
 	"benchmark": {
@@ -51,7 +51,7 @@
 		3500.0,
 		3500.0
 	],
-	"content_hash": "d8d57de5af49e17061ecc69315776a1d44d96e80d45ae2fd4b7b2aba33bea7b2",
+	"content_hash": "e7a0ca2748f7f7b84039af11909a182f6a2cde1d5221a964a886bb71d05c5123",
 	"grass_approved": false,
 	"grass_enabled": true,
 	"id": "ukraine",
@@ -105,7 +105,7 @@
 		"objectives",
 		"authored_terrain"
 	],
-	"source_hash": "24ddaa0f0a05b7354d5a6c8032246a4f6fe518f6cc5ee2573af63223118291e7",
+	"source_hash": "7e52e8423e9348236afb7ce06403c5b0f27f5318519e9f98e7c50114eac8a924",
 	"sources": [
 		"res://assets/war/biomes/nova_grama.png",
 		"res://modes/naval/scripts/catalog.gd",
@@ -257,5 +257,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 16
+	"version": 17
 }

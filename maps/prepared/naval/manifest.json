@@ -22,23 +22,23 @@
 		},
 		{
 			"path": "res://maps/prepared/naval/islands_0.res",
-			"sha256": "61aceb26ff38d50903fd3c26806d39c1356668f33865769bc4153b51f7a3ed7b"
+			"sha256": "35c1ff3403287d61d7cedf153dcaec5b05fb7747b6490db5631ece646789a252"
 		},
 		{
 			"path": "res://maps/prepared/naval/islands_1.res",
-			"sha256": "51ae7a1a598f241e3ba8332af29c8f8e860b15a72bc7dcfbb53a2a602ca839da"
+			"sha256": "ef2b34a9d2b6e4e81dc1624fa2808d4e9fc787feff211976bd207c70e398f5c9"
 		},
 		{
 			"path": "res://maps/prepared/naval/islands_2.res",
-			"sha256": "5a49c4d18a3b5e47a384d7139f022ec734942080f168572d1b436d4f015ab13e"
+			"sha256": "dad7d32555366331d160b2e280f892a588a45bd43e153db33acc8fc9b4a6d866"
 		},
 		{
 			"path": "res://maps/prepared/naval/islands_3.res",
-			"sha256": "410c170dea3dc9553f0cf38f89744a5b0eaa6ab46e1b376009a6183a10734299"
+			"sha256": "68a95fea2880fc54485fe430af466f1b67a8b6396bbf4637cf1f30cadb435e87"
 		},
 		{
 			"path": "res://maps/prepared/naval/islands_4.res",
-			"sha256": "4a31a515b6513a4ca7ddf7685bb2dfa924cf557e43f6b0ffc71b9f35de85bb7b"
+			"sha256": "1bc7ecb7de5c3e4ae8bbaa1030823ef037684bc84371e79bca298989aa1f2dc1"
 		}
 	],
 	"benchmark": {
@@ -59,7 +59,7 @@
 		1960.0,
 		1960.0
 	],
-	"content_hash": "cb59f4e394dc615cc3368ace6a21297f34b6efbff20bf304143f992a576866ce",
+	"content_hash": "5e0894b0cbe0b04cc361a69595690a875b6ebd2058bcb300eb9ffef0ebcdc976",
 	"grass_approved": false,
 	"grass_enabled": false,
 	"id": "naval",
@@ -70,7 +70,7 @@
 		"ports",
 		"water_lanes"
 	],
-	"source_hash": "7b9f869ba108e75bbb00434131d28b0f44885a7875086dc8edb2dfb2192273ba",
+	"source_hash": "b5acf114f715c8586aa20edf033c532fe487f3c3dca0273d90baed20b302a249",
 	"sources": [
 		"res://modes/naval/scripts/catalog.gd",
 		"res://modes/naval/shaders/clouds.gdshader",
@@ -144,5 +144,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 8
+	"version": 9
 }

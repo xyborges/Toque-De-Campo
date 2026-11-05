@@ -6,7 +6,7 @@
 		},
 		{
 			"path": "res://maps/prepared/office/navigation.res",
-			"sha256": "c3d78b451d436142e21ed6dc2aac4ce11a5b5a399e575b471f9ca1f124c735fd"
+			"sha256": "ee3ed21981e71bd9403fb877f1e800b7defbae5485d053b447427b9667b8d8f9"
 		}
 	],
 	"benchmark": {
@@ -27,7 +27,7 @@
 		30.0,
 		52.0
 	],
-	"content_hash": "67b61f74753d15f9ce65513ad39f51af4aa0876f736961921c9fd79e26d53109",
+	"content_hash": "1c7bbdb4851d0c74522a84638955f6b9ad88ed9500aaf6b55bf7810dde0ec089",
 	"grass_approved": false,
 	"grass_enabled": false,
 	"id": "office",
@@ -38,7 +38,7 @@
 		"corridors",
 		"rooms"
 	],
-	"source_hash": "2d867a424fbeb6659b9fe78b2968831866bca7dac086131dabe8f87a4c48b024",
+	"source_hash": "d1d4b7fa8c5cd65931fdb1d4ed46115fd42939b2b0128a37329959b46c02886c",
 	"sources": [
 		"res://scripts/environment/environment_kit.gd",
 		"res://scripts/environment/environment_props.gd",
@@ -95,5 +95,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 8
+	"version": 9
 }

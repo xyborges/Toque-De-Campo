@@ -6,7 +6,7 @@
 		},
 		{
 			"path": "res://maps/prepared/desert/grass.res",
-			"sha256": "a64de601b058b4e505a785e1488335de99d15066e076b4cfe105a9cfb2e11503"
+			"sha256": "52cbb8ba9094233d6fe4c6dc07256eb75f589b892c1de3343508ccc78e435e4c"
 		},
 		{
 			"path": "res://maps/prepared/desert/grass_far_mesh.res",
@@ -30,7 +30,7 @@
 		},
 		{
 			"path": "res://maps/prepared/desert/navigation.res",
-			"sha256": "d59762fb61c3662a0484c40b16733d9bd2752f41c86d38345f068d1bcb0c3bcb"
+			"sha256": "4d2d10cb236623b0d4142b638d0d6ec265c0d82e7d462ef04b95de5f2482c114"
 		}
 	],
 	"benchmark": {
@@ -51,7 +51,7 @@
 		300.0,
 		300.0
 	],
-	"content_hash": "1ee69f1e0740982b8477ede38839fea6dea6752918afe8fa05894fa63672392c",
+	"content_hash": "a4dd3c2cafea4af1dcd23aa59a4d7f1a71638ef746c3fffe02529a0449b79dea",
 	"grass_approved": false,
 	"grass_enabled": true,
 	"id": "desert",
@@ -62,7 +62,7 @@
 		"spawn_pads",
 		"approaches"
 	],
-	"source_hash": "69e6faab4e95225343c3bf3cba4d36455bc7e0bd77eba8476eb7d1ff3492a58c",
+	"source_hash": "904220b3c12160590df8a96563ecc04e9b4770863de24ba8e0f7c0db3e135ca9",
 	"sources": [
 		"res://modes/war/scripts/grass_assets.gd",
 		"res://modes/war/shaders/grass_field.gdshader",
@@ -132,5 +132,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 8
+	"version": 9
 }
