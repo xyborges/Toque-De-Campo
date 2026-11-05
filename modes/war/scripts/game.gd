@@ -18,6 +18,13 @@ var simulation_peak_ms:=0.
 var simulation_samples:=0
 var simulation_total_ms:=0.
 var simulation_report_at:=0.
+var authority_window_start_usec:=0
+var authority_last_tick_usec:=0
+var authority_tick_gap_usec:=0
+var authority_tick_gap_end_usec:=0
+var authority_last_snapshot_usec:=0
+var authority_snapshot_gap_usec:=0
+var authority_snapshot_gap_end_usec:=0
 var war_clock := 0.0
 var weather_seed:=0
 var world_prebuilt:=false
@@ -1142,6 +1149,14 @@ func _physics_process(delta: float) -> void:
 			life_sync_wait=0;rpc_id(1,"war_recover_life",local_player.life_id)
 	else: life_sync_wait=0
 	if not (online or offline_operation) or not multiplayer.is_server(): return
+	if online:
+		if authority_window_start_usec==0: authority_window_start_usec=tick_started
+		if authority_last_tick_usec>0:
+			var tick_gap:=tick_started-authority_last_tick_usec
+			if tick_gap>authority_tick_gap_usec:
+				authority_tick_gap_usec=tick_gap
+				authority_tick_gap_end_usec=tick_started
+		authority_last_tick_usec=tick_started
 	_process_queued_deployments()
 	if match_ended:
 		round_restart_left=maxf(0.,round_restart_left-delta)
@@ -1192,13 +1207,34 @@ func _physics_process(delta: float) -> void:
 	snapshot_clock += delta
 	if NetworkCadence.due(snapshot_clock,.2):
 		snapshot_clock = NetworkCadence.consume(snapshot_clock,.2)
+		if online:
+			var snapshot_started:=Time.get_ticks_usec()
+			if authority_last_snapshot_usec>0:
+				var snapshot_gap:=snapshot_started-authority_last_snapshot_usec
+				if snapshot_gap>authority_snapshot_gap_usec:
+					authority_snapshot_gap_usec=snapshot_gap
+					authority_snapshot_gap_end_usec=snapshot_started
+			authority_last_snapshot_usec=snapshot_started
 		_send_war_snapshot()
 
 	var elapsed:=(Time.get_ticks_usec()-tick_started)*.001
 	simulation_peak_ms=maxf(simulation_peak_ms,elapsed);simulation_total_ms+=elapsed;simulation_samples+=1
 	if war_clock-simulation_report_at>=10.:
 		simulation_report_at=war_clock
-		GameDiagnostics.record("war_simulation",{"mean_ms":simulation_total_ms/maxi(1,simulation_samples),"peak_ms":simulation_peak_ms,"engine_physics_ms":Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS)*1000.,"population":_health_status(),"rtt_ms":_transport_rtt()})
+		var details:={"mean_ms":simulation_total_ms/maxi(1,simulation_samples),"peak_ms":simulation_peak_ms,"engine_physics_ms":Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS)*1000.,"population":_health_status(),"rtt_ms":_transport_rtt()}
+		if online:
+			var now:=Time.get_ticks_usec()
+			var unix_offset_ms:=Time.get_unix_time_from_system()*1000.-now*.001
+			details.authority_pacing={
+				"tick_hz":simulation_samples*1000000./maxi(1,tick_started-authority_window_start_usec),
+				"max_tick_gap_ms":authority_tick_gap_usec*.001,
+				"max_tick_gap_end_unix_ms":unix_offset_ms+authority_tick_gap_end_usec*.001 if authority_tick_gap_usec>0 else 0.,
+				"max_snapshot_send_gap_ms":authority_snapshot_gap_usec*.001,
+				"max_snapshot_send_gap_end_unix_ms":unix_offset_ms+authority_snapshot_gap_end_usec*.001 if authority_snapshot_gap_usec>0 else 0.
+			}
+			authority_window_start_usec=tick_started
+			authority_tick_gap_usec=0;authority_snapshot_gap_usec=0
+		GameDiagnostics.record("war_simulation",details)
 		simulation_peak_ms=0.;simulation_total_ms=0.;simulation_samples=0
 
 func _transport_rtt() -> Dictionary:

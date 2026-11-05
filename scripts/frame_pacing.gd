@@ -30,6 +30,7 @@ var snapshot_gaps: Array[Dictionary]=[]
 var camera_previous:=Vector3.ZERO
 var camera_previous_direction:=Vector3.ZERO
 var world_snapshot_max_age_ms:=0.
+var world_snapshot_max_age_at_usec:=0
 var world_stale_frames:=0
 var world_stale_camera_turns:=0
 var camera_known:=false
@@ -52,7 +53,7 @@ func reset(now: int=0) -> void:
 	snapshot_at=0;snapshot_previous=0;snapshot_max_gap_ms=0.;snapshot_count=0
 	snapshot_gaps.clear()
 	camera_known=false;moving_frames=0;repeated_camera_frames=0
-	world_snapshot_max_age_ms=0.;world_stale_frames=0;world_stale_camera_turns=0
+	world_snapshot_max_age_ms=0.;world_snapshot_max_age_at_usec=0;world_stale_frames=0;world_stale_camera_turns=0
 	over_33_frames=0;over_100_frames=0;largest_tick_catchup=0
 	pipeline_last.clear();pipeline_totals.clear();pipeline_coincident_long_frames=0
 
@@ -134,7 +135,9 @@ func tick(game: Node,now: int=-1) -> void:
 	var operation_received_at: int=game.operation_received_at
 	var operation_age_usec:=now-operation_received_at if game.online and not game.multiplayer.is_server() and operation_received_at>0 else -1
 	if operation_age_usec>=0:
-		world_snapshot_max_age_ms=maxf(world_snapshot_max_age_ms,operation_age_usec*.001)
+		if operation_age_usec*.001>world_snapshot_max_age_ms:
+			world_snapshot_max_age_ms=operation_age_usec*.001
+			world_snapshot_max_age_at_usec=now
 		if operation_age_usec>=WORLD_STALE_USEC: world_stale_frames+=1
 	var camera:=game.get_viewport().get_camera_3d() as Camera3D
 	if is_instance_valid(camera):
@@ -152,7 +155,7 @@ func tick(game: Node,now: int=-1) -> void:
 	details.screen_hz=DisplayServer.screen_get_refresh_rate();details.focused=DisplayServer.window_is_focused()
 	details.state_recoveries=game.state_recovery_received
 	if operation_age_usec>=0:
-		details.world_state={"max_age_ms":world_snapshot_max_age_ms,"stale_frames":world_stale_frames,"camera_turns_during_stale_frames":world_stale_camera_turns,"threshold_ms":WORLD_STALE_USEC*.001}
+		details.world_state={"max_age_ms":world_snapshot_max_age_ms,"max_age_unix_ms":Time.get_unix_time_from_system()*1000.-(now-world_snapshot_max_age_at_usec)*.001,"stale_frames":world_stale_frames,"camera_turns_during_stale_frames":world_stale_camera_turns,"threshold_ms":WORLD_STALE_USEC*.001}
 	details.population={"actors":game.players.size(),"bots":0}
 	for member: Dictionary in game.members.values():
 		if bool(member.get("bot",false)):details.population.bots+=1
