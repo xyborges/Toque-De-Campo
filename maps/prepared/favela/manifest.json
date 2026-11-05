@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 6,
+  "version": 9,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,8 +8,8 @@
     1500,
     1500
   ],
-  "content_hash": "b522792b6e8ecb9d6be685cf7bb506d5908e99d053f64929dde01db19666e9fc",
-  "source_hash": "8f85ae7c590a71edce25eabbe29fe4cff09ed55f82eed071b592d23b76fc8114",
+  "content_hash": "1f1bb637215b37584c4c62b045f0544c1cac64c079433bf5c727868f48e48696",
+  "source_hash": "09e725d9dd0c6ed4db325c3292972b236b58d98f14b02b33b6cefa02bb8b372c",
   "sources": [
     "res://modes/war/equipment/motorbike.tscn",
     "res://modes/war/library/favela_antena_parabolica.tscn",
@@ -19,6 +19,7 @@
     "res://modes/war/library/favela_barricada_pneus.tscn",
     "res://modes/war/library/favela_caixa_dagua.tscn",
     "res://modes/war/library/favela_caixa_eletrica.tscn",
+    "res://modes/war/library/favela_caixa_fibra_optica.tscn",
     "res://modes/war/library/favela_canaleta_drenagem.tscn",
     "res://modes/war/library/favela_carro_compacto.tscn",
     "res://modes/war/library/favela_casa_laje.tscn",
@@ -30,10 +31,12 @@
     "res://modes/war/library/favela_kit_obra.tscn",
     "res://modes/war/library/favela_laje_domestica.tscn",
     "res://modes/war/library/favela_laje_obra.tscn",
+    "res://modes/war/library/favela_lixeira_rua.tscn",
     "res://modes/war/library/favela_lixo_calcada.tscn",
     "res://modes/war/library/favela_moto_estacionada.tscn",
     "res://modes/war/library/favela_muro_contencao.tscn",
     "res://modes/war/library/favela_nevoa_encosta.tscn",
+    "res://modes/war/library/favela_pedras_entulho.tscn",
     "res://modes/war/library/favela_pixacao.tscn",
     "res://modes/war/library/favela_porta_entrada.tscn",
     "res://modes/war/library/favela_portao_grade.tscn",
@@ -58,6 +61,7 @@
     "res://modes/war/scripts/favela_street_space.gd",
     "res://modes/war/scripts/favela_uniform.gd",
     "res://modes/war/scripts/operation.gd",
+    "res://modes/war/scripts/prefab_factory.gd",
     "res://modes/war/scripts/rules.gd",
     "res://modes/war/scripts/vehicles.gd"
   ],

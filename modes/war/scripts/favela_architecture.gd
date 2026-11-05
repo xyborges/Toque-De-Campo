@@ -25,11 +25,15 @@ const MODULES := {
 	"favela_portao_grade": preload("res://modes/war/library/favela_portao_grade.tscn"),
 	"favela_tanque_lavanderia": preload("res://modes/war/library/favela_tanque_lavanderia.tscn"),
 	"favela_barraca_rua": preload("res://modes/war/library/favela_barraca_rua.tscn"),
+	"favela_lixeira_rua": preload("res://modes/war/library/favela_lixeira_rua.tscn"),
+	"favela_pedras_entulho": preload("res://modes/war/library/favela_pedras_entulho.tscn"),
+	"favela_caixa_fibra_optica": preload("res://modes/war/library/favela_caixa_fibra_optica.tscn"),
 }
 const EDGE_MODULE_IDS := [
 	"favela_canaleta_drenagem","favela_muro_contencao","favela_corrimao_beco",
 	"favela_tubulacao_externa","favela_antena_parabolica","favela_portao_grade",
-	"favela_tanque_lavanderia","favela_barraca_rua"
+	"favela_tanque_lavanderia","favela_barraca_rua",
+	"favela_lixeira_rua","favela_pedras_entulho","favela_caixa_fibra_optica"
 ]
 static var modules: Dictionary={}
 
@@ -157,7 +161,7 @@ static func place(kit: EnvironmentKit,id: String,pose: Transform3D,solid:=false)
 	var module: Dictionary=modules[id]
 	# Edge infrastructure repeats across the whole 1.5 km map. Larger sectors
 	# reduce MultiMesh batch count while its short LOD ranges retain local culling.
-	var sector_size:=160.0 if id in EDGE_MODULE_IDS else (85.0 if id=="puxadinho_chapa" else 48.0)
+	var sector_size:=160.0 if id in EDGE_MODULE_IDS else (100.0 if id=="carro_compacto" else (85.0 if id=="puxadinho_chapa" else 48.0))
 	for part: Dictionary in module.parts:
 		kit._instance(part.mesh,part.material,pose*part.pose,false,null,float(part.distance),
 			{"shadows":false,"optional":not solid,"sector":sector_size})
