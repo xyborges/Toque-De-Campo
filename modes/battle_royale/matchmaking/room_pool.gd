@@ -1,7 +1,7 @@
 extends RefCounted
 class_name BRRoomPool
 const REGISTRY=preload("res://modes/battle_royale/matchmaking/room_registry.gd")
-const PROTOCOL:=9
+const PROTOCOL:=10
 const CAPACITY:=12
 const MIN_PORT:=3020
 const MAX_PORT:=3035

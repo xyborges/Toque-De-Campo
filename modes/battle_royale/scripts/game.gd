@@ -2,7 +2,7 @@ extends "res://scripts/main.gd"
 class_name BattleRoyaleGame
 
 signal closed
-const BR_PROTOCOL:=9
+const BR_PROTOCOL:=10
 const BR_PORT:=3016
 const BR_CAPACITY:=40
 const HUMAN_CAPACITY:=12
