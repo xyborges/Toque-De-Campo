@@ -264,8 +264,7 @@ func preferred_spawn(id: int) -> String:
 	if team not in [0,1]: return "base"
 	var slot:=int(record.slot)
 	if slot<2 and is_instance_valid(game.vehicle_system):
-		var kind: String=("guarani" if team==0 else "bmp2") if slot==0 else ("abrams" if team==0 else "t90")
-		var vehicle:=game.vehicle_system.vehicles.get("v_"+kind) as WarVehicle
+		var vehicle:=_assigned_armor(team,slot)
 		if is_instance_valid(vehicle) and not vehicle.destroyed and vehicle.driver<=0 and vehicle.global_position.distance_to(WarRules.BASES[team])<125.:
 			return "base"
 	var focus_key:=str(record.get("objective","C"))
@@ -762,23 +761,32 @@ func _friendly_lane(actor: WarPlayer,point: Vector3,radius:=.8) -> bool:
 		if nearest.distance_to(centre)<radius: return false
 	return true
 
+func _assigned_armor(team: int,slot: int) -> WarVehicle:
+	var vehicle_id: String
+	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+		if team!=0:return null
+		vehicle_id="v_guarani_"+str(slot%2)
+	else:
+		var kind: String=("guarani" if team==0 else "bmp2") if slot!=1 else ("abrams" if team==0 else "t90")
+		vehicle_id="v_"+kind
+	return game.vehicle_system.vehicles.get(vehicle_id) as WarVehicle
+
 func _board(actor: WarPlayer,record: Dictionary) -> bool:
 	var slot:=int(record.slot)
 	if record.get("boarded_once",false): return false
 	var human:=game.local_player as WarPlayer
 	# Leave the human's two vehicles untouched during initial preparation.
-	if WarRules.CURRENT_OPERATION!=WarOperation.AFGHAN and is_instance_valid(human) and actor.war_team==human.war_team and game.war_clock<35 and human.vehicle_id.is_empty() and human.position.distance_to(WarRules.BASES[human.war_team])<85:
+	var favela:=WarRules.CURRENT_OPERATION==WarOperation.FAVELA
+	if not favela and WarRules.CURRENT_OPERATION!=WarOperation.AFGHAN and is_instance_valid(human) and actor.war_team==human.war_team and game.war_clock<35 and human.vehicle_id.is_empty() and human.position.distance_to(WarRules.BASES[human.war_team])<85:
 		record.direction=Vector3.ZERO;return true
 	var vehicle: WarVehicle
-	if slot<=3:
-		var kind: String=("guarani" if actor.war_team==0 else "bmp2") if slot!=1 else ("abrams" if actor.war_team==0 else "t90")
-		vehicle=game.vehicle_system.vehicles.get("v_"+kind) as WarVehicle
+	if slot<=3 and (not favela or actor.war_team==0):
+		vehicle=_assigned_armor(actor.war_team,slot)
 	else:
 		vehicle=_nearby_transport(actor,record)
 	if not is_instance_valid(vehicle) or vehicle.destroyed: return false
-	# Keep the tank available to a player at the start of an Afghan match.
-	# Unlike the old rule, this does not immobilize every infantry bot.
-	if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and slot==1 and game.war_clock<65.:
+	# Leave one heavy vehicle available without holding infantry in place.
+	if (favela or WarRules.CURRENT_OPERATION==WarOperation.AFGHAN) and slot==1 and not bool(vehicle.spec.get("transport",false)) and game.war_clock<65.:
 		for human_id in game.members:
 			var member: Dictionary=game.members[human_id]
 			if bool(member.get("bot",false)) or int(member.get("team",-1))!=actor.war_team: continue
