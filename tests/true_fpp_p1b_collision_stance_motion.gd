@@ -213,6 +213,12 @@ func run() -> void:
 			forbidden[field]=false if field in ["grounded","legs_intact"] else .2
 			if not bool(Solver.solve(bind,forbidden).get("supported",true)):
 				rejected+=1
+		var airborne_run: Dictionary=invalid_motion.duplicate(true)
+		airborne_run.moving=0.
+		airborne_run.sprint=.25
+		airborne_run.grounded=false
+		if not bool(Solver.solve(bind,airborne_run).get("supported",true)):
+			rejected+=1
 		var soft_aim: Dictionary=invalid_motion.duplicate(true)
 		soft_aim.aiming=true
 		if bool(Solver.solve(bind,soft_aim).get("supported",false)):
@@ -229,7 +235,7 @@ func run() -> void:
 			"notes":notable,"pass":ok}
 		summary.append(row)
 		print("P1B_PRONE_WEAPON ",JSON.stringify(row))
-	passed=passed and evaluated==25 and movement_evaluated==60 and transitions_evaluated==60 and rejected==15 and soft_supported==5
+	passed=passed and evaluated==25 and movement_evaluated==60 and transitions_evaluated==60 and rejected==20 and soft_supported==5
 	print("P1B_PRONE_RESULT ",JSON.stringify({"pass":passed,"cases":evaluated,"motion_cases":movement_evaluated,"transition_cases":transitions_evaluated,"invalid_motion_rejected":rejected,"soft_aim_supported":soft_supported,"weapons":WEAPONS.size()}))
 	game.queue_free()
 	await process_frame

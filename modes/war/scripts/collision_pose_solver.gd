@@ -112,7 +112,9 @@ static func supported(state: Dictionary) -> bool:
 	var valid_posture: bool=c>=0. and c<=1. and p>=0. and p<=1.
 	var moving: float=float(state.get("moving",0.))
 	var sprint: float=float(state.get("sprint",0.))
-	var walking: bool=moving>=0. and moving<=1. and sprint>=0. and sprint<=1. and (moving<.00001 or bool(state.get("grounded",false)))
+	# The run blend decays slower than movement. While still in the air,
+	# either weight keeps the legacy compact jump pose active.
+	var walking: bool=moving>=0. and moving<=1. and sprint>=0. and sprint<=1. and ((moving==0. and sprint==0.) or bool(state.get("grounded",false)))
 	# During standing idle, nonzero stale velocity drives the legacy clock
 	# gait. Do not silently approximate it with a stationary limb transform.
 	var no_stale_gait: bool=moving>.00001 or float(state.get("velocity_ground_speed",0.))<.001
