@@ -141,10 +141,10 @@ func populate(human_team: int) -> void:
 			actor.set_meta("war_bot",true)
 			var role:=BOT_ROLES[slot%BOT_ROLES.size()]
 			game.members[id]={"team":team,"role":role,"deployed":false,"vehicle":"","charges":3,"ready_at":0.,"shield":0.,"gadget":WarRules.launcher_for_team(team),"pending":{},"last_gadget":-100.,"bot":true,"bot_lane":slot}
-			# Offline combat stays on the three central frontline objectives.
-			# Sending bots to distant port objectives leaves a small offline match
-			# spread across the whole 3.5 km map and makes firefights too rare.
-			var available: Array=["A","B","C"]
+			# Large legacy operations concentrate offline combat on the central
+			# front. Favela is compact: all five domination zones are ordinary
+			# combat objectives and must receive squads from the opening push.
+			var available: Array=["A","B","C","D","E"] if WarRules.CURRENT_OPERATION==WarOperation.FAVELA else ["A","B","C"]
 			if team==1: available.reverse()
 			var objective:=str(available[slot%available.size()])
 			var group:=str(team)+":"+str(slot/3)
@@ -332,7 +332,9 @@ func _physics_process(delta: float) -> void:
 		return
 	var ids:=bot_ids
 	if game.war_clock>=strategy_at:
-		strategy_at=game.war_clock+3.;_assign_objectives()
+		# A point can change from secure to contested quickly in the dense Favela.
+		# This remains squad-level work, not a per-bot expensive query.
+		strategy_at=game.war_clock+(1.5 if WarRules.CURRENT_OPERATION==WarOperation.FAVELA else 3.);_assign_objectives()
 	if game.war_clock>=spatial_at:
 		spatial_at=game.war_clock+.2;_index_actors()
 	think_accumulator=minf(.05,think_accumulator+delta)
@@ -398,14 +400,16 @@ func _think(id: int) -> void:
 	if is_instance_valid(target): diagnostics.target_acquisitions=int(diagnostics.target_acquisitions)+1
 	if bool(record.line_clear): diagnostics.clear_shot_ticks=int(diagnostics.clear_shot_ticks)+1
 	var data: Dictionary=WarRules.OBJECTIVES[str(record.objective)]
+	var defending_all:=bool(record.get("defend_all",false))
 	var phase:=float(id%7)*TAU/7.+floorf(game.war_clock/12.)*.8
 	var formation:=_formation(actor,record)
 	if actor.war_class=="marksman":
-		# Marksmen hold an offset firing lane instead of entering the capture
-		# circle with the assault pair.  Their sniper remains relevant while the
-		# squad advances and they still move when the front changes objective.
-		formation+=Vector3(-34. if actor.war_team==0 else 34.,0,(id%3-1)*13.)
-	var goal:=WarTerrain.point(data.position.x+cos(phase)*9+formation.x,data.position.z+sin(phase)*9+formation.z)
+		# Under total control marksmen tighten their perimeter instead of
+		# extending the front toward the enemy base.
+		var marksman_offset:=16. if defending_all else 34.
+		formation+=Vector3(-marksman_offset if actor.war_team==0 else marksman_offset,0,(id%3-1)*(7. if defending_all else 13.))
+	var orbit:=6. if defending_all else 9.
+	var goal:=WarTerrain.point(data.position.x+cos(phase)*orbit+formation.x,data.position.z+sin(phase)*orbit+formation.z)
 	if favela and not target and actor.war_class=="marksman":
 		goal=transit.rooftop_overwatch(actor.global_position,goal)
 	record.goal=goal
@@ -413,15 +417,27 @@ func _think(id: int) -> void:
 	diagnostics.routes=int(diagnostics.routes)+1
 	if target:
 		_look_at(actor,target)
-		if not bool(record.line_clear):
-			# A wall should make a bot maneuver toward a firing lane, not forget
-			# the enemy and idle on its current objective.
-			if favela:direction=_route_direction(actor,target.global_position,record)
+		var objective_gap:=actor.global_position.distance_to(Vector3(data.position))
+		var objective_owned:=int(game.objective_states[str(record.objective)].owner)==actor.war_team
+		if defending_all and objective_gap<=WarRules.CAPTURE_RADIUS*.82:
+			# We own the entire map: fire from the defended sector, do not
+			# chase a visible player out toward the enemy spawn.
+			direction=Vector3.ZERO
+			if favela:record.roof_follow=false
+		elif not bool(record.line_clear):
+			# While attacking, a wall should make the bot maneuver toward a
+			# firing lane. Full-control defenders outside their post return to it.
+			if defending_all:direction=_route_direction(actor,goal,record)
+			elif favela:direction=_route_direction(actor,target.global_position,record)
 			else:direction=navigation.direction_to(actor,target.global_position,game.war_clock)
 		elif actor.global_position.distance_to(target.global_position)<(110 if actor.war_class=="marksman" else 65):
 			var cover:=_cover_goal(actor,target,record)
-			if cover.is_finite() and actor.global_position.distance_squared_to(cover)>1.:
+			if cover.is_finite() and actor.global_position.distance_squared_to(cover)>1. and (not defending_all or cover.distance_to(Vector3(data.position))<=WarRules.CAPTURE_RADIUS):
 				direction=_route_direction(actor,cover,record)
+			elif not defending_all and not objective_owned and objective_gap>WarRules.CAPTURE_RADIUS*.72:
+				# No useful cover must not turn an assault into a permanent
+				# firing-line pause. Keep pressure on the domination zone.
+				direction=_route_direction(actor,goal,record)
 			else:
 				direction=Vector3.ZERO
 				if favela:record.roof_follow=false
@@ -717,8 +733,17 @@ func _near_actors(at: Vector3) -> Array:
 		for x in range(-1,2): result.append_array(spatial.get(centre+Vector2i(x,z),[]))
 	return result
 
+func _team_controls_all(team: int) -> bool:
+	var active:=0
+	for key: String in WarRules.OBJECTIVES:
+		if not bool(WarRules.OBJECTIVES[key].get("active",false)): continue
+		active+=1
+		if int(game.objective_states[key].owner)!=team: return false
+	return active>0
+
 func _assign_objectives() -> void:
 	var assignments: Dictionary={}
+	var full_control:=[_team_controls_all(0),_team_controls_all(1)]
 	for squad: Dictionary in squads.values():
 		var centre:=Vector3.ZERO;var alive:=0
 		for id in squad.members:
@@ -727,28 +752,44 @@ func _assign_objectives() -> void:
 		if alive==0: continue
 		centre/=alive
 		var team:=int(squad.team)
+		var defending_all:=bool(full_control[team])
 		var best: String=squad.objective;var best_score:=-INF
 		for key: String in WarRules.OBJECTIVES:
 			var objective: Dictionary=WarRules.OBJECTIVES[key]
 			if not bool(objective.get("active",false)): continue
-			# Keep the majority of infantry in the main front, without ignoring
-			# urgent nearby threats to another objective.
-			if key in ["D","E"] and int(bots[squad.members[0]].slot)>=3: continue
+			# D/E are ordinary domination zones in the compact Favela. Keep
+			# the old flank limiter only on the large legacy operations.
+			if not defending_all and WarRules.CURRENT_OPERATION!=WarOperation.FAVELA and key in ["D","E"] and int(bots[squad.members[0]].slot)>=3: continue
 			var state: Dictionary=game.objective_states[key]
 			var position: Vector3=objective.position
 			var allies:=int(state.count[team]);var enemies:=int(state.count[1-team])
 			var owned:=int(state.owner)==team
-			var score: float=(210. if not owned else -30.)-centre.distance_to(position)*.12
-			if owned and enemies>allies: score+=360.
-			elif owned and enemies>0: score+=180.
-			elif not owned and enemies>0: score+=90.
-			if int(state.get("side",-1))==1-team and owned: score+=170.
-			if not owned and allies>enemies: score+=35.
-			score-=float(assignments.get(str(team)+key,0))*112.
-			if key==squad.objective: score+=32.
+			var assigned:=float(assignments.get(str(team)+key,0))
+			var score: float
+			if defending_all:
+				# Once every point is ours, stop pushing toward the enemy base.
+				# Spread squads across the five sectors and reinforce contact.
+				score=240.-centre.distance_to(position)*.10-assigned*165.
+				if enemies>allies: score+=480.
+				elif enemies>0: score+=260.
+				if bool(state.contested): score+=220.
+				if key==squad.objective: score+=28.
+			else:
+				score=(210. if not owned else -30.)-centre.distance_to(position)*.12
+				if owned and enemies>allies: score+=360.
+				elif owned and enemies>0: score+=180.
+				elif not owned and enemies>0: score+=90.
+				if int(state.get("side",-1))==1-team and owned: score+=170.
+				if not owned and allies>enemies: score+=35.
+				score-=assigned*112.
+				if key==squad.objective: score+=32.
 			if score>best_score: best_score=score;best=key
-		squad.objective=best;assignments[str(team)+best]=int(assignments.get(str(team)+best,0))+1
-		for id in squad.members: bots[id].objective=best
+		squad.objective=best
+		squad.defend_all=defending_all
+		assignments[str(team)+best]=int(assignments.get(str(team)+best,0))+1
+		for id in squad.members:
+			bots[id].objective=best
+			bots[id].defend_all=defending_all
 
 func _formation(actor: WarPlayer,record: Dictionary) -> Vector3:
 	var members: Array=squads[record.squad].members
@@ -795,6 +836,13 @@ func _roof_direction(actor: WarPlayer,goal: Vector3,record: Dictionary) -> Vecto
 	return Vector3.INF
 
 func _ground_direction(actor: WarPlayer,goal: Vector3,record: Dictionary) -> Vector3:
+	var goal_distance_sq:=actor.global_position.distance_squared_to(goal)
+	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA and goal_distance_sq<150.*150.:
+		# The 3 m Favela grid covers all five domination zones. Use it for the
+		# dense last mile instead of leaving the road node on a direct line
+		# through walls/buildings around A, B and E.
+		var local:=navigation.direction_to(actor,goal,game.war_clock)
+		if local.length_squared()>.01 or goal_distance_sq<4.: return local
 	if absf(actor.position.x)<340 and actor.position.z>-245 and actor.position.z<245 and absf(goal.x)<340 and goal.z>-245 and goal.z<245:
 		return navigation.direction_to(actor,goal,game.war_clock)
 	if record.get("transit_goal",Vector3.INF).distance_to(goal)>25 or record.get("foot_path",[]).is_empty():
