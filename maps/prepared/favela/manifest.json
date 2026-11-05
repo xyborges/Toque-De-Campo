@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 9,
+  "version": 10,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,8 +8,8 @@
     1500,
     1500
   ],
-  "content_hash": "1f1bb637215b37584c4c62b045f0544c1cac64c079433bf5c727868f48e48696",
-  "source_hash": "09e725d9dd0c6ed4db325c3292972b236b58d98f14b02b33b6cefa02bb8b372c",
+  "content_hash": "3f3a369a5d6ac57e380f844399d290917a40296916c90537450069a2cf5ba6f1",
+  "source_hash": "437ded4ac6f3dc64bc06f4e042a52945e7fa9891b3dee1b305393c5e015d6afc",
   "sources": [
     "res://modes/war/equipment/motorbike.tscn",
     "res://modes/war/library/favela_antena_parabolica.tscn",
