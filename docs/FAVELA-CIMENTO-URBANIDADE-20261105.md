@@ -1,8 +1,8 @@
 # Favela — cimento urbano, veículos estacionados e infraestrutura aérea
 
-**Data:** 05/11/2026  
-**Branch de trabalho:** `ia/favela-cimento-urbanidade`  
-**Base:** `main`, commit `10d83c8` (1.13.4/build 91 já publicada)  
+**Data:** 05/11/2026
+**Branch de trabalho:** `ia/favela-cimento-urbanidade`
+**Base:** `main`, commit `10d83c8` (1.13.4/build 91 já publicada)
 **Estado:** mudanças de desenvolvimento, sem merge na `main` ou publicação.
 
 ## Objetivo visual
