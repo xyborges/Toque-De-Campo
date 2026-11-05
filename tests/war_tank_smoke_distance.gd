@@ -76,4 +76,12 @@ func _run_tests() -> void:
     fx._wreck_plume_step(75.0, camera)
     verify(pool.visible_instance_count == 0 and fx.wreck_plumes.is_empty(), "plumes expire cleanly")
     print("PASS war_tank_smoke_distance: ", passed, " checks; 240-frame CPU loop ", snappedf(elapsed_ms, .01), " ms")
-    quit()
+    # Release test-only scene resources before the headless renderer shuts down.
+    root.remove_child(visible_mesh)
+    visible_mesh.free()
+    root.remove_child(camera)
+    camera.free()
+    fx.wreck_plume_pool = null
+    fx.free()
+    await process_frame
+    quit(0)

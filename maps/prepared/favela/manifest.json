@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 4,
+  "version": 5,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,8 +8,8 @@
     1500,
     1500
   ],
-  "content_hash": "715a13886bde9ae57aa944eb68ac912a6c9dd64956c41e193779cb15cde955f0",
-  "source_hash": "7c32c4484886b45f9b02b2ca3e43968e862d5aeb8201ca5b3da2592157c09842",
+  "content_hash": "d72fb1f59d1317bac5f5343cfb14e8064f95f9194cf496b5d3fad10160c45e9f",
+  "source_hash": "97d85561811346eef05765e9dd006b0140e1d3cec47de2b960f7a32767f5afc0",
   "sources": [
     "res://modes/war/scripts/favela_map.gd",
     "res://modes/war/scripts/favela_uniform.gd",
