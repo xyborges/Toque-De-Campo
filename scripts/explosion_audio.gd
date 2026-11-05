@@ -136,7 +136,7 @@ func _play_layer(voice: AudioStreamPlayer3D,event_id: String,point: Vector3,kind
 		ray.hit_from_inside=false
 		var hit:=get_world_3d().direct_space_state.intersect_ray(ray)
 		if not hit.is_empty() and Vector3(hit.position).distance_to(point)>contact_allowance(kind): voice.bus=bus_name+"Blocked"
-	var volume:=float(settings.db)+near_presence_db(kind,distance)+linear_to_db(maxf(.001,weight))
+	var volume:=float(settings.db)+near_presence_db(kind,distance)+GameSoundPropagation.distant_gain_db(distance)+linear_to_db(maxf(.001,weight))
 	voice.volume_db=volume
 	voice.unit_size=float(settings.unit)
 	voice.max_distance=float(settings.range)

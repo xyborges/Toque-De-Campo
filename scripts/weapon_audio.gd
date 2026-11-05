@@ -64,7 +64,7 @@ static func acoustic_bus(distance_to: float,blocked: bool,enclosed: bool,rear:=f
 static func apply_acoustics(voice: AudioStreamPlayer3D,distance_to: float,blocked: bool,enclosed: bool,smoothing:=1.0) -> void:
 	voice.bus=acoustic_bus(distance_to,blocked,enclosed,source_behind(voice.get_viewport(),voice.global_position))
 	var edge:=1.0-smoothstep(voice.max_distance*.78,voice.max_distance,distance_to)
-	var goal:=float(voice.get_meta("base_db",-12))-(8.0 if blocked else 0.0)+linear_to_db(maxf(.001,edge))
+	var goal:=float(voice.get_meta("base_db",-12))+GameSoundPropagation.distant_gain_db(distance_to)-(8.0 if blocked else 0.0)+linear_to_db(maxf(.001,edge))
 	voice.volume_db=lerpf(voice.volume_db,goal,clampf(smoothing,0,1))
 
 static func _bus(label: String,parent: String) -> int:
