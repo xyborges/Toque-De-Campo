@@ -134,3 +134,75 @@ estética final ou lançar o mapa.**
    também cliente + bots + blindados durante 10–20 minutos com combate.
 6. Somente após encerrar os bloqueios fazer merge revisado na `main`.
    **Não publicar a atualização automaticamente.**
+
+
+## Verificação final solicitada — 11:22
+
+### 1. A correção viária resolve o defeito físico, mas não encerra a composição visual
+
+O estado atual não commitado de `ia/favela-guerra` substitui as malhas de rua
+sobrepostas por uma máscara única de pavimento (`favela_street_space.gd`) e
+reposiciona/descarta mobiliário que tocaria a faixa de circulação.
+
+A auditoria física repetida no estado atual continua em **0 obstáculos em
+238.926 amostras** e **0 superfícies quase coplanares nos 44 cruzamentos**.
+Portanto, a sobreposição que motivou a captura original está tecnicamente
+corrigida no protótipo atual.
+
+Entretanto, o cinza lateral ainda tem uma causa estrutural no material:
+
+- `_ground_color()` calcula `urban` numa mancha extensa e mistura `soil`
+  com `paving` cinza;
+- o novo `TERRAIN_SHADER`, fora da máscara viária, usa
+  `texture(concrete_tex, UV).rgb * COLOR.rgb`;
+- portanto o terreno urbano que **não é rua** continua recebendo aparência
+  cinza/concretada em amplas áreas.
+
+As capturas equivalentes confirmam a diferença: os objetos e pavimentos
+sobrepostos foram limpos, mas trechos como **cobertura-na-pista** e parte dos
+cruzamentos continuam com margens largas, planas e pouco ocupadas. Isso falha
+o requisito artístico de densidade extrema mesmo quando a física da via passa.
+
+**Conclusão visual:** não aprovar a Favela como final apenas com o patch atual.
+É necessário separar visualmente solo/encosta/pátio das ruas e, onde houver
+espaço seguro, compor essas bordas com arquitetura, contenção, escadas,
+drenagem e acessos. A correção não deve ser uma simples troca de cor.
+
+### 2. Perfil de desempenho: não é gargalo primário da GTX 1650
+
+Foi executado um novo perfil em **1920×1080, preset Alto, escala 100%,
+28 bots**, com amostragem de `nvidia-smi` durante o percurso:
+
+- **66,6 FPS médios** em 30 s;
+- P50 **15,0 ms**;
+- P99 de quadro **34,5 ms**;
+- P99 de física **21,3 ms**;
+- **892 draw calls medianos**, pico 1.825;
+- uso médio da GTX 1650: **19,6%**;
+- pico de GPU: **54%**;
+- VRAM máxima observada: **1.216 MiB**.
+
+Com os ensaios anteriores, o mesmo mapa em Alta variou entre aproximadamente
+**57 e 66,6 FPS médios**. A média isolada pode cruzar 60 FPS, mas os P99
+continuam acima do orçamento de 16,67 ms.
+
+Como a GPU fica muito abaixo de saturação enquanto a física excede o frame
+budget em picos e o cenário mantém centenas de draw calls, o gargalo principal
+é **CPU/simulação/submissão de render**, não fill-rate da GTX 1650.
+Reduzir somente resolução ou textura não ataca a causa principal.
+
+**Gate de desempenho:** ainda não considerar 60 FPS estáveis aprovados.
+Priorizar redução de custo de simulação dos 28 bots, picos físicos e batching/
+culling das ~900 chamadas medianas antes de sacrificar a densidade visual.
+
+### 3. Estado de integração
+
+No momento desta verificação, a sessão `chat-favela-sobreposicoes`
+(`20261105-090504-3a9ef229`) continua **ATIVA** e mantém reserva sobre
+`favela_map.gd`, `favela_street_art.gd`, `favela_street_space.gd`,
+manifesto e QA de ruas. As mudanças permanecem não commitadas em
+`ia/favela-guerra`.
+
+Esta revisão não tomou posse desses arquivos nem alterou a branch principal.
+A `main` continua com uma modificação alheia em
+`distribution/release-history.json`, preservada sem intervenção.
