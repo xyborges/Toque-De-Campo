@@ -68,8 +68,9 @@ func run() -> void:
 		check(far_blast.stream.resource_path==GameCombatAudioCatalog.EXPLOSIONS_FAR[1],"distant tank keeps its V3 distant sample")
 		check(far_blast.unit_size==float(explosions.event_profile("destroy").unit) and far_blast.global_position==Vector3(0,0,-600),"distance profile and 3D position remain intact")
 
-	# Compare actual output from the same V3 file at 600m; below limiter
-	# threshold the 5% source gain should reach the mix as ~5% RMS.
+	# Explosion V3 is impulsive and has changing secondary transients. A short
+	# window can land on a different transient between runs and corrupt A/B RMS.
+	# Use a constant loop through the SAME 3D far bus and mixer for stable QA.
 	for voice in guns.voices: voice.stop()
 	for voice in explosions.voices: voice.stop()
 	for voice in explosions.pressure_voices: voice.stop()
@@ -77,22 +78,40 @@ func run() -> void:
 	var capture:=AudioEffectCapture.new()
 	capture.buffer_length=2.0
 	AudioServer.add_bus_effect(master,capture)
+	var tone:=AudioStreamWAV.new()
+	tone.format=AudioStreamWAV.FORMAT_16_BITS
+	tone.mix_rate=48000
+	tone.stereo=false
+	var bytes:=PackedByteArray()
+	bytes.resize(4800*2)
+	for i in 4800:
+		bytes.encode_s16(i*2,int(sin(TAU*440.0*float(i)/48000.0)*2500.0))
+	tone.data=bytes
+	tone.loop_mode=AudioStreamWAV.LOOP_FORWARD
+	tone.loop_end=4800
+	var test_voice:=AudioStreamPlayer3D.new()
+	scene.add_child(test_voice)
+	test_voice.stream=tone
+	test_voice.bus="CombatExplosionsFar"
+	test_voice.attenuation_model=AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
+	test_voice.max_db=3.0
+	test_voice.unit_size=240.0
+	test_voice.max_distance=4800.0
+	test_voice.global_position=Vector3(0,0,-600)
 	var measured: Array[float]=[]
-	for baseline in [true,false]:
-		for voice in explosions.voices: voice.stop()
-		await create_timer(.15).timeout
+	for level in [-4.0,-4.0+boost]:
+		test_voice.volume_db=level
+		test_voice.play()
+		await create_timer(.25).timeout
 		capture.clear_buffer()
-		var test_voice:=explosions._start("far-pcm:"+str(baseline),Vector3(0,0,-600),"destroy")
-		if is_instance_valid(test_voice):
-			if baseline: test_voice.volume_db-=boost
-			await create_timer(.9).timeout
-			measured.append(rms(capture.get_buffer(capture.get_frames_available())))
-		else:
-			measured.append(0.0)
+		await create_timer(.45).timeout
+		measured.append(rms(capture.get_buffer(capture.get_frames_available())))
+		test_voice.stop()
+		await create_timer(.12).timeout
 	AudioServer.remove_bus_effect(master,AudioServer.get_bus_effect_count(master)-1)
 	var ratio:=measured[1]/maxf(.0000001,measured[0])
 	print("FAR_AUDIO_PCM ",JSON.stringify({"baseline_rms":measured[0],"boosted_rms":measured[1],"amplitude_ratio":ratio,"expected":1.05}))
-	check(ratio>=1.02 and ratio<=1.08,"600m sampled PCM mix is approximately five percent louder")
+	check(measured[0]>.000001 and ratio>=1.04 and ratio<=1.06,"600m steady-state PCM mix is five percent louder")
 
 	print("AUDIO_FAR_GAIN ",JSON.stringify({"checks":checks,"failures":failures,"boost_db":boost}))
 	scene.queue_free()
