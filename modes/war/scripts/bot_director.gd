@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 class_name WarBotDirector
 
 # The authority owns this director in offline operations and online bot-filled
@@ -432,12 +432,14 @@ func _think(id: int) -> void:
 			else:direction=navigation.direction_to(actor,target.global_position,game.war_clock)
 		elif actor.global_position.distance_to(target.global_position)<(110 if actor.war_class=="marksman" else 65):
 			var cover:=_cover_goal(actor,target,record)
-			if cover.is_finite() and actor.global_position.distance_squared_to(cover)>1. and (not defending_all or cover.distance_to(Vector3(data.position))<=WarRules.CAPTURE_RADIUS):
+			var assaulting:=not defending_all and not objective_owned and objective_gap>WarRules.CAPTURE_RADIUS*.72
+			var cover_advances:=cover.is_finite() and cover.distance_to(Vector3(data.position))<objective_gap-2.5
+			if assaulting:
+				# Dense urban cover is useful only when it also advances the assault.
+				# Otherwise new street props can trap bots on a firing line beside the flag.
+				direction=_route_direction(actor,cover if cover_advances and actor.global_position.distance_squared_to(cover)>1. else goal,record)
+			elif cover.is_finite() and actor.global_position.distance_squared_to(cover)>1. and (not defending_all or cover.distance_to(Vector3(data.position))<=WarRules.CAPTURE_RADIUS):
 				direction=_route_direction(actor,cover,record)
-			elif not defending_all and not objective_owned and objective_gap>WarRules.CAPTURE_RADIUS*.72:
-				# No useful cover must not turn an assault into a permanent
-				# firing-line pause. Keep pressure on the domination zone.
-				direction=_route_direction(actor,goal,record)
 			else:
 				direction=Vector3.ZERO
 				if favela:record.roof_follow=false
