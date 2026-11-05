@@ -44,7 +44,7 @@ const MODES := {
 	"desert":["PVP DESERTO","DOMINAÇÃO · CASINHA","Cada jogador por si. Capture a casa, acumule pontos e reponha munição no interior.","2–6 JOGADORES · ONLINE"],
 	"war":["GUERRA","LINHA DE FRENTE","Conquista, trincheiras, classes e blindados. Treine sozinho com bots ou dispute uma operação online.","OFFLINE COM BOTS · ONLINE 6v6"],
 	"war_afghan":["GUERRA · AFEGÃO","DESERTO AFEGÃO","A mesma Conquista do modo Guerra no vale afegão. EUA contra Mujahidins, com bases, classes, blindados e bots.","OFFLINE COM BOTS · ONLINE 6v6"],
-	"war_favela":["GUERRA · FAVELA","FAVELA","Conquista urbana: polícia contra bandidos, lajes, becos, motos e Guaranis. Mapa de 1,5 km.","OFFLINE COM BOTS"],
+	"war_favela":["GUERRA · FAVELA","FAVELA","Conquista urbana: polícia contra bandidos, lajes, becos, motos e Guaranis. Mapa de 1,5 km.","OFFLINE COM BOTS · ONLINE 6v6"],
 	"br":["BATTLE ROYALE","DESERTO AFEGÃO","Explore os vilarejos, encontre equipamento e sobreviva ao fechamento da zona.","INDIVIDUAL · 2 km × 2 km"]}
 func _ready() -> void:
 	name = "MainMenu"
@@ -212,17 +212,14 @@ func _select_mode(id: String) -> void:
 	hero_detail.text = MODES[id][2]
 	play_button.text = "INICIAR TREINO" if id=="office" else ("VER SALAS NAVAIS" if id=="naval" else ("CONECTAR ONLINE" if id in ["war","war_afghan","war_favela"] else "ENTRAR NO PVP"))
 	if id=="br":play_button.text="INICIAR"
-	if id=="war_favela":play_button.text="JOGAR COM BOTS"
 	if id in ["war","war_afghan","war_favela"]:
 		preparation_team.set_item_text(0,"Polícia" if id=="war_favela" else ("EUA" if id=="war_afghan" else "Ucrânia"))
 		preparation_team.set_item_text(1,"Bandidos" if id=="war_favela" else ("Mujahidins" if id=="war_afghan" else "Rússia"))
 	desert_training_button.visible=id=="office"
-	war_offline_button.visible=id in ["war","war_afghan","br"]
+	war_offline_button.visible=id in ["war","war_afghan","war_favela","br"]
 	_configure_preparation()
 func _play() -> void:
-	# The Favela online server is not deployed yet. Keep the launch playable and
-	# avoid connecting to the BR broker, which owns the old shared port 3016.
-	game.launch_from_menu(selected_mode,selected_mode=="war_favela")
+	game.launch_from_menu(selected_mode,false)
 func _build_arsenal() -> void:
 	_page_head("arsenal","COLEÇÃO / INFANTARIA","SEU ARMAMENTO.","Selecione seu equipamento inicial entre as armas adquiridas.")
 	var row := HBoxContainer.new()
