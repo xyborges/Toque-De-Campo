@@ -31,7 +31,7 @@ class ReleasePolicyTests(unittest.TestCase):
                        'archive': 'releases/game-1.6.0-26.zip', 'sha256': 'a' * 64}
         self.metadata = {'schema': 1, 'build': 26, 'version': '1.6.0',
                          'hashes': {name: 'b' * 64 for name in release.BASE_ARTIFACTS |
-                                    {'public/' + self.client['archive'], 'server/toque-war.service'}}}
+                                    {'public/' + self.client['archive'], 'server/toque-war.service', 'server/toque-war-favela.service'}}}
 
     def tearDown(self):
         self.temp_root.stop()
@@ -60,8 +60,10 @@ class ReleasePolicyTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     release.validate_artifacts(metadata, client)
 
-    def test_actual_war_unit_matches_policy(self):
+    def test_actual_war_units_match_policy(self):
         release.validate_war_unit(ROOT / 'distribution/ubuntu/toque-war.service')
+        release.validate_war_afghan_unit(ROOT / 'distribution/ubuntu/toque-war-afghan.service')
+        release.validate_war_favela_unit(ROOT / 'distribution/ubuntu/toque-war-favela.service')
 
     def test_actual_br_unit_and_optional_signed_artifact(self):
         release.validate_br_unit(ROOT / 'distribution/ubuntu/toque-br.service')
@@ -158,6 +160,13 @@ class ReleasePolicyTests(unittest.TestCase):
                 with mock.patch.object(release, 'process_owns_udp', return_value=owns), mock.patch.object(release.time, 'monotonic', side_effect=[0, 0, 2]), mock.patch.object(release.time, 'sleep'):
                     with self.assertRaisesRegex(RuntimeError, 'health failed'):
                         release.services_healthy(['toque-war'], stamp, timeout=1)
+
+    def test_favela_health_requires_dedicated_3017_socket(self):
+        path = self.status('war-favela-status.json')
+        started = path.stat().st_mtime_ns - 1
+        with mock.patch.object(release, 'GAME_DATA', self.root), mock.patch.object(release, 'active', return_value=True), mock.patch.object(release, 'run', return_value=subprocess.CompletedProcess([], 0, '7331\n', '')), mock.patch.object(release, 'process_owns_udp', return_value=True) as udp:
+            release.services_healthy(['toque-war-favela'], started)
+            udp.assert_called_once_with(7331, 3017)
 
     @contextlib.contextmanager
     def activation(self, existing_war=False, enabled=False):
@@ -256,6 +265,30 @@ class ReleasePolicyTests(unittest.TestCase):
             self.assertEqual((app / 'current').read_text(), str(app / 'releases/build-26'))
             self.assertEqual(war.read_text(), 'new-unit')
             self.assertEqual(events[-1], ('systemctl', 'enable', 'toque-war'))
+
+    def test_favela_activation_starts_and_enables_service(self):
+        with self.activation() as (stage, web, app, war, events):
+            favela = war.with_name('toque-war-favela.service')
+            (stage / 'server/toque-war-favela.service').write_text('new-favela-unit')
+            with mock.patch.object(release, 'WAR_FAVELA_UNIT', favela):
+                release.activate(stage, self.client, self.client['archive'], app / 'releases/build-26')
+            self.assertEqual(favela.read_text(), 'new-favela-unit')
+            self.assertIn(('systemctl', 'restart', 'toque-naval', 'toque-pvp', 'toque-war', 'toque-war-favela'), events)
+            self.assertEqual(events[-1], ('systemctl', 'enable', 'toque-war-favela'))
+
+    def test_initial_favela_health_failure_removes_unit_and_rolls_back(self):
+        with self.activation() as (stage, web, app, war, events):
+            favela = war.with_name('toque-war-favela.service')
+            (stage / 'server/toque-war-favela.service').write_text('new-favela-unit')
+            release.services_healthy.side_effect = RuntimeError('favela health failed')
+            previous = release.active.side_effect
+            with mock.patch.object(release, 'WAR_FAVELA_UNIT', favela), mock.patch.object(release, 'active', side_effect=lambda unit: False if unit == 'toque-war-favela' else previous(unit)):
+                with self.assertRaisesRegex(RuntimeError, 'favela health failed'):
+                    release.activate(stage, self.client, self.client['archive'], app / 'releases/build-26')
+            self.assert_old_files(web, app)
+            self.assertFalse(favela.exists())
+            self.assertIn(('systemctl', 'disable', 'toque-war-favela'), events)
+            self.assertEqual([event for event in events if event[:2] == ('systemctl', 'restart')][-1], ('systemctl', 'restart', 'toque-naval', 'toque-pvp'))
 
     def test_br_activation_starts_and_enables_broker(self):
         with self.activation() as (stage, web, app, war, events):
