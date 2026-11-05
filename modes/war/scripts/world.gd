@@ -165,15 +165,23 @@ static func base(k: EnvironmentKit,team: int) -> void:
 static func _afghan_base(k: EnvironmentKit,team: int,centre: Vector3) -> void:
 	var ground:=func(offset: Vector3)->Vector3:return WarTerrain.point(centre.x+offset.x,centre.z+offset.z)
 	for x in [-34.,34.]:
-		for z in [-18.,0.,18.]: EnvironmentProps.sandbags(k,ground.call(Vector3(x,0,z)),7,PI*.5)
+		for z in [-18.,0.,18.]:
+			# The US camp's eastern access road crosses this exact wall
+			# segment. Leave a gate without removing the base perimeter.
+			if team==0 and x==34. and z==0.: continue
+			EnvironmentProps.sandbags(k,ground.call(Vector3(x,0,z)),7,PI*.5)
 	for z in [-29.,29.]:
 		for x in [-18.,0.,18.]: EnvironmentProps.sandbags(k,ground.call(Vector3(x,0,z)),7)
 	EnvironmentProps.canopy(k,ground.call(Vector3(-16,0,-13)),Vector2(12,9),4.0)
-	var container_at: Vector3=ground.call(Vector3(17,0,15))
+	# The Mujahideen mountain access road goes NE through the old
+	# +X/+Z container apron. Keep its collision intact, but park cargo off
+	# the graded lane instead of forcing motorcycles into a corrugated wall.
+	var container_offset:=Vector3(17,0,-15) if team==1 else Vector3(17,0,15)
+	var container_at: Vector3=ground.call(container_offset)
 	if ResourceLoader.exists("res://modes/war/library/container_20ft.tscn"):
 		WarMapContent.instantiate(k.root,"res://modes/war/library/container_20ft.tscn",container_at,k.visuals)
 	else: EnvironmentProps.container(k,container_at,true)
-	EnvironmentProps.generator(k,ground.call(Vector3(13,0,20)))
+	EnvironmentProps.generator(k,ground.call(Vector3(-10,0,18) if team==1 else Vector3(13,0,20)))
 	EnvironmentProps.tower(k,ground.call(Vector3(-24,0,18)),11)
 	var sign_at: Vector3=ground.call(Vector3(0,0,-27))+Vector3.UP*3.
 	k.sign_text("BASE "+WarRules.team_name(team).to_upper()+" / IMPLANTAÇÃO",sign_at,6)
