@@ -906,8 +906,12 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	var traffic:=_traffic_plan(vehicle,record)
 	# A passing maneuver must not take a tank off the engineered mountain road.
 	if follow_road and traffic.has("point"):
-		traffic={"brake":true,"reason":"afghan_road_no_overtake"}
-		record.traffic=traffic
+		# Large hulls stay on the centreline. A bike can pass only when both
+		# local bypass points fit inside the authored road's physical width.
+		var bike_pass:=bool(vehicle.spec.get("transport",false)) and transit.motorcycle_lane_clear(Vector3(traffic.point),float(vehicle.spec.size.x)*.5) and (not traffic.has("after") or transit.motorcycle_lane_clear(Vector3(traffic.after),float(vehicle.spec.size.x)*.5))
+		if not bike_pass:
+			traffic={"brake":true,"reason":"afghan_road_no_overtake"}
+			record.traffic=traffic
 	var next_point: Vector3=traffic.get("point",path[int(record.vehicle_index)])
 	var detour: Vector3=record.get("terrain_detour",Vector3.INF)
 	if detour.is_finite() and game.war_clock<float(record.get("terrain_detour_until",0.)) and vehicle.position.distance_to(detour)>4.:
@@ -1088,12 +1092,12 @@ func _traffic_plan(vehicle: WarVehicle,record: Dictionary) -> Dictionary:
 	if hull_gap<stop_gap:record.traffic={"brake":true,"reason":"vehicle_stopping_distance"};return record.traffic
 	# A wheeled APC needs turning room before it can acquire a parallel lane.
 	# When already too close, wait rather than curling into the lead's rear.
-	if not bool(vehicle.spec.tracked) and nearest_dist<26.:record.traffic={"brake":true,"reason":"vehicle_turning_clearance"};return record.traffic
+	if not bool(vehicle.spec.tracked) and not bool(vehicle.spec.get("transport",false)) and nearest_dist<26.:record.traffic={"brake":true,"reason":"vehicle_turning_clearance"};return record.traffic
 	if nearest.speed>vehicle.speed+.5 and nearest_dist>float(vehicle.spec.size.z)+5.:
 		record.traffic={};return {}
 	# A close vehicle or obstructed side requires stopping; only pass on a
 	# corridor large enough for the hull and with room ahead of the slower one.
-	var gap: float=(float(nearest.spec.size.x)+float(vehicle.spec.size.x))*.5+3.0
+	var gap: float=(float(nearest.spec.size.x)+float(vehicle.spec.size.x))*.5+(1.0 if bool(vehicle.spec.get("transport",false)) else 3.0)
 	var beyond: float=(float(nearest.spec.size.z)+float(vehicle.spec.size.z))*.5+8.0
 	var approach: float=clampf(nearest_dist-(float(nearest.spec.size.z)+float(vehicle.spec.size.z))*.5-6.,6.,22.)
 	for side in [-1.,1.]:
@@ -1101,4 +1105,9 @@ func _traffic_plan(vehicle: WarVehicle,record: Dictionary) -> Dictionary:
 		var destination: Vector3=nearest.global_position+right*gap*float(side)+forward*beyond
 		if _traffic_clear(vehicle,vehicle.global_position,beside) and _traffic_clear(vehicle,beside,destination):
 			record.traffic={"point":beside,"after":destination,"expires":game.war_clock+35.,"brake":false};return record.traffic
-	record.traffic={"brake":true};return record.traffic
+	# A failed pass at 30+ metres is not a reason for an instant full stop.
+	# Approach until the conservative stopping gap, then hold safely.
+	if hull_gap>stop_gap+maxf(3.,absf(vehicle.speed)*.45):
+		record.traffic={}
+		return {}
+	record.traffic={"brake":true,"reason":"vehicle_no_safe_pass"};return record.traffic
