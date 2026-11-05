@@ -85,6 +85,11 @@ uniform sampler2D concrete_tex : source_color, filter_linear_mipmap, repeat_enab
 uniform sampler2D asphalt_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D wear_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform float half_map = 750.0;
+varying float hillside_gradient;
+
+void vertex() {
+	hillside_gradient = clamp(1.0 - abs(NORMAL.y), 0.0, 1.0);
+}
 
 void fragment() {
 	vec2 world_xz = UV / 0.23;
@@ -93,6 +98,15 @@ void fragment() {
 	vec3 surface = texture(street_mask, (world_xz + edge + vec2(half_map)) / (2.0 * half_map)).rgb;
 	float coverage = clamp(surface.r + surface.g, 0.0, 1.0);
 	vec3 ground = texture(ground_tex, UV * 0.72).rgb * COLOR.rgb;
+	// Thin downhill runoff streaks and fragmented bare sediment break up
+	// smooth slopes without changing any terrain collision or road surface.
+	float channel = 1.0 - smoothstep(0.03, 0.20, abs(sin(
+		world_xz.x * .19 + sin(world_xz.y * .037) * .77)));
+	float cut = smoothstep(.12, .40, hillside_gradient);
+	float sediment = sin(world_xz.x * .067 + world_xz.y * .032)
+		* cos(world_xz.y * .071 - world_xz.x * .018);
+	float erosion = cut * (channel * .20 + .07 * smoothstep(.10, .75, sediment));
+	ground *= 1.0 - erosion * (1.0 - coverage);
 	if (coverage > 0.005) {
 		vec2 paving_uv = world_xz * 0.55;
 		float worn = sin(world_xz.x * 0.65 + world_xz.y * 0.37)

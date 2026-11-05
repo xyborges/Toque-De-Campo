@@ -20,6 +20,8 @@ const CABLE := preload("res://modes/war/library/favela_rede_aerea.tscn")
 const ARCHITECTURE := preload("res://modes/war/scripts/favela_architecture.gd")
 const LAYOUT := preload("res://modes/war/scripts/favela_layout.gd")
 const EDGE_COMPOSITION := preload("res://modes/war/scripts/favela_edge_composition.gd")
+const HILLSIDE := preload("res://modes/war/scripts/favela_hillside.gd")
+const ATMOSPHERE := preload("res://modes/war/scripts/favela_atmosphere.gd")
 const STREET_SPACE := preload("res://modes/war/scripts/favela_street_space.gd")
 const STREET_ART := preload("res://modes/war/scripts/favela_street_art.gd")
 const PARKED_BIKE := preload("res://modes/war/library/favela_moto_estacionada.tscn")
@@ -207,6 +209,9 @@ func build() -> void:
 		_place_litter(site.position, site.yaw)
 	litter_sites.clear()
 	_vegetation(kit)
+	var hillside_summary := HILLSIDE.populate(kit, housing_plan(), BASES_2D, OBJECTIVES_2D,
+		func(p: Vector2) -> float: return road_distance(p),
+		func(x: float, z: float) -> float: return height_at(x, z))
 	kit.flush()
 	if render_visuals:
 		STREET_ART.paint_walls(self)
@@ -222,6 +227,7 @@ func build() -> void:
 		"build_ms":Time.get_ticks_msec()-begun,"visuals":render_visuals}
 	build_metrics.merge(neighborhood)
 	build_metrics.merge(edge_summary)
+	build_metrics.merge(hillside_summary)
 	set_meta("favela_build_metrics",build_metrics)
 
 func _reserve_buildings_and_spawns() -> void:
@@ -881,26 +887,5 @@ func _vegetation(k: EnvironmentKit) -> void:
 			k._collider("Tronco",trunk,Transform3D(Basis.IDENTITY,p+Vector3.UP*trunk.height*.5),"wood")
 
 func _atmosphere() -> void:
-	var world:=WorldEnvironment.new()
-	var env:=Environment.new()
-	var sky_mat:=ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color=Color("5889ad")
-	sky_mat.sky_horizon_color=Color("d5b69c")
-	sky_mat.ground_horizon_color=Color("9d988a")
-	sky_mat.ground_bottom_color=Color("454c3a")
-	var sky:=Sky.new();sky.sky_material=sky_mat
-	env.background_mode=Environment.BG_SKY;env.sky=sky
-	env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color=Color("c7d0cb");env.ambient_light_energy=.44
-	env.tonemap_mode=Environment.TONE_MAPPER_FILMIC
-	env.fog_enabled=true;env.fog_light_color=Color("b7ae9e")
-	env.fog_density=.00025;env.fog_sky_affect=.45
-	world.environment=env;add_child(world)
-	var sun:=DirectionalLight3D.new()
-	sun.rotation_degrees=Vector3(-43,-28,0)
-	sun.light_color=Color("f1e7d6")
-	sun.light_energy=.77
-	sun.shadow_enabled=true
-	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
-	sun.directional_shadow_max_distance=135
-	add_child(sun)
+	ATMOSPHERE.build(self,
+		func(x: float, z: float) -> float: return height_at(x, z))
