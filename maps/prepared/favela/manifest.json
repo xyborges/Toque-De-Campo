@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 3,
+  "version": 4,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,8 +8,8 @@
     1500,
     1500
   ],
-  "content_hash": "571ea8481b911716591239d6ed65c56747759ba7d1e22ac255e26350fb46645c",
-  "source_hash": "e6afbff05286bdb0dabbc4d70665c379098832409cdaaba0ebe9f5d8fb662b8b",
+  "content_hash": "715a13886bde9ae57aa944eb68ac912a6c9dd64956c41e193779cb15cde955f0",
+  "source_hash": "7c32c4484886b45f9b02b2ca3e43968e862d5aeb8201ca5b3da2592157c09842",
   "sources": [
     "res://modes/war/scripts/favela_map.gd",
     "res://modes/war/scripts/favela_uniform.gd",
@@ -24,7 +24,20 @@
     "res://modes/war/equipment/motorbike.tscn",
     "res://modes/war/scripts/favela_street_art.gd",
     "res://modes/war/library/favela_pixacao.tscn",
-    "res://modes/war/library/favela_lixo_calcada.tscn"
+    "res://modes/war/library/favela_lixo_calcada.tscn",
+    "res://modes/war/scripts/favela_layout.gd",
+    "res://modes/war/scripts/favela_architecture.gd",
+    "res://modes/war/library/favela_janela_grade.tscn",
+    "res://modes/war/library/favela_janela_madeira.tscn",
+    "res://modes/war/library/favela_porta_entrada.tscn",
+    "res://modes/war/library/favela_sacada.tscn",
+    "res://modes/war/library/favela_laje_domestica.tscn",
+    "res://modes/war/library/favela_laje_obra.tscn",
+    "res://modes/war/library/favela_escada_externa.tscn",
+    "res://modes/war/library/favela_carro_compacto.tscn",
+    "res://modes/war/scripts/bot_transit.gd",
+    "res://modes/war/scripts/bot_director.gd",
+    "res://modes/war/library/favela_puxadinho_chapa.tscn"
   ],
   "grass_enabled": false,
   "grass_approved": false,

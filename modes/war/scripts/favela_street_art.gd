@@ -19,12 +19,14 @@ varying vec3 world_pos;
 varying vec3 world_normal;
 varying float base_height;
 varying float variation;
+varying float upkeep;
 
 void vertex() {
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	world_normal = normalize(MODEL_NORMAL_MATRIX * NORMAL);
 	base_height = (MODEL_MATRIX * vec4(0.0, -0.5, 0.0, 1.0)).y;
 	variation = fract(dot(MODEL_MATRIX[3].xz, vec2(0.0731, 0.0537)));
+	upkeep = step(0.69, fract(dot(floor(MODEL_MATRIX[3].xz / 61.0), vec2(0.362, 0.583))));
 }
 
 void fragment() {
@@ -41,13 +43,13 @@ void fragment() {
 		float fine = texture(grime_tex, surface * 0.31 + vec2(0.39, 0.13)).r;
 		float streak = texture(grime_tex, surface * vec2(0.33, 0.032)).r;
 		float level = broad * 0.88 + fine * 0.12;
-		float threshold = 0.56 + variation * 0.18 - brick_bias * 0.22;
+		float threshold = 0.56 + variation * 0.18 + upkeep * 0.14 - brick_bias * 0.22;
 		float exposed = smoothstep(threshold - 0.008, threshold + 0.009, level);
 		float worn_edge = smoothstep(threshold - 0.033, threshold - 0.009, level);
 		float damp = (1.0 - smoothstep(0.45, 1.8, height)) * (0.30 + streak * 0.38);
 		float paint_band = (1.0 - smoothstep(1.08, 1.18, height)) * step(0.53, variation);
 		paint = mix(paint, paint * vec3(0.68, 0.78, 0.82), paint_band * 0.70);
-		paint *= 0.80 + fine * 0.29 - damp * 0.47;
+		paint *= 0.80 + fine * 0.29 - damp * (0.47 - upkeep * 0.21);
 		paint *= 1.0 - smoothstep(0.57, 0.85, streak) * 0.35;
 
 		vec2 course = surface / vec2(0.29, 0.095);
@@ -62,7 +64,7 @@ void fragment() {
 		masonry = max(exposed, brick_bias * 0.96);
 		vec3 detailed = mix(undercoat, brick, masonry);
 		float crack = texture(cracks_tex, surface * vec2(0.107, 0.119) + vec2(variation, 0.0)).a;
-		detailed *= 1.0 - crack * 0.72 * (1.0 - masonry);
+		detailed *= 1.0 - crack * (0.72 - upkeep * 0.54) * (1.0 - masonry);
 		result = mix(detailed, result, smoothstep(100.0, 150.0, length(VERTEX)));
 	}
 	NORMAL_MAP = mix(texture(plaster_normal, surface * 0.57).rgb,

@@ -10,7 +10,6 @@ const GRID := 21
 const HALF_STEPS := 150
 const SAMPLE_WIDTH := HALF_STEPS*2+1
 const SEED := 241106
-const LOT_PITCH := 14.6
 const AVENUE_WIDTH := 10.5
 const CROSS_WIDTH := 6.8
 const ALLEY_WIDTH := 3.8
@@ -18,6 +17,8 @@ const MINI_STREET_WIDTH := 2.8
 const COMMERCE := preload("res://modes/war/library/favela_comercio_fachada.tscn")
 const POLE := preload("res://modes/war/library/favela_poste_cabos.tscn")
 const CABLE := preload("res://modes/war/library/favela_rede_aerea.tscn")
+const ARCHITECTURE := preload("res://modes/war/scripts/favela_architecture.gd")
+const LAYOUT := preload("res://modes/war/scripts/favela_layout.gd")
 const STREET_ART := preload("res://modes/war/scripts/favela_street_art.gd")
 const PARKED_BIKE := preload("res://modes/war/library/favela_moto_estacionada.tscn")
 const PRIMARY := [
@@ -51,8 +52,18 @@ var parked_bikes:=0
 var tag_count:=0
 var litter_count:=0
 var shop_connections: Array[Vector3]=[]
+var house_connections: Array[Vector3]=[]
+var roof_paths: Array[PackedVector3Array]=[]
+var parked_cars:=0
+var service_drops:=0
+var facade_modules:=0
+var roof_modules:=0
+var lean_tos:=0
+var underpasses:=0
+
 static var ground_material: StandardMaterial3D
 static var terrain_samples := PackedFloat32Array()
+static var housing_lots: Array[Dictionary]=[]
 
 static func _landform(x: float,z: float) -> float:
 	var north:=clampf((575.0-z)/1170.0,0.0,1.0)
@@ -143,40 +154,20 @@ static func accessible(p: Vector3) -> bool:
 	var sz:=(height_at(p.x,p.z+2.0)-height_at(p.x,p.z-2.0))*.25
 	return Vector2(sx,sz).length()<.65
 
-static func site_clear(p: Vector2,half_lot: Vector2) -> bool:
-	if p.x < -650.0 or p.x > 650.0 or p.y < -550.0 or p.y > 505.0:return false
-	if p.x > 510.0 and p.y > 420.0:return false
-	var margin:=maxf(half_lot.x,half_lot.y)*1.28
-	if primary_distance(p)<AVENUE_WIDTH*.5+1.8+margin:return false
-	var mini_clearance:=MINI_STREET_WIDTH*.5+.65+margin
-	if _mini_street_distance(p,mini_clearance)<mini_clearance:return false
-	for z in CROSS_STREETS:
-		if absf(p.y-z)<CROSS_WIDTH*.5+1.0+half_lot.y:return false
-	for x in VERTICAL_STREETS:
-		if absf(p.x-x)<ALLEY_WIDTH*.5+1.16+half_lot.x:return false
-	for base in BASES_2D:
-		if p.distance_to(base)<61.0+margin:return false
-	for target in OBJECTIVES_2D:
-		if p.distance_to(target)<33.0+margin:return false
-	return true
-
-static func _street_frontage(p: Vector2,half_lot: Vector2) -> Vector2:
-	# Pull the first eligible row up to the street. It moves away from the
-	# next row in the block, leaving the open shoulder to the terrain only
-	# where a base, objective or second street needs it.
-	for x: float in VERTICAL_STREETS:
-		var offset:=p.x-x
-		var frontage:=ALLEY_WIDTH*.5+1.22+half_lot.x
-		if absf(offset)>frontage and absf(offset)<frontage+10.0:
-			var candidate:=Vector2(x+signf(offset)*frontage,p.y)
-			if site_clear(candidate,half_lot):return candidate
+static func road_envelopes() -> Array[Dictionary]:
+	var roads: Array[Dictionary]=[{"id":0,"points":PRIMARY,"width":AVENUE_WIDTH}]
 	for z: float in CROSS_STREETS:
-		var offset:=p.y-z
-		var frontage:=CROSS_WIDTH*.5+1.06+half_lot.y
-		if absf(offset)>frontage and absf(offset)<frontage+10.0:
-			var candidate:=Vector2(p.x,z+signf(offset)*frontage)
-			if site_clear(candidate,half_lot):return candidate
-	return p
+		roads.append({"id":roads.size(),"points":[Vector2(-640,z),Vector2(640,z)],"width":CROSS_WIDTH})
+	for x: float in VERTICAL_STREETS:
+		roads.append({"id":roads.size(),"points":[Vector2(x,-550),Vector2(x,500)],"width":ALLEY_WIDTH})
+	for route: Array in MINI_STREETS:
+		roads.append({"id":roads.size(),"points":route,"width":MINI_STREET_WIDTH})
+	return roads
+
+static func housing_plan() -> Array[Dictionary]:
+	if housing_lots.is_empty():
+		housing_lots=LAYOUT.generate(road_envelopes(),BASES_2D,OBJECTIVES_2D)
+	return housing_lots
 
 func build() -> void:
 	var begun:=Time.get_ticks_msec()
@@ -193,7 +184,7 @@ func build() -> void:
 	_bases(kit)
 	var neighborhood:=_neighborhoods(kit)
 	_landmarks(kit)
-	_street_wiring()
+	_street_wiring(kit)
 	_vegetation(kit)
 	kit.flush()
 	if render_visuals:
@@ -203,7 +194,9 @@ func build() -> void:
 	build_metrics={"area_m":1500,"terrain_tiles":225,
 		"collision_shapes":kit.collision_count,"visual_instances":kit.detail_count,
 		"storefronts":store_count,"utility_poles":pole_count,"wire_spans":cable_count,
-		"wall_tags":tag_count,"litter_clusters":litter_count,
+		"wall_tags":tag_count,"litter_clusters":litter_count,"parked_cars":parked_cars,
+		"service_drops":service_drops,"facade_modules":facade_modules,"roof_modules":roof_modules,
+		"covered_passages":underpasses,"roof_lean_tos":lean_tos,
 		"parked_bikes":parked_bikes,"build_ms":Time.get_ticks_msec()-begun,"visuals":render_visuals}
 	build_metrics.merge(neighborhood)
 	set_meta("favela_build_metrics",build_metrics)
@@ -360,83 +353,102 @@ func _bases(k: EnvironmentKit) -> void:
 					"asphalt:777c80",false)
 
 func _neighborhoods(k: EnvironmentKit) -> Dictionary:
-	var rng:=RandomNumberGenerator.new();rng.seed=SEED
 	var count:=0
 	var stacked:=0
 	var roofs:=0
 	var bridges:=0
-	for rz in 72:
-		var z: float=-535.0+float(rz)*LOT_PITCH
-		var row_shift:=sin(floorf(rz*.5)*.84)*2.25
-		var fringe:=512.0+70.0*sin(z*.011)+36.0*cos(z*.026)
-		var previous_roof:=Vector3.INF
-		for cx in 88:
-			var x: float=-635.0+float(cx)*LOT_PITCH+row_shift
-			var sparse:=z>400.0 or absf(x-22.0*sin(z*.02))>fringe
-			if sparse and (rz%2!=0 or cx%3==0):
-				previous_roof=Vector3.INF
-				continue
-			var p:=Vector2(x+rng.randf_range(-.28,.28),
-				z+rng.randf_range(-.30,.30))
-			var width:=rng.randf_range(11.5,12.65)
-			var depth:=rng.randf_range(11.3,12.7)
-			var half_lot:=Vector2(width,depth)*.5
-			if not site_clear(p,half_lot):
-				previous_roof=Vector3.INF
-				continue
-			if not sparse:p=_street_frontage(p,half_lot)
-			var roll:=rng.randf()
-			var storeys:=1+int(rng.randi_range(0,3))
-			if roll<.12:storeys=5
-			if sparse:storeys=mini(storeys,2)
-			var base:=point(p.x,p.y)
-			var palette:=["plaster:ae916b","plaster:68828c","brick:9d5947",
-				"plaster:b9a16b","plaster:788b72","concrete:827e75",
-				"plaster:a06354","brick:885346","plaster:6a8d9b","plaster:a9a393"]
-			var finish: String=palette[int(rng.randi_range(0,palette.size()-1))]
-			var min_ground:=base.y
-			var max_ground:=base.y
-			for corner: Vector2 in [Vector2(-width,depth),Vector2(width,depth),
-					Vector2(-width,-depth),Vector2(width,-depth)]:
-				var ground:=height_at(p.x+corner.x*.5,p.y+corner.y*.5)
-				min_ground=minf(min_ground,ground)
-				max_ground=maxf(max_ground,ground)
-			var roof_pair:=not sparse and rz%7==2 and cx%11 in [4,5] and absf(base.z-z)<1.0
-			var open_house: bool=max_ground-min_ground<2.0 and (
-				roof_pair or (count%17==0 and storeys<=2))
-			var upper_storeys:=mini(storeys-1,2) if storeys>=2 and count%4!=0 and not open_house else 0
-			_house(k,base,width,depth,storeys,finish,count,open_house,base.y-min_ground+.35,upper_storeys)
-			var market:=absf(base.z+15)<25.0 and absf(base.x)<360.0
-			var shop_interval:=2 if market else 5
-			if not open_house and not sparse and count%shop_interval==0:
-				_commercial_front(k,base,half_lot,count)
-			if upper_storeys>0:stacked+=1
-			if open_house:roofs+=1
-			if roof_pair and open_house:
-				var roof_height:=base.y+3.01
-				var roof_edge:=Vector3(base.x-width*.5,roof_height,z-3.9)
-				var gap:=roof_edge.x-previous_roof.x
-				if previous_roof.is_finite() and gap<4.6 and absf(previous_roof.y-roof_height)<gap*.47:
-					var span:=roof_edge-previous_roof
-					k.box("PassarelaLajes",(previous_roof+roof_edge)*.5,
-						Vector3(span.length()+.36,.16,1.25),"wood:716251",true,
-						Vector3(0,0,atan2(span.y,span.x)))
-					bridges+=1
-				previous_roof=Vector3(base.x+width*.5,roof_height,z-3.9)
-			else:previous_roof=Vector3.INF
-			count+=1
-	return {"houses":count,"stacked_houses":stacked,"walkable_roofs":roofs,"roof_bridges":bridges}
+	var pulled:=0
+	var compact:=0
+	var forecourts:=0
+	var previous_roof:=Vector3.INF
+	var previous_roof_center:=Vector3.INF
+	var previous_lot: Dictionary={}
+	for lot: Dictionary in housing_plan():
+		var p: Vector2=lot.position
+		var size: Vector2=lot.size
+		var half_lot:=size*.5
+		var base:=point(p.x,p.y)
+		var min_ground:=base.y
+		var max_ground:=base.y
+		for corner: Vector2 in [Vector2(-1,1),Vector2(1,1),Vector2(-1,-1),Vector2(1,-1)]:
+			var at:=p+corner*half_lot
+			var ground:=height_at(at.x,at.y)
+			min_ground=minf(min_ground,ground)
+			max_ground=maxf(max_ground,ground)
+		var adjacent:=not previous_lot.is_empty() and int(previous_lot.row)==int(lot.row) and int(previous_lot.column)+1==int(lot.column)
+		var roof_pair: bool=not lot.sparse and int(lot.row)%4==2 and int(lot.column)%6 in [2,3] and float(lot.edge.gap)>1.35
+		var open_house: bool=lot.stair_clear and max_ground-min_ground<2.45 and (
+			roof_pair or (int(lot.profile)==0 and count%5==0 and float(lot.edge.gap)>1.35))
+		var storeys: int=lot.storeys
+		var upper_storeys:=mini(storeys-1,2) if storeys>=2 and int(lot.profile)!=3 and not open_house else 0
+		_house(k,base,size.x,size.y,storeys,lot.finish,count,open_house,base.y-min_ground+.35,upper_storeys,lot)
+		var market:=absf(base.z+15)<25.0 and absf(base.x)<360.0
+		var shop_interval:=2 if market else 4
+		if not open_house and not lot.sparse and count%shop_interval==0:
+			_commercial_front(k,base,half_lot,count,lot)
+		if upper_storeys>0:stacked+=1
+		if open_house:roofs+=1
+		if lot.moved:pulled+=1
+		if float(lot.edge.gap)<1.0:compact+=1
+		if lot.pocket and float(lot.edge.gap)<3.0 and float(lot.edge.gap)>2.2:forecourts+=1
+		if roof_pair and open_house:
+			var roof_height:=base.y+3.01
+			var roof_edge:=Vector3(base.x-size.x*.5,roof_height,base.z-size.y*.5+.46)
+			var gap:=roof_edge.x-previous_roof.x
+			if (adjacent and previous_roof.is_finite() and gap>.45 and gap<5.4
+					and absf(previous_roof.y-roof_height)<gap*.42
+					and absf(roof_edge.z-previous_roof.z)<1.45):
+				_roof_bridge(k,previous_roof,roof_edge)
+				roof_paths.append(PackedVector3Array([previous_roof_center,previous_roof,roof_edge,base+Vector3.UP*3.01]))
+				bridges+=1
+			previous_roof=Vector3(base.x+size.x*.5,roof_height,base.z-size.y*.5+.46)
+			previous_roof_center=base+Vector3.UP*3.01
+		else:previous_roof=Vector3.INF
+		previous_lot=lot
+		count+=1
+	return {"houses":count,"stacked_houses":stacked,"walkable_roofs":roofs,"roof_bridges":bridges,
+		"moved_frontages":pulled,"compact_frontages":compact,"open_forecourts":forecourts}
+
+func _roof_bridge(k: EnvironmentKit,a: Vector3,b: Vector3) -> void:
+	var horizontal:=Vector3(b.x-a.x,0,b.z-a.z).normalized()
+	var side:=horizontal.cross(Vector3.UP)*.625
+	var entry:=a-horizontal*.23
+	var landing:=b+horizontal*.23
+	var center:=(entry+landing)*.5
+	var span:=landing-entry
+	var yaw:=atan2(-span.z,span.x)
+	var grade:=atan2(span.y,Vector2(span.x,span.z).length())
+	k.box("PassarelaLajes",center-Vector3.UP*.08,Vector3(span.length(),.16,1.25),
+		"wood:716251",false,Vector3(0,yaw,grade))
+	# Vertical ends sit flush with both slabs, including when the deck slopes.
+	var hull:=ConvexPolygonShape3D.new()
+	var points:=PackedVector3Array()
+	for end: Vector3 in [entry,landing]:
+		for offset: Vector3 in [-side,side]:
+			points.append(end+offset-center)
+			points.append(end+offset-center-Vector3.UP*.16)
+	hull.points=points
+	k._collider("PassarelaLajes",hull,Transform3D(Basis.IDENTITY,center),"wood")
 
 func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 	storeys: int,finish: String,index: int,open_house: bool,foundation: float,
-	upper_storeys: int) -> void:
+	upper_storeys: int,lot: Dictionary) -> void:
 	const FLOOR := 2.85
 	var roof_color: String="concrete:8f8577" if index%5!=0 else "concrete:706d64"
 	var lower_storeys:=1 if open_house else storeys-upper_storeys
 	var height:=float(lower_storeys)*FLOOR
-	var upper_width:=w*(.68+.06*(index%3))
-	var upper_depth:=d*.68
-	var upper_offset:=Vector3((w-upper_width)*(.36 if index%2==0 else -.36),0,-d*.14)
+	var profile: int=lot.profile
+	var block: int=lot.block
+	var street_side: Vector2=-Vector2(lot.edge.normal)
+	var frontage:=Vector3(signf(street_side.x),0,0) if absf(street_side.x)>absf(street_side.y) else Vector3(0,0,signf(street_side.y))
+	var upper_width: float=w*[.74,.67,.82,.70,.66][profile]
+	var upper_depth: float=d*[.68,.79,.66,.69,.74][profile]
+	var upper_offset:=Vector3((w-upper_width)*.37*(-1 if block%2 else 1),0,
+		(d-upper_depth)*.38*(-1 if block<2 else 1))
+	var facade_yaw:=atan2(frontage.x,frontage.z)
+	var tangent:=Vector3(frontage.z,0,-frontage.x)
+	var front_depth:=w if frontage.x!=0 else d
+	var front_width:=d if frontage.x!=0 else w
 	if open_house:
 		var wall_height:=FLOOR+foundation
 		var center_y:=(FLOOR-foundation)*.5
@@ -445,25 +457,43 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 				Vector3(.28,wall_height,d),finish,true)
 			k.box("CasaParedeFrente",ground+Vector3(side*(w+2.2)*.25,center_y,d*.5),
 				Vector3((w-2.2)*.5,wall_height,.28),finish,true)
-		k.box("ParedeFundo",ground+Vector3(0,center_y,-d*.5),
-			Vector3(w,wall_height,.3),finish,true)
+		var through:=(profile in [0,2,4]
+			and height_at(ground.x,ground.z-d*.5)<ground.y+.60
+			and height_at(ground.x,ground.z+d*.5)<ground.y+.60)
+		if through:
+			for edge: float in [-1.0,1.0]:
+				k.box("ParedePassagem",ground+Vector3(edge*(w+2.2)*.25,center_y,-d*.5),
+					Vector3((w-2.2)*.5,wall_height,.3),finish,true)
+			k.box("VergaPassagem",ground+Vector3(0,FLOOR-.18,-d*.5),
+				Vector3(2.5,.36,.3),finish,true)
+			underpasses+=1
+		else:
+			k.box("ParedeFundo",ground+Vector3(0,center_y,-d*.5),
+				Vector3(w,wall_height,.3),finish,true)
 		k.box("PortaVerga",ground+Vector3(0,FLOOR-.18,d*.5),
 			Vector3(2.5,.36,.3),finish,true)
 		k.box("LajeAcessivel",ground+Vector3(0,FLOOR,0),
 			Vector3(w+.3,.28,d+.3),roof_color,true)
 		var stair_x:=ground.x-w*.5-.64
 		var stair_start_z:=ground.z+d*.5-1.0
-		var stair_end_z:=ground.z-d*.5+1.15
+		var stair_end_z:=ground.z-d*.5+2.45
 		var stair_start_y:=height_at(stair_x,stair_start_z)+.11
 		var landing_y:=ground.y+FLOOR+.14
-		var tread:=(stair_start_z-stair_end_z)/17.0
-		for step in 18:
-			var t:=float(step)/17.0
-			k.box("EscadaLaje",Vector3(stair_x,lerpf(stair_start_y,landing_y,t)-.12,
-				lerpf(stair_start_z,stair_end_z,t)),Vector3(1.04,.24,tread+.04),
-				roof_color,true)
-		k.box("DesembarqueLaje",Vector3(stair_x+.40,landing_y-.12,stair_end_z-.40),
-			Vector3(1.42,.24,1.0),roof_color,true)
+		var run:=stair_start_z-stair_end_z
+		var foot:=Vector3(stair_x,stair_start_y-.08,stair_start_z)
+		var top:=Vector3(stair_x,landing_y,stair_end_z)
+		var ramp_scale:=Vector3(1.0,(top.y-foot.y)/2.85,run/8.6)
+		ARCHITECTURE.place(k,"escada_externa",Transform3D(Basis.from_scale(ramp_scale),foot),true)
+		var landing:=Vector3(stair_x+.40,landing_y-.12,stair_end_z-.40)
+		k.box("DesembarqueLaje",landing,Vector3(1.42,.24,1.0),roof_color,true)
+		var approach:=point(foot.x,foot.z+.75)+Vector3.UP*.05
+		var nav:=PackedVector3Array([approach,foot+Vector3.UP*.06])
+		for step in range(1,5):
+			nav.append(foot.lerp(top,step*.25)+Vector3.UP*.06)
+		nav.append(landing+Vector3.UP*.18)
+		nav.append(Vector3(ground.x-w*.5+.56,landing_y+.06,landing.z))
+		nav.append(ground+Vector3.UP*3.01)
+		roof_paths.append(nav)
 	else:
 		k.box("CasaFavela",ground+Vector3(0,(height-foundation)*.5,0),
 			Vector3(w,height+foundation,d),finish,true)
@@ -476,18 +506,23 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 			Vector3(upper_width,added,upper_depth),upper_finish,true)
 		k.box("LajeAlta",ground+upper_offset+Vector3(0,height+added-.06,0),
 			Vector3(upper_width+.34,.18,upper_depth+.34),roof_color,false)
-		if index%7==0:
-			var balcony:=ground+upper_offset+Vector3(-upper_width*.23,height+.08,upper_depth*.5+.48)
-			k.box("Sacada",balcony,Vector3(2.45,.17,.96),roof_color,true)
-			k.box("GradeSacada",balcony+Vector3(0,.53,.43),Vector3(2.45,.82,.065),
-				"steel:60615a",false)
+		if profile in [1,4] and not lot.sparse:
+			var upper_face:=upper_width if frontage.x!=0 else upper_depth
+			var balcony:=ground+upper_offset+Vector3.UP*(height+.11)+frontage*(upper_face*.5)+tangent*.85
+			ARCHITECTURE.place(k,"sacada",Transform3D(Basis(Vector3.UP,facade_yaw),balcony),true)
+			facade_modules+=1
 	if not open_house:
 		for side in [-1.0,1.0]:
 			k.box("Platibanda",ground+Vector3(side*w*.5,height+.38,0),
 				Vector3(.22,.7,d+.4),roof_color,false)
-	if index%3!=0 and not open_house:
-		k.box("Portão",ground+Vector3(-w*.16,1.35,d*.5+.04),
-			Vector3(2.15,2.65,.055),"steel:484942",false)
+	if not open_house:
+		var entrance:=ground+frontage*(front_depth*.5+.012)-tangent*front_width*.23
+		entrance.y=height_at(entrance.x,entrance.z)
+		if entrance.y+2.33<ground.y+height:
+			ARCHITECTURE.place(k,"porta_entrada",Transform3D(Basis(Vector3.UP,facade_yaw),entrance))
+			facade_modules+=1
+	if not lot.sparse and float(lot.edge.gap)<4.0 and index%3==0:
+		house_connections.append(ground+frontage*(front_depth*.5+.10)+tangent*.70+Vector3.UP*minf(height-.16,3.1))
 	if not open_house and index%3==0:
 		var side:=1.0 if index%2==0 else -1.0
 		var wall:=ground+Vector3(side*(w*.5+.055),1.04,d*.24)
@@ -503,44 +538,44 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 			.045,"steel:777870",false,false)
 		k.box("Medidor",service_face+Vector3(0,1.55,.22),
 			Vector3(.22,.30,.30),"steel:7e8278",false)
-	for floor in (0 if open_house else storeys):
+	for floor in (1 if open_house else storeys):
 		var upper:=floor>=lower_storeys
 		var origin:=ground+upper_offset if upper else ground
 		var facade_width:=upper_width if upper else w
 		var facade_depth:=upper_depth if upper else d
-		var y:=float(floor)*FLOOR+1.7
-		var window_x:=facade_width*(.20 if (index+floor)%3!=0 else -.24)
-		k.box("JanelaFrente",origin+Vector3(window_x,y,facade_depth*.5+.06),
-			Vector3(1.3,1.04,.035),"steel:343c3f",false)
-		if floor%2==0:
-			k.box("JanelaLateral",origin+Vector3(facade_width*.5+.06,y,-facade_depth*.2),
-				Vector3(.045,1.0,1.05),"steel:454c4c",false)
+		var plane_depth:=facade_width if frontage.x!=0 else facade_depth
+		var plane_width:=facade_depth if frontage.x!=0 else facade_width
+		var y:=float(floor)*FLOOR+1.72
+		var window_id: String="janela_madeira" if (profile+floor)%3==1 else "janela_grade"
+		var position:=origin+Vector3.UP*y+frontage*(plane_depth*.5+.015)+tangent*plane_width*.23
+		if not open_house or frontage!=Vector3(0,0,1):
+			ARCHITECTURE.place(k,window_id,Transform3D(Basis(Vector3.UP,facade_yaw),position))
+			facade_modules+=1
+		if (profile+floor)%2==0 and not lot.sparse:
+			var side_pos:=origin+Vector3.UP*y+tangent*(plane_width*.5+.015)-frontage*plane_depth*.22
+			ARCHITECTURE.place(k,"janela_grade",Transform3D(Basis(Vector3.UP,facade_yaw+PI*.5),side_pos))
+			facade_modules+=1
 	var roof_y:=height+upper_storeys*FLOOR
 	var roof_origin:=ground+(upper_offset if upper_storeys>0 else Vector3.ZERO)
-	if index%7==0:
-		k.cylinder("CaixaAgua",roof_origin+Vector3(-w*.22,roof_y+.80,-d*.19),
-			.67,1.60,"steel:386c92",false)
-	if index%13==0:
-		for side in [-1.0,1.0]:
-			for back in [-1.0,1.0]:
-				var column:=roof_origin+Vector3(side*w*.25,roof_y+.77,back*d*.21)
-				k.box("ColunaObra",column,Vector3(.28,1.55,.28),"concrete:9a8e7d",false)
-				k.box("Ferragem",column+Vector3.UP*.99,Vector3(.13,.44,.13),
-					"steel:52453b",false,Vector3.ZERO,true)
-	if index%29==0:
+	var shed: bool=not open_house and not lot.sparse and profile in [0,3] and (int(lot.row)+int(lot.column))%3==0
+	if shed:
+		var offset:=Vector3.UP*(roof_y+.02)+tangent*.85-frontage*.70
+		ARCHITECTURE.place(k,"puxadinho_chapa",Transform3D(Basis(Vector3.UP,facade_yaw),roof_origin+offset),true)
+		lean_tos+=1
+	elif not lot.sparse and index%3==block%3:
+		var scene: String="laje_obra" if profile in [1,2] else "laje_domestica"
+		var offset:=Vector3(2.5,roof_y+.14,3.2) if open_house else Vector3.UP*(roof_y+.02)+tangent*1.6+frontage*.65
+		var yaw:=0.0 if open_house else facade_yaw
+		ARCHITECTURE.place(k,scene,Transform3D(Basis(Vector3.UP,yaw),roof_origin+offset),open_house)
+		roof_modules+=1
+	if not lot.sparse and index%9==0:
 		var mast:=roof_origin+Vector3(w*.15,roof_y,-d*.18)
 		k.beam(mast,mast+Vector3(.08,1.9,0),.047,.047,"steel:4b504c")
 		for level in 3:
 			k.box("Antena",mast+Vector3(.08,1.35+level*.20,0),
 				Vector3(.95-level*.13,.036,.04),"steel:4b504c",false,Vector3(0,.4*index,0),true)
-	if index%17==0:
-		k.box("Varal",roof_origin+Vector3(0,roof_y+1.0,d*.13),
-			Vector3(w*.55,.025,.035),"steel:727470",false)
-		for n in 3:
-			k.box("Roupa",roof_origin+Vector3(-1.7+n*1.6,roof_y+.62,d*.13),
-				Vector3(.65,.78,.04),"fabric:9e554b" if n%2==0 else "fabric:5779a0",false)
 
-func _commercial_front(k: EnvironmentKit,ground: Vector3,half_lot: Vector2,index: int) -> void:
+func _commercial_front(k: EnvironmentKit,ground: Vector3,half_lot: Vector2,index: int,lot: Dictionary) -> void:
 	var center:=Vector2(ground.x,ground.z)
 	var center_distance:=road_distance(center)
 	if center_distance>16.0:return
@@ -572,6 +607,16 @@ func _commercial_front(k: EnvironmentKit,ground: Vector3,half_lot: Vector2,index
 		var sign_node:=shop.get_node("Nome") as Label3D
 		sign_node.text=names[store_count%names.size()]
 		if sign_node.text.length()>13:sign_node.pixel_size=.0059
+	if lot.pocket and float(lot.edge.gap)>2.65 and int(lot.edge.road)>0 and store_count%2==0:
+		var parking:=edge+street_face*1.39-street_face.orthogonal()*3.35
+		var curb_safe:=true
+		for long: float in [-1.85,1.85]:
+			for across: float in [-.98,.98]:
+				if _on_paving(parking+street_face.orthogonal()*long+street_face*across):curb_safe=false
+		if curb_safe:
+			var at:=point(parking.x,parking.y)
+			ARCHITECTURE.place(k,"carro_compacto",Transform3D(Basis(Vector3.UP,shop.rotation.y+PI*.5),at),true)
+			parked_cars+=1
 	if store_count%3==0 and best>3.35:
 		var parking:=edge+street_face*.51+street_face.orthogonal()*2.97
 		if road_distance(parking)<2.7:return
@@ -583,9 +628,7 @@ func _commercial_front(k: EnvironmentKit,ground: Vector3,half_lot: Vector2,index
 			mesh.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		parked_bikes+=1
 
-func _litter(at: Vector2,yaw: float) -> void:
-	litter_count+=1
-	if not render_visuals:return
+func _on_paving(at: Vector2) -> bool:
 	var edge_offset:=.21*sin(at.x*.22+at.y*.16)
 	var on_paving:=primary_distance(at)<AVENUE_WIDTH*.5+edge_offset
 	on_paving=on_paving or _mini_street_distance(at,2.0)<MINI_STREET_WIDTH*.5+edge_offset
@@ -593,8 +636,13 @@ func _litter(at: Vector2,yaw: float) -> void:
 		on_paving=on_paving or (absf(at.x)<640.0 and absf(at.y-z)<CROSS_WIDTH*.5+edge_offset)
 	for x: float in VERTICAL_STREETS:
 		on_paving=on_paving or (at.y>-550.0 and at.y<500.0 and absf(at.x-x)<ALLEY_WIDTH*.5+edge_offset)
+	return on_paving
+
+func _litter(at: Vector2,yaw: float) -> void:
+	litter_count+=1
+	if not render_visuals:return
 	var detail:=WarMapContent.instantiate(street_fixtures,STREET_ART.LITTER.resource_path,
-		point(at.x,at.y)+Vector3.UP*(.175 if on_paving else .012),true)
+		point(at.x,at.y)+Vector3.UP*(.175 if _on_paving(at) else .012),true)
 	var normal:=Vector3(height_at(at.x-.3,at.y)-height_at(at.x+.3,at.y),.6,
 		height_at(at.x,at.y-.3)-height_at(at.x,at.y+.3)).normalized()
 	detail.basis=Basis(Quaternion(Vector3.UP,normal))*Basis(Vector3.UP,yaw)
@@ -608,7 +656,17 @@ func _cable_span(a: Vector3,b: Vector3,sag:=1.0) -> void:
 		cables.basis=Basis(delta/18.0,Vector3.UP*sag,sideways.normalized())
 	cable_count+=1
 
-func _wire_route(anchors: Array,width: float,interval: float) -> void:
+func _service_wire(k: EnvironmentKit,a: Vector3,b: Vector3) -> void:
+	if render_visuals:
+		var previous:=a
+		for step in range(1,6):
+			var t:=float(step)*.2
+			var at:=a.lerp(b,t)-Vector3.UP*sin(t*PI)*.62
+			k.pipe(previous,at,.013,"steel:32372f")
+			previous=at
+	service_drops+=1
+
+func _wire_route(k: EnvironmentKit,anchors: Array,width: float,interval: float) -> void:
 	var previous:=Vector3.INF
 	var number:=0
 	for i in anchors.size()-1:
@@ -638,15 +696,23 @@ func _wire_route(anchors: Array,width: float,interval: float) -> void:
 				if distance>5.0 and distance<closest:
 					branch=endpoint
 					closest=distance
-			if branch.is_finite():_cable_span(top-Vector3.UP*.6,branch,.55)
+			if branch.is_finite():_service_wire(k,top-Vector3.UP*.6,branch)
+			var home:=Vector3.INF
+			var closest_home:=24.0
+			for endpoint: Vector3 in house_connections:
+				var distance:=top.distance_to(endpoint)
+				if distance>6.0 and distance<closest_home:
+					home=endpoint
+					closest_home=distance
+			if home.is_finite():_service_wire(k,top-Vector3.UP*.92,home)
 
-func _street_wiring() -> void:
-	_wire_route(PRIMARY.slice(2),AVENUE_WIDTH,36.0)
+func _street_wiring(k: EnvironmentKit) -> void:
+	_wire_route(k,PRIMARY.slice(2),AVENUE_WIDTH,36.0)
 	for z: float in CROSS_STREETS:
-		_wire_route([Vector2(-455,z),Vector2(455,z)],CROSS_WIDTH,39.0)
+		_wire_route(k,[Vector2(-455,z),Vector2(455,z)],CROSS_WIDTH,39.0)
 	for x: float in [-320.0,-105.0,105.0,355.0]:
-		_wire_route([Vector2(x,-490),Vector2(x,340)],ALLEY_WIDTH,33.0)
-	for route: Array in MINI_STREETS:_wire_route(route,MINI_STREET_WIDTH,29.0)
+		_wire_route(k,[Vector2(x,-490),Vector2(x,340)],ALLEY_WIDTH,33.0)
+	for route: Array in MINI_STREETS:_wire_route(k,route,MINI_STREET_WIDTH,29.0)
 
 func _landmarks(k: EnvironmentKit) -> void:
 	for i in OBJECTIVES_2D.size():
@@ -742,7 +808,7 @@ func _atmosphere() -> void:
 	var sky:=Sky.new();sky.sky_material=sky_mat
 	env.background_mode=Environment.BG_SKY;env.sky=sky
 	env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color=Color("c7d0cb");env.ambient_light_energy=.49
+	env.ambient_light_color=Color("c7d0cb");env.ambient_light_energy=.44
 	env.tonemap_mode=Environment.TONE_MAPPER_FILMIC
 	env.fog_enabled=true;env.fog_light_color=Color("b7ae9e")
 	env.fog_density=.00025;env.fog_sky_affect=.45
@@ -750,7 +816,8 @@ func _atmosphere() -> void:
 	var sun:=DirectionalLight3D.new()
 	sun.rotation_degrees=Vector3(-43,-28,0)
 	sun.light_color=Color("f1e7d6")
-	sun.light_energy=.84
+	sun.light_energy=.77
 	sun.shadow_enabled=true
-	sun.directional_shadow_max_distance=190
+	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+	sun.directional_shadow_max_distance=135
 	add_child(sun)

@@ -153,3 +153,59 @@ O teste visual ainda mostra recuos excessivos, fachadas simplificadas e fiação
 muito paralela. A próxima etapa autorizada é arquitetônica e por quadras, com
 repetição das mesmas câmeras, aproximação das frentes, módulos de fachada e laje
 e validação de acessos. Esta etapa de superfícies não encerra o trabalho solicitado.
+
+## Revisão de quadras e circulação vertical — versão 4
+
+O desenho de lotes reserva a largura das vias primeiro. As frentes viáveis
+ganham prioridade, com afastamentos calculados a partir da borda e um índice
+espacial que impede a sobreposição de lotes. Perfis de volume, altura,
+acabamento e recuo variam por quadra. O mapa de 1,5 km × 1,5 km tem 3.845 casas,
+1.071 frentes deslocadas, 955 fachadas a menos de 1 m da via e 133 recuos de
+2,2 a 3,0 m preservados junto a trechos de comércio e estacionamento.
+
+- Nove cenas novas no catálogo, com janelas gradeadas e com venezianas, porta
+  com soleira, sacada, duas composições de laje, escada externa, carro compacto
+  e puxadinho de chapa. Os módulos usam malhas compartilhadas, instâncias
+  agrupadas por setor e alcance por porte. Os elementos de cobertura têm
+  colisão na autoridade e no cliente.
+- Há 432 puxadinhos de chapa, 1.024 conjuntos de objetos de laje e 105 frentes
+  comerciais. O entorno ganhou seis carros compactos nos recuos, 23 motos
+  estacionadas e 107 ramais individuais de fiação. Reboco, alvenaria e sinais
+  de desgaste variam por trecho. A luz direcional usa duas divisões de sombras
+  com alcance de 135 m.
+- As 126 lajes ligadas a escadas, 12 passarelas e 54 passagens cobertas ampliam
+  as alternativas de infantaria. A rede de rua usa cruzamentos geométricos
+  explícitos. A Favela tem grade local de 3 m e um grafo tridimensional para
+  escadas e lajes. Atiradores podem buscar um ponto de observação próximo ao
+  objetivo em uma laje alcançável.
+
+As imagens `rua-antes.png` e `rua-depois.png` foram capturadas no mesmo
+enquadramento a partir de (-200, -15). Elas mostram a mudança do recuo das
+fachadas e a profundidade dos elementos de janela e sacada. Também foram
+inspecionados comércio, viela, escada, passarela e encosta. A composição foi
+comparada às escadarias entre edificações de
+[Santa Marta](https://brasil.elpais.com/brasil/2017/09/22/politica/1506096531_079176.html)
+e às cenas de rua da
+[Rocinha fotografadas por Julian Machado Rigg](https://www.julianmachadorigg.com/rocinha).
+O panorama ainda evidencia a malha de quadras mais regular que as referências.
+
+- Smoke de layout e regras passou com visuais, incluindo a avenida e as seis
+  mini-ruas. O grafo viário alcança a vizinhança dos cinco objetivos.
+- O QA de arquitetura passou em 9.133 amostras de piso e folga das escadas e
+  passarelas. Com `--favela-bot-traversal`, um bot do WarGame subiu uma
+  escada e cruzou uma passarela em dois percursos controlados.
+- Partida offline passou nas 39 verificações, com 28 bots implantados e oito
+  veículos. O smoke DTLS entre cliente e servidor local passou em 15
+  verificações de identidade, objetivos, frota, regras e ocupação de veículo.
+
+A GTX 1650 registrou 73,2 FPS médios no Alto nativo em 1080p e 28 bots durante
+120 s. O p99 foi 30,5 ms e o pior quadro, 77,5 ms. O Baixo, com saída em
+1080p e escala interna de 75%, registrou 82,6 FPS durante 45 s, p99 de 32,8 ms
+e pior quadro de 79,5 ms. Os dois trechos automatizados tiveram bots em
+movimento, sem disparos registrados. A média no Alto supera a meta de 60 FPS,
+mas o pior quadro ficou acima do limite de 50 ms do manifesto. A estabilidade
+em combate completo, o equilíbrio e uma travessia de veículos em partida longa
+continuam pendentes para aceitação de lançamento.
+
+As capturas, o roteiro de câmera e o log estão em
+`C:/Users/Joao Borges/.codex/visualizations/2026/11/05/01a1ab1b-38f6-7f83-afa8-697ff50a81ac/Favela/`.
