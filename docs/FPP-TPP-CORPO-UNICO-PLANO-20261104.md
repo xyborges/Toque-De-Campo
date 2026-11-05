@@ -1,10 +1,14 @@
 # Plano técnico — Personagem único FPP/TPP (True First Person)
 **Data:** 04/11/2026  
-**Projeto:** Toque de Campo — `project.godot` declara 1.13.1, Godot 4.7 / GL Compatibility  
-**Status:** PLANEJADO, SEM MODIFICAÇÃO DE RUNTIME, SEM RELEASE  
+**Projeto:** Toque de Campo — auditoria original na 1.13.1; base de integração atual 1.13.3, Godot 4.7 / GL Compatibility
+**Status:** P1b–P1j implementados e testados em branch isolada; **P1g desligado por padrão, P2 pendente, sem novo release**
 **Plano-pai:** `docs/REALISMO-TATICO-PLANO-SQUAD-20261104.md`  
 **Referência ambiental:** `docs/AFEGANISTAO-REFERENCIA-SINAI-TRILHAS-20261104.md`
 
+> **ESTADO ATUAL (04/11/2026):** [integração e QA da P1 sobre 1.13.3](FPP-TPP-INTEGRACAO-1133-QA-20261104.md), branch `ia/fpp-integracao-1133`, commit-base `9e5d741`. P1f usa olho lógico para mira FPP/TPP; P1g tem CollisionRig independente opt-in (31/31 verificações); P1i validou dano por membro e ragdoll (24/24); P1j passou ENet/DTLS com servidor 15/15, atirador 2/2 e vítima 2/2. Zeragem (58/58) e ópticas headless (242/242) permaneceram verdes na integração. **Ainda bloqueado:** custo de 28 atores/bots, fallback de ações especiais com LOD visual, mapa completo/clientes exportados e a P2 de corpo/câmera únicos. Nenhuma publicação feita por esta branch.
+>
+> **As notas P0/P1a/P1b abaixo são histórico do diagnóstico inicial**, não o estado atual do projeto.
+>
 > **P1b iniciada com protótipo separado:** [CollisionRig físico isolado e validado](FPP-TPP-P1B-COLLISION-RIG-PROXY-20261104.md), 16 regiões e marcador de cano com correspondência de transform 0 m nas três posturas, sem dupla colisão. Ainda espelha pose visual; próximo gate é solver puro independente do render e teste de desempenho, antes de passar hitboxes reais para o proxy.
 >
 > **P1a — experimento leve de 04/11/2026 encerrado:** [relatório](FPP-TPP-P1A-COLLISION-LITE-EXPERIMENT-20261104.md). Abordagens Lite e por eventos corrigiram a inconsistência do teste de postura, mas pioraram a média ou o p99 da CPU com 28 atores; **ambas foram revertidas no gameplay**. Foi criado `collision_pose_state.gd`, com captura e comparação física de 13–16 regiões e cano; teste próprio passou nas três posturas. A próxima peça precisa ser um **CollisionRig autônomo sem MeshInstance3D**, não mais um remendo no LOD existente.

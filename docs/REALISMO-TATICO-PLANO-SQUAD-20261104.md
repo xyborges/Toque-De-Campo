@@ -1,9 +1,13 @@
 # Plano diretor — realismo tático estilo Squad (movimentos, animações, armas e gráficos)
 
 **Emissão:** 04/11/2026  
-**Projeto auditado:** Toque de Campo, versão local `1.13.1` declarada por `project.godot`, Godot 4.7 / Compatibility; plano, **nenhuma mudança de runtime, cena, rede ou versão por esta entrega**.  
+**Projeto auditado:** Toque de Campo, auditoria inicial na 1.13.1, Godot 4.7 / Compatibility; revisão da P1 na base 1.13.3, sem publicação por esta tarefa.
 **Referência interna obrigatória:** `docs/AFEGANISTAO-REFERENCIA-SINAI-TRILHAS-20261104.md` (trilha de encosta, transição seca/verde, trilhas de flanco, proteção BR).  
 **Princípio:** inspiração de intensidade, coerência de materiais e ritmo de combate do Squad, sem reproduzir modelos, sons, animações, interface, nomes comerciais de conteúdo, identidade visual ou assets protegidos.
+
+**Estado da pré-condição FPP/TPP (04/11/2026):** P1b–P1j reunidos e validados sobre a base 1.13.3 na branch `ia/fpp-integracao-1133` (ver [QA de integração](FPP-TPP-INTEGRACAO-1133-QA-20261104.md)). Mira lógica FPP/TPP, CollisionRig opt-in, dano por membro/ragdoll e ENet local passaram; regressão de física antes do spawn corrigida. **Não habilitar CollisionRig por padrão:** desempenho com 28 bots e fallback sem hitbox stale ainda não aprovados. P2 de câmera/corpo real e óticas PiP continua pendente; nenhum novo release.
+
+**As notas P0/P1a/P1b a seguir são registros históricos do começo do plano.**
 
 **Protótipo P1b iniciado (04/11/2026):** [CollisionRigProxy independente em estrutura](FPP-TPP-P1B-COLLISION-RIG-PROXY-20261104.md), com 16 regiões físicas isoladas, shape próprio e cano virtual; paridade 0 m nas três posturas, testes aprovados. Não há solver físico independente nem ganho de FPS comprovado: próximo passo é portar matemática das articulações sem atualizar o visual.
 
