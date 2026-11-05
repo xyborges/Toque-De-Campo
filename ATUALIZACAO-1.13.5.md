@@ -25,4 +25,19 @@ FPP/TPP CollisionRig experimental permanece fora desta atualização.
 
 ## Gates
 
-Os resultados finais de importação, QA, mapas, build assinada, preflight e verificação live serão registrados aqui após execução.
+- Godot 4.7.2: importação completa **PASS**.
+- RPG-7/Stinger: `launcher_realism_qa.gd` **PASS**; inspeção FPP/TPP/ADS e projéteis já preservada na branch integrada.
+- Favela urbanidade: **PASS**.
+- Pressão dos bots: primeiro ensaio detectou cobertura lateral interrompendo o avanço; corrigido em `aa93669`. Repetição final **PASS**, incluindo assalto com inimigo visível e defesa sob controle total.
+- Intensidade de bots/veículos: **PASS**.
+- Captura em veículos ocupados: **PASS**.
+- Menu Favela: **22/22 PASS** após regenerar a identidade preparada para manifesto v10.
+- Smoke visual da Favela: **PASS**.
+- Runtime Favela com 28 bots: **PASS**.
+- Áudio open-air com mixer 3D nativo: **PASS**.
+- Áudio espacial: **28/28 PASS**; medições transitórias não foram versionadas.
+- Empacotamento/deploy estático: **PASS**.
+- Mapas: Afegão, Deserto, Escritório e Naval **PASS**; Ucrânia regenerada para v19 e validada **PASS** com 802.579 patches de grama. Afegão mantém o aviso conhecido de 1/162 âncoras rejeitada.
+- Favela ENet/DTLS: servidor local + 2 clientes **PASS**.
+
+Aguardando apenas build assinada, preflight e verificação live no servidor para marcar como publicada.
