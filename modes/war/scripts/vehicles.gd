@@ -1216,8 +1216,8 @@ func explosion_event(id: String,point: Vector3,radius: float,surface:="",weapon:
 	var visual_kind:=weapon if weapon in ["tank_wreck","armor_wreck"] else kind
 	if game.combat_effects: game.combat_effects.explosion(point,radius,hash(id),visual_kind)
 	game.war_fx.flash(point+Vector3.UP*.5)
-	if game.combat_audio: game.combat_audio.explosion(id,point,kind)
-	if is_instance_valid(game.combat_feedback) and surface in GameImpactSurface.SOUNDS: game.combat_feedback.impact(id+":contact",point,surface)
+	if game.combat_audio: game.combat_audio.explosion(id,point,kind,surface)
+	if weapon!="autocannon" and is_instance_valid(game.combat_feedback) and surface in GameImpactSurface.SOUNDS: game.combat_feedback.impact(id+":contact",point,surface)
 	if surface in ["metal","vehicle"] and is_instance_valid(game.metal_sparks): game.metal_sparks.burst(point,Vector3.UP,id)
 
 func acquire(actor: WarPlayer) -> Dictionary:

@@ -4,7 +4,7 @@ class_name GameWeaponAudio
 # Each trigger owns a fixed world-space origin. A tail is never moved with
 # another shot, even when a pool is full or the emitter walks away.
 const LIMIT := 96
-const PATHS := {"fists":"melee_swing_generated.wav","ak":"ak-005.wav","fal":"fal-098.wav","g3":"g3_near.mp3","glock":"pistol-109.wav","sniper":"sound_026.wav","lightMG":"light-mg.wav","heavyMG":"heavy-mg.wav","hmg":"heavy-mg.wav","autocannon":"heavy-mg.wav","tank":"missile.wav","rpg":"missile.wav","stinger":"missile.wav","tv":"missile.wav","missile":"missile.wav","torpedo":"torpedo.wav","grenade":"melee_swing_generated.wav","broom":"melee_swing_generated.wav","squeegee":"melee_swing_generated.wav","axe":"melee_swing_generated.wav"}
+const PATHS := {"fists":"melee_swing_generated.wav","ak":"ak-005.wav","fal":"fal-098.wav","g3":"g3_near.mp3","glock":"pistol-109.wav","sniper":"sound_026.wav","lightMG":"light-mg.wav","heavyMG":"heavy-mg.wav","hmg":"heavy-mg.wav","autocannon":"apc30mm/APC_30mm_disparo_01.wav","tank":"missile.wav","rpg":"missile.wav","stinger":"missile.wav","tv":"missile.wav","missile":"missile.wav","torpedo":"torpedo.wav","grenade":"melee_swing_generated.wav","broom":"melee_swing_generated.wav","squeegee":"melee_swing_generated.wav","axe":"melee_swing_generated.wav"}
 var pools: Dictionary = {}
 var streams: Dictionary = {}
 var voices: Array[AudioStreamPlayer3D] = []
@@ -17,6 +17,8 @@ var acoustic_cache: Dictionary={}
 var ray_window:=-1
 var ray_budget:=0
 var started_events:=0
+var autocannon_sequence: Dictionary={}
+const AUTOCANNON_FAR_START_M:=300.0
 
 static func profile(weapon: String) -> Dictionary:
 	match weapon:
@@ -117,6 +119,8 @@ func _ready() -> void:
 		var path: String="res://audio/"+file
 		if not streams.has(path): streams[path]=GameCombatAudioCatalog.stream(path)
 
+	for path in GameCombatAudioCatalog.AUTOCANNON_SHOTS+[GameCombatAudioCatalog.AUTOCANNON_SHOT_FAR]:
+		if not streams.has(path): streams[path]=GameCombatAudioCatalog.stream(path)
 	for index in LIMIT: _new_voice()
 
 func play(emitter: int,weapon: String,point: Vector3,elapsed:=0.0) -> AudioStreamPlayer3D:
@@ -163,6 +167,9 @@ func _play_now(emitter: int,weapon: String,point: Vector3) -> AudioStreamPlayer3
 	if point.distance_to(listener_position(get_viewport()))>=float(settings.range): return null
 	var distance_to_listener:=point.distance_to(listener_position(get_viewport()))
 	var path: String="res://audio/"+("g3_far.mp3" if weapon=="g3" and distance_to_listener>=160.0 else PATHS[weapon])
+	if weapon=="autocannon":
+		var next_index:=int(autocannon_sequence.get(emitter,0))
+		path=GameCombatAudioCatalog.AUTOCANNON_SHOT_FAR if distance_to_listener>=AUTOCANNON_FAR_START_M else GameCombatAudioCatalog.AUTOCANNON_SHOTS[next_index%3]
 	var stream: AudioStream=streams.get(path)
 	if not stream: return null
 	var key := "%d:%s"%[emitter,weapon]
@@ -199,6 +206,12 @@ func _play_now(emitter: int,weapon: String,point: Vector3) -> AudioStreamPlayer3
 	# the existing controller; the first route uses a bounded, cached query.
 	voice.bus=acoustic_bus(point.distance_to(listener),_blocked(point,listener),interior,source_behind(get_viewport(),point))
 	voice.pitch_scale=elevation_pitch(get_viewport(),point)
+	if weapon=="autocannon":
+		var shot_index:=int(autocannon_sequence.get(emitter,0))
+		if distance_to_listener<AUTOCANNON_FAR_START_M:
+			voice.pitch_scale*=float([.98,1.0,1.02][shot_index%3])
+		autocannon_sequence[emitter]=shot_index+1
+		if autocannon_sequence.size()>128: autocannon_sequence.erase(autocannon_sequence.keys()[0])
 	voice.volume_db=float(settings.db)
 	voice.unit_size=float(settings.unit)
 	voice.max_distance=float(settings.range)
@@ -239,9 +252,9 @@ func _process(delta: float) -> void:
 		apply_acoustics(voice,distance_to,blocked,interior)
 
 func _exit_tree() -> void:
-	set_process(false);propagation.clear();acoustic_cache.clear()
+	set_process(false);propagation.clear();acoustic_cache.clear();autocannon_sequence.clear()
 	for voice in voices: voice.stop()
 
 func cancel() -> void:
-	propagation.clear();set_process(false)
+	propagation.clear();set_process(false);autocannon_sequence.clear()
 	for voice in voices: voice.stop()
