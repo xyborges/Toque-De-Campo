@@ -77,6 +77,31 @@ da estética ou da trafegabilidade. A validação da correção em andamento exi
 comparação visual dos mesmos ângulos, raycasts do ambiente completo e
 ensaios de navegação e veículos; a tela não foi capturada por esta branch.
 
+## Experimento A/B descartado: aproximação adicional dos lotes
+
+Numa alteração isolada de `favela_layout.gd`, o deslocamento permitido de
+lotes recuados subiu temporariamente de 18 m para 24 m, sempre sujeito a
+`clear()` e `overlaps()`. Os resultados foram:
+
+| Métrica | Base 18 m | Experimento 24 m |
+| --- | ---: | ---: |
+| Lotes | 3.845 | 3.845 |
+| Bordas com casas a até 5 m | 64,7% | 65,0% |
+| Bordas com casas a mais de 15 m | 6,0% | 5,6% |
+| Sobreposição de footprints | 0 | 0 |
+| Teste físico dos percursos verticais | PASS (referência) | PASS: 9.133 amostras, 126 escadas e 12 pontes |
+| Partida offline com 28 bots | PASS (referência) | PASS: 39 verificações e 28 bots implantados |
+
+**Decisão:** diferença arquitetônica insuficiente para justificar mover casas
+por distâncias maiores sem comparação visual. O arquivo `favela_layout.gd`
+foi restaurado pontualmente à versão inicial e o `git diff --exit-code`
+confirmou igualdade; nenhuma alteração no planejamento foi commitada.
+
+A QA foi executada também contra as modificações viárias ainda não commitadas
+na outra worktree: o resultado da distribuição de lotes permaneceu igual.
+A auditoria física dessa outra IA e as capturas antes/depois ainda devem
+ser verificadas no momento da integração.
+
 ## Integração
 
 Levar **apenas** o teste `tests/favela_spatial_review.gd`, seu UID
