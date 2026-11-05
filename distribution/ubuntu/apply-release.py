@@ -259,6 +259,21 @@ def read_status(path):
     return value
 
 
+def br_room_process_matches(pid, room_id):
+    """Reject stale room files whose PID has been recycled by an unrelated process."""
+    process = pathlib.Path('/proc') / str(pid)
+    try:
+        executable = os.readlink(process / 'exe')
+        arguments = [item.decode('utf-8', 'surrogateescape')
+                     for item in (process / 'cmdline').read_bytes().split(b'\0') if item]
+    except (FileNotFoundError, ProcessLookupError, PermissionError, OSError):
+        return False
+    release_root = str(APP / 'releases') + '/build-'
+    if not executable.startswith(release_root) or not executable.endswith('/ToqueDeCampo.x86_64'):
+        return False
+    return '--br-room' in arguments and '--br-room-id=' + room_id in arguments
+
+
 def guard_players():
     for unit, (name, _) in SERVICE_STATUS.items():
         path = GAME_DATA / name
@@ -289,6 +304,8 @@ def guard_players():
                 try:
                     os.kill(pid, 0)
                 except ProcessLookupError:
+                    continue
+                if not br_room_process_matches(pid, path.parent.name):
                     continue
                 updated = status.get('heartbeat')
                 if not isinstance(updated, (int, float)) or not 0 <= time.time() - updated < 15:

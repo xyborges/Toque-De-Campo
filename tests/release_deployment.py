@@ -85,10 +85,27 @@ class ReleasePolicyTests(unittest.TestCase):
         path.unlink()
         room = self.root / 'br-matches' / ('a' * 32);room.mkdir(parents=True)
         (room / 'status.json').write_text(json.dumps({'pid':123456, 'humans':1, 'heartbeat':time.time()}))
-        with mock.patch.object(release, 'GAME_DATA', self.root), mock.patch.object(release, 'active', return_value=False), mock.patch.object(release.os, 'kill', return_value=None):
+        with mock.patch.object(release, 'GAME_DATA', self.root), mock.patch.object(release, 'active', return_value=False), mock.patch.object(release.os, 'kill', return_value=None), mock.patch.object(release, 'br_room_process_matches', return_value=True):
             with self.assertRaisesRegex(RuntimeError, 'jogadores conectados'):release.guard_players()
         with mock.patch.object(release, 'GAME_DATA', self.root), mock.patch.object(release, 'active', return_value=False), mock.patch.object(release.os, 'kill', side_effect=ProcessLookupError):
             release.guard_players()
+
+    def test_br_stale_room_ignores_recycled_pid_but_not_real_room(self):
+        room_id = 'b' * 32
+        room = self.root / 'br-matches' / room_id;room.mkdir(parents=True)
+        (room / 'status.json').write_text(json.dumps({
+            'pid':123456, 'humans':0, 'heartbeat':time.time()-600,
+            'phase':'cancelled', 'room_id':room_id
+        }))
+        common = [mock.patch.object(release, 'GAME_DATA', self.root),
+                  mock.patch.object(release, 'active', return_value=False),
+                  mock.patch.object(release.os, 'kill', return_value=None)]
+        with common[0], common[1], common[2], mock.patch.object(release, 'br_room_process_matches', return_value=False) as matcher:
+            release.guard_players()
+            matcher.assert_called_once_with(123456, room_id)
+        with mock.patch.object(release, 'GAME_DATA', self.root), mock.patch.object(release, 'active', return_value=False), mock.patch.object(release.os, 'kill', return_value=None), mock.patch.object(release, 'br_room_process_matches', return_value=True):
+            with self.assertRaisesRegex(RuntimeError, 'Cannot confirm an empty BR room'):
+                release.guard_players()
 
     def test_br_health_requires_new_heartbeat_and_broker_socket(self):
         path = self.status('br-broker-status.json')
