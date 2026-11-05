@@ -56,6 +56,20 @@ func _rebuild() -> void:
 		picker.select(choices[slot].find(slots[slot]))
 		picker.item_selected.connect(func(index: int): slots[slot]=str(picker.get_item_metadata(index));_rebuild();_changed();_show_detail(str(slots[slot])))
 		rows[slot]={"button":button,"picker":picker,"amount":amount}
+		if slot=="grenade" and choices[slot].size()>1:
+			# Both grenade types stay visible; the equipped type is accented.
+			# The main slot selector still works just like the other weapons.
+			var grenade_choices:=HBoxContainer.new()
+			grenade_choices.add_theme_constant_override("separation",6)
+			listing.add_child(grenade_choices)
+			for kind: String in choices[slot]:
+				var title: String="FUMAÇA M18" if kind=="smoke" else "EXPLOSIVA"
+				var option:=GameUI.button(grenade_choices,title,_choose_grenade.bind(kind))
+				option.name="GrenadeChoice_"+kind
+				option.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+				option.custom_minimum_size.y=34
+				option.add_theme_font_size_override("font_size",12)
+				GameUI.accent(option,str(slots[slot])==kind)
 	add_option.clear();add_option.add_item("Adicionar")
 	for slot in GameLoadouts.ORDER:
 		if choices.has(slot) and not slots.has(slot): add_option.add_item(GameLoadouts.TITLES[slot]);add_option.set_item_metadata(add_option.item_count-1,slot)
@@ -76,6 +90,14 @@ func _sync_optic_choice() -> void:
 		if slots.has("optic"): slots.erase("optic");equipment_changed=true
 	optic_primary=primary
 
+func _choose_grenade(kind: String) -> void:
+	if kind not in choices.get("grenade",[]): return
+	if str(slots.get("grenade",""))==kind: return
+	slots.grenade=kind
+	_rebuild()
+	_changed()
+	_show_detail(kind)
+
 func _select(slot: String) -> void:
 	if slot in ["primary","sidearm","melee","optic"]:
 		preview_slot="primary" if slot=="optic" else slot
@@ -84,6 +106,12 @@ func _select(slot: String) -> void:
 	_show_detail(str(slots[slot]))
 
 func _show_detail(id: String) -> void:
+	if id=="smoke":
+		detail.text="M18 · cortina de fumaça para ocultação, sem dano explosivo"
+		detail.show();return
+	if id=="grenade":
+		detail.text="Fragmentação · explosão com dano em área"
+		detail.show();return
 	if id.begins_with("vest_") or id.begins_with("helmet_"):
 		var tier:=clampi(int(id.get_slice("_",1)),1,3)
 		detail.text="Proteção %d%% · Resistência %d · %.1f kg"%[roundi(BRInventory.PROTECTION_RATIO[tier]*100),int(BRInventory.PROTECTION_HP[tier]),float(preload("res://scripts/infantry_protection.gd").WEIGHT["vest" if id.begins_with("vest_") else "helmet"][tier])];detail.show();return
