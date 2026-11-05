@@ -38,8 +38,11 @@ var p1g_collision_rig: WarCollisionRigProxy
 var p1g_collision_bindings: Dictionary={}
 var p1g_collision_binding_key:=""
 var _p1g_bound_muzzle: Marker3D
+var _p1g_bound_scope: Node3D
 var _p1g_visual_pose_updated:=false
+var _p1g_world_frame: Dictionary={}
 var p1g_solver_frames:=0
+var p1g_shared_pose_frames:=0
 var p1g_visual_reuse_frames:=0
 var p1g_legacy_fallback_frames:=0
 
@@ -101,7 +104,9 @@ func _p1g_can_rebind() -> bool:
 	return true
 
 func _p1g_binding_matches() -> bool:
-	return is_instance_valid(_p1g_bound_muzzle) and _p1g_bound_muzzle==muzzle_marker and p1g_collision_binding_key==_p1g_binding_key()
+	# An optics refresh can rebuild a scope at the same ID and a new mount
+	# position, independently of the weapon's muzzle and imported mesh.
+	return is_instance_valid(_p1g_bound_muzzle) and _p1g_bound_muzzle==muzzle_marker and _p1g_bound_scope==weapon_optics.world_scope and p1g_collision_bindings.weapon_id==weapon_id
 
 func _p1g_collision_tick(visual_pose_current:=false) -> void:
 	if not p1g_authority_collision_pilot: return
@@ -117,7 +122,11 @@ func _p1g_collision_tick(visual_pose_current:=false) -> void:
 
 	var binding_matches:=_p1g_binding_matches()
 	var synced:=false
-	if not visual_pose_current and binding_matches:
+	if visual_pose_current and not _p1g_world_frame.is_empty():
+		synced=p1g_collision_rig.sync(_p1g_world_frame)
+		_p1g_world_frame={}
+		if synced: p1g_shared_pose_frames+=1
+	elif not visual_pose_current and binding_matches:
 		var frame: Dictionary=COLLISION_POSE_SOLVER.solve(p1g_collision_bindings,COLLISION_POSE_SOLVER.state(self))
 		if bool(frame.get("supported",false)):
 			synced=p1g_collision_rig.sync(frame)
@@ -140,8 +149,9 @@ func _p1g_collision_tick(visual_pose_current:=false) -> void:
 			p1g_collision_bindings=COLLISION_POSE_SOLVER.bind(self,p1g_collision_rig.legacy_regions)
 			p1g_collision_binding_key=_p1g_binding_key()
 			_p1g_bound_muzzle=muzzle_marker
+			_p1g_bound_scope=weapon_optics.world_scope
 		synced=p1g_collision_rig.sync_legacy(self)
-		if synced and visual_pose_current: p1g_visual_reuse_frames+=1
+	if synced and visual_pose_current: p1g_visual_reuse_frames+=1
 
 	if synced and not p1g_collision_rig.using_authority:
 		p1g_collision_rig.activate(self)
@@ -273,6 +283,9 @@ func _physics_process(delta: float) -> void:
 			else: set_utility("")
 		weapon_optics.advance(self,delta)
 		GameInfantryPose.reset(self);_swim_physics(delta)
+		# Swimming just published its own pose. A frame left by a network
+		# presentation callback is no longer valid.
+		_p1g_world_frame={}
 		_p1g_collision_tick(true)
 		return
 	elif swimming:
@@ -309,6 +322,7 @@ func _drone_controller_pose() -> void:
 
 func _animate_walk() -> void:
 	_p1g_visual_pose_updated=false
+	if not _p1g_world_frame.is_empty(): _p1g_world_frame={}
 	# P1a opt-in host audit. Physical hit regions are still children of
 	# visual pivots. The existing distance LOD can leave hitboxes stale on
 	# listen servers. Full articulation at 60 Hz corrects that, but the 28
@@ -324,9 +338,52 @@ func _animate_walk() -> void:
 		next_pose_usec=now+(33333 if distance<6400 else (66666 if distance<62500 else 125000))
 	if in_water():
 		_swim_pose()
-	else:
+	elif not p1g_authority_collision_pilot or not _p1g_pose_remote():
 		_pose_infantry()
 	_p1g_visual_pose_updated=p1g_authority_collision_pilot
+
+func _p1g_pose_remote() -> bool:
+	# Local FPP, special actions and unbound weapons use the existing pose.
+	# A remote firearm can publish both consumers from one evaluated frame.
+	if is_local or is_instance_valid(view_root) or not _p1g_binding_matches(): return false
+	var frame:=COLLISION_POSE_SOLVER.solve(p1g_collision_bindings,COLLISION_POSE_SOLVER.state(self),true)
+	if not bool(frame.get("supported",false)): return false
+	_p1g_apply_remote_pose(frame.presentation)
+	_p1g_world_frame=frame
+	return true
+
+func _p1g_apply_remote_pose(pose: Dictionary) -> void:
+	body_root.transform=pose.body
+	avatar_parts.torso.transform=pose.torso
+	avatar_parts.head.transform=pose.head
+	(body_root.get_node("Pelvis") as Node3D).transform=pose.pelvis
+	weapon_root.transform=pose.weapon
+	var imported:=weapon_root.get_node_or_null("Imported_"+GameWeapons.canonical(weapon_id)) as Node3D
+	if is_instance_valid(imported):
+		imported.transform=pose.model
+		GameReloadPose.apply(imported,weapon_id,pose.timeline)
+	for side: String in ["L","R"]:
+		var data: Dictionary=stance.leg_parts[side]
+		var leg: Dictionary=pose["leg"+side]
+		data.joint.transform=leg.joint
+		data.knee.transform=leg.knee
+		data.shoe.transform=leg.shoe
+		if pose.low_posture:
+			var pad:=data.knee.get_node_or_null("KneePad") as Node3D
+			if pad:
+				pad.rotation.x=-float(leg.knee_angle)*.5
+				pad.position=Basis(Vector3.RIGHT,pad.rotation.x)*Vector3(0,0,-.11)
+		var arm: Node3D=avatar_parts["arm_"+side.to_lower()]
+		var arm_pose: Dictionary=pose["arm"+side]
+		arm.transform=arm_pose.arm
+		(arm.get_node("Arm"+side+"Mesh") as Node3D).transform=arm_pose.upper
+		(arm.get_node("Forearm"+side+"Mesh") as Node3D).transform=arm_pose.lower
+		var hand:=arm.get_node("Hand"+side) as MeshInstance3D
+		hand.transform=arm_pose.hand
+		var mesh:=WarHumanRig.grip_glove(side=="L",weapon_id=="glock" or (side=="L" and pose.grabbing))
+		if hand.mesh!=mesh: hand.mesh=mesh
+		if arm.has_meta("human_pose_cache"): arm.remove_meta("human_pose_cache")
+		arm.set_meta("grip_error",arm_pose.grip_error)
 
 func _pose_infantry() -> void:
 	# Network velocity is the last packet's derivative and can outlive motion.

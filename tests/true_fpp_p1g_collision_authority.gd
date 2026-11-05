@@ -135,8 +135,29 @@ func run() -> void:
 	actor._animate_walk()
 	var reuse_before:=actor.p1g_visual_reuse_frames
 	var solves_before:=actor.p1g_solver_frames
+	var shared_before:=actor.p1g_shared_pose_frames
 	actor._p1g_collision_tick(actor._p1g_visual_pose_updated)
 	check(actor.p1g_visual_reuse_frames==reuse_before+1 and actor.p1g_solver_frames==solves_before,"fresh presentation supplies physics without a second solve")
+	check(actor.p1g_shared_pose_frames==shared_before+1,"remote firearm publishes both consumers from one solve")
+
+	# Check the shared presentation against the existing rig in a frame that
+	# also moves both the imported weapon and its support hand.
+	actor.reload_weapon=actor.weapon_id
+	actor.reload_total=4.
+	actor.reload_left=2.4
+	actor._pose_infantry()
+	var legacy_reload:=rig.legacy_snapshot(actor)
+	var shared_reload_before:=actor.p1g_shared_pose_frames
+	actor.next_pose_usec=0
+	actor._animate_walk()
+	actor._p1g_collision_tick(actor._p1g_visual_pose_updated)
+	var visual_reload:=Snapshot.compare(legacy_reload,rig.legacy_snapshot(actor))
+	var physical_reload:=Snapshot.compare(rig.legacy_snapshot(actor),rig.snapshot())
+	check(actor.p1g_shared_pose_frames==shared_reload_before+1,"remote reload uses one shared pose")
+	check(visual_reload.missing.is_empty() and visual_reload.max_origin_m<.001 and visual_reload.max_basis_delta<.005 and visual_reload.muzzle_origin_m<.001,"shared reload matches legacy hand, hitboxes and muzzle")
+	check(physical_reload.missing.is_empty() and physical_reload.max_origin_m<.001 and physical_reload.max_basis_delta<.005 and physical_reload.muzzle_origin_m<.001,"remote render and collision stay aligned in reload")
+	actor.reload_left=0.
+	actor.reload_weapon=""
 
 	# A grenade changes the required pose within that same physics frame.
 	# The next attempt at visual articulation is deliberately skipped by LOD.
@@ -172,6 +193,23 @@ func run() -> void:
 	check(actor.p1g_solver_frames==old_solver_frames+1,"AK returns to independent solver after crouched rebind")
 	var ak_parity:=Snapshot.compare(crouched_reference,rig.snapshot())
 	check(ak_parity.missing.is_empty() and ak_parity.max_origin_m<.001 and ak_parity.max_basis_delta<.005 and ak_parity.muzzle_origin_m<.001,"crouched rebind preserves region and muzzle parity")
+
+	# Rebuilding the same optic does not rebuild the weapon. The scope's
+	# mounted transform still needs its own calibration.
+	actor.set_meta("weapon_attachments",{"ak":GameAttachmentState.from_legacy("ak","hensoldt4x")})
+	actor.refresh_weapon_optics()
+	actor.next_pose_usec=0
+	actor._animate_walk()
+	actor._p1g_collision_tick(actor._p1g_visual_pose_updated)
+	var bound_scope:=actor.weapon_optics.world_scope
+	var bound_muzzle:=actor.muzzle_marker
+	check(is_instance_valid(bound_scope) and actor._p1g_binding_matches(),"optic mount is calibrated after refresh")
+	actor.refresh_weapon_optics()
+	check(actor.muzzle_marker==bound_muzzle and actor.weapon_optics.world_scope!=bound_scope and not actor._p1g_binding_matches(),"same optic ID and muzzle still invalidate a rebuilt scope")
+	actor.next_pose_usec=0
+	actor._animate_walk()
+	actor._p1g_collision_tick(actor._p1g_visual_pose_updated)
+	check(actor._p1g_binding_matches(),"recalibration adopts the rebuilt scope")
 
 	# Boarding can leave riders exposed. Preserve the area's enabled state and
 	# keep it attached to the pivots driven by the vehicle's seat updates.

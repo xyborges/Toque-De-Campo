@@ -86,7 +86,9 @@ static func bind(actor: WarPlayer,region_source: Dictionary={}) -> Dictionary:
 		"weapon_id":weapon_id,
 		"neutral_grip":{"grip_left":weapon_space*support_target,
 			"grip_right":weapon_space*actor.weapon_hand_target(false),"hand_basis_local":hand_basis_local,
-			"muzzle_local":weapon_space*actor.muzzle_marker.global_transform,"grabbing":false},
+			"muzzle_local":weapon_space*actor.muzzle_marker.global_transform,"grabbing":false,
+			"model":model.transform if is_instance_valid(model) else Transform3D.IDENTITY,
+			"timeline":GameReloadPose.state(weapon_id,0.,0.)},
 		"hand_basis_local":hand_basis_local,
 		"muzzle_model_local":muzzle_model_local,
 		"right_model_local":right_model_local,
@@ -128,15 +130,18 @@ static func supported(state: Dictionary) -> bool:
 	var ads_safe: bool=optical_state_valid and (not iron or not optic_enabled or valid_optic_weight)
 	var reload_left: float=float(state.get("reload_left",0.))
 	var reload_total: float=float(state.get("reload_total",0.))
-	var reload_weapon: String=GameWeapons.canonical(str(state.get("reload_weapon","")))
-	var reload_active: bool=reload_left>.00001
-	var reload_safe: bool=not reload_active or (reload_total>.00001 and reload_weapon==GameWeapons.canonical(str(state.get("weapon",""))))
+	var reload_safe: bool=reload_left<=.00001 or (reload_total>.00001 and GameWeapons.canonical(str(state.get("reload_weapon","")))==str(state.get("weapon","")))
 	return str(state.get("weapon","")) in SUPPORTED_WEAPONS and ads_safe and valid_posture and valid_motion and reload_safe and float(state.get("fire_cooldown",0.))<=0. and float(state.get("reaction",0.))==0. and float(state.get("attack",0.))==0. and float(state.get("recoil",0.))==0. and not bool(state.get("special",false))
 
 static func state(actor: WarPlayer) -> Dictionary:
-	return {"weapon":actor.weapon_id,"pitch":actor.pitch,"lean":actor.lean,"scoped":actor.weapon_optics.presented(),"iron":actor.iron_sights,"aiming":actor.aiming,"optic_enabled":actor.weapon_optics.enabled(actor),"optic_weight":actor.weapon_optics.aim_weight,"optic_id":str(actor.weapon_optics.selected_optic),"fire_cooldown":actor.fire_cooldown,
+	# Refresh validates attachments and updates selected_optic with the mounted
+	# optic. The physics tick can use that result without validating it again.
+	var optic_id: String=actor.weapon_optics.selected_optic
+	var stale_velocity: bool=not actor.is_local and actor.locomotion.initialized and actor.locomotion.speed<=.18
+	var ground_speed:=0. if stale_velocity else Vector2(actor.velocity.x,actor.velocity.z).length()
+	return {"weapon":actor.weapon_id,"pitch":actor.pitch,"lean":actor.lean,"scoped":actor.weapon_optics.presented(),"iron":actor.iron_sights,"aiming":actor.aiming,"optic_enabled":not optic_id.is_empty(),"optic_weight":actor.weapon_optics.aim_weight,"optic_id":optic_id,"fire_cooldown":actor.fire_cooldown,
 		"grounded":actor.locomotion.grounded,"phase":actor.locomotion.phase,
-		"direction":actor.locomotion.local_direction,"velocity_ground_speed":Vector2(actor.velocity.x,actor.velocity.z).length(),
+		"direction":actor.locomotion.local_direction,"velocity_ground_speed":ground_speed,
 		"crouched":actor.crouched,"prone":actor.prone,
 		"legs_intact":float(actor.limbs.legL)>0. and float(actor.limbs.legR)>0.,
 		"crouch_weight":actor.stance.crouch_weight,"prone_weight":actor.stance.prone_weight,
@@ -156,13 +161,13 @@ static func _gait_angles(input: Dictionary,side: String,lean: float) -> Vector3:
 	var sign_value: float=-1. if side=="L" else 1.
 	return Vector3(sign_value*stride*forward,0.,sign_value*stride*lateral*.55-atan2(lean*.04,.78))
 
-static func _walking_height(bindings: Dictionary,input: Dictionary,lean: float) -> float:
+static func _walking_height(bindings: Dictionary,gait_left: Vector3,gait_right: Vector3,lean: float) -> float:
 	# The authored boot AABB is calibrated once. Keep the exact planted-sole
 	# support calculation of WarStance without reading mesh nodes each tick.
 	var lowest:=INF
 	for side: String in ["L","R"]:
 		var data: Dictionary=bindings.legs[side]
-		var angles:=_gait_angles(input,side,lean)
+		var angles:=gait_left if side=="L" else gait_right
 		var position: Vector3=Vector3(data.base_position)+Vector3(lean*.04,0.,0.)
 		var leg_pose:=Transform3D(Basis.from_euler(angles)*Basis.from_scale(Vector3(data.leg_scale)),position)
 		var pose: Transform3D=leg_pose*Transform3D(data.knee)*Transform3D(data.shoe)
@@ -192,7 +197,7 @@ static func _arm(shoulder: Vector3,grip: Vector3,hand_basis: Basis,upper_pose: T
 	var projection:=clampf((a*a-b*b+distance*distance)/(2*distance),0,a)
 	var elbow:=shoulder+along*projection+perpendicular*sqrt(maxf(0,a*a-projection*projection))
 	var arm:=Transform3D(Basis(Quaternion(Vector3.DOWN,(elbow-shoulder).normalized())),shoulder)
-	var inverse:=arm.affine_inverse()
+	var inverse:=arm.inverse() # The quaternion constructs an orthonormal basis.
 	var elbow_local:=inverse*elbow
 	var wrist_local:=inverse*wrist
 	var lower_basis:=Basis(Quaternion(Vector3.DOWN,(wrist_local-elbow_local).normalized()))*Basis.from_scale(Vector3(proportion,b/LOWER,proportion))
@@ -224,9 +229,10 @@ static func _reload_geometry(bindings: Dictionary,input: Dictionary) -> Dictiona
 		grip_right=model_local*Vector3(pose.right_hand)
 		hand_basis_local=model_local.basis*rest_basis.inverse()
 	return {"grip_left":grip_left,"grip_right":grip_right,"hand_basis_local":hand_basis_local,
-		"grabbing":bool(pose.hand_grabbing),"muzzle_local":model_local*Transform3D(bindings.muzzle_model_local)}
+		"grabbing":bool(pose.hand_grabbing),"muzzle_local":model_local*Transform3D(bindings.muzzle_model_local),
+		"model":model_local,"timeline":pose}
 
-static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
+static func solve(bindings: Dictionary,input: Dictionary,include_presentation:=false) -> Dictionary:
 	if not supported(input) or str(input.get("weapon",""))!=str(bindings.get("weapon_id","")):
 		return {"supported":false,"reason":"Requires matching calibrated firearm and supported posture/motion; recoil and utility remain gated"}
 	if bool(input.get("optic_enabled",false)) and str(input.get("optic_id",""))!=str(bindings.get("optic_id","")):
@@ -242,8 +248,10 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	var sprint: float=float(input.get("sprint",0.))
 	var phase: float=float(input.get("phase",0.))
 	var direction: Vector3=input.get("direction",Vector3.ZERO)
+	var gait_left:=_gait_angles(input,"L",lean)
+	var gait_right:=_gait_angles(input,"R",lean)
 	if crouch<.00001 and prone<.00001 and moving>.00001 and bool(input.get("grounded",false)):
-		body_height=_walking_height(bindings,input,lean)
+		body_height=_walking_height(bindings,gait_left,gait_right,lean)
 	var body:=Transform3D(Basis.IDENTITY,Vector3(0,body_height,0))
 	# WarPlayer clamps muzzle aim more tightly while prone; the torso still
 	# uses the raw pose pitch when matching the current procedural rig.
@@ -284,22 +292,29 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	var head_basis:=Basis(Vector3.RIGHT,clampf(pitch*.92,-1.12,1.12))*Basis(Vector3.BACK,-lean*.18)
 	var neck:=Vector3(0,float(Vector3(rest.head).y)-.21,0)
 	var mounts: Dictionary={}
+	var presentation: Dictionary={}
 	var torso_animation:=Basis.from_euler(Vector3(-.085*sprint*maxf(0.,-direction.z),0.,-direction.x*.035*moving))
 	var torso_euler: Vector3=(upper.basis*torso_animation).get_euler()
 	torso_euler.x=lerp_angle(torso_euler.x,-PI*.5,prone)
 	var torso_basis:=Basis.from_euler(torso_euler)*Basis.from_scale(Vector3.ONE*torso_scale)
 	var torso_origin: Vector3=(upper*Vector3(rest.torso)).lerp(Vector3(0,.06,-.42),prone)
-	mounts["torso"]=body*Transform3D(torso_basis,torso_origin)
-	mounts["head"]=body*Transform3D(head_basis*Basis.from_scale(Vector3.ONE*head_scale),(upper*neck+head_basis*(Vector3(rest.head)-neck)).lerp(Vector3(0,.22,-1.02),prone))
+	var torso:=Transform3D(torso_basis,torso_origin)
+	var head:=Transform3D(head_basis*Basis.from_scale(Vector3.ONE*head_scale),(upper*neck+head_basis*(Vector3(rest.head)-neck)).lerp(Vector3(0,.22,-1.02),prone))
 	var pelvis_origin: Vector3=(Vector3(rest.pelvis)+Vector3(lean*.04,0,0)).lerp(Vector3(0,.04,.05),prone)
-	var pelvis_basis:=Basis.from_euler(Vector3(-PI*.5*prone,0.,-lean*.035))
-	mounts["pelvis"]=body*Transform3D(pelvis_basis,pelvis_origin)
+	var pelvis:=Transform3D(Basis.from_euler(Vector3(-PI*.5*prone,0.,-lean*.035)),pelvis_origin)
+	mounts["torso"]=body*torso
+	mounts["head"]=body*head
+	mounts["pelvis"]=body*pelvis
+	if include_presentation:
+		presentation={"body":body,"torso":torso,"head":head,"pelvis":pelvis,"weapon":weapon,
+			"model":reload_geometry.model,"timeline":reload_geometry.timeline,"grabbing":reload_geometry.grabbing,
+			"low_posture":crouch>0. or prone>0.}
 	var legs: Dictionary=bindings.legs
 	for side: String in ["L","R"]:
 		var leg: Dictionary=legs[side]
 		var sign_value: float=-1. if side=="L" else 1.
 		var position: Vector3=(Vector3(leg.base_position)+Vector3(lean*.04,0,0)).lerp(Vector3(sign_value*.16,0,.10),prone)
-		var gait_angles: Vector3=_gait_angles(input,side,lean)
+		var gait_angles:=gait_left if side=="L" else gait_right
 		var leg_roll: float=gait_angles.z+sign_value*.07*prone
 		var thigh_angle:=gait_angles.x
 		var knee_angle:=0.
@@ -319,12 +334,18 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 			var prone_bend: float=-acos(clampf((knee_y-ankle_y)/b,-1.,1.))-thigh_angle
 			knee_angle=bend*crouch+prone_bend*prone
 		var shoe_angle: float=-(thigh_angle+knee_angle)*crouch
-		var leg_pose:=body*Transform3D(Basis.from_euler(Vector3(thigh_angle,0.,leg_roll))*Basis.from_scale(Vector3(leg.leg_scale)),position)
-		var knee_pose:=Transform3D(Basis(Vector3.RIGHT,knee_angle)*Transform3D(leg.knee).basis,Vector3(Transform3D(leg.knee).origin))
-		var shoe_pose:=Transform3D(Basis(Vector3.RIGHT,shoe_angle)*Transform3D(leg.shoe).basis,Vector3(Transform3D(leg.shoe).origin))
-		mounts["thigh"+side]=leg_pose*Transform3D(leg.thigh)
-		mounts["shin"+side]=leg_pose*knee_pose
-		mounts["foot"+side]=leg_pose*knee_pose*shoe_pose
+		var leg_pose:=Transform3D(Basis.from_euler(Vector3(thigh_angle,0.,leg_roll))*Basis.from_scale(Vector3(leg.leg_scale)),position)
+		var knee_rest: Transform3D=leg.knee
+		var shoe_rest: Transform3D=leg.shoe
+		var knee_pose:=Transform3D(Basis(Vector3.RIGHT,knee_angle)*knee_rest.basis,knee_rest.origin)
+		var shoe_pose:=Transform3D(Basis(Vector3.RIGHT,shoe_angle)*shoe_rest.basis,shoe_rest.origin)
+		var thigh_world:=body*leg_pose
+		var knee_world:=thigh_world*knee_pose
+		mounts["thigh"+side]=thigh_world*Transform3D(leg.thigh)
+		mounts["shin"+side]=knee_world
+		mounts["foot"+side]=knee_world*shoe_pose
+		if include_presentation:
+			presentation["leg"+side]={"joint":leg_pose,"knee":knee_pose,"shoe":shoe_pose,"knee_angle":knee_angle}
 	for side: String in ["L","R"]:
 		var point:=Vector3(rest.left if side=="L" else rest.right)
 		point.x=signf(point.x)*(.325*torso_scale+.025)
@@ -335,11 +356,17 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 		var relative_hand_basis:=weapon.basis*Basis(reload_geometry.hand_basis_local)
 		var result: Dictionary=_arm(arm_position,relative_grip,relative_hand_basis,upper,side,clampf(float(bindings.arm_proportion),.65,1.5),str(bindings.weapon_id)=="glock",side=="L" and bool(reload_geometry.grabbing))
 		if result.is_empty():return {"supported":false,"reason":"Invalid arm target"}
-		mounts["upper"+side]=body*result.arm*result.upper
-		mounts["lower"+side]=body*result.arm*result.lower
-		mounts["hand"+side]=body*result.arm*result.hand
+		var arm_world: Transform3D=body*Transform3D(result.arm)
+		mounts["upper"+side]=arm_world*Transform3D(result.upper)
+		mounts["lower"+side]=arm_world*Transform3D(result.lower)
+		mounts["hand"+side]=arm_world*Transform3D(result.hand)
+		if include_presentation:
+			result["grip_error"]=(Transform3D(result.arm)*Vector3(Transform3D(result.hand).origin)).distance_to(relative_grip)
+			presentation["arm"+side]=result
 	var regions: Dictionary={}
 	var offsets: Dictionary=bindings.offsets
 	for id: String in REGION_MOUNTS:
 		if offsets.has(id): regions[id]=Transform3D(mounts[REGION_MOUNTS[id]])*Transform3D(offsets[id])
-	return {"supported":true,"regions":regions,"has_muzzle":true,"muzzle":muzzle}
+	var frame: Dictionary={"supported":true,"regions":regions,"has_muzzle":true,"muzzle":muzzle}
+	if include_presentation: frame["presentation"]=presentation
+	return frame
