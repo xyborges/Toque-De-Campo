@@ -75,24 +75,43 @@ void fragment() {
 }
 """
 
-const PAVING_SHADER := """
+const TERRAIN_SHADER := """
 shader_type spatial;
 render_mode specular_disabled;
 
-uniform sampler2D surface_tex : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D street_mask : filter_linear_mipmap, repeat_disable;
+uniform sampler2D concrete_tex : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D asphalt_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D wear_tex : source_color, filter_linear_mipmap, repeat_enable;
-uniform vec3 tone : source_color = vec3(0.53, 0.53, 0.51);
-uniform float distress = 1.0;
+uniform float half_map = 750.0;
 
 void fragment() {
-	vec3 pavement = texture(surface_tex, UV).rgb * tone * COLOR.rgb;
-	float near_factor = 1.0 - smoothstep(30.0, 85.0, length(VERTEX));
-	if (near_factor > 0.0) {
-		vec4 wear = texture(wear_tex, UV * 0.179);
-		pavement = mix(pavement, wear.rgb, wear.a * near_factor * distress);
+	vec2 world_xz = UV / 0.23;
+	vec2 edge = 0.10 * vec2(sin(world_xz.y * 0.68 + world_xz.x * 0.11),
+		cos(world_xz.x * 0.57 + world_xz.y * 0.17));
+	vec3 surface = texture(street_mask, (world_xz + edge + vec2(half_map)) / (2.0 * half_map)).rgb;
+	float coverage = clamp(surface.r + surface.g, 0.0, 1.0);
+	vec3 ground = texture(concrete_tex, UV).rgb * COLOR.rgb;
+	if (coverage > 0.005) {
+		vec2 paving_uv = world_xz * 0.55;
+		float worn = sin(world_xz.x * 0.65 + world_xz.y * 0.37)
+			* cos(world_xz.y * 0.51 - world_xz.x * 0.18);
+		vec3 tint = mix(vec3(0.714, 0.690, 0.651), vec3(0.929, 0.922, 0.886),
+			smoothstep(-0.30, 0.65, worn));
+		vec3 road = texture(asphalt_tex, paving_uv).rgb * vec3(0.53, 0.53, 0.51) * tint;
+		vec3 lane = texture(concrete_tex, paving_uv).rgb * vec3(0.46, 0.45, 0.43) * tint;
+		float material_mix = surface.r / max(coverage, 0.005);
+		vec3 pavement = mix(lane, road, material_mix);
+		float near_factor = 1.0 - smoothstep(30.0, 85.0, length(VERTEX));
+		if (near_factor > 0.0) {
+			vec4 wear = texture(wear_tex, paving_uv * 0.179);
+			pavement = mix(pavement, wear.rgb, wear.a * near_factor * mix(0.79, 1.0, material_mix));
+		}
+		pavement = mix(pavement, vec3(0.55, 0.51, 0.38), surface.b * 0.7);
+		ground = mix(ground, pavement, coverage);
 	}
-	ALBEDO = pavement;
-	ROUGHNESS = 0.98;
+	ALBEDO = ground;
+	ROUGHNESS = 1.0;
 }
 """
 
@@ -142,8 +161,6 @@ const WALL_CRACKS := """
 
 static var wall_paint: ShaderMaterial
 static var wall_brick: ShaderMaterial
-static var asphalt: ShaderMaterial
-static var concrete: ShaderMaterial
 static var tag_meshes: Array[Mesh]=[]
 
 static func _material(code: String) -> ShaderMaterial:
@@ -180,19 +197,17 @@ static func paint_walls(parent: Node3D) -> void:
 			if child.material_override==plaster_material:child.material_override=wall_paint
 			elif child.material_override==brick_material:child.material_override=wall_brick
 
-static func paving(is_concrete: bool) -> ShaderMaterial:
-	if asphalt==null:
-		var image:=Image.new()
-		image.load_svg_from_string(PAVING_WEAR)
-		image.generate_mipmaps()
-		asphalt=_material(PAVING_SHADER)
-		asphalt.set_shader_parameter("wear_tex",ImageTexture.create_from_image(image))
-		asphalt.set_shader_parameter("surface_tex",EnvironmentKit.material("asphalt").albedo_texture)
-		concrete=asphalt.duplicate() as ShaderMaterial
-		concrete.set_shader_parameter("surface_tex",EnvironmentKit.material("concrete").albedo_texture)
-		concrete.set_shader_parameter("tone",Color("76736d"))
-		concrete.set_shader_parameter("distress",.79)
-	return concrete if is_concrete else asphalt
+static func terrain_material(mask: Image, half_map: float) -> ShaderMaterial:
+	var wear := Image.new()
+	wear.load_svg_from_string(PAVING_WEAR)
+	wear.generate_mipmaps()
+	var result := _material(TERRAIN_SHADER)
+	result.set_shader_parameter("half_map", half_map)
+	result.set_shader_parameter("street_mask", ImageTexture.create_from_image(mask))
+	result.set_shader_parameter("wear_tex", ImageTexture.create_from_image(wear))
+	result.set_shader_parameter("concrete_tex", EnvironmentKit.material("concrete").albedo_texture)
+	result.set_shader_parameter("asphalt_tex", EnvironmentKit.material("asphalt").albedo_texture)
+	return result
 
 static func tag(kit: EnvironmentKit,position: Vector3,yaw: float,index: int) -> void:
 	if not kit.visuals:return

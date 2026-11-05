@@ -9,6 +9,8 @@ var occupied: Dictionary={}
 
 const SIZES := [Vector2(12.8,12.3),Vector2(11.8,13.5),Vector2(13.4,11.8),
 	Vector2(12.2,12.8),Vector2(13.2,13.0)]
+const BAILE_CENTER := Vector2(430.0, -275.0)
+const BAILE_CLEARANCE := Rect2(BAILE_CENTER - Vector2(47.0, 34.0), Vector2(94.0, 68.0))
 const PALETTES := [
 	["plaster:688d91","plaster:b3a179","brick:9d5947","plaster:9c6358"],
 	["plaster:8e9c7b","brick:985846","plaster:c1b390","plaster:718b9c"],
@@ -41,6 +43,7 @@ func frontage(p: Vector2,half: Vector2) -> Dictionary:
 func clear(p: Vector2,half: Vector2) -> bool:
 	if p.x< -650 or p.x>650 or p.y< -550 or p.y>505:return false
 	if p.x>510 and p.y>420:return false
+	if BAILE_CLEARANCE.intersects(Rect2(p-half,half*2.0).grow(1.0)):return false
 	if float(frontage(p,half).gap)<.38:return false
 	var radius:=half.length()
 	for base: Vector2 in bases:
@@ -69,29 +72,44 @@ func occupy(rect: Rect2) -> void:
 
 func _plan() -> Array[Dictionary]:
 	var candidates: Array[Dictionary]=[]
-	for row in 72:
-		var z: float=-535.0+row*14.6
-		var shift:=sin(floorf(row*.5)*.84)*2.25
+	# Denser candidate grid with gentle block-level drift. Houses remain in
+	# coherent clusters, while streets, stairs, and intentional pockets stay
+	# protected by the footprint checks below.
+	for row in 80:
+		var z: float=-535.0+row*13.0
+		var block_row:=floori(row/4.0)
+		var shift:=sin(block_row*.84)*2.25+sin(row*.43)*.48
 		var fringe:=512.0+70*sin(z*.011)+36*cos(z*.026)
-		for column in 88:
-			var x: float=-635.0+column*14.6+shift
+		for column in 100:
+			var block_column:=floori(column/5.0)
+			var x: float=-643.0+column*13.0+shift+sin(block_column*.91)*1.7
 			var sparse:=z>400 or absf(x-22*sin(z*.02))>fringe
 			if sparse and (row%2!=0 or column%3==0):continue
-			var block:=posmod(floori(column/5.0)+floori(row/4.0)*3,4)
+			var block:=posmod(block_column+block_row*3,4)
 			var profile:=posmod(column+row*2+block,5)
 			var size: Vector2=SIZES[profile]
 			# Related homes share floor heights, palette and extension direction.
 			# The small repeating setbacks belong to a block, not a random house.
-			var p:=Vector2(x+float((column+block)%3-1)*.24,z+float((row+profile)%3-1)*.30)
+			var cluster_x:=sin(block_column*1.71+block_row*.43)*.82
+			var cluster_z:=cos(block_row*1.37+block_column*.58)*.72
+			var p:=Vector2(x+cluster_x+float((column+block)%3-1)*.34,
+				z+cluster_z+float((row+profile)%3-1)*.38)
+			# A few houses in each cluster start as smaller footprints; their
+			# raised additions make visible construction phases and narrow gaps.
+			var extension_stage:=posmod(column*2+row+block,7)
+			if extension_stage in [1,4]: size*=Vector2(.91,.94)
 			var edge:=frontage(p,size*.5)
 			if float(edge.gap)<.4:continue
 			var storeys: int=[2,3,4,2,3][profile]
 			if block==2 and profile==2:storeys=5
 			if sparse:storeys=mini(storeys,2)
 			var palette: Array=PALETTES[block]
-			candidates.append({"id":row*88+column,"row":row,"column":column,
+			var extension_side:=posmod(block+floori(column/2.0)+floori(row/3.0),4)
+			if extension_stage==6: extension_side=posmod(extension_side+1,4)
+			candidates.append({"id":row*100+column,"row":row,"column":column,
 				"position":p,"size":size,"profile":profile,"block":block,
 				"storeys":storeys,"finish":palette[(column+row)%palette.size()],
+				"extension_side":extension_side,"extension_stage":extension_stage,
 				"sparse":sparse,"gap":edge.gap,"edge":edge,"moved":false})
 	candidates.sort_custom(func(a: Dictionary,b: Dictionary):
 		return int(a.id)<int(b.id) if float(a.gap)==float(b.gap) else float(a.gap)<float(b.gap))
