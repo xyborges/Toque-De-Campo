@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="StandardMaterial3D" id="TankMat"]
+albedo_color = Color(0.12, 0.22, 0.28, 1)
+roughness = 0.82
+
+[sub_resource type="StandardMaterial3D" id="CapMat"]
+albedo_color = Color(0.08, 0.12, 0.14, 1)
+roughness = 0.9
+
+[sub_resource type="CylinderMesh" id="TankMesh"]
+top_radius = 0.48
+bottom_radius = 0.52
+height = 0.92
+radial_segments = 12
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CapMesh"]
+top_radius = 0.19
+bottom_radius = 0.22
+height = 0.10
+radial_segments = 10
+
+[node name="FavelaCaixaDagua" type="Node3D"]
+metadata/library_id = "favela_caixa_dagua"
+metadata/footprint = Vector2(1.1, 1.1)
+metadata/origin = "roof_surface"
+metadata/asset_revision = 1
+metadata/lod_near = 260.0
+metadata/lod_far = 420.0
+metadata/surface = "plastic"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.46, 0)
+mesh = SubResource("TankMesh")
+material_override = SubResource("TankMat")
+cast_shadow = 0
+visibility_range_end = 420.0
+
+[node name="Tampa" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.97, 0)
+mesh = SubResource("CapMesh")
+material_override = SubResource("CapMat")
+cast_shadow = 0
+visibility_range_end = 220.0

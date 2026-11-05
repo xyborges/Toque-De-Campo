@@ -76,17 +76,34 @@ func _rect_distance(p: Vector2,rect: Rect2) -> float:
 	var dz:=maxf(maxf(rect.position.y-p.y,0.0),p.y-rect.end.y)
 	return Vector2(dx,dz).length()
 
-func _house_distance(p: Vector2) -> float:
+func _nearest_house(p: Vector2) -> Dictionary:
 	var best:=INF
+	var closest:=p
+	var best_index:=-1
 	for index in _near_indices(p):
-		best=minf(best,_rect_distance(p,lot_rects[int(index)]))
-	return best
+		var rect:=lot_rects[int(index)]
+		var q:=Vector2(
+			clampf(p.x,rect.position.x,rect.end.x),
+			clampf(p.y,rect.position.y,rect.end.y)
+		)
+		var distance:=p.distance_to(q)
+		if distance<best:
+			best=distance
+			closest=q
+			best_index=int(index)
+	return {"distance":best,"point":closest,"index":best_index}
+
+func _house_distance(p: Vector2) -> float:
+	return float(_nearest_house(p).distance)
 
 func _protected(p: Vector2) -> bool:
 	for base: Vector2 in bases:
 		if p.distance_to(base)<78.0:return true
 	for target: Vector2 in objectives:
-		if p.distance_to(target)<36.0:return true
+		# Keep the actual capture core open, but allow retaining walls, drainage
+		# and pedestrian infrastructure on the surrounding slopes. Housing keeps
+		# its larger independent objective reserve in favela_layout.gd.
+		if p.distance_to(target)<18.0:return true
 	return false
 
 func _height(p: Vector2) -> float:
@@ -112,10 +129,9 @@ func _record(
 ) -> Dictionary:
 	var spec: Dictionary=DEFINITIONS[kind]
 	var depth:=float(spec.depth)
-	var at:=center+normal*side*(depth*.5)
 	return {
 		"kind":kind,
-		"position":Vector3(at.x,_height(at),at.y),
+		"position":Vector3(center.x,_height(center),center.y),
 		"yaw":_yaw_for(tangent,str(spec.axis)),
 		"solid":bool(spec.solid),
 		"road":road_id,
@@ -147,9 +163,33 @@ func _append(
 	var center:=_edge_center(road_center,normal,side,radius,depth,extra)
 	if _protected(center):return
 	var record:=_record(kind,center,tangent,normal,side,road_id,segment,sample,context)
-	# _record expects its center on the inner face, so cancel its half-depth
-	# helper offset by reconstructing the exact planned world point.
-	record.position=Vector3(center.x,_height(center),center.y)
+	output.append(record)
+
+func _append_facade(
+	output: Array[Dictionary],
+	kind: String,
+	facade: Vector2,
+	road_center: Vector2,
+	tangent: Vector2,
+	normal: Vector2,
+	side: float,
+	radius: float,
+	road_id: int,
+	segment: int,
+	sample: int,
+	context: String
+) -> void:
+	var depth:=float(DEFINITIONS[kind].depth)
+	var outward:=normal*side
+	var center:=facade-outward*(depth*.5+.035)
+	var clearance:=(center-road_center).dot(outward)-radius-depth*.5
+	if clearance<ROAD_CLEARANCE:
+		center=_edge_center(road_center,normal,side,radius,depth)
+		clearance=ROAD_CLEARANCE
+	if _protected(center):return
+	var record:=_record(kind,center,tangent,normal,side,road_id,segment,sample,context)
+	record.road_clearance=clearance
+	record.facade_snapped=true
 	output.append(record)
 
 func _roadside(output: Array[Dictionary]) -> void:
@@ -175,7 +215,8 @@ func _roadside(output: Array[Dictionary]) -> void:
 					var edge:=road_center+normal*side*(radius+ROAD_CLEARANCE)
 					if _protected(edge):continue
 					var outward:=normal*side
-					var house_gap:=_house_distance(edge)
+					var house_info:=_nearest_house(edge)
+					var house_gap:=float(house_info.distance)
 					var h0:=_height(edge)
 					var h2:=_height(edge+outward*2.2)
 					var h45:=_height(edge+outward*4.5)
@@ -200,15 +241,16 @@ func _roadside(output: Array[Dictionary]) -> void:
 					# Tight frontage: use facade-scale infrastructure. These are
 					# non-solid and later get snapped to the actual facade plane.
 					if house_gap<3.2:
+						var facade: Vector2=house_info.point
 						if seed%4==0:
-							_append(output,"favela_portao_grade",road_center,tangent,normal,side,radius,
+							_append_facade(output,"favela_portao_grade",facade,road_center,tangent,normal,side,radius,
 								road_id,segment,sample,"residential_front")
 						elif seed%4==1:
-							_append(output,"favela_tubulacao_externa",road_center,tangent,normal,side,radius,
-								road_id,segment,sample,"service_front",.22)
-						elif seed%11==0:
-							_append(output,"favela_tanque_lavanderia",road_center,tangent,normal,side,radius,
-								road_id,segment,sample,"domestic_front",.35)
+							_append_facade(output,"favela_tubulacao_externa",facade,road_center,tangent,normal,side,radius,
+								road_id,segment,sample,"service_front")
+						elif seed%11==0 and house_gap>1.1:
+							_append_facade(output,"favela_tanque_lavanderia",facade,road_center,tangent,normal,side,radius,
+								road_id,segment,sample,"domestic_front")
 						continue
 
 					# Medium gap: drainage defines the road edge and handrails

@@ -47,7 +47,7 @@ func _run() -> void:
 	require(roadside>=200,"too few functional roadside modules")
 	require(solid<=220,"too many new structural colliders")
 	require(min_clearance>=.47,"road reserve below 47 cm")
-	require(max_clearance<=.49,"road clearance bookkeeping drift")
+	require(max_clearance<=3.5,"facade snap moved detail implausibly far from road edge")
 	require(counts.get("favela_canaleta_drenagem",0)>=45,"drainage coverage too low")
 	require(counts.get("favela_muro_contencao",0)>=15,"retaining wall coverage too low")
 	require(counts.get("favela_portao_grade",0)>=25,"residential edge coverage too low")

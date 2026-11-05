@@ -19,6 +19,8 @@ const POLE := preload("res://modes/war/library/favela_poste_cabos.tscn")
 const CABLE := preload("res://modes/war/library/favela_rede_aerea.tscn")
 const ARCHITECTURE := preload("res://modes/war/scripts/favela_architecture.gd")
 const LAYOUT := preload("res://modes/war/scripts/favela_layout.gd")
+const EDGE_COMPOSITION := preload("res://modes/war/scripts/favela_edge_composition.gd")
+const STREET_SPACE := preload("res://modes/war/scripts/favela_street_space.gd")
 const STREET_ART := preload("res://modes/war/scripts/favela_street_art.gd")
 const PARKED_BIKE := preload("res://modes/war/library/favela_moto_estacionada.tscn")
 const PRIMARY := [
@@ -45,6 +47,10 @@ const OBJECTIVES_2D := [
 var render_visuals := true
 var build_metrics: Dictionary = {}
 var street_fixtures: Node3D
+var streets: STREET_SPACE
+var litter_sites: Array[Dictionary] = []
+var fixture_moves := 0
+var fixture_skips := 0
 var store_count:=0
 var pole_count:=0
 var cable_count:=0
@@ -60,8 +66,11 @@ var facade_modules:=0
 var roof_modules:=0
 var lean_tos:=0
 var underpasses:=0
+var edge_module_count:=0
+var edge_solid_count:=0
+var edge_module_skips:=0
 
-static var ground_material: StandardMaterial3D
+static var ground_material: Material
 static var terrain_samples := PackedFloat32Array()
 static var housing_lots: Array[Dictionary]=[]
 
@@ -159,7 +168,7 @@ static func road_envelopes() -> Array[Dictionary]:
 	for z: float in CROSS_STREETS:
 		roads.append({"id":roads.size(),"points":[Vector2(-640,z),Vector2(640,z)],"width":CROSS_WIDTH})
 	for x: float in VERTICAL_STREETS:
-		roads.append({"id":roads.size(),"points":[Vector2(x,-550),Vector2(x,500)],"width":ALLEY_WIDTH})
+		roads.append({"id":roads.size(),"points":[Vector2(x,-550),Vector2(x,500)],"width":ALLEY_WIDTH,"asphalt":false})
 	for route: Array in MINI_STREETS:
 		roads.append({"id":roads.size(),"points":route,"width":MINI_STREET_WIDTH})
 	return roads
@@ -174,17 +183,29 @@ func build() -> void:
 	set_meta("sector_colliders",true)
 	set_meta("war_detail_lod",true)
 	set_meta("use_occluders",false)
+	streets = STREET_SPACE.new(road_envelopes())
+	_reserve_buildings_and_spawns()
+	if render_visuals and ground_material == null:
+		var mask := streets.pavement_mask(HALF, _pavement_areas())
+		if mask != null:
+			ground_material = STREET_ART.terrain_material(mask, HALF)
+		else:
+			push_error("Favela pavement mask could not be built")
+			ground_material = EnvironmentKit.material("sand")
 	for iz in 15:
 		for ix in 15:_terrain_tile(ix,iz)
 	var kit:=EnvironmentKit.new(self,render_visuals,85.0)
 	street_fixtures=Node3D.new()
 	street_fixtures.name="InfraestruturaUrbana"
 	add_child(street_fixtures)
-	_roads(kit)
 	_bases(kit)
 	var neighborhood:=_neighborhoods(kit)
+	var edge_summary:=_edge_infrastructure(kit)
 	_landmarks(kit)
 	_street_wiring(kit)
+	for site: Dictionary in litter_sites:
+		_place_litter(site.position, site.yaw)
+	litter_sites.clear()
 	_vegetation(kit)
 	kit.flush()
 	if render_visuals:
@@ -197,18 +218,81 @@ func build() -> void:
 		"wall_tags":tag_count,"litter_clusters":litter_count,"parked_cars":parked_cars,
 		"service_drops":service_drops,"facade_modules":facade_modules,"roof_modules":roof_modules,
 		"covered_passages":underpasses,"roof_lean_tos":lean_tos,
-		"parked_bikes":parked_bikes,"build_ms":Time.get_ticks_msec()-begun,"visuals":render_visuals}
+		"parked_bikes":parked_bikes,"fixture_moves":fixture_moves,"fixture_skips":fixture_skips,
+		"build_ms":Time.get_ticks_msec()-begun,"visuals":render_visuals}
 	build_metrics.merge(neighborhood)
+	build_metrics.merge(edge_summary)
 	set_meta("favela_build_metrics",build_metrics)
+
+func _reserve_buildings_and_spawns() -> void:
+	for lot: Dictionary in housing_plan():
+		streets.protect(STREET_SPACE.footprint(lot.position, lot.size * .5))
+	for base: Vector2 in BASES_2D:
+		streets.protect(STREET_SPACE.footprint(base, Vector2(33.4, 31.9)))
+	for objective: Vector2 in OBJECTIVES_2D:
+		streets.protect(STREET_SPACE.footprint(objective, Vector2(2.4, 2.4)))
+
+func _pavement_areas() -> Array[Dictionary]:
+	var areas: Array[Dictionary] = []
+	for base: Vector2 in BASES_2D:
+		areas.append({"rect": STREET_SPACE.footprint(base, Vector2(33, 31.5)), "asphalt": false})
+	for objective: Vector2 in OBJECTIVES_2D:
+		areas.append({"rect": STREET_SPACE.footprint(objective, Vector2(14, 11.5)), "asphalt": false})
+	areas.append({"rect": STREET_SPACE.footprint(Vector2(OBJECTIVES_2D[2]) + Vector2(9, -18),
+		Vector2(11, 8)), "asphalt": false})
+	for x: float in [1.0, 16.0]:
+		areas.append({"rect": STREET_SPACE.footprint(Vector2(BASES_2D[0]) + Vector2(x, 0),
+			Vector2(4, 8)), "asphalt": true})
+	return areas
+
+func _edge_infrastructure(k: EnvironmentKit) -> Dictionary:
+	edge_module_count=0
+	edge_solid_count=0
+	edge_module_skips=0
+	var placements: Array[Dictionary]=EDGE_COMPOSITION.generate(
+		road_envelopes(),housing_plan(),BASES_2D,OBJECTIVES_2D,
+		func(x: float,z: float)->float:return height_at(x,z)
+	)
+	for record: Dictionary in placements:
+		var context:=str(record.context)
+		var kind:=str(record.kind)
+		var position: Vector3=record.position
+		# Structural/freestanding modules must pass the same road/building claim
+		# system used by the rest of the street furniture. Facade utilities and
+		# rooftop silhouettes intentionally attach to already reserved buildings.
+		if int(record.road)>=0 and context not in [
+			"residential_front","service_front","domestic_front"
+		]:
+			var footprint: Vector2=record.footprint
+			var rect:=STREET_SPACE.footprint(
+				Vector2(position.x,position.z),footprint*.5,float(record.yaw))
+			if not streets.claim(rect):
+				edge_module_skips+=1
+				continue
+		var pose:=Transform3D(Basis(Vector3.UP,float(record.yaw)),position)
+		ARCHITECTURE.place(k,kind,pose,bool(record.solid))
+		edge_module_count+=1
+		if bool(record.solid):edge_solid_count+=1
+	return {
+		"edge_modules":edge_module_count,
+		"edge_solids":edge_solid_count,
+		"edge_module_skips":edge_module_skips,
+		"edge_modules_planned":placements.size()
+	}
 
 func _ground_color(x: float,z: float) -> Color:
 	var mix:=.5+.5*sin(x*.073+z*.052)*cos(z*.019)
-	var soil:=Color("827665").lerp(Color("9b856e"),mix)
+	var soil:=Color("9a806b").lerp(Color("b3977c"),mix)
 	var urban:=1.0-smoothstep(530.0,665.0,absf(x))
 	urban*=smoothstep(-570.0,-530.0,z)*(1.0-smoothstep(400.0,505.0,z))
-	var paving:=Color("666b6e").lerp(Color("8a8e8d"),mix)
-	if road_distance(Vector2(x,z))<7.0:paving=paving.darkened(.10)
-	return soil.lerp(paving,urban).lerp(Color("59654a").lerp(Color("444a35"),mix),
+	# Roads are painted exclusively by STREET_SPACE's mask. Outside that mask,
+	# dense urban ground stays warm/earthy instead of becoming a continuous
+	# grey concrete slab between the asphalt and the houses.
+	var packed:=Color("857765").lerp(Color("a08b72"),mix)
+	var near_road:=1.0-smoothstep(7.0,22.0,road_distance(Vector2(x,z)))
+	var result:=soil.lerp(packed,urban*.62)
+	result=result.lerp(Color("796d5e").lerp(Color("92806b"),mix),urban*near_road*.16)
+	return result.lerp(Color("59654a").lerp(Color("444a35"),mix),
 		1.0-smoothstep(-620.0,-555.0,z))
 
 func _terrain_tile(ix: int,iz: int) -> void:
@@ -239,13 +323,6 @@ func _terrain_tile(ix: int,iz: int) -> void:
 	var shape:=ConcavePolygonShape3D.new();shape.set_faces(faces);shape.backface_collision=true
 	var collision:=CollisionShape3D.new();collision.shape=shape;body.add_child(collision)
 	if not render_visuals:return
-	if ground_material==null:
-		ground_material=StandardMaterial3D.new()
-		ground_material.vertex_color_use_as_albedo=true
-		ground_material.vertex_color_is_srgb=true
-		ground_material.albedo_texture=EnvironmentKit.material("concrete").albedo_texture
-		ground_material.roughness=1.0
-		ground_material.texture_filter=BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	var arrays:=[];arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX]=verts
 	arrays[Mesh.ARRAY_NORMAL]=normals
@@ -257,66 +334,6 @@ func _terrain_tile(ix: int,iz: int) -> void:
 	view.material_override=ground_material
 	view.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	body.add_child(view)
-
-func _road_strip(anchors: Array,width: float,verge: bool=false) -> void:
-	if not render_visuals:return
-	var verts:=PackedVector3Array();var indices:=PackedInt32Array()
-	var normals:=PackedVector3Array();var uvs:=PackedVector2Array()
-	var wear:=PackedColorArray()
-	var edges: Array[Vector2]=[]
-	var columns:=ceili(width/1.25)
-	for i in anchors.size():
-		var before: Vector2=(anchors[i]-anchors[maxi(i-1,0)]).normalized()
-		var after: Vector2=(anchors[mini(i+1,anchors.size()-1)]-anchors[i]).normalized()
-		var bisector: Vector2=(before+after).normalized()
-		edges.append(-bisector.orthogonal()/maxf(.7,bisector.dot(after if after!=Vector2.ZERO else before)))
-	for i in anchors.size()-1:
-		var a: Vector2=anchors[i];var b: Vector2=anchors[i+1]
-		var steps:=maxi(1,ceili(a.distance_to(b)/1.25))
-		for row in range(0 if i==0 else 1,steps+1):
-			var t:=float(row)/steps
-			var center:=a.lerp(b,t)
-			var side:=edges[i].lerp(edges[i+1],t)
-			var rough_edge:=width+.42*sin(center.x*.22+center.y*.16)
-			var start:=verts.size()
-			for col in columns+1:
-				var p:=center+side*rough_edge*(float(col)/columns-.5)
-				verts.append(point(p.x,p.y)+Vector3.UP*.16)
-				normals.append(Vector3.UP)
-				uvs.append(p*.55)
-				var patch:=sin(p.x*.65+p.y*.37)*cos(p.y*.51-p.x*.18)
-				wear.append(Color("b6b0a6").lerp(Color("edebe2"),smoothstep(-.3,.65,patch)))
-				if start>0 and col<columns:
-					var near:=start+col
-					var far:=near-columns-1
-					indices.append_array(PackedInt32Array([far,near,far+1,
-						far+1,near,near+1]))
-	var arrays:=[];arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX]=verts;arrays[Mesh.ARRAY_INDEX]=indices
-	arrays[Mesh.ARRAY_NORMAL]=normals;arrays[Mesh.ARRAY_TEX_UV]=uvs
-	arrays[Mesh.ARRAY_COLOR]=wear
-	var mesh:=ArrayMesh.new();mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,arrays)
-	var view:=MeshInstance3D.new();view.name="Passagem" if verge else "Asfalto";view.mesh=mesh
-	view.material_override=STREET_ART.paving(verge)
-	view.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(view)
-
-func _roads(k: EnvironmentKit) -> void:
-	_road_strip(PRIMARY,AVENUE_WIDTH)
-	for z in CROSS_STREETS:_road_strip([Vector2(-640,z),Vector2(640,z)],CROSS_WIDTH)
-	for x in VERTICAL_STREETS:_road_strip([Vector2(x,-550),Vector2(x,500)],ALLEY_WIDTH,true)
-	for route: Array in MINI_STREETS:_road_strip(route,MINI_STREET_WIDTH)
-	# A pintura gasta só aparece no acesso asfaltado, antes da encosta.
-	for i in 2:
-		var a: Vector2=PRIMARY[i];var b: Vector2=PRIMARY[i+1]
-		var direction: Vector2=(b-a).normalized()
-		for s in range(1,int(a.distance_to(b)/18.0)):
-			var p:=a+direction*float(s*18)
-			var tilt:=atan2(height_at(p.x-direction.x,p.y-direction.y)
-				-height_at(p.x+direction.x,p.y+direction.y),2.0)
-			k.box("FaixaGasta",point(p.x,p.y)+Vector3.UP*.19,
-				Vector3(.12,.02,2.0),"plaster:a79670",false,
-				Vector3(tilt,atan2(direction.x,direction.y),0),true)
 
 func _avenue_gate_offset(center: Vector2,wall_z: float) -> float:
 	var z:=center.y+wall_z
@@ -332,8 +349,6 @@ func _bases(k: EnvironmentKit) -> void:
 		var c: Vector2=BASES_2D[team]
 		var floor:=point(c.x,c.y)
 		var finish: String="concrete:626e79" if team==0 else "brick:8f4f4b"
-		k.box("PátioBase",floor+Vector3(0,.04,0),Vector3(66,.12,63),
-			"concrete:8b8980",true)
 		for side in [-1.0,1.0]:
 			k.box("MuroBase",floor+Vector3(side*33,2,0),Vector3(.7,4,61),finish,true)
 		for wall_z in [-31.0,31.0]:
@@ -347,10 +362,6 @@ func _bases(k: EnvironmentKit) -> void:
 			Vector3(18,.24,13),"concrete:ccc2ad",true)
 		k.sign_text("BASE POLÍCIA" if team==0 else "BASE VERMELHA",
 			floor+Vector3(0,4,29),6,0.0)
-		if team==0:
-			for x in [1.0,16.0]:
-				k.box("VagaGuarani",floor+Vector3(x,.14,0),Vector3(8,.025,16),
-					"asphalt:777c80",false)
 
 func _neighborhoods(k: EnvironmentKit) -> Dictionary:
 	var count:=0
@@ -363,6 +374,7 @@ func _neighborhoods(k: EnvironmentKit) -> Dictionary:
 	var previous_roof:=Vector3.INF
 	var previous_roof_center:=Vector3.INF
 	var previous_lot: Dictionary={}
+	var shop_sites: Array[Dictionary] = []
 	for lot: Dictionary in housing_plan():
 		var p: Vector2=lot.position
 		var size: Vector2=lot.size
@@ -385,7 +397,7 @@ func _neighborhoods(k: EnvironmentKit) -> Dictionary:
 		var market:=absf(base.z+15)<25.0 and absf(base.x)<360.0
 		var shop_interval:=2 if market else 4
 		if not open_house and not lot.sparse and count%shop_interval==0:
-			_commercial_front(k,base,half_lot,count,lot)
+			shop_sites.append({"base": base, "half": half_lot, "index": count, "lot": lot})
 		if upper_storeys>0:stacked+=1
 		if open_house:roofs+=1
 		if lot.moved:pulled+=1
@@ -406,6 +418,8 @@ func _neighborhoods(k: EnvironmentKit) -> Dictionary:
 		else:previous_roof=Vector3.INF
 		previous_lot=lot
 		count+=1
+	for site: Dictionary in shop_sites:
+		_commercial_front(k, site.base, site.half, site.index, site.lot)
 	return {"houses":count,"stacked_houses":stacked,"walkable_roofs":roofs,"roof_bridges":bridges,
 		"moved_frontages":pulled,"compact_frontages":compact,"open_forecourts":forecourts}
 
@@ -480,6 +494,7 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 		var stair_start_y:=height_at(stair_x,stair_start_z)+.11
 		var landing_y:=ground.y+FLOOR+.14
 		var run:=stair_start_z-stair_end_z
+		streets.protect(Rect2(Vector2(stair_x - .61, stair_end_z - .96), Vector2(1.22, run + 1.95)))
 		var foot:=Vector3(stair_x,stair_start_y-.08,stair_start_z)
 		var top:=Vector3(stair_x,landing_y,stair_end_z)
 		var ramp_scale:=Vector3(1.0,(top.y-foot.y)/2.85,run/8.6)
@@ -509,8 +524,15 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 		if profile in [1,4] and not lot.sparse:
 			var upper_face:=upper_width if frontage.x!=0 else upper_depth
 			var balcony:=ground+upper_offset+Vector3.UP*(height+.11)+frontage*(upper_face*.5)+tangent*.85
-			ARCHITECTURE.place(k,"sacada",Transform3D(Basis(Vector3.UP,facade_yaw),balcony),true)
-			facade_modules+=1
+			# Sacadas podem avançar sobre o lote, mas jamais sobre a faixa viária.
+			# O prefab tem footprint físico 2,64 x 1,13 m e antes ignorava o
+			# envelope da rua, gerando colisores suspensos sobre a pista.
+			var balcony_collision_center:=balcony+frontage*.55
+			var balcony_rect:=STREET_SPACE.footprint(
+				Vector2(balcony_collision_center.x,balcony_collision_center.z),Vector2(1.32,.565),facade_yaw)
+			if not streets.touches_road(balcony_rect):
+				ARCHITECTURE.place(k,"sacada",Transform3D(Basis(Vector3.UP,facade_yaw),balcony),true)
+				facade_modules+=1
 	if not open_house:
 		for side in [-1.0,1.0]:
 			k.box("Platibanda",ground+Vector3(side*w*.5,height+.38,0),
@@ -594,6 +616,8 @@ func _commercial_front(k: EnvironmentKit,ground: Vector3,half_lot: Vector2,index
 	if door.y-ground.y>0.42 or door.y-ground.y< -2.1:return
 	var shop:=WarMapContent.instantiate(street_fixtures,COMMERCE.resource_path,door,render_visuals)
 	shop.rotation.y=atan2(street_face.x,street_face.y)
+	_fit_shop_crate(shop)
+	if render_visuals: _fit_shop_awning(shop, edge, street_face)
 	store_count+=1
 	var mark:=door-shop.basis.x*3.6+shop.basis.z*.065
 	mark.y=maxf(door.y+1.08,ground.y+.7)
@@ -607,42 +631,87 @@ func _commercial_front(k: EnvironmentKit,ground: Vector3,half_lot: Vector2,index
 		var sign_node:=shop.get_node("Nome") as Label3D
 		sign_node.text=names[store_count%names.size()]
 		if sign_node.text.length()>13:sign_node.pixel_size=.0059
+	var parking_yaw := shop.rotation.y + PI * .5
 	if lot.pocket and float(lot.edge.gap)>2.65 and int(lot.edge.road)>0 and store_count%2==0:
-		var parking:=edge+street_face*1.39-street_face.orthogonal()*3.35
-		var curb_safe:=true
-		for long: float in [-1.85,1.85]:
-			for across: float in [-.98,.98]:
-				if _on_paving(parking+street_face.orthogonal()*long+street_face*across):curb_safe=false
-		if curb_safe:
-			var at:=point(parking.x,parking.y)
-			ARCHITECTURE.place(k,"carro_compacto",Transform3D(Basis(Vector3.UP,shop.rotation.y+PI*.5),at),true)
-			parked_cars+=1
-	if store_count%3==0 and best>3.35:
-		var parking:=edge+street_face*.51+street_face.orthogonal()*2.97
-		if road_distance(parking)<2.7:return
-		var parked:=WarMapContent.instantiate(street_fixtures,PARKED_BIKE.resource_path,
-			point(parking.x,parking.y)+Vector3.UP*.08,render_visuals)
-		parked.rotation.y=shop.rotation.y+PI*.5
+		var parking := edge + street_face * 1.39 - street_face.orthogonal() * 3.35
+		var slot := _fixture_slot(parking, Vector2(.96, 1.87), parking_yaw, 2)
+		if slot.is_finite():
+			var at := point(slot.x, slot.y)
+			ARCHITECTURE.place(k, "carro_compacto", Transform3D(Basis(Vector3.UP, parking_yaw), at), true)
+			parked_cars += 1
+	if (store_count % 3 == 0 or lot.pocket) and best > 3.35:
+		var parking := edge + street_face * .54 + street_face.orthogonal() * 2.97
+		var slot := _fixture_slot(parking, Vector2(.41, 1.13), parking_yaw, 2)
+		if not slot.is_finite(): return
+		var parked := WarMapContent.instantiate(street_fixtures, PARKED_BIKE.resource_path,
+			point(slot.x, slot.y) + Vector3.UP * .08, render_visuals)
+		parked.rotation.y = parking_yaw
 		for mesh: MeshInstance3D in parked.find_children("*","MeshInstance3D",true,false):
-			mesh.visibility_range_end=120.0
-			mesh.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		parked_bikes+=1
+			mesh.visibility_range_end = 120.0
+			mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parked_bikes += 1
 
-func _on_paving(at: Vector2) -> bool:
-	var edge_offset:=.21*sin(at.x*.22+at.y*.16)
-	var on_paving:=primary_distance(at)<AVENUE_WIDTH*.5+edge_offset
-	on_paving=on_paving or _mini_street_distance(at,2.0)<MINI_STREET_WIDTH*.5+edge_offset
-	for z: float in CROSS_STREETS:
-		on_paving=on_paving or (absf(at.x)<640.0 and absf(at.y-z)<CROSS_WIDTH*.5+edge_offset)
-	for x: float in VERTICAL_STREETS:
-		on_paving=on_paving or (at.y>-550.0 and at.y<500.0 and absf(at.x-x)<ALLEY_WIDTH*.5+edge_offset)
-	return on_paving
+func _fit_shop_crate(shop: Node3D) -> void:
+	var collider := shop.get_node("ContatoCaixa") as StaticBody3D
+	var original := collider.position
+	for x: float in [original.x, 2.48, -2.48, 3.30, -3.30]:
+		for depth: float in [original.z, .35]:
+			var local := Vector3(x, original.y, depth)
+			var at := shop.to_global(local)
+			if not streets.claim(STREET_SPACE.footprint(Vector2(at.x, at.z), Vector2(.35, .33), shop.rotation.y)):
+				continue
+			local.y += height_at(at.x, at.z) - shop.global_position.y
+			collider.position = local
+			for part: String in ["CaixaRetornavel", "BordaCaixa"]:
+				var mesh := shop.get_node_or_null(part) as Node3D
+				if mesh != null: mesh.position += local - original
+			if not local.is_equal_approx(original): fixture_moves += 1
+			return
+	# Keep the storefront mounted on its house. Omit the loose crate at
+	# frontages whose sidewalk cannot hold its complete footprint.
+	collider.free()
+	for part: String in ["CaixaRetornavel", "BordaCaixa"]:
+		var mesh := shop.get_node_or_null(part)
+		if mesh != null: mesh.free()
+	fixture_skips += 1
 
-func _litter(at: Vector2,yaw: float) -> void:
-	litter_count+=1
-	if not render_visuals:return
-	var detail:=WarMapContent.instantiate(street_fixtures,STREET_ART.LITTER.resource_path,
-		point(at.x,at.y)+Vector3.UP*(.175 if _on_paving(at) else .012),true)
+func _fit_shop_awning(shop: Node3D, edge: Vector2, outward: Vector2) -> void:
+	var canopy := shop.get_node("Toldo") as Node3D
+	var hem := shop.get_node("SaiaDoToldo") as Node3D
+	for reach: float in [1.02, .82, .64, .47, .31, .22]:
+		var center := edge + outward * reach * .5
+		if streets.touches_road(STREET_SPACE.footprint(center, Vector2(1.72, reach * .5), shop.rotation.y)):
+			continue
+		var ratio := reach / 1.02
+		canopy.position.z *= ratio
+		canopy.scale.z *= ratio
+		hem.position.z *= ratio
+		return
+	canopy.free()
+	hem.free()
+
+func _fixture_slot(preferred: Vector2, half_size: Vector2, yaw: float, rings: int, record_move := true) -> Vector2:
+	for ring in range(rings + 1):
+		for direction in (1 if ring == 0 else 12):
+			var at := preferred + Vector2.RIGHT.rotated(direction * TAU / 12.0) * ring * 1.25
+			if not accessible(point(at.x, at.y)): continue
+			var rect := STREET_SPACE.footprint(at, half_size, yaw)
+			if streets.claim(rect.grow(.03)):
+				if record_move and ring > 0: fixture_moves += 1
+				return at
+	if record_move: fixture_skips += 1
+	return Vector2.INF
+
+func _litter(at: Vector2, yaw: float) -> void:
+	litter_sites.append({"position": at, "yaw": yaw})
+
+func _place_litter(at: Vector2, yaw: float) -> void:
+	at = _fixture_slot(at, Vector2(.60, .45), yaw, 2, false)
+	if not at.is_finite(): return
+	litter_count += 1
+	if not render_visuals: return
+	var detail := WarMapContent.instantiate(street_fixtures, STREET_ART.LITTER.resource_path,
+		point(at.x, at.y) + Vector3.UP * .012, true)
 	var normal:=Vector3(height_at(at.x-.3,at.y)-height_at(at.x+.3,at.y),.6,
 		height_at(at.x,at.y-.3)-height_at(at.x,at.y+.3)).normalized()
 	detail.basis=Basis(Quaternion(Vector3.UP,normal))*Basis(Vector3.UP,yaw)
@@ -678,11 +747,12 @@ func _wire_route(k: EnvironmentKit,anchors: Array,width: float,interval: float) 
 			var side:=1.0 if number%4<2 else -1.0
 			var p:=a.lerp(b,(float(step)+.42)/steps)+right*side*(width*.5+.44)
 			number+=1
-			if primary_distance(p)<AVENUE_WIDTH*.5+.22:continue
-			if _mini_street_distance(p,2.0)<MINI_STREET_WIDTH*.5+.22:continue
+			var yaw := atan2(-right.y, right.x)
+			p = _fixture_slot(p, Vector2(.17, .17), yaw, 2)
+			if not p.is_finite(): continue
 			var at:=point(p.x,p.y)
 			var pole:=WarMapContent.instantiate(street_fixtures,POLE.resource_path,at,render_visuals)
-			pole.rotation.y=atan2(-right.y,right.x)
+			pole.rotation.y = yaw
 			pole_count+=1
 			if number%3==0:_litter(p+right*side*.28,float(number)*.73)
 			var top:=at+Vector3.UP*7.71
@@ -716,57 +786,70 @@ func _street_wiring(k: EnvironmentKit) -> void:
 
 func _landmarks(k: EnvironmentKit) -> void:
 	for i in OBJECTIVES_2D.size():
-		var p: Vector2=OBJECTIVES_2D[i]
-		var anchor:=point(p.x,p.y)
-		k.box("PisoPonto",anchor+Vector3(0,.05,0),Vector3(28,.12,23),
-			"concrete:999389",true)
-		k.cylinder("MastroObjetivo",anchor+Vector3(0,2.3,0),.07,4.6,
-			"steel:5d6162",false)
-		k.sign_text(str(["A","B","C","D","E"][i])+" · "+
+		var p: Vector2 = OBJECTIVES_2D[i]
+		var anchor := point(p.x, p.y)
+		k.cylinder("MastroObjetivo", anchor + Vector3.UP * 2.3, .07, 4.6,
+			"steel:5d6162", false)
+		k.sign_text(str(["A","B","C","D","E"][i]) + " · " +
 			str(["ENTRADA","ESCADARIA","PRAÇA","LAJES","RESERVATÓRIO"][i]),
-			anchor+Vector3(0,4.7,0),3.5)
-		for side in [-1.0,1.0]:
-			k.box("CoberturaObjetivo",anchor+Vector3(side*11,0.8,8),
-				Vector3(3.5,1.6,1.4),"brick:956455",true)
-		if i==2:
-			k.box("QuadraPiso",anchor+Vector3(9,.045,-18),
-				Vector3(22,.1,16),"concrete:8c9382",false)
-		if i==4:
-			k.cylinder("Reservatorio",anchor+Vector3(17,5,-12),5,10,
-				"concrete:a7aaa2",true)
-	# Contexto de combate: carros carbonizados, pneus, cimento e barricadas.
+			anchor + Vector3.UP * 4.7, 3.5)
+		# Give the authored structure its own plot before filling it with cover.
+		var offset := Vector2(-6, -29) if i == 2 else Vector2(32, 19)
+		var house := _fixture_slot(p + offset, Vector2(5.8, 5.3), 0.0, 15)
+		if house.is_finite():
+			var floor := point(house.x, house.y)
+			for corner: Vector2 in [Vector2(-5.5,-5),Vector2(5.5,-5),Vector2(5.5,5),Vector2(-5.5,5)]:
+				floor.y = minf(floor.y, height_at(house.x + corner.x, house.y + corner.y))
+			var housing := WarMapContent.instantiate(self,
+				"res://modes/war/library/favela_casa_laje.tscn", floor, render_visuals)
+			housing.name = "CasaAutorada_" + str(i)
+		if i == 4:
+			var tank := _fixture_slot(p + Vector2(17, -12), Vector2(5, 5), 0.0, 9)
+			if tank.is_finite():
+				k.cylinder("Reservatorio", point(tank.x, tank.y) + Vector3.UP * 5, 5, 10,
+					"concrete:a7aaa2", true)
+		for side: float in [-1.0, 1.0]:
+			var cover := _fixture_slot(p + Vector2(side * 11, 8), Vector2(1.75, .70), 0.0, 6)
+			if cover.is_finite():
+				k.box("CoberturaObjetivo", point(cover.x, cover.y) + Vector3.UP * .8,
+					Vector3(3.5, 1.6, 1.4), "brick:956455", true)
+		var tyre := _fixture_slot(p + Vector2(-13, 11), Vector2(1.60, .77), 0.0, 6)
+		if tyre.is_finite():
+			var barricade := WarMapContent.instantiate(self, "res://modes/war/library/favela_barricada_pneus.tscn",
+				point(tyre.x, tyre.y), render_visuals)
+			barricade.name = "PneusAutorados_" + str(i)
+
 	for i in 36:
-		var p: Vector2
-		if i%3==0:
-			p=PRIMARY[mini(int(i/3),PRIMARY.size()-1)]+Vector2(8,7)
+		var preferred: Vector2
+		if i % 3 == 0:
+			preferred = PRIMARY[mini(int(i / 3), PRIMARY.size() - 1)] + Vector2(8, 7)
 		else:
-			p=OBJECTIVES_2D[i%5]+Vector2(float((i*11)%31-15),float((i*7)%33-16))
-		var pos:=point(p.x,p.y)
-		if i%4==0:
-			k.box("CarroQueimado",pos+Vector3(0,.65,0),Vector3(3.7,1.3,1.8),
-				"steel:33302c",true,Vector3(0,float(i)*.4,0))
-			k.box("CarroTeto",pos+Vector3(.1,1.46,0),Vector3(1.8,.5,1.5),
-				"steel:2a2927",false,Vector3(0,float(i)*.4,0))
+			preferred = OBJECTIVES_2D[i % 5] + Vector2(float((i * 11) % 31 - 15), float((i * 7) % 33 - 16))
+		var wreck := i % 4 == 0
+		var yaw := float(i) * .4 if wreck else 0.0
+		var footprint := Vector2(1.87, .93) if wreck else Vector2(1.35, .72)
+		var at := _fixture_slot(preferred, footprint, yaw, 9)
+		if not at.is_finite(): continue
+		var pos := point(at.x, at.y)
+		if wreck:
+			k.box("CarroQueimado", pos + Vector3.UP * .65, Vector3(3.7, 1.3, 1.8),
+				"steel:33302c", true, Vector3(0, yaw, 0))
+			k.box("CarroTeto", pos + Vector3(.1, 1.46, 0), Vector3(1.8, .5, 1.5),
+				"steel:2a2927", false, Vector3(0, yaw, 0))
 		else:
-			for stack in 3:
-				k.cylinder("BarricadaPneus",pos+Vector3((stack%2)*1.0,0.24+stack*.46,0),
-					.7,.45,"steel:252626",true)
-		if i%6==0:
+			for stack: float in [-.62, .62]:
+				var bottom := point(pos.x + stack, pos.z)
+				k.cylinder("BarricadaPneus", bottom + Vector3.UP * .225, .7, .45, "steel:252626", true)
+				if stack < 0.0:
+					k.cylinder("BarricadaPneus", bottom + Vector3.UP * .675, .7, .45, "steel:252626", true)
+		if i % 6 == 0:
+			var brick_site := _fixture_slot(at + Vector2(3.45, 1.5), Vector2(.62, .16), 0.0, 2, false)
+			if not brick_site.is_finite(): continue
+			var brick := point(brick_site.x, brick_site.y)
 			for j in 8:
-				k.box("TijolosEntulho",pos+Vector3(3.0+(j%4)*.3,.15+(j/4)*.24,1.5),
-					Vector3(.30,.22,.18),"brick:9b6353",false)
-	# Assets autorais reutilizaveis, integrados sem tocar no mapa da Ucrania.
-	for i in 5:
-		var offset:=Vector2(-6,-29) if i==2 else Vector2(32,19)
-		var q: Vector2=OBJECTIVES_2D[i]+offset
-		var housing:=WarMapContent.instantiate(self,
-			"res://modes/war/library/favela_casa_laje.tscn",point(q.x,q.y),render_visuals)
-		housing.name="CasaAutorada_"+str(i)
-		var tyre: Vector2=OBJECTIVES_2D[i]+Vector2(-13.0,11.0)
-		var barricade:=WarMapContent.instantiate(self,
-			"res://modes/war/library/favela_barricada_pneus.tscn",
-			point(tyre.x,tyre.y),render_visuals)
-		barricade.name="PneusAutorados_"+str(i)
+				k.box("TijolosEntulho", brick + Vector3(float(j % 4) * .3 - .45, .11 + floorf(j / 4.0) * .22, 0),
+					Vector3(.30, .22, .18), "brick:9b6353", false)
+
 func _vegetation(k: EnvironmentKit) -> void:
 	var rng:=RandomNumberGenerator.new();rng.seed=SEED+91
 	const FOLIAGE := "favela_foliage"

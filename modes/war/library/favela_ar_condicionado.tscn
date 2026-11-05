@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="StandardMaterial3D" id="BodyMat"]
+albedo_color = Color(0.72, 0.72, 0.67, 1)
+roughness = 0.82
+
+[sub_resource type="StandardMaterial3D" id="VentMat"]
+albedo_color = Color(0.18, 0.20, 0.19, 1)
+roughness = 0.95
+
+[sub_resource type="BoxMesh" id="BodyMesh"]
+size = Vector3(0.78, 0.48, 0.34)
+
+[sub_resource type="BoxMesh" id="VentMesh"]
+size = Vector3(0.62, 0.30, 0.03)
+
+[node name="FavelaArCondicionado" type="Node3D"]
+metadata/library_id = "favela_ar_condicionado"
+metadata/footprint = Vector2(0.9, 0.45)
+metadata/origin = "facade_center"
+metadata/asset_revision = 1
+metadata/lod_near = 115.0
+metadata/lod_far = 150.0
+metadata/surface = "metal"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+mesh = SubResource("BodyMesh")
+material_override = SubResource("BodyMat")
+cast_shadow = 0
+visibility_range_end = 150.0
+
+[node name="Grade" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0, 0.185)
+mesh = SubResource("VentMesh")
+material_override = SubResource("VentMat")
+cast_shadow = 0
+visibility_range_end = 105.0

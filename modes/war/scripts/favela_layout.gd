@@ -46,7 +46,9 @@ func clear(p: Vector2,half: Vector2) -> bool:
 	for base: Vector2 in bases:
 		if p.distance_to(base)<61.0+radius:return false
 	for objective: Vector2 in objectives:
-		if p.distance_to(objective)<30.0+radius:return false
+		# Capture radius is 24 m. Keep the complete footprint outside 26.5 m:
+		# dense walls frame the sector without occupying the capture circle.
+		if p.distance_to(objective)<26.5+radius:return false
 	return true
 
 func overlaps(rect: Rect2,ignore:=Vector2.INF) -> bool:
@@ -66,6 +68,66 @@ func occupy(rect: Rect2) -> void:
 			var cell:=Vector2i(x,z)
 			if not occupied.has(cell):occupied[cell]=[]
 			occupied[cell].append(rect)
+
+func _append_frontage_infill(lots: Array[Dictionary]) -> int:
+	# Secondary growth hugs road edges only where the original block grid leaves
+	# a real buildable void. It is deliberately smaller and more irregular than
+	# the primary lots: this closes broad grey shoulders while preserving alleys.
+	var added:=0
+	for road: Dictionary in routes:
+		var road_id:=int(road.id)
+		var route: Array=road.points
+		var radius:=float(road.width)*.5
+		for segment in route.size()-1:
+			var a: Vector2=route[segment]
+			var b: Vector2=route[segment+1]
+			var axis:=b-a
+			var length:=axis.length()
+			if length<12.0:continue
+			var tangent:=axis/length
+			var normal:=Vector2(-tangent.y,tangent.x)
+			var spacing:=11.4+float(posmod(road_id+segment,3))*.75
+			var steps:=maxi(1,floori(length/spacing))
+			for side_index in 2:
+				var side: float=-1.0 if side_index==0 else 1.0
+				for step in steps:
+					var seed:=road_id*97+segment*31+side_index*17+step*13
+					# Keep an occasional narrow access/garage break instead of
+					# creating a continuous canyon with no tactical crossings.
+					if posmod(seed,9)==0:continue
+					var t:=(float(step)+.5)/float(steps)
+					if t<.045 or t>.955:continue
+					var front:=7.0+float(posmod(seed,4))*.62
+					var depth:=6.8+float(posmod(seed/3,5))*.58
+					var size:=Vector2(front,depth) if absf(tangent.x)>=absf(tangent.y) else Vector2(depth,front)
+					var half:=size*.5
+					var extent:=half.dot(normal.abs())
+					var setback:=.54+float(posmod(seed,5))*.11
+					var jitter:=(float(posmod(seed,7))-3.0)*.17
+					var p:=a.lerp(b,t)+tangent*jitter+normal*side*(radius+extent+setback)
+					var edge:=frontage(p,half)
+					# At crossings the nearest street can change; leave that
+					# corner open rather than pushing a house into two envelopes.
+					if int(edge.road)!=road_id or float(edge.gap)<.40 or float(edge.gap)>1.55:continue
+					var footprint:=Rect2(p-half,size).grow(.34)
+					if not clear(p,half) or overlaps(footprint):continue
+					occupy(footprint)
+					var block:=posmod(road_id+segment+side_index,PALETTES.size())
+					var profile:=posmod(seed,5)
+					var storeys:=2+posmod(seed/5,3)
+					if posmod(seed,29)==0:storeys=5
+					var palette: Array=PALETTES[block]
+					var synthetic_row:=1000+road_id*80+segment*4+side_index
+					lots.append({
+						"id":100000+road_id*10000+segment*1000+side_index*400+step,
+						"row":synthetic_row,"column":step,"position":p,"size":size,
+						"profile":profile,"block":block,"storeys":storeys,
+						"finish":palette[posmod(seed,palette.size())],
+						"sparse":false,"gap":edge.gap,"edge":edge,"moved":true,
+						"pocket":posmod(seed,13)==0,"infill":true
+					})
+					added+=1
+	return added
 
 func _plan() -> Array[Dictionary]:
 	var candidates: Array[Dictionary]=[]
@@ -116,7 +178,9 @@ func _plan() -> Array[Dictionary]:
 		lot.position=p
 		lot.edge=frontage(p,half)
 		lot.pocket=pocket
+		lot.infill=false
 		lots.append(lot)
+	_append_frontage_infill(lots)
 	for lot: Dictionary in lots:
 		var p: Vector2=lot.position
 		var half: Vector2=lot.size*.5
