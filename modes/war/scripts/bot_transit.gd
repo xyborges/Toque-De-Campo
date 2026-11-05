@@ -172,6 +172,13 @@ func add_route(route: Array,drivable:=false) -> void:
 			if previous!=next:network.connect_points(previous,next)
 			previous=next
 
+# Check local road clearance before a motorcycle is allowed to overtake.
+# The spatial road index lives in the same generator as the physical road.
+func motorcycle_lane_clear(point: Vector3,half_width: float) -> bool:
+	if operation_id!=WarOperation.AFGHAN: return true
+	var nearby: Dictionary=BRAfghanMap.LAND._near_road(Vector2(point.x,point.z))
+	return float(nearby.get("distance",INF))+half_width+.35<=float(nearby.get("width",0.))*.5
+
 func path(start: Vector3,goal: Vector3,drivable:=false) -> Array[Vector3]:
 	var result: Array[Vector3]=[]
 	var network:=vehicle_graph if drivable and operation_id in [WarOperation.AFGHAN,WarOperation.FAVELA] else graph

@@ -6,7 +6,7 @@
 		},
 		{
 			"path": "res://maps/prepared/afghan/grass.res",
-			"sha256": "add2f26e8bcdf32b3bc864eb7f53f9727a8205b01e94021bc82dd4961f154323"
+			"sha256": "0e2ab2bf1523dcaa6c2e01e02ef3839eccece29c806fa0005b3becac6160e605"
 		},
 		{
 			"path": "res://maps/prepared/afghan/grass_far_mesh.res",
@@ -47,7 +47,7 @@
 		2000.0,
 		2000.0
 	],
-	"content_hash": "b6e8a749d18c01dc39b659cf81d51cb81e93b979fae5180fac9b7c4525cb22fe",
+	"content_hash": "3a96c350bcd2e0873f709f24b5cf5abc62c7b21d60f35bb92d9d930a5fad8e5a",
 	"grass_approved": false,
 	"grass_enabled": false,
 	"id": "afghan",
@@ -1936,7 +1936,7 @@
 		"farmland",
 		"property_access"
 	],
-	"source_hash": "a455c6a02a17464fc07156e1926f8d35ba557063c9c9fc07cb2ad4e99df49f2c",
+	"source_hash": "d134b48ba6bf18987b917074da207c72f566298d22b4baf591b46ee319b2e05f",
 	"sources": [
 		"res://modes/battle_royale/library/adobe_house.tscn",
 		"res://modes/battle_royale/library/adobe_house_v2.tscn",
@@ -2868,5 +2868,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 13
+	"version": 15
 }

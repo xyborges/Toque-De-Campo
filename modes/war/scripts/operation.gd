@@ -33,8 +33,8 @@ const DATA := {
 		# access roads start at these exact base positions.
 		"bases":[Vector3(-420,0,900),Vector3(380,0,-880)],
 		"armor_bays":[
-			[Vector3(-410,0,905),Vector3(-385,0,900)], # USA, on valley access road
-			[Vector3(390,0,-872),Vector3(433,0,-831)] # Mujahideen, graded mountain road
+			[Vector3(-410,0,905),Vector3(-385,0,908)], # USA: tank off driving lane
+			[Vector3(390,0,-872),Vector3(429,0,-826)] # Mujahideen: tank at graded shoulder
 		],
 		"objectives":{
 			"A":{"position":Vector3(-720,0,440),"name":"Qala norte","active":true},
@@ -48,7 +48,7 @@ const DATA := {
 	FAVELA:{
 		"name":"Favela",
 		"map_content":"favela",
-		"port":3016,
+		"port":3017,
 		"half":750.0,
 		"teams":["Polícia","Bandidos"],
 		"bases":[Vector3(-470,0,590),Vector3(280,0,-500)],

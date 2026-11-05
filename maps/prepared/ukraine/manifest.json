@@ -6,7 +6,7 @@
 		},
 		{
 			"path": "res://maps/prepared/ukraine/grass.res",
-			"sha256": "01335f485a3a38061ad64845c8fcc914e28fd0d24479087facf7177d58a8ecd0"
+			"sha256": "4c40688ab9f091eb52ad6806006f669ba39e8787a3ab065a69490a2bc485c33f"
 		},
 		{
 			"path": "res://maps/prepared/ukraine/grass_far_mesh.res",
@@ -30,7 +30,7 @@
 		},
 		{
 			"path": "res://maps/prepared/ukraine/navigation.res",
-			"sha256": "8e2062e55fe62c2a998d01ce3b9ef2e92f973975e605fb04907d81409c800751"
+			"sha256": "4c8265ea23fe8a44dc2c9062d83c3f58126f3152e4f889655040b6014d6e577a"
 		}
 	],
 	"benchmark": {
@@ -51,7 +51,7 @@
 		3500.0,
 		3500.0
 	],
-	"content_hash": "e7a0ca2748f7f7b84039af11909a182f6a2cde1d5221a964a886bb71d05c5123",
+	"content_hash": "7dae9e1b6ca0ffcf549537054619d4592fdbc9eff72dad0dc0905aac10aecd09",
 	"grass_approved": false,
 	"grass_enabled": true,
 	"id": "ukraine",
@@ -105,7 +105,7 @@
 		"objectives",
 		"authored_terrain"
 	],
-	"source_hash": "7e52e8423e9348236afb7ce06403c5b0f27f5318519e9f98e7c50114eac8a924",
+	"source_hash": "01cb0aef6c016c7df3ec4d5cb7bd4dbcbd589b9abeac8ecdde9f50df197dc1f6",
 	"sources": [
 		"res://assets/war/biomes/nova_grama.png",
 		"res://modes/naval/scripts/catalog.gd",
@@ -131,6 +131,40 @@
 		"res://modes/war/library/estrada_rampa_12m.tscn",
 		"res://modes/war/library/fachada_atingida.tscn",
 		"res://modes/war/library/fal_referencia.tscn",
+		"res://modes/war/library/favela_antena_parabolica.tscn",
+		"res://modes/war/library/favela_ar_condicionado.tscn",
+		"res://modes/war/library/favela_arbusto_encosta.tscn",
+		"res://modes/war/library/favela_barraca_rua.tscn",
+		"res://modes/war/library/favela_barricada_pneus.tscn",
+		"res://modes/war/library/favela_caixa_dagua.tscn",
+		"res://modes/war/library/favela_caixa_eletrica.tscn",
+		"res://modes/war/library/favela_canaleta_drenagem.tscn",
+		"res://modes/war/library/favela_carro_compacto.tscn",
+		"res://modes/war/library/favela_casa_laje.tscn",
+		"res://modes/war/library/favela_comercio_fachada.tscn",
+		"res://modes/war/library/favela_corrimao_beco.tscn",
+		"res://modes/war/library/favela_escada_externa.tscn",
+		"res://modes/war/library/favela_janela_grade.tscn",
+		"res://modes/war/library/favela_janela_madeira.tscn",
+		"res://modes/war/library/favela_kit_obra.tscn",
+		"res://modes/war/library/favela_laje_domestica.tscn",
+		"res://modes/war/library/favela_laje_obra.tscn",
+		"res://modes/war/library/favela_lixo_calcada.tscn",
+		"res://modes/war/library/favela_moto_estacionada.tscn",
+		"res://modes/war/library/favela_muro_contencao.tscn",
+		"res://modes/war/library/favela_nevoa_encosta.tscn",
+		"res://modes/war/library/favela_pixacao.tscn",
+		"res://modes/war/library/favela_porta_entrada.tscn",
+		"res://modes/war/library/favela_portao_grade.tscn",
+		"res://modes/war/library/favela_poste_cabos.tscn",
+		"res://modes/war/library/favela_puxadinho_chapa.tscn",
+		"res://modes/war/library/favela_rede_aerea.tscn",
+		"res://modes/war/library/favela_rocha_encosta.tscn",
+		"res://modes/war/library/favela_sacada.tscn",
+		"res://modes/war/library/favela_tanque_lavanderia.tscn",
+		"res://modes/war/library/favela_toldo.tscn",
+		"res://modes/war/library/favela_tubulacao_externa.tscn",
+		"res://modes/war/library/favela_varal.tscn",
 		"res://modes/war/library/glock_referencia.tscn",
 		"res://modes/war/library/grama_baixa_2m.tscn",
 		"res://modes/war/library/guarani_referencia.tscn",
@@ -163,6 +197,15 @@
 		"res://modes/war/scripts/districts.gd",
 		"res://modes/war/scripts/drone.gd",
 		"res://modes/war/scripts/effects.gd",
+		"res://modes/war/scripts/favela_architecture.gd",
+		"res://modes/war/scripts/favela_atmosphere.gd",
+		"res://modes/war/scripts/favela_edge_composition.gd",
+		"res://modes/war/scripts/favela_hillside.gd",
+		"res://modes/war/scripts/favela_layout.gd",
+		"res://modes/war/scripts/favela_map.gd",
+		"res://modes/war/scripts/favela_street_art.gd",
+		"res://modes/war/scripts/favela_street_space.gd",
+		"res://modes/war/scripts/favela_uniform.gd",
 		"res://modes/war/scripts/game.gd",
 		"res://modes/war/scripts/grass_assets.gd",
 		"res://modes/war/scripts/grass_stream.gd",
@@ -223,6 +266,7 @@
 		"res://modes/war/shaders/sea.gdshader",
 		"res://modes/war/shaders/smoke.gdshader",
 		"res://modes/war/shaders/tracer.gdshader",
+		"res://modes/war/shaders/wreck_smoke_far.gdshader",
 		"res://scripts/environment/environment_kit.gd",
 		"res://scripts/environment/environment_props.gd",
 		"res://scripts/maps/definition.gd",
@@ -257,5 +301,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 17
+	"version": 18
 }

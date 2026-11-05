@@ -1,88 +1,125 @@
 [
   {
+    "version": "1.13.3",
+    "title": "Atualização 1.13.3 — fumaça tática, veículos e miras",
+    "additions": [
+      "Granada M18 selecionável, com pavio de 4 segundos, nuvem persistente e comportamento autoritativo sem dano explosivo.",
+      "Cortinas de fumaça para Abrams, T-90, BMP-2 e Guarani, com duração, recarga, LOD, agrupamento e áudio 3D limitados.",
+      "Zeragem balística por arma em passos de 50 m, validada e recalculada pelo servidor.",
+      "Modelos dos blindados com torres, canhões, coaxiais e lançadores visualmente conectados.",
+      "Bases, baias, estrada de descida, nascimento de bots e controle de veículos revisados no Afegão.",
+      "Marcadores de objetivos projetados pela câmera das ópticas 4× e 8×.",
+      "Mixer dinâmico global e ducking de combate continuam pendentes."
+    ],
+    "fixes": [
+      "Moto revisada no Guerra e Battle Royale, com piloto, garupa, guidão, apoios e restauração da pose ao sair.",
+      "Tela de preparação imediata antes de abrir partidas e transições de retorno ao menu.",
+      "O CollisionRig/FPP-TPP experimental permanece fora da atualização por ainda ter trabalho ativo e regressão de desempenho registrada no ensaio de 28 atores."
+    ]
+  },
+  {
+    "version": "1.13.2",
+    "title": "Atualização 1.13.2 — G3, lunetas e carregamento de vegetação",
+    "additions": [
+      "Atualização gradual das células de vegetação. O pool reutilizado limita cada quadro a até três células próximas e duas distantes, em vez de enviar todas as células pendentes no mesmo quadro."
+    ],
+    "fixes": [
+      "Refinamentos visuais do G3 e das lunetas Hensoldt 4× e Telescópica 8×, com ajustes de montagem, geometria e transições de mira.",
+      "Mudança preparada pela branch ia/perf-stutter-20261104 e integrada à main no commit 49296a8."
+    ]
+  },
+  {
+    "version": "1.13.1",
+    "title": "Atualização 1.13.1 — Explosões e áudio de combate",
+    "additions": [
+      "Novo pacote de sons V3 para explosões de tanques, perto e distante, com cinco estalos de munição dentro dos próprios WAVs.",
+      "Sincronização de clarões e detonações secundárias visuais para tanques e outros blindados.",
+      "Bola de fogo maior, fumaça, poeira, onda de choque e efeitos controlados por pools.",
+      "Granadas e drones mantêm suas amostras específicas.",
+      "A mixagem dinâmica global entre explosões e armas ainda não foi implementada. Está documentada em docs/PLANO-MESTRE-AUDIO-20261104.md."
+    ],
+    "fixes": [
+      "Explosões pesadas mais presentes a curta distância, incluindo correção do teto de áudio dos emissores e da carcaça que abafava a própria explosão."
+    ]
+  },
+  {
+    "version": "1.11.0",
+    "title": "1.11.0 — Personagem, proteção e cenário (build 82)",
+    "additions": [
+      "Distância de cenário 250/400/650/900 m, padrão 400 m; controles separados de vegetação e LOD. Lunetas e binóculos priorizam o setor estável dentro do limite escolhido, com atualização limitada por quadro e retenção ao mover a câmera.",
+      "Personagem como fundo 3D da trincheira com névoa, personalização por hover e clique, painel lateral com as conexões atuais. Capacete do login corrigido. Uniforme do Guerra conserva a identidade do time.",
+      "Equipamentos salvos por equipe/classe, aplicados na próxima implantação. Colete e capacete possuem proteção regional, peso, resistência, som de quebra e remoção. Autoridade replica vida e revisão para impedir restauração por mensagens antigas ou proteção acumulada. BR e Naval conservam suas regras.",
+      "Download: https://192.168.101.24/ . O launcher existente consulta o manifesto assinado."
+    ],
+    "fixes": [
+      "Objetivos do Guerra redistribuídos, ajustes físicos perto de E, motos e deslocamento dos bots, restauração da arma ao desembarcar. Identidade e dados preparados dos cinco mapas conferidos."
+    ]
+  },
+  {
+    "version": "1.10.6",
+    "title": "1.10.6 — Estabilidade do Guerra (build 81)",
+    "additions": [
+      "Escrita do status periódico fora da thread de física. O JSON de status do servidor de Guerra era gravado a cada 2 s dentro do passo de física. Passou a usar uma thread de escrita com uma única atualização pendente, cópia imutável dos dados e troca atômica do arquivo; o encerramento aguarda a última gravação.",
+      "A pausa periódica de ~1 s relatada não é declarada eliminada; o que se comprova é a retirada da escrita síncrona do callback periódico. A comparação de quadros da investigação é observacional.",
+      "Benchmark térmico e partida longa com 28 bots não foram refeitos nesta publicação; não há número de FPS a anunciar."
+    ],
+    "fixes": [
+      "Diagnóstico warframepacing. Janelas de 10 s com tempos reais entre quadros, passos de física por quadro, correções de posição, intervalos de estado do veículo, população, RTT, repetição de câmera e dados de vegetação. Memória fixa, sem posições, credenciais ou voz.",
+      "Todas as correções de entrada, terreno, câmera, bots, placar, áudio (volume/VOIP 55 m), ópticas, transportes, motos e otimizações da 1.10.4/1.10.5 permanecem como estavam."
+    ]
+  },
+  {
     "version": "1.10.5",
-    "title": "Áudio e transportes",
+    "title": "1.10.5 — Áudio e transportes",
     "additions": [
-      "Voz por proximidade: O alcance passa a ser fixo em 55 metros, seguindo o perfil dos sons dos jogadores. Volume, microfone e silenciamento continuam disponíveis nas configurações.",
-      "Motos no Guerra: Motos destruídas retornam em 15 segundos. Quando abandonadas, retornam à base após 3 minutos; veículos ocupados preservam seus passageiros."
+      "Controles de volume respeitados pelos sons de morte (Efeitos), ambiente (Ambiente), login (Interface) e retorno do Naval (Música).",
+      "Captura exclusiva entre teste e transmissão, diagnóstico por tentativa/canal, encerramento de voz na saída e reabertura limitada ao trocar/perder dispositivo preservados.",
+      "Motos do Guerra destruídas retornam após15s; abandonadas após180s. Motos ocupadas não retornam automaticamente. Não se afirma que motos do BR reaparecem durante a partida."
     ],
     "fixes": [
-      "Controles de som: Sons de morte, ambiente e tela de login respeitam suas categorias de volume. O volume da música mantém a preferência ao sair do Naval.",
-      "Microfone: Teste e transmissão compartilham a captura de forma exclusiva, com tratamento para mudança de dispositivo e encerramento ao sair da sala.",
-      "Guerra: Preservadas as correções de nascimento, entrada gradual, placar completo, equilíbrio dos 28 bots e ordenação por personagem da versão 1.10.4."
+      "VOIP com alcance fixo55m, atenuação4m e ganho base−6dB, compartilhado com os sons de morte. Removidos os ajustes de distância; mantidos volume, dispositivo/teste, ativação e silenciamento. Origem acompanha a cabeça do personagem. Autoridade ignora distância antiga informada pelo cliente.",
+      "Todas as correções de entrada, terreno/câmera do BR, bots, placar e otimizações de personagens, assim como a ordenação por ator/vida e por geração/relógio da1.10.4, são preservadas."
     ]
   },
   {
-    "version": "1.10.3",
-    "title": "Correções do BR e do Guerra",
-    "additions": [
-      "Movimento no Afegão: A entrada online conserva o mapa Afegão durante todas as etapas de preparação e conexão. O personagem usa seus limites e terreno corretos.",
-      "Câmera da moto: A câmera externa permanece ativa ao girar a visão, sem alternar para a apresentação da arma e das mãos a pé. Sair da moto restaura a visão escolhida pelo jogador.",
-      "Desempenho do Guerra: Reduz cálculos repetidos do corpo, das mãos e da recarga, preservando as posições das armas e hitboxes. Corrige também o intervalo de atualização dos bots."
-    ],
+    "version": "1.10.4",
+    "title": "1.10.4 — sincronização do Guerra",
+    "additions": [],
     "fixes": [
-      "Paredes invisíveis perto do centro: Removida a aplicação acidental do limite de 149 metros do pequeno mapa do Deserto ao Battle Royale online.",
-      "Nascimento no céu ou abaixo do terreno: A entrada deixa de usar a altura e a recuperação de posição do terreno de outro modo. A correção foi verificada com clientes independentes no mapa completo.",
-      "Piscada ao girar na moto: Atualizações do mouse e da visão passam a respeitar a câmera da moto também entre os quadros de física.",
-      "Placar do Guerra: O placar exibe os jogadores e bots de ambas as equipes.",
-      "Entrada no Guerra: Os personagens são preparados gradualmente ao entrar na partida.",
-      "Microfone: Melhorado o teste do microfone e a troca de dispositivos durante o chat de voz."
-    ]
-  },
-  {
-    "version": "1.10.2",
-    "title": "Mais vida no campo de batalha",
-    "additions": [
-      "28 bots nas partidas online: Guerra e Battle Royale recebem 28 bots, além dos jogadores. Eles se movimentam, procuram inimigos e combatem. No Guerra, disputam objetivos; no BR, procuram recursos e seguem a zona segura.",
-      "Mais lugares para explorar: O Afegão ganha novas construções, pequenos núcleos rurais, vegetação e detalhes próximos às propriedades. Neblina, iluminação e cores foram revisadas. Os nascimentos ficam mais próximos dos locais de loot.",
-      "Motos no Battle Royale: Motocicletas próximas de casas e estradas ajudam a atravessar o mapa, com som próprio que acompanha a aceleração.",
-      "Cores do personagem: Personalize pele, camisa, calça e botas. O corpo passa a ter proporções padronizadas, com a aparência salva na conta.",
-      "Voz nos modos online: Segure X para falar com jogadores próximos. O áudio acompanha a posição de quem fala, com alcance menor, escolha do dispositivo, volume, silenciamento e teste de microfone nas configurações.",
-      "Novas frentes no Guerra: Os pontos A, B e C ficam mais afastados, abrindo espaço para deslocamentos e disputas em diferentes regiões do mapa.",
-      "Menus em movimento: Painéis e telas recebem transições rápidas de entrada e saída, mantendo os controles responsivos.",
-      "Diagnóstico para suporte: As configurações permitem exportar um ZIP com registros de erros e conexão. O servidor também passa a manter registros separados por jogador. O relatório não inclui senhas nem gravações de voz."
-    ],
-    "fixes": [
-      "Preparação do BR online: A lista mostra os participantes e sua preparação. A partida aguarda a confirmação dos jogadores previstos; falhas e demora na entrada recebem tratamento e uma opção de saída.",
-      "Curativo com a mochila fechada: A aplicação leva quatro segundos e continua após fechar a mochila. O personagem fica parado durante a aplicação e recupera vida gradualmente depois dela. Um pedido atrasado de tiro deixa de cancelar o uso.",
-      "Armas iguais na mochila: Agora é possível carregar duas armas do mesmo tipo, com carregadores e acessórios independentes. Largar e recolher preserva os itens da arma escolhida.",
-      "Corrida, passos e agachamento: O BR usa o balanço de corrida compartilhado com o Guerra. Os passos foram verificados e o volume dos próprios passos aumentou. Ctrl alterna agachar e levantar por clique; Z continua alternando deitar.",
-      "Objetos apoiados no chão: Varais, caixas, lenha, feno e poços verificam a base antes de serem colocados. Pontos de loot das caixas usam a mesma regra de posicionamento.",
-      "Entrada e saída mais estáveis: A entrada com muitos personagens recebe uma carga inicial distribuída. Desconexões limpam o estado da sessão; morrer ou sair de uma moto libera o assento e seus controles.",
-      "X para voz, T para térmica: X deixa de ativar a visão térmica no Guerra e fica reservado à comunicação por voz."
+      "Os lotes de bots usam transporte não ordenado e uma sequência monotônica por personagem e por vida. A autoridade gera essa sequência; o receptor compartilhado rejeita duplicatas, posições antigas e vidas anteriores.",
+      "O estado da operação também usa transporte não ordenado e rejeita atualizações antigas pelo identificador da operação e pelo relógio da autoridade. Um estado de uma operação anterior não restaura relógio, tickets ou fim de partida.",
+      "As mensagens confiáveis de entrada, equipamento, dano e transição de rodada preservam seu caminho existente. Os 28 bots, colisões e otimizações de CPU continuam ativos."
     ]
   },
   {
     "version": "1.10.1",
-    "title": "Entrada online e novas coberturas",
+    "title": "1.10.1 — Entrada online e novas coberturas",
     "additions": [
-      "Cobertura no Afegão: Taludes e muros rurais baixos protegem áreas abertas, acompanhados por tamargueiras, capim rasteiro e detalhes de solo. Modelos distantes usam LOD; a cobertura física permanece.",
-      "Prismática 4×: Novo exterior compacto e facetado para distinguir da PSO de tubo longo. As duas lunetas conservam ampliação de 4× e podem ser instaladas em AK e FAL."
+      "PSO e Prismática são itens/cenas separados; a seleção efetiva foi conferida em FAL e AK, no mundo e na cópia FPP. Ambas continuam com ampliação 4×. Como as carcaças herdadas ficavam parecidas, a Prismática ganhou exterior curto e facetado, base elevada e ocular octogonal. A PSO conserva corpo longo e suporte lateral. Referências de montagem, observação, lente e balística foram preservadas.",
+      "206 conjuntos de talude/muro rural baixo e 1.029 tamargueiras, associados a caminhos, limites de propriedades e áreas jogáveis abertas. Novas cenas reutilizáveis e catálogo da biblioteca acompanham a integração.",
+      "MultiMesh por célula, modelos de folhagem próximos/distantes e alcances por tipo. 108 corpos estáticos agrupam 466 formas; a colisão dos obstáculos não desaparece com o LOD. Folhagem, capim baixo e pequenas pedras não têm colisão ou sombra própria.",
+      "Capim rasteiro, manchas de pedrinhas curtas e normal/material do chão com detalhe fino próximo e menor brilho. O heightmap não mudou e a Nova Grama experimental continua excluída.",
+      "A seleção de centros da zona mantém sua lógica de acessibilidade. Não se garante um obstáculo dentro de todo círculo final arbitrariamente estreito. Não foi executada nova série de benchmarks ou prometido ganho de FPS.",
+      "Quem já substituiu o atualizador para a 1.10.0 só precisa fechar o jogo e abri-lo pelo atualizador. Launchers anteriores à inclusão da voz ainda precisam ser substituídos uma vez pelo executável do site."
     ],
     "fixes": [
-      "Battle Royale online: Corrigidos o caminho da conexão de pareamento, a exibição da busca e a abertura das salas pelo servidor protegido. A tela de espera mostra a busca, os participantes e a contagem.",
-      "Arma e punhos: A troca atualiza os modelos imediatamente, sem precisar mirar para a arma aparecer.",
-      "Postura deitado: A arma acompanha a altura dos ombros; braços deixam de esticar acima da cabeça. Recarga da AK preserva os alvos corretos das mãos nas posturas baixas.",
-      "Implantação no Guerra: Proteções ao reconstruir apresentações de armas e acessórios tratam nós já destacados, evitando chamar sua remoção sobre uma referência vazia."
+      "A arma deitada passou a usar a altura dos ombros da pose baixa, em vez do ponto de apoio de um personagem em pé. Isso corrige braços esticados sobre a cabeça. Recarga da AK mantém os alvos das mãos nas posturas baixas.",
+      "A reconstrução da arma atualiza sua apresentação local imediatamente, resolvendo punhos invisíveis e armas que só voltavam a aparecer ao mirar. Cópias destacadas são descartadas com verificação do pai.",
+      "Os 206 conjuntos bloquearam tiros no teste físico. Navegação preparada atualizada: 339 verificações, 652 candidatos conectados de spawn/zona, 90 interiores e 43 telhados acessíveis preservados."
     ]
   },
   {
     "version": "1.10.0",
-    "title": "Battle Royale no Deserto Afegão",
+    "title": "1.10.0 — Battle Royale no Deserto Afegão",
     "additions": [
-      "Battle Royale: Partidas individuais com loot, bots, zona progressiva, espectador e resultados. O pareamento dura 30 segundos; partidas iniciadas fecham a entrada e novas buscas formam outro grupo.",
-      "Deserto Afegão: Vilarejos com interiores exploráveis, propriedades muradas, plantações, canais, vegetação e rotas entre os vales. O loot aparece em locais de coleta associados às construções e propriedades.",
-      "Mochila e equipamentos: Clique nos itens para usar, equipar, recarregar ou largar. Dois espaços livres para combinar armas, mochilas de três níveis e coletes e capacetes com proteção e resistência próprias.",
-      "Armas e acessórios: Prismática 4× e PSO 4× podem ser encontradas e instaladas na FAL ou AK. A mochila mostra as armas e seus encaixes; trocar ou largar conserva os acessórios e a munição.",
-      "Corpos saqueáveis: No Battle Royale, o corpo permanece até o fim da rodada. Retirar mochila, colete ou capacete remove a peça do cadáver para todos os jogadores.",
-      "Voz por proximidade: Segure X para falar com jogadores vivos por perto. Configure dispositivo, volume e silêncio nas opções de áudio. Substitua o atualizador antigo pelo novo executável disponível neste site.",
-      "Personagem e combate: Personagem articulado compartilhado entre os modos, socos no Battle Royale, agachar e deitar, ajustes na recarga da AK e aumento do dano das granadas."
+      "Battle Royale individual no mapa afegão: interiores exploráveis, loot contextual, bots, zona, socos, proteção e mochilas 1/2/3, espectador, resultados e nova rodada. Pareamento fixo de 30 segundos; sala iniciada fecha admissão. Duas partidas simultâneas configuradas nesta VM de 8 GB, com limite de memória de 4 GB para o serviço BR e seus filhos.",
+      "Inventário com CHÃO/MOCHILA/ARMAS/EQUIPAMENTO, lista mista e menus Usar/Equipar/Recarregar/Largar. Troca da arma atual com dois espaços ocupados preserva munição e módulos no chão.",
+      "Prismática e PSO 4× intercambiáveis em AK/FAL, com lente ao vivo e arquitetura modular de acessórios, sem duplicar modelos-base. Futuras categorias exigem seus próprios modelos e comportamentos; não entram como itens fictícios no loot desta versão.",
+      "Corpos BR persistem até o fim da rodada. Saquear mochila, colete ou capacete retira sua geometria para todos. Posição final sincronizada, física congelada após estabilizar e persistência após desconectar. Pilhas grandes de munição e curativos conservam as quantidades.",
+      "Voz por proximidade com X para sobreviventes, dispositivo/volume/silêncio e codec Opus no cliente. Servidor Linux retransmite sem codec."
     ],
     "fixes": [
-      "Construções da Ucrânia: Removida uma cópia deslocada dos detalhes do mapa no porto leste. Fundações e objetos acompanham o terreno ajustado às ruas, corrigindo construções elevadas sobre encostas artificiais.",
-      "Motoristas aliados: Bots em blindados passam a antecipar aliados a pé e veículos à frente, com mais distância para frear e desviar.",
-      "Saque e munição: Trocas com os dois espaços ocupados preservam a arma largada. Pilhas de mochilas grandes, curativos, acessórios e itens dos corpos mantêm suas quantidades ao coletar, trocar ou descartar.",
-      "Câmeras e morte: Ajustes de alinhamento do cano com as ópticas, representação do equipamento e limpeza de estados entre mortes, saídas e novas rodadas."
+      "Personagem articulado compartilhado, recarga da AK revisada, socos e posturas BR, ajustes nas ópticas e maior dano da granada compartilhada."
     ]
   },
   {
