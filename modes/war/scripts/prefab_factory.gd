@@ -4,7 +4,7 @@ class_name WarPrefabFactory
 # Authoring factory only. The shipped map loads ordinary PackedScenes with
 # saved geometry/materials/collision; it never rebuilds these objects at spawn.
 const PATH:="res://modes/war/library/"
-const ITEMS:={"favela_casa_laje":"Favela · casa com laje","favela_barricada_pneus":"Favela · barricada de pneus","caixa_municao":"Caixa de munição","pinheiro":"Pinheiro","arvore_queimada":"Árvore queimada","trincheira_6m":"Revestimento · 6 m","estrada_12m":"Estrada · 12 m","container_20ft":"Contêiner · 20 pés","cais_8m":"Cais · 8 m","barreira_concreto":"Barreira de concreto","escada_4m":"Escada · 4 m","casa_ruina":"Casa em ruínas","estrada_curva_90":"Estrada · curva 90°","estrada_cruzamento":"Estrada · cruzamento","estrada_entroncamento":"Estrada · entroncamento T","estrada_rampa_12m":"Estrada · rampa 12 m","cais_curva_90":"Cais · curva 90°","cais_rampa_8m":"Cais · rampa 8 m","trincheira_escavavel_6m":"Trincheira escavável · 6 m","fachada_atingida":"Fachada atingida","laje_desabada":"Laje desabada","carro_carbonizado":"Carro carbonizado","entulho_tijolos":"Entulho de tijolos","carga_portuaria":"Carga portuária","defensa_portuaria":"Defensa de cais","canaleta_danificada":"Canaleta danificada","cratera_impacto":"Cratera de impacto","grama_baixa_2m":"Grama baixa · 2 m"}
+const ITEMS:={"favela_comercio_fachada":"Favela · comércio", "favela_poste_cabos":"Favela · poste", "favela_rede_aerea":"Favela · rede aérea", "favela_moto_estacionada":"Favela · moto estacionada","favela_casa_laje":"Favela · casa com laje","favela_barricada_pneus":"Favela · barricada de pneus","caixa_municao":"Caixa de munição","pinheiro":"Pinheiro","arvore_queimada":"Árvore queimada","trincheira_6m":"Revestimento · 6 m","estrada_12m":"Estrada · 12 m","container_20ft":"Contêiner · 20 pés","cais_8m":"Cais · 8 m","barreira_concreto":"Barreira de concreto","escada_4m":"Escada · 4 m","casa_ruina":"Casa em ruínas","estrada_curva_90":"Estrada · curva 90°","estrada_cruzamento":"Estrada · cruzamento","estrada_entroncamento":"Estrada · entroncamento T","estrada_rampa_12m":"Estrada · rampa 12 m","cais_curva_90":"Cais · curva 90°","cais_rampa_8m":"Cais · rampa 8 m","trincheira_escavavel_6m":"Trincheira escavável · 6 m","fachada_atingida":"Fachada atingida","laje_desabada":"Laje desabada","carro_carbonizado":"Carro carbonizado","entulho_tijolos":"Entulho de tijolos","carga_portuaria":"Carga portuária","defensa_portuaria":"Defensa de cais","canaleta_danificada":"Canaleta danificada","cratera_impacto":"Cratera de impacto","grama_baixa_2m":"Grama baixa · 2 m"}
 
 static func node(label: String,parent: Node3D) -> Node3D:
 	var result:=Node3D.new();result.name=label;parent.add_child(result);return result
@@ -69,7 +69,7 @@ static func create(id: String) -> Node3D:
 			else: mesh.visibility_range_end=WarDevastationFactory.NEAR[id]
 		return root
 	match id:
-		"caixa_municao","grama_baixa_2m","favela_casa_laje","favela_barricada_pneus":
+		"caixa_municao","grama_baixa_2m","favela_casa_laje","favela_barricada_pneus","favela_comercio_fachada","favela_poste_cabos","favela_rede_aerea","favela_moto_estacionada":
 			root.free()
 			return load(PATH+id+".tscn").instantiate() as Node3D
 		"pinheiro","arvore_queimada": tree(root,id=="pinheiro")

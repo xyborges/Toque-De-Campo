@@ -45,6 +45,7 @@ func _prepare() -> void:
 			road_paths.append([Vector2(-640,street_z),Vector2(640,street_z)])
 		for street_x in WarFavelaMap.VERTICAL_STREETS:
 			road_paths.append([Vector2(street_x,-550),Vector2(street_x,500)])
+		road_paths.append_array(WarFavelaMap.MINI_STREETS)
 	else:
 		for route: Array in WarRoads.ROUTES: road_paths.append(WarRoads.rounded(route))
 	var points: Array[Vector2]=[]

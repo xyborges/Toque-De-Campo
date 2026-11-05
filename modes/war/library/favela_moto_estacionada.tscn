@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://modes/war/equipment/motorbike.tscn" id="1"]
+
+[sub_resource type="BoxShape3D" id="Shape_moto"]
+size = Vector3(0.54, 0.72, 1.72)
+
+[node name="MotoEstacionadaFavela" type="Node3D"]
+metadata/library_id = "favela_moto_estacionada"
+metadata/footprint = Vector2(0.78, 2.18)
+metadata/origin = "ground"
+metadata/asset_revision = 1
+metadata/lod_near = 120.0
+metadata/lod_far = 120.0
+metadata/surface = "vehicle"
+metadata/destructible = false
+
+[node name="Modelo" parent="." instance=ExtResource("1")]
+rotation = Vector3(0, 0, -0.12)
+
+[node name="Corpo" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+metadata/surface = "vehicle"
+
+[node name="Contato" type="CollisionShape3D" parent="Corpo"]
+position = Vector3(0, 0.42, 0)
+shape = SubResource("Shape_moto")

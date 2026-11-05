@@ -43,6 +43,8 @@ func configure(map_id: String) -> void:
 			add_route(across,true)
 		for x in WarFavelaMap.VERTICAL_STREETS:
 			add_route([Vector2(x,-550),Vector2(x,500)])
+		for route: Array in WarFavelaMap.MINI_STREETS:
+			add_route(route)
 	else:
 		for source: Array in WarRoads.ROUTES:add_route(WarRoads.rounded(source))
 		add_route([Vector2(-560,0),Vector2(-260,-115),Vector2(0,0),Vector2(260,-115),Vector2(560,0)])

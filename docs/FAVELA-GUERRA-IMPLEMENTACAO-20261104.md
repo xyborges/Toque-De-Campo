@@ -80,3 +80,45 @@ Antes de merge/release ainda são necessários:
 Abra a worktree exclusiva e use o menu **GUERRA · FAVELA** (requer `gameplay/war_enabled`).
 Para testar offline: selecione Favela e **JOGAR COM BOTS**. Servidor online precisa suportar a
 operação e a porta própria; a execução isolada não hospeda o servidor público.
+
+## Revisão urbana de 05/11/2026
+
+A identidade do manifesto passou para a versão 2. O terreno ganhou mais de 125 m de
+desnível entre o acesso e a mata, com lombas no miolo e inclinações menores no
+eixo principal. A malha visível passou a mostrar a mesma superfície já usada pela
+física. Os portões acompanham a avenida e a casa autoral da Praça saiu do seu leito.
+
+- **3.834 edificações**, incluindo 2.213 casas com volumes escalonados, 66 lajes
+  servidas por escadas e 10 passarelas com colisão.
+- **Seis mini-ruas** sinuosas de cerca de 2,8 m, ligadas à rede de infantaria e ao
+  minimapa. A avenida e as travessas mantêm o corredor de veículos. O miolo usa
+  concreto e asfalto com variação de desgaste. A terra se concentra na periferia
+  e na transição para a mata.
+- **66 frentes comerciais**, com portas de aço, toldos, placas e caixotes.
+  Há 322 postes, 322 vãos de seis cabos e 14 motos estacionadas com colisão.
+  Comércios, postes, vãos e motos estão disponíveis como cenas no catálogo do editor.
+- Casas com reboco gasto, tijolo, sacadas, tubulações, medidores, antenas e caixas
+  d'água. Os elementos de rua usam recursos compartilhados e agrupamento visual
+  por setor. As colisões são construídas também na autoridade headless.
+- O diretor de bots reconhece os dois IDs dos Guaranis e usa motos para os
+  bandidos. Os seis veículos operáveis do tipo moto continuam separados das motos
+  estáticas de cenário.
+
+Os testes de construção com e sem visuais passaram no Godot 4.7.2, incluindo a
+checagem física da avenida e das seis mini-ruas. A partida offline passou nas
+39 verificações com 28 bots, dois Guaranis e seis motos operáveis.
+
+A sessão local DTLS passou em 15 verificações entre cliente e servidor. O cliente
+aceitou a identidade da Favela e recebeu os cinco objetivos e os oito veículos.
+A autoridade recusou um pedido forjado de RPG policial e replicou a ocupação
+validada de um Guarani. A duração e a carga desse teste cobrem apenas a entrada,
+a implantação e a ocupação do veículo.
+
+Em uma passagem de câmera de 30 s por preset, na GTX 1650 com saída 1080p e
+28 bots, o Alto registrou 24,1 FPS médios e p99 de 120,9 ms. O Baixo, com escala
+de renderização de 75%, registrou 32,4 FPS e p99 de 104,1 ms. Ambos excederam
+o limite de 50 ms para o pior quadro previsto no manifesto.
+
+Ficam para a aceitação de lançamento a navegação prolongada de veículos e bots
+entre os objetivos, a travessia de todas as lajes em partida, o equilíbrio entre
+facções e a estabilidade de FPS em combate completo.
