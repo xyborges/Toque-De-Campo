@@ -41,5 +41,6 @@ func _ready() -> void:
 	for path in ["kill-confirm","friendly-confirm"]: GameCombatAudioCatalog.stream("res://audio/war/"+path+".wav")
 	GameCombatAudioCatalog.stream("res://audio/war/tank-fire.wav")
 
-func explosion(event_id: String,point: Vector3,kind:="standard") -> void:
-	if is_instance_valid(explosion_audio): explosion_audio.play_event(event_id,point,kind)
+func explosion(event_id: String,point: Vector3,kind:="standard",surface:="") -> void:
+	var selected_kind:=GameCombatAudioCatalog.autocannon_impact_kind(surface) if kind=="autocannon" else kind
+	if is_instance_valid(explosion_audio): explosion_audio.play_event(event_id,point,selected_kind)

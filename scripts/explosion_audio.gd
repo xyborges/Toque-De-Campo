@@ -43,7 +43,7 @@ func _ready() -> void:
 		AudioServer.add_bus_effect(index,AudioEffectLimiter.new())
 	if AudioServer.get_bus_index(category)>=0 and category!=bus_name:
 		AudioServer.set_bus_send(index,category)
-	for path in GameCombatAudioCatalog.EXPLOSIONS+GameCombatAudioCatalog.EXPLOSIONS_FAR+PRESSURE_PATHS:
+	for path in GameCombatAudioCatalog.EXPLOSIONS+GameCombatAudioCatalog.EXPLOSIONS_FAR+PRESSURE_PATHS+GameCombatAudioCatalog.AUTOCANNON_IMPACTS:
 		GameCombatAudioCatalog.stream(path)
 	# Both WAV versions already contain their own outdoor reflections.
 	# The far bus must not put an additional artificial room on top.
@@ -94,7 +94,7 @@ func play_event(event_id: String,point: Vector3,kind:="standard") -> AudioStream
 func event_profile(kind: String) -> Dictionary:
 	if kind in ["tank","destroy"]: return {"range":4800.,"unit":240.,"db":gain_db+2.5}
 	if kind in ["tv","drone","rpg","stinger","missile"]: return {"range":4000.,"unit":175.,"db":gain_db+1.5}
-	if kind=="autocannon": return {"range":2500.,"unit":110.,"db":gain_db}
+	if kind in ["autocannon","autocannon_ground","autocannon_metal"]: return {"range":2500.,"unit":110.,"db":gain_db}
 	if kind=="grenade": return {"range":1400.,"unit":62.,"db":gain_db-1.5}
 	return {"range":audible_distance,"unit":115.,"db":gain_db}
 
@@ -129,7 +129,8 @@ func _play_layer(voice: AudioStreamPlayer3D,event_id: String,point: Vector3,kind
 	# protects against combined peaks; light blasts retain more headroom.
 	voice.max_db=3.0 if kind in ["tank","destroy","tank_wreck","armor_wreck"] else 0.0
 	var paths: Array=GameCombatAudioCatalog.EXPLOSIONS_FAR if distant else GameCombatAudioCatalog.EXPLOSIONS
-	voice.stream=GameCombatAudioCatalog.stream(paths[clip])
+	var path: String=GameCombatAudioCatalog.autocannon_impact_path(kind,distant) if kind in ["autocannon","autocannon_ground","autocannon_metal"] else str(paths[clip])
+	voice.stream=GameCombatAudioCatalog.stream(path)
 	voice.bus=bus_name+("Far" if distance>180 else "")
 	if distance>2:
 		var ray:=PhysicsRayQueryParameters3D.create(listener,point,1)
@@ -196,7 +197,9 @@ func _start(event_id: String,point: Vector3,kind:="standard") -> AudioStreamPlay
 		var secondary:=_find_voice(listener,distance,true)
 		if is_instance_valid(secondary):
 			_play_layer(secondary,event_id,point,kind,clip,not dominant_far,secondary_weight,settings,distance,listener)
-	_start_pressure(event_id,point,clip,settings,distance,voice.bus)
+	# The 30mm recording includes its own transient; no grenade pressure layer.
+	if kind not in ["autocannon","autocannon_ground","autocannon_metal"]:
+		_start_pressure(event_id,point,clip,settings,distance,voice.bus)
 	return voice
 
 func _exit_tree() -> void:
