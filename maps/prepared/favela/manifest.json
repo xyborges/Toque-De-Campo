@@ -1,0 +1,72 @@
+{
+  "id": "favela",
+  "version": 1,
+  "status": "testing",
+  "bounds": [
+    -750,
+    -750,
+    1500,
+    1500
+  ],
+  "content_hash": "93da52a21cff0aade0bad76b7204cd97db7569be3731339f14611a1b06bb5aa4",
+  "source_hash": "8006e231df950d0b12511e98257e03beccc1b7bb72588ec440957286ee8a037a",
+  "sources": [
+    "res://modes/war/scripts/favela_map.gd",
+    "res://modes/war/scripts/favela_uniform.gd",
+    "res://modes/war/scripts/operation.gd",
+    "res://modes/war/scripts/rules.gd",
+    "res://modes/war/library/favela_casa_laje.tscn",
+    "res://modes/war/library/favela_barricada_pneus.tscn"
+  ],
+  "grass_enabled": false,
+  "grass_approved": false,
+  "objectives": [
+    {
+      "id": "A",
+      "x": -265,
+      "z": 345
+    },
+    {
+      "id": "B",
+      "x": -440,
+      "z": 35
+    },
+    {
+      "id": "C",
+      "x": -85,
+      "z": -20
+    },
+    {
+      "id": "D",
+      "x": 270,
+      "z": -205
+    },
+    {
+      "id": "E",
+      "x": -290,
+      "z": -405
+    }
+  ],
+  "benchmark": {
+    "renderer": "gl_compatibility",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "vram_limit_mib": 4096,
+    "median_loss_max_percent": 5,
+    "worst_frame_max_ms": 50,
+    "seconds": 120
+  },
+  "stages": [
+    "layout",
+    "terrain",
+    "roads",
+    "buildings",
+    "microdetails",
+    "rules",
+    "multiplayer",
+    "benchmark"
+  ],
+  "artifacts": []
+}

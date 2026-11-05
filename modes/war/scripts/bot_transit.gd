@@ -33,6 +33,16 @@ func configure(map_id: String) -> void:
 			if route.size()<2: continue
 			add_route(route)
 			if float(record.get("width",0.))>=6.: add_route(route,true)
+	elif wanted==WarOperation.FAVELA:
+		add_route(WarFavelaMap.PRIMARY)
+		add_route(WarFavelaMap.PRIMARY,true)
+		for z in WarFavelaMap.CROSS_STREETS:
+			var across: Array=[Vector2(-640,z),Vector2(640,z)]
+			add_route(across)
+			# As travessas largas ligam o trafego, sem entrar nos becos.
+			add_route(across,true)
+		for x in WarFavelaMap.VERTICAL_STREETS:
+			add_route([Vector2(x,-550),Vector2(x,500)])
 	else:
 		for source: Array in WarRoads.ROUTES:add_route(WarRoads.rounded(source))
 		add_route([Vector2(-560,0),Vector2(-260,-115),Vector2(0,0),Vector2(260,-115),Vector2(560,0)])
@@ -75,7 +85,7 @@ func add_route(route: Array,drivable:=false) -> void:
 
 func path(start: Vector3,goal: Vector3,drivable:=false) -> Array[Vector3]:
 	var result: Array[Vector3]=[]
-	var network:=vehicle_graph if drivable and operation_id==WarOperation.AFGHAN else graph
+	var network:=vehicle_graph if drivable and operation_id in [WarOperation.AFGHAN,WarOperation.FAVELA] else graph
 	if network.get_point_count()>0:
 		var from_id:=network.get_closest_point(Vector2(start.x,start.z))
 		var to_id:=network.get_closest_point(Vector2(goal.x,goal.z))
@@ -83,5 +93,5 @@ func path(start: Vector3,goal: Vector3,drivable:=false) -> Array[Vector3]:
 		for p: Vector2 in route: result.append(WarTerrain.point(p.x,p.y))
 	# Do not append a cross-country straight line to vehicle routes:
 	# stop at the last road node and let infantry finish the approach.
-	if not drivable or operation_id!=WarOperation.AFGHAN: result.append(goal)
+	if not drivable or operation_id not in [WarOperation.AFGHAN,WarOperation.FAVELA]: result.append(goal)
 	return result

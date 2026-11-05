@@ -106,7 +106,10 @@ func _network_port() -> int:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--war-port="): return int(arg.trim_prefix("--war-port="))
 	return WarRules.operation_port()
-func _health_file() -> String: return "war-afghan-status.json" if operation_id==WarOperation.AFGHAN else "war-status.json"
+func _health_file() -> String:
+	if operation_id==WarOperation.AFGHAN:return "war-afghan-status.json"
+	if operation_id==WarOperation.FAVELA:return "war-favela-status.json"
+	return "war-status.json"
 func _health_status() -> Dictionary:
 	var bots:=[0,0];var humans:=[0,0];var spectators:=0
 	for state: Dictionary in members.values():
@@ -172,7 +175,8 @@ func _start_offline() -> void:
 	_enter_match_world()
 	await _warm_vegetation()
 	var base: Vector3=WarRules.BASES[0]
-	var actor:=_spawn_player(1,true,false,WarTerrain.point(base.x+35.,base.z)) as WarPlayer
+	var initial_spawn:=WarTerrain.point(base.x if operation_id==WarOperation.FAVELA else base.x+35.,base.z+10. if operation_id==WarOperation.FAVELA else base.z)
+	var actor:=_spawn_player(1,true,false,initial_spawn) as WarPlayer
 	actor.name=str(profile.nickname)
 	var look:=_appearance_payload();actor.set_meta("appearance",look)
 	actor.apply_body_proportions(look.get("proportions",{}))
@@ -189,7 +193,8 @@ func _warm_vegetation() -> void:
 func _build_desert() -> void:
 	var render_visuals:=not dedicated_pvp and DisplayServer.get_name()!="headless"
 	WarWorld.build(world_root,render_visuals)
-	if render_visuals and GameOptions.vegetation_preview_available(self):
+	# A Favela possui mata e vegetação próprias; não sobrepor o gerador ucraniano.
+	if render_visuals and operation_id!=WarOperation.FAVELA and GameOptions.vegetation_preview_available(self):
 		var vegetation=load("res://modes/war/scripts/vegetation_visuals.gd").new()
 		world_root.add_child(vegetation)
 		if operation_id==WarOperation.AFGHAN:
@@ -642,14 +647,15 @@ func _deploy(id: int,team: int,role: String,weapon: String,gadget: String,spawn_
 	var state: Dictionary = members[id]
 	var actor := players[id] as WarPlayer
 	if not _deployment_team_allowed(id,team): _notice(id,"Equipe cheia ou desequilibrada. Escolha a outra equipe.");return false
-	if (loadout.is_empty() and weapon not in WarRules.primary_for(role,team)) or gadget not in ["rpg","stinger"]: _notice(id,"Equipamento indisponível.");return false
+	var valid_gadget:=gadget in ["rpg","stinger"] or (WarRules.CURRENT_OPERATION==WarOperation.FAVELA and team==0 and gadget.is_empty())
+	if (loadout.is_empty() and weapon not in WarRules.primary_for(role,team)) or not valid_gadget: _notice(id,"Equipamento indisponível.");return false
 	if loadout.is_empty():
 		loadout=GameLoadouts.defaults("war",GameWeapons.INFANTRY_IDS,role,team);loadout.primary=weapon
 	var approved:=GameLoadouts.validate(loadout,"war",GameWeapons.INFANTRY_IDS,role,team)
 	if not approved.ok: _notice(id,str(approved.error));return false
 	weapon=str(approved.equipped)
 	if role=="antitank" and not WarRules.launcher_allowed(team,gadget):
-		_notice(id,"Sua equipe utiliza "+str(GameWeapons.ITEMS[WarRules.launcher_for_team(team)].name)+".");return false
+		_notice(id,"Lançador indisponível para sua equipe neste mapa.");return false
 	if role!="antitank": gadget=WarRules.launcher_for_team(team)
 	if not _valid_deployment_spawn(team,spawn_id): _notice(id,"Ponto indisponível. Escolha uma base ou setor da sua equipe.");return false
 	var chosen := {"team":team,"role":role,"weapon":weapon,"gadget":gadget,"spawn":spawn_id,"life":actor.life_id,"loadout":approved.slots.duplicate()}
@@ -718,6 +724,8 @@ func find_spawn(id: int) -> Vector3:
 				var base: Vector3=WarRules.BASES[team]
 				var front: Vector3=WarRules.OBJECTIVES["D" if team==0 else "B"].position
 				p=base.lerp(front,.12+.06*lane)+Vector3((lane%3-1)*7,0,((lane/3)-1)*6)
+		elif WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+			p=WarRules.BASES[team]+Vector3((lane%4-1)*6,0,-6+(lane/4)*8)
 		elif lane<4: p=WarRules.BASES[team]+Vector3((lane%2)*5-3,0,-10+(lane/2)*7)
 		else: p=Vector3(-190 if team==0 else 190,0,-180+(lane-4)*57)
 	var best := p

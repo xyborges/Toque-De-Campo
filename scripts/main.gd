@@ -470,6 +470,7 @@ func launch_from_menu(selected: String, offline := false) -> void:
 		"desert": title = "PREPARANDO DESERTO"; detail = "Iniciando treino..." if offline else "Conectando ao PVP..."
 		"naval": title = "PREPARANDO FROTA"; detail = "Abrindo as salas navais..."
 		"war": title = "PREPARANDO GUERRA"; detail = "Carregando a linha de frente..."
+		"war_favela": title = "PREPARANDO FAVELA"; detail = "Carregando becos e lajes..."
 		"war_afghan": title = "PREPARANDO AFEGÃO"; detail = "Carregando o vale afegão..."
 		"br": title = "PREPARANDO BATTLE ROYALE"; detail = "Carregando mapa e pareamento..."
 		_: return
@@ -487,6 +488,7 @@ func launch_from_menu(selected: String, offline := false) -> void:
 		"naval": open_naval()
 		"war": open_war(offline,WarOperation.UKRAINE)
 		"war_afghan": open_war(offline,WarOperation.AFGHAN)
+		"war_favela": open_war(offline,WarOperation.FAVELA)
 		"br": open_battle_royale(offline)
 	# As telas próprias de espera/matchmaking continuam gerindo a partida.
 	# A cortina global desaparece suavemente depois de a UI de destino existir.

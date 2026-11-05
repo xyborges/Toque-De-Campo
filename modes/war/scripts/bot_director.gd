@@ -37,13 +37,18 @@ class BotRoutes extends OfflineDirector:
 	var heights:=PackedFloat32Array()
 	func setup(owner_game: Node3D) -> void:
 		game=owner_game;cell=4.
-		origin=Vector2(-600,-260) if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN else Vector2(-350,-250)
+		if WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+			cell=5.0
+			origin=Vector2(-650,-555)
+		elif WarRules.CURRENT_OPERATION==WarOperation.AFGHAN:
+			origin=Vector2(-600,-260)
+		else:origin=Vector2(-350,-250)
 		# Never load a Ukrainian baked navgrid on Afghan terrain. Afghan
 		# currently uses a local grid around the central village plus transit.
 		if load("res://scripts/maps/navigation_cache.gd").install(self,WarRules.map_content()):return
 		# Central cover uses a fine local grid. Long transit uses the road graph
 		# instead of searching a dense grid across all 3.5 kilometres.
-		grid.region=Rect2i(Vector2i.ZERO,Vector2i(176,126))
+		grid.region=Rect2i(Vector2i.ZERO,Vector2i(260,222)) if WarRules.CURRENT_OPERATION==WarOperation.FAVELA else Rect2i(Vector2i.ZERO,Vector2i(176,126))
 		grid.cell_size=Vector2.ONE*cell;grid.offset=origin
 		grid.diagonal_mode=AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
 		grid.update()
@@ -888,7 +893,7 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	if vehicle.driver!=actor.peer_id:
 		if vehicle.position.distance_to(goal)<65: manager.release(actor.peer_id)
 		return
-	var follow_road:=WarRules.CURRENT_OPERATION==WarOperation.AFGHAN
+	var follow_road:=WarRules.CURRENT_OPERATION in [WarOperation.AFGHAN,WarOperation.FAVELA]
 	if record.vehicle_goal!=record.objective or record.vehicle_path.is_empty():
 		record.vehicle_path=transit.path(vehicle.position,goal,follow_road);record.vehicle_index=0;record.vehicle_goal=record.objective
 		record.terrain_detour=Vector3.INF;record.grade_check_at=0.

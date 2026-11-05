@@ -3,6 +3,7 @@ class_name WarOperation
 
 const UKRAINE := "ukraine"
 const AFGHAN := "afghan"
+const FAVELA := "favela"
 
 const DATA := {
 	UKRAINE:{
@@ -43,11 +44,31 @@ const DATA := {
 			"E":{"position":Vector3(450,0,-510),"name":"Povoado sul","active":true}},
 		"transport":{
 			"bike_0":[Vector3(-418,0,895),Vector3(-402,0,900),Vector3(-430,0,916)],
-			"bike_1":[Vector3(379,0,-873),Vector3(370,0,-887),Vector3(405,0,-871)]}}
+			"bike_1":[Vector3(379,0,-873),Vector3(370,0,-887),Vector3(405,0,-871)]}},
+	FAVELA:{
+		"name":"Favela",
+		"map_content":"favela",
+		"port":3016,
+		"half":750.0,
+		"teams":["Polícia","Bandidos"],
+		"bases":[Vector3(-470,0,590),Vector3(280,0,-500)],
+		"armor_bays":[[Vector3(-469,0,580),Vector3(-455,0,580)],[]],
+		"objectives":{
+			"A":{"position":Vector3(-265,0,345),"name":"Entrada da favela","active":true},
+			"B":{"position":Vector3(-440,0,35),"name":"Escadaria","active":true},
+			"C":{"position":Vector3(-85,0,-20),"name":"Praça central","active":true},
+			"D":{"position":Vector3(270,0,-205),"name":"Lajes do alto","active":true},
+			"E":{"position":Vector3(-290,0,-405),"name":"Reservatório","active":true}},
+		"transport":{
+			"bike_0":[Vector3(-445,0,594),Vector3(-447,0,608),Vector3(-463,0,607)],
+			"bike_1":[Vector3(284,0,-516),Vector3(295,0,-514),Vector3(302,0,-496)]}}
 }
 
 static func normalize(id: String) -> String:
-	return AFGHAN if id.to_lower() in ["afghan","afghanistan","afeganistao","afeganistão"] else UKRAINE
+	var key:=id.to_lower()
+	if key in ["afghan","afghanistan","afeganistao","afeganistão"]:return AFGHAN
+	if key in ["favela","war_favela","favela_guerra"]:return FAVELA
+	return UKRAINE
 
 static func data(id: String) -> Dictionary:
 	return DATA[normalize(id)]
@@ -84,6 +105,7 @@ static func transport(id: String) -> Dictionary:
 
 static func armor_heading(id: String,team: int) -> float:
 	if normalize(id)==AFGHAN: return -1.72 if team==0 else -2.72
+	if normalize(id)==FAVELA: return -.28 if team==0 else PI
 	return -PI*.5 if team==0 else PI*.5
 
 static func armor_bay(id: String,team: int,heavy: bool) -> Vector3:

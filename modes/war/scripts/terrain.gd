@@ -126,7 +126,7 @@ static func _settlement_grade(x: float,z: float,height: float) -> float:
 	return height
 
 static func trench_distance(p: Vector2) -> float:
-	if operation_id==WarOperation.AFGHAN:return INF
+	if operation_id in [WarOperation.AFGHAN,WarOperation.FAVELA]:return INF
 	var distance := INF
 	for i in TRENCH.size()-1:
 		distance = minf(distance,p.distance_to(Geometry2D.get_closest_point_to_segment(p,TRENCH[i],TRENCH[i+1])))
@@ -137,6 +137,7 @@ static func trench_distance(p: Vector2) -> float:
 
 static func raw_height(x: float,z: float) -> float:
 	if operation_id==WarOperation.AFGHAN:return BRAfghanMap.height_at(x,z)
+	if operation_id==WarOperation.FAVELA:return WarFavelaMap.height_at(x,z)
 	WarTerrainEdits.prepare()
 	var h := _base(x,z)
 	for port: Vector3 in WarCoast.PORTS:
@@ -239,6 +240,7 @@ static func fine_vertex(key: Vector4i,sx: int,sz: int) -> float:
 
 static func height_at(x: float,z: float) -> float:
 	if operation_id==WarOperation.AFGHAN:return BRAfghanMap.height_at(x,z)
+	if operation_id==WarOperation.FAVELA:return WarFavelaMap.height_at(x,z)
 	WarTerrainEdits.prepare()
 	var key:=cell_at(x,z)
 	if not fine_cell(key): return _coarse_height_at(x,z)

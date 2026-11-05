@@ -39,6 +39,12 @@ func _prepare() -> void:
 			var line: Array=[]
 			for location: Vector3 in route.points:line.append(Vector2(location.x,location.z))
 			if line.size()>1:road_paths.append(line)
+	elif WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+		road_paths.append(WarFavelaMap.PRIMARY)
+		for street_z in WarFavelaMap.CROSS_STREETS:
+			road_paths.append([Vector2(-640,street_z),Vector2(640,street_z)])
+		for street_x in WarFavelaMap.VERTICAL_STREETS:
+			road_paths.append([Vector2(street_x,-550),Vector2(street_x,500)])
 	else:
 		for route: Array in WarRoads.ROUTES: road_paths.append(WarRoads.rounded(route))
 	var points: Array[Vector2]=[]
@@ -50,7 +56,7 @@ func _prepare() -> void:
 	for y in RES:
 		for x in RES:
 			var p:=(Vector2(x+.5,y+.5)/RES*2-Vector2.ONE)*WarTerrain.HALF
-			var dry:=absf(p.x-BRAfghanMap.LAND.stream_center(p.y))>4. if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN else WarCoast.inland(p.x,p.y)>2
+			var dry:=true if WarRules.CURRENT_OPERATION==WarOperation.FAVELA else (absf(p.x-BRAfghanMap.LAND.stream_center(p.y))>4. if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN else WarCoast.inland(p.x,p.y)>2)
 			land[y*RES+x]=1 if dry else 0
 			var nearest:=-1;var best:=INF
 			for i in points.size():
@@ -59,7 +65,14 @@ func _prepare() -> void:
 			sectors[y*RES+x]=nearest
 			var c:=Color("172c32")
 			if dry:
-				if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN:
+				if WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+					var height:=WarFavelaMap.height_at(p.x,p.y)
+					var distance:=WarFavelaMap.road_distance(p)
+					if p.y< -570.0:c=Color("43674a").lightened(clampf((height-80.0)*.001,-.1,.10))
+					elif p.y>505.0:c=Color("898477")
+					elif distance<9.0:c=Color("52585a")
+					else:c=Color("a48d80").lightened(clampf((height-50.0)*.0005,-.07,.07))
+				elif WarRules.CURRENT_OPERATION==WarOperation.AFGHAN:
 					var height:=BRAfghanMap.height_at(p.x,p.y)
 					c=Color("85775c").lightened(clampf((height-10.)*.002,-.05,.1))
 				else:
