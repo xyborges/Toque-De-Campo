@@ -28,8 +28,8 @@ func run() -> void:
 	menu.mode_buttons["war_favela"].pressed.emit()
 	check(menu.selected_mode=="war_favela","Favela selected without starting a background game")
 	check(menu.hero_title.text=="FAVELA" and menu.hero_detail.text.contains("Conquista urbana"),"Correct Favela title and description")
-	check(menu.play_button.text=="JOGAR COM BOTS","Favela primary action is explicitly offline")
-	check(not menu.war_offline_button.visible,"No duplicated Favela offline button")
+	check(menu.play_button.text=="CONECTAR ONLINE","Favela primary action exposes online matchmaking")
+	check(menu.war_offline_button.visible,"Favela keeps a separate offline bots action")
 	check(menu.preparation_roles.visible and menu.preparation_panel.visible,"Class, team and loadout preparation available")
 	check(menu.preparation_team.get_item_text(0)=="Polícia" and menu.preparation_team.get_item_text(1)=="Bandidos","Correct Favela teams")
 	check(menu.preparation_editor.mode=="war","Existing Guerra loadout reused")
@@ -50,8 +50,12 @@ func run() -> void:
 	menu.play_button.pressed.emit()
 	for i in 9:
 		await process_frame
-	check(game.war_launches==[true],"Pressing JOGAR COM BOTS dispatches an offline operation")
-	check(game.mode=="menu" and game.world_root==null,"Fixture launch does not create an actual match in the background")
+	check(game.war_launches==[false],"Pressing CONECTAR ONLINE dispatches the Favela online operation")
+	check(game.mode=="menu" and game.world_root==null,"Fixture online launch does not create an actual match in the background")
+	menu.war_offline_button.pressed.emit()
+	for i in 3:
+		await process_frame
+	check(game.war_launches==[false,true],"Favela offline bots action remains available separately")
 	menu._select_mode("war")
 	check(menu.play_button.text=="CONECTAR ONLINE" and menu.war_offline_button.visible,"Ukraine Guerra still has both actions")
 	menu._select_mode("war_afghan")
@@ -65,5 +69,5 @@ func run() -> void:
 func _finish(game: Node,previous: Variant) -> void:
 	ProjectSettings.set_setting("gameplay/war_enabled",previous)
 	if is_instance_valid(game):game.queue_free()
-	print("FAVELA_MENU_RELEASE_QA ",JSON.stringify({"checks":checks,"failures":failures,"note":"candidate-only, no deployment"}))
+	print("FAVELA_MENU_RELEASE_QA ",JSON.stringify({"checks":checks,"failures":failures,"note":"multiplayer-ready candidate, no deployment"}))
 	quit(0 if failures.is_empty() else 1)
