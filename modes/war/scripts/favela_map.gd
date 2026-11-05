@@ -18,6 +18,7 @@ const MINI_STREET_WIDTH := 2.8
 const COMMERCE := preload("res://modes/war/library/favela_comercio_fachada.tscn")
 const POLE := preload("res://modes/war/library/favela_poste_cabos.tscn")
 const CABLE := preload("res://modes/war/library/favela_rede_aerea.tscn")
+const STREET_ART := preload("res://modes/war/scripts/favela_street_art.gd")
 const PARKED_BIKE := preload("res://modes/war/library/favela_moto_estacionada.tscn")
 const PRIMARY := [
 	Vector2(-470,600),Vector2(-460,490),Vector2(-395,420),
@@ -47,9 +48,10 @@ var store_count:=0
 var pole_count:=0
 var cable_count:=0
 var parked_bikes:=0
+var tag_count:=0
+var litter_count:=0
 var shop_connections: Array[Vector3]=[]
 static var ground_material: StandardMaterial3D
-static var asphalt_material: StandardMaterial3D
 static var terrain_samples := PackedFloat32Array()
 
 static func _landform(x: float,z: float) -> float:
@@ -195,11 +197,13 @@ func build() -> void:
 	_vegetation(kit)
 	kit.flush()
 	if render_visuals:
+		STREET_ART.paint_walls(self)
 		WarSceneryBatch.build(street_fixtures)
 		_atmosphere()
 	build_metrics={"area_m":1500,"terrain_tiles":225,
 		"collision_shapes":kit.collision_count,"visual_instances":kit.detail_count,
 		"storefronts":store_count,"utility_poles":pole_count,"wire_spans":cable_count,
+		"wall_tags":tag_count,"litter_clusters":litter_count,
 		"parked_bikes":parked_bikes,"build_ms":Time.get_ticks_msec()-begun,"visuals":render_visuals}
 	build_metrics.merge(neighborhood)
 	set_meta("favela_build_metrics",build_metrics)
@@ -299,15 +303,8 @@ func _road_strip(anchors: Array,width: float,verge: bool=false) -> void:
 	arrays[Mesh.ARRAY_NORMAL]=normals;arrays[Mesh.ARRAY_TEX_UV]=uvs
 	arrays[Mesh.ARRAY_COLOR]=wear
 	var mesh:=ArrayMesh.new();mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,arrays)
-	if asphalt_material==null:
-		asphalt_material=StandardMaterial3D.new()
-		asphalt_material.albedo_color=Color("77706a")
-		asphalt_material.albedo_texture=EnvironmentKit.material("asphalt").albedo_texture
-		asphalt_material.vertex_color_use_as_albedo=true
-		asphalt_material.vertex_color_is_srgb=true
-		asphalt_material.roughness=1.0
 	var view:=MeshInstance3D.new();view.name="Passagem" if verge else "Asfalto";view.mesh=mesh
-	view.material_override=EnvironmentKit.material("concrete:645b52") if verge else asphalt_material
+	view.material_override=STREET_ART.paving(verge)
 	view.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(view)
 
@@ -412,7 +409,7 @@ func _neighborhoods(k: EnvironmentKit) -> Dictionary:
 			var market:=absf(base.z+15)<25.0 and absf(base.x)<360.0
 			var shop_interval:=2 if market else 5
 			if not open_house and not sparse and count%shop_interval==0:
-				_commercial_front(base,half_lot,count)
+				_commercial_front(k,base,half_lot,count)
 			if upper_storeys>0:stacked+=1
 			if open_house:roofs+=1
 			if roof_pair and open_house:
@@ -491,12 +488,15 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 	if index%3!=0 and not open_house:
 		k.box("Portão",ground+Vector3(-w*.16,1.35,d*.5+.04),
 			Vector3(2.15,2.65,.055),"steel:484942",false)
-	if index%5==0:
-		k.box("TijoloExposto",ground+Vector3(w*.28,height*.65,d*.5+.045),
-			Vector3(w*.28,height*.35,.035),"brick:92594b",false)
-	if index%6==0:
-		k.box("RebocoGasto",ground+Vector3(w*.30,height*.18,-d*.5-.034),
-			Vector3(w*.29,height*.30,.041),"concrete:8b8373",false)
+	if not open_house and index%3==0:
+		var side:=1.0 if index%2==0 else -1.0
+		var wall:=ground+Vector3(side*(w*.5+.055),1.04,d*.24)
+		wall.y=maxf(wall.y,height_at(wall.x,wall.z)+.5)
+		if wall.y+1.25<ground.y+height:
+			STREET_ART.tag(k,wall,side*PI*.5,index)
+			tag_count+=1
+		if index%12==0:
+			_litter(Vector2(wall.x+side*.31,wall.z+.5),float(index)*.31)
 	if index%9==0:
 		var service_face:=ground+Vector3(w*.5+.055,0,d*.24)
 		k.pipe(service_face+Vector3.UP*.18,service_face+Vector3.UP*(height-.1),
@@ -540,7 +540,7 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 			k.box("Roupa",roof_origin+Vector3(-1.7+n*1.6,roof_y+.62,d*.13),
 				Vector3(.65,.78,.04),"fabric:9e554b" if n%2==0 else "fabric:5779a0",false)
 
-func _commercial_front(ground: Vector3,half_lot: Vector2,index: int) -> void:
+func _commercial_front(k: EnvironmentKit,ground: Vector3,half_lot: Vector2,index: int) -> void:
 	var center:=Vector2(ground.x,ground.z)
 	var center_distance:=road_distance(center)
 	if center_distance>16.0:return
@@ -560,6 +560,12 @@ func _commercial_front(ground: Vector3,half_lot: Vector2,index: int) -> void:
 	var shop:=WarMapContent.instantiate(street_fixtures,COMMERCE.resource_path,door,render_visuals)
 	shop.rotation.y=atan2(street_face.x,street_face.y)
 	store_count+=1
+	var mark:=door-shop.basis.x*3.6+shop.basis.z*.065
+	mark.y=maxf(door.y+1.08,ground.y+.7)
+	STREET_ART.tag(k,mark,shop.rotation.y,index+store_count)
+	tag_count+=1
+	var trash:=door-shop.basis.x*2.55+shop.basis.z*.47
+	_litter(Vector2(trash.x,trash.z),shop.rotation.y+.3)
 	shop_connections.append(door+Vector3.UP*2.76)
 	if render_visuals:
 		var names:=["MERCEARIA","OFICINA DO BAIRRO","BAR DO ALTO","DEPÓSITO","ARMAZÉM","LANCHES"]
@@ -576,6 +582,22 @@ func _commercial_front(ground: Vector3,half_lot: Vector2,index: int) -> void:
 			mesh.visibility_range_end=120.0
 			mesh.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		parked_bikes+=1
+
+func _litter(at: Vector2,yaw: float) -> void:
+	litter_count+=1
+	if not render_visuals:return
+	var edge_offset:=.21*sin(at.x*.22+at.y*.16)
+	var on_paving:=primary_distance(at)<AVENUE_WIDTH*.5+edge_offset
+	on_paving=on_paving or _mini_street_distance(at,2.0)<MINI_STREET_WIDTH*.5+edge_offset
+	for z: float in CROSS_STREETS:
+		on_paving=on_paving or (absf(at.x)<640.0 and absf(at.y-z)<CROSS_WIDTH*.5+edge_offset)
+	for x: float in VERTICAL_STREETS:
+		on_paving=on_paving or (at.y>-550.0 and at.y<500.0 and absf(at.x-x)<ALLEY_WIDTH*.5+edge_offset)
+	var detail:=WarMapContent.instantiate(street_fixtures,STREET_ART.LITTER.resource_path,
+		point(at.x,at.y)+Vector3.UP*(.175 if on_paving else .012),true)
+	var normal:=Vector3(height_at(at.x-.3,at.y)-height_at(at.x+.3,at.y),.6,
+		height_at(at.x,at.y-.3)-height_at(at.x,at.y+.3)).normalized()
+	detail.basis=Basis(Quaternion(Vector3.UP,normal))*Basis(Vector3.UP,yaw)
 
 func _cable_span(a: Vector3,b: Vector3,sag:=1.0) -> void:
 	var delta:=b-a
@@ -604,6 +626,7 @@ func _wire_route(anchors: Array,width: float,interval: float) -> void:
 			var pole:=WarMapContent.instantiate(street_fixtures,POLE.resource_path,at,render_visuals)
 			pole.rotation.y=atan2(-right.y,right.x)
 			pole_count+=1
+			if number%3==0:_litter(p+right*side*.28,float(number)*.73)
 			var top:=at+Vector3.UP*7.71
 			if previous.is_finite() and previous.distance_to(top)<interval*2.45:_cable_span(previous,top)
 			previous=top

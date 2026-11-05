@@ -36,7 +36,7 @@ func _run() -> void:
 		"Prefab casa ausente")
 	ensure(ResourceLoader.exists("res://modes/war/library/favela_barricada_pneus.tscn"),
 		"Prefab pneus ausente")
-	for id in ["favela_comercio_fachada","favela_poste_cabos","favela_rede_aerea","favela_moto_estacionada"]:
+	for id in ["favela_pixacao","favela_lixo_calcada","favela_comercio_fachada","favela_poste_cabos","favela_rede_aerea","favela_moto_estacionada"]:
 		var prefab:=WarPrefabFactory.create(id)
 		ensure(WarPrefabFactory.ITEMS.has(id) and prefab.get_meta("library_id","")==id,
 			"Objeto ausente no catálogo: "+id)
@@ -86,6 +86,8 @@ func _run() -> void:
 			"Faltam acessos e ligações físicas entre lajes")
 		ensure(int(stats.get("storefronts",0))>=50 and int(stats.get("wire_spans",0))>=200
 			and int(stats.get("parked_bikes",0))>=10,"Faltam elementos de rua da Favela")
+		ensure(int(stats.get("wall_tags",0))>1000 and int(stats.get("litter_clusters",0))>300,
+			"Faltam marcas de uso nas paredes e bordas das ruas")
 		ensure(int(stats.get("collision_shapes",0))>950,"Coberturas sem colisão")
 		print("FAVELA_LAYOUT ",JSON.stringify(stats))
 		if visuals:

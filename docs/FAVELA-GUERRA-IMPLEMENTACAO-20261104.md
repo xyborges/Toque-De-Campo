@@ -122,3 +122,34 @@ o limite de 50 ms para o pior quadro previsto no manifesto.
 Ficam para a aceitação de lançamento a navegação prolongada de veículos e bots
 entre os objetivos, a travessia de todas as lajes em partida, o equilíbrio entre
 facções e a estabilidade de FPS em combate completo.
+
+## Revisão de superfícies de 05/11/2026 — versão 3
+
+As fachadas receberam materiais compartilhados com áreas irregulares de reboco
+perdido, juntas de alvenaria, umidade, rachaduras e normais de superfície. Foram
+removidos os antigos retângulos de tijolo colados sobre algumas paredes.
+As vias usam remendos e fissuras mipmapeados com redução de detalhe à distância.
+
+Há 1.276 marcas de parede em quatro variantes autorais e 482 conjuntos de resíduos
+(sacos, papelão, papel e garrafas), apoiados conforme a inclinação e a altura do
+pavimento. Pixação e lixo têm cenas reutilizáveis no catálogo. Os detalhes pequenos
+não criam colisores, usam recursos compartilhados, alcance limitado e agrupamento.
+O terreno, as 3.834 edificações e as coberturas físicas permanecem nesta revisão.
+
+Validação desta versão no Godot 4.7.2:
+- Smoke com e sem representação visual passou, incluindo identidade das fontes e
+  amostras físicas da avenida e das seis mini-ruas.
+- Partida offline com 28 bots passou nas 39 verificações, com oito veículos.
+- Shaders compilaram na GTX 1650. Capturas reais Alto/Baixo do comércio, avenida,
+  beco, viela, encosta e asfalto confirmaram os elementos em execução.
+- Passagem de câmera de 30 s por preset, 1080p e 28 bots, registrou Alto 52,8 FPS,
+  p99 48,4 ms e pior quadro 75,7 ms. Baixo com escala 75% registrou 59,4 FPS,
+  p99 69,1 ms e pior quadro 138,4 ms. São medições curtas e variáveis, sem combate
+  efetivo registrado; não demonstram 60 FPS estáveis nem aprovação de lançamento.
+- Capturas e logs em
+  `C:/Users/Joao Borges/AppData/Local/Temp/favela-qa-26454181a19a4b398fd236193fe76830/desgaste-entrega/`.
+
+O teste visual ainda mostra recuos excessivos, fachadas simplificadas e fiação
+muito paralela. A próxima etapa autorizada é arquitetônica e por quadras, com
+repetição das mesmas câmeras, aproximação das frentes, módulos de fachada e laje
+e validação de acessos. Esta etapa de superfícies não encerra o trabalho solicitado.

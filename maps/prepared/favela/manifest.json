@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 2,
+  "version": 3,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,8 +8,8 @@
     1500,
     1500
   ],
-  "content_hash": "ca1e52b7c8e3a0e0113ae38c7fb0d53c4c0dfc8a340451b4fa00a0e97c2dcfdd",
-  "source_hash": "7b9a162e02ee2c75a9b6a36edaca1aaf2fdb0b87b4a95e2ba09d1707b4dfa842",
+  "content_hash": "571ea8481b911716591239d6ed65c56747759ba7d1e22ac255e26350fb46645c",
+  "source_hash": "e6afbff05286bdb0dabbc4d70665c379098832409cdaaba0ebe9f5d8fb662b8b",
   "sources": [
     "res://modes/war/scripts/favela_map.gd",
     "res://modes/war/scripts/favela_uniform.gd",
@@ -21,7 +21,10 @@
     "res://modes/war/library/favela_poste_cabos.tscn",
     "res://modes/war/library/favela_rede_aerea.tscn",
     "res://modes/war/library/favela_moto_estacionada.tscn",
-    "res://modes/war/equipment/motorbike.tscn"
+    "res://modes/war/equipment/motorbike.tscn",
+    "res://modes/war/scripts/favela_street_art.gd",
+    "res://modes/war/library/favela_pixacao.tscn",
+    "res://modes/war/library/favela_lixo_calcada.tscn"
   ],
   "grass_enabled": false,
   "grass_approved": false,
