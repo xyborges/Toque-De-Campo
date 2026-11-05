@@ -2,6 +2,7 @@ extends Node3D
 class_name WarVehicles
 const NetworkCadence=preload("res://scripts/network_cadence.gd")
 const MOTORBIKE=preload("res://modes/war/scripts/motorbike.gd")
+const STINGER_AUDIO=preload("res://modes/war/scripts/stinger_lock_audio.gd")
 var game: WarGame
 var vehicles: Dictionary = {}
 var drones: Dictionary = {}
@@ -24,6 +25,7 @@ var last_control_role := ""
 var aim_point := Vector3.ZERO
 var lock_target := ""
 var lock_progress := 0.0
+var lock_audio: Node
 var last_gadget_clock := -100.0
 var effect_clock := 0.0
 var last_sent: Dictionary = {}
@@ -48,6 +50,8 @@ var impact_events: Dictionary={}
 
 func _ready() -> void:
 	name = "WarVehicles"
+	lock_audio=STINGER_AUDIO.new()
+	add_child(lock_audio)
 	tv.manager=self
 	for kind in WarRules.VEHICLES:
 		if not WarRules.vehicle_enabled(kind):continue
@@ -410,10 +414,14 @@ func _process(delta: float) -> void:
 		camera.rotate_object_local(Vector3.UP,sin(shock_clock*41+.8)*amplitude*.65)
 		camera.rotate_object_local(Vector3.BACK,sin(shock_clock*37)*amplitude*.55)
 	hull_shock=maxf(0,hull_shock-delta*2.5) if vehicle is WarVehicle else 0.
-	if is_instance_valid(game.local_player) and game.local_player.gadget_equipped and game.local_player.gadget=="stinger":
+	var seeker_enabled: bool=is_instance_valid(game.local_player) and game.local_player.hp>0 and game.local_player.deployed and game.local_player.vehicle_id.is_empty() and game.local_player.gadget_equipped and game.local_player.gadget=="stinger"
+	if seeker_enabled:
 		var result := acquire(game.local_player)
 		if str(result.get("id",""))==lock_target and not result.is_empty(): lock_progress=minf(1.0,lock_progress+delta/1.25)
-		else: lock_target=str(result.get("id",""));lock_progress=0
+		else: lock_target=str(result.get("id",""));lock_progress=0.0
+	else:
+		lock_target="";lock_progress=0.0
+	if is_instance_valid(lock_audio): lock_audio.call("sync",lock_target,lock_progress,delta,seeker_enabled and not game.ui_focus.blocked())
 
 func _update_transport_camera(vehicle: WarVehicle,delta: float) -> void:
 	vehicle_view.external=true;zoom=false
