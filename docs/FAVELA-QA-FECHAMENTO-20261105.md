@@ -28,7 +28,8 @@ mantida intocada. Não validar release a partir desse estado.
 | Multiplayer ENet/DTLS | PASS | servidor + 2 clientes, 26/26 checagens |
 | Aparência/ocupação visual das margens cinzas | **PENDENTE** | 6 capturas antes/depois, faixas cinzas extensas ainda visíveis |
 | 60 FPS em Alta, 1080p, 28 bots | **NÃO ATINGIDO** | média 57,0 FPS, p99 61,8 ms |
-| Partida longa com humanos e 28 bots *juntos*, combate e motoristas | **NÃO EXECUTADO** | cenários separados testaram rede, bots e locomoção |
+| Servidor + 2 clientes + 28 bots (30 atores) | PASS | 18/18 em 3 processos; 12 s de movimento replicado |
+| Soak de 10–20 min com humanos, bots, combate e motoristas | **NÃO EXECUTADO** | cenário prolongado e combate misto ainda pendentes |
 
 ### Objetos colocados em segurança
 
@@ -55,6 +56,19 @@ O novo `tests/favela_network_qa.gd` verificou:
 Rodada concluída com **12 verificações no servidor, 7 no cliente alpha e 7
 no cliente bravo; zero falhas**. Nenhum script de teste cria contas reais ou
 publica servidor. Os relatórios vão para pasta temporária de QA.
+
+**Carga online adicional:** `tests/favela_online_bot_qa.gd` implantou 28 bots
+do servidor e conectou dois humanos simultâneos (30 atores). Os dois clientes
+receberam 28 bots e suas movimentações; o servidor confirmou atividade de
+múltiplos bots durante uma janela de 12 s, além das oito viaturas.
+Resultado **8/8 servidor, 5/5 alpha e 5/5 bravo; zero falhas**.
+Esse teste confirma admissão e sincronização sob carga, **não** simula 10–20 min
+de combate com entrada e saída de blindados.
+
+```powershell
+cd 'C:\Users\Joao Borges\Documents\campo-worktrees\favela-street-review'
+python tests/run_favela_network.py --project 'C:\Users\Joao Borges\Documents\campo-worktrees\favela-guerra' --script 'C:\Users\Joao Borges\Documents\campo-worktrees\favela-street-review\tests\favela_online_bot_qa.gd'
+```
 
 Comando de reprodução:
 ```powershell
