@@ -1,6 +1,6 @@
 # Atualização 1.13.3 — fumaça tática, veículos e miras
 
-**Estado:** CANDIDATA em 04/11/2026.
+**Estado:** PUBLICADA em 04/11/2026 — build 90.
 
 ## Conteúdo
 
@@ -36,4 +36,13 @@
 - O CollisionRig/FPP-TPP experimental permanece fora da atualização por ainda ter trabalho ativo e regressão de desempenho registrada no ensaio de 28 atores.
 - Mixer dinâmico global e ducking de combate continuam pendentes.
 
-Os resultados finais de mapas, instalação assinada, publicação e serviços serão registrados após a validação do candidato.
+## Publicação e verificação final
+
+- Build assinada: **90 / 1.13.3**.
+- Instalação assinada local: **13/13 verificações**, sem falhas; o executável protegido iniciou e carregou o codec, mantendo o pacote intacto.
+- Preflight remoto: **PREFLIGHT_OK build=90**, com build 89 publicada anteriormente.
+- Publicador oficial: **VERIFIED_READY build=90** e **DEPLOYED build=90 version=1.13.3**, código zero.
+- Pós-publicação ao vivo: **7/7 verificações**; manifesto HTTPS exatamente igual ao assinado, build 90 ativa, arquivo `game-90-db7c3deb8ab7.zip` anunciado, cinco serviços ativos e hashes dos binários Linux correspondentes ao manifesto.
+- Download interno: `https://192.168.101.24/`.
+
+As falhas conhecidas das suítes legadas de fila do BR e `war_multiplayer` permanecem registradas acima porque também foram reproduzidas na 1.13.2; elas não foram tratadas como regressões introduzidas pela 1.13.3.
