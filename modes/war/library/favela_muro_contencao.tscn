@@ -1,0 +1,71 @@
+[gd_scene load_steps=8 format=3]
+
+[sub_resource type="StandardMaterial3D" id="MatWall"]
+albedo_color = Color(0.44, 0.42, 0.38, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="MatBrick"]
+albedo_color = Color(0.43, 0.22, 0.16, 1)
+roughness = 0.98
+
+[sub_resource type="BoxMesh" id="MeshWall"]
+size = Vector3(6.0, 3.2, 0.62)
+
+[sub_resource type="BoxMesh" id="MeshButtress"]
+size = Vector3(0.42, 2.5, 0.95)
+
+[sub_resource type="BoxMesh" id="MeshCap"]
+size = Vector3(6.3, 0.20, 0.82)
+
+[sub_resource type="BoxShape3D" id="ShapeWall"]
+size = Vector3(6.0, 3.2, 0.62)
+
+[node name="FavelaMuroContencao" type="Node3D"]
+metadata/library_id = "favela_muro_contencao"
+metadata/footprint = Vector2(6.3, 1.0)
+metadata/origin = "ground"
+metadata/asset_revision = 1
+metadata/lod_near = 160.0
+metadata/lod_far = 520.0
+metadata/surface = "concrete"
+metadata/destructible = false
+
+[node name="Corpo" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+metadata/surface = "concrete"
+
+[node name="Collision" type="CollisionShape3D" parent="Corpo"]
+position = Vector3(0, 1.6, 0)
+shape = SubResource("ShapeWall")
+metadata/surface = "concrete"
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.6, 0)
+mesh = SubResource("MeshWall")
+material_override = SubResource("MatWall")
+visibility_range_end = 520.0
+
+[node name="Coroamento" type="MeshInstance3D" parent="."]
+position = Vector3(0, 3.27, 0)
+mesh = SubResource("MeshCap")
+material_override = SubResource("MatBrick")
+visibility_range_end = 420.0
+
+[node name="ContraforteA" type="MeshInstance3D" parent="."]
+position = Vector3(-2.15, 1.25, 0.33)
+mesh = SubResource("MeshButtress")
+material_override = SubResource("MatWall")
+visibility_range_end = 320.0
+
+[node name="ContraforteB" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.25, 0.33)
+mesh = SubResource("MeshButtress")
+material_override = SubResource("MatWall")
+visibility_range_end = 320.0
+
+[node name="ContraforteC" type="MeshInstance3D" parent="."]
+position = Vector3(2.15, 1.25, 0.33)
+mesh = SubResource("MeshButtress")
+material_override = SubResource("MatWall")
+visibility_range_end = 320.0
