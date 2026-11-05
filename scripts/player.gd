@@ -1342,8 +1342,16 @@ func _set_hitboxes_enabled(enabled: bool) -> void:
 		if is_instance_valid(area): area.collision_layer = 2 if enabled else 0
 		if not area:
 			continue
+		# Some articulated regions are reparented/rebuilt and Godot assigns an
+		# auto-generated node name (for example @CollisionShape3D@1017). Do not
+		# rely on the literal node name when toggling physical hit regions.
 		var shape := area.get_node_or_null("CollisionShape3D") as CollisionShape3D
-		if shape:
+		if not is_instance_valid(shape):
+			for child in area.get_children():
+				if child is CollisionShape3D:
+					shape=child as CollisionShape3D
+					break
+		if is_instance_valid(shape):
 			shape.set_deferred("disabled", not enabled)
 
 func receive_network_state(pos: Vector3, new_yaw: float, new_pitch: float) -> void:
