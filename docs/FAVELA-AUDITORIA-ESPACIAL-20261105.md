@@ -102,6 +102,21 @@ na outra worktree: o resultado da distribuição de lotes permaneceu igual.
 A auditoria física dessa outra IA e as capturas antes/depois ainda devem
 ser verificadas no momento da integração.
 
+## Origem adicional das superfícies cinzas — verificar visualmente
+
+No `favela_map.gd` v4, `_ground_color(x,z)` mistura a cor do solo com
+`paving` cinza em praticamente toda a mancha urbana, independentemente da
+máscara real da rua. O protótipo viário da outra IA retirou as malhas de
+pavimento duplicadas, mas seu shader `TERRAIN_SHADER` ainda multiplica a textura
+base por `COLOR`, que é justamente a cor ampla de `_ground_color`.
+
+**Hipótese verificável, não conclusão visual:** parte da área cinza pode
+persistir mesmo após o z-fighting desaparecer, porque o próprio terreno fora
+dos corredores continua recebendo tonalidade de concreto. Avaliar as capturas
+antes/depois antes de modificar a coloração. Mudança só de cor não substitui
+muros, escadas, drenagem, becos e composição real; não tocar nesses arquivos
+nesta branch enquanto outra IA os tiver reservados.
+
 ## Integração
 
 Levar **apenas** o teste `tests/favela_spatial_review.gd`, seu UID
