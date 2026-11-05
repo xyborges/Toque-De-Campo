@@ -3,6 +3,15 @@ class_name GameSoundPropagation
 
 const SPEED:=343.0
 const LIMIT:=256
+# A subtle 5% linear-amplitude boost for distant combat sounds.
+# Keep close-range punch and the existing spatial attenuation untouched.
+const FAR_GAIN_START_M:=350.0
+const FAR_GAIN_FULL_M:=600.0
+const FAR_GAIN_LINEAR:=1.05
+
+static func distant_gain_db(distance: float) -> float:
+	var blend:=smoothstep(FAR_GAIN_START_M,FAR_GAIN_FULL_M,maxf(0.0,distance))
+	return linear_to_db(lerpf(1.0,FAR_GAIN_LINEAR,blend))
 var clock:=0.0
 var pending: Array[Dictionary]=[]
 var dropped:=0
