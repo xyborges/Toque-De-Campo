@@ -23,8 +23,11 @@ func measure(weapon: String,point: Vector3) -> Vector3:
 	for voice in audio.voices: voice.stop()
 	await create_timer(.18).timeout
 	capture.clear_buffer()
+	var propagation_delay:=GameSoundPropagation.delay(GameWeaponAudio.listener_position(root.get_viewport()).distance_to(point))
 	var voice:=audio.play(41,weapon,point)
 	if voice: audio._process(.11)
+	await create_timer(propagation_delay+.04).timeout
+	capture.clear_buffer()
 	await create_timer(.32).timeout
 	var frames:=capture.get_buffer(capture.get_frames_available())
 	var left:=0.;var right:=0.
@@ -69,7 +72,7 @@ func run() -> void:
 	await physics_frame;await physics_frame
 	var blocked: Vector3=await measure("fal",origin+Vector3(0,0,-40))
 	check(blocked.x>0 and blocked.x<clear.x*.7 and audio.pools["41:fal"][0].bus=="WeaponBlocked","wall muffles the real mix without silencing the shot")
-	for i in 130: audio.play(100+i,"fal",origin+Vector3(2,0,-10))
+	for i in 130: audio._play_now(100+i,"fal",origin+Vector3(2,0,-10))
 	check(audio.voices.size()==GameWeaponAudio.LIMIT,"130 simultaneous emitters remain bounded at 96 voices")
 	var unique: Dictionary={}
 	for key in audio.pools:
@@ -78,14 +81,15 @@ func run() -> void:
 	var no_alias:=unique.size()==audio.voices.size()
 	for count in unique.values(): no_alias=no_alias and int(count)==1
 	check(no_alias,"recycled voices belong to exactly one emitter pool")
-	var shot:=audio.play(999,"glock",origin+Vector3(1,0,-5))
-	check(shot.max_distance==500 and shot.unit_size==32 and shot.max_polyphony==1,"recycled pistol voice receives its own acoustic profile")
+	var shot:=audio._play_now(999,"glock",origin+Vector3(1,0,-5))
+	var glock_profile:=GameWeaponAudio.profile("glock")
+	check(shot.max_distance==float(glock_profile.range) and shot.unit_size==float(glock_profile.unit) and shot.max_polyphony==1,"recycled pistol voice receives its own acoustic profile")
 	var fixed:=shot.global_position
-	audio.play(999,"glock",origin+Vector3(10,0,-5))
+	audio._play_now(999,"glock",origin+Vector3(10,0,-5))
 	check(shot.global_position==fixed,"a later shot does not move an earlier audio tail")
 	var war:=WarAudio.new();game.world_root.add_child(war)
-	var war_shot:=war.play(5,"fal",origin+Vector3(0,0,-30))
-	check(war.external_acoustics and war_shot.is_in_group("war_spatial_audio") and war_shot.max_distance==700,"War shares shot profiles and retains its existing acoustic controller")
+	var war_shot:=war._play_now(5,"fal",origin+Vector3(0,0,-30))
+	check(war.external_acoustics and war_shot.is_in_group("war_spatial_audio") and war_shot.max_distance==float(GameWeaponAudio.profile("fal").range),"War shares shot profiles and retains its existing acoustic controller")
 	AudioServer.remove_bus_effect(bus,AudioServer.get_bus_effect_count(bus)-1)
 	game.show_menu();await process_frame
 	check(game.sound_pools.is_empty() and game.weapon_audio==null,"menu exit clears all match audio references")
