@@ -22,6 +22,7 @@ policy=importlib.util.module_from_spec(helper_spec);helper_spec.loader.exec_modu
 # root helper's explicit service policy.
 policy.validate_war_unit(ROOT/'distribution/ubuntu/toque-war.service')
 policy.validate_war_afghan_unit(ROOT/'distribution/ubuntu/toque-war-afghan.service')
+policy.validate_war_favela_unit(ROOT/'distribution/ubuntu/toque-war-favela.service')
 policy.validate_br_unit(ROOT/'distribution/ubuntu/toque-br.service')
 if not args.deploy_only and not args.upload_only:
  run(sys.executable,'distribution/publish.py','--version',args.version,'--launcher','--skip-xampp')
@@ -34,9 +35,10 @@ if not args.deploy_only and not args.upload_only:
  for name in ['ToqueDeCampo.x86_64','ToqueDeCampo.pck']:shutil.copy2(ROOT/'distribution/build/linux'/name,stage/'server'/name)
  shutil.copy2(ROOT/'distribution/ubuntu/toque-war.service',stage/'server/toque-war.service')
  shutil.copy2(ROOT/'distribution/ubuntu/toque-war-afghan.service',stage/'server/toque-war-afghan.service')
+ shutil.copy2(ROOT/'distribution/ubuntu/toque-war-favela.service',stage/'server/toque-war-favela.service')
  shutil.copy2(ROOT/'distribution/ubuntu/toque-br.service',stage/'server/toque-br.service')
  (stage/'public/index.html').write_text(render_download_page(client),encoding='utf-8')
- artifact_names=['public/'+name for name in ['manifest.json','ToqueDeCampo.exe',client['archive'],'api.php','index.html']] + ['server/ToqueDeCampo.x86_64','server/ToqueDeCampo.pck','server/toque-war.service','server/toque-war-afghan.service','server/toque-br.service']
+ artifact_names=['public/'+name for name in ['manifest.json','ToqueDeCampo.exe',client['archive'],'api.php','index.html']] + ['server/ToqueDeCampo.x86_64','server/ToqueDeCampo.pck','server/toque-war.service','server/toque-war-afghan.service','server/toque-war-favela.service','server/toque-br.service']
  hashes={name:sha(stage/name) for name in artifact_names}
  metadata={'schema':1,'build':client['version'],'version':client['version_name'],'hashes':hashes}
  payload=ROOT/'distribution/build/server-payload.json';payload.write_text(json.dumps(metadata,separators=(',',':')),encoding='utf-8')
@@ -52,6 +54,7 @@ for name,digest in metadata['hashes'].items():
   raise SystemExit('Local release artifact differs from its signed hash: '+name)
 policy.validate_war_unit(stage/'server/toque-war.service')
 policy.validate_war_afghan_unit(stage/'server/toque-war-afghan.service')
+policy.validate_war_favela_unit(stage/'server/toque-war-favela.service')
 if 'server/toque-br.service' in metadata['hashes']:policy.validate_br_unit(stage/'server/toque-br.service')
 # Fail before uploading hundreds of MB when the helper would refuse the release
 # anyway (build does not increase, or an older directory with the same number).
