@@ -159,13 +159,14 @@ func muzzle_smoke(origin: Vector3,direction: Vector3,weapon: String,seed_value: 
 	emitted_at[key]=clock
 	var heavy:=weapon in ["tank","rpg","stinger","autocannon","tv"]
 	var random:=RandomNumberGenerator.new();random.seed=seed_value
-	for index in (3 if heavy else 1):
+	for index in (6 if weapon in ["rpg","stinger"] else (3 if heavy else 1)):
 		var drift:=Vector3(random.randf_range(-.45,.45),random.randf_range(.2,.7),random.randf_range(-.45,.45))
 		spawn(origin+direction*index*.10,direction*random.randf_range(1.2,2.8)+drift,.18 if heavy else .06,.85 if heavy else .30,Color(.40,.42,.40,.42 if heavy else .25),.42 if heavy else .12,true)
 	if weapon in ["rpg","stinger"]:
 		var rear:=origin-direction*(1.75 if weapon=="rpg" else 1.6)
-		for index in 3:
-			spawn(rear-direction*index*.12,-direction*(2.5+index)+Vector3.UP*.3,.18,.85,Color(.43,.40,.34,.38),.4,true)
+		for index in 5:
+			var exhaust_speed:=2.5+float(index)*1.15
+			spawn(rear-direction*index*.10,-direction*exhaust_speed+Vector3.UP*.45,.22,1.05,Color(.43,.40,.34,.44),.50,true)
 
 func smoke_screen(point: Vector3,seed_value: int) -> void:
 	if pool==null: return
