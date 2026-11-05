@@ -40,7 +40,7 @@ func run() -> void:
 	var explosion_blocked:=effects("CombatExplosionsBlocked")
 	check(float(mid.get("wet",1.))==0., "outside middle range has no room echo")
 	check(float(far.get("wet",1.))<=.015 and float(far.get("dry",0.))==1.,"distant exterior gun remains almost dry")
-	check(float(far.get("cutoff",0.))==3300., "exterior shot loses less high frequency abruptly")
+	check(float(far.get("cutoff",0.))==19500., "distance EQ stays neutral on shared bus; each shot uses its continuous 3D filter")
 	check(float(blocked.get("wet",1.))==0., "occlusion muffles without inventing a room")
 	check(float(interior.get("wet",0.))>=.09,"indoor gun continues to reflect")
 	check(float(rear_far.get("wet",1.))<=.015, "rear exterior avoids artificial room tone")

@@ -26,6 +26,10 @@ Planejar cursos d'água, rede viária, canais, campos e acessos às propriedades
 
 Seguir `DIRETRIZES-INTERFACE.md`; usar nomes curtos, ícones e estados visuais, sem explicações óbvias ou mensagens internas de implementação.
 
+## Áudio criado com IA
+
+Antes de gerar, importar ou substituir áudio do jogo, seguir `docs/INSTRUCOES-AUDIO-IA.md`. Não gerar nem alterar assets de áudio quando o pedido for apenas análise, planejamento ou orientação. Preservar o original e validar qualquer variante dentro do mixer real do jogo antes de propor substituição.
+
 ## Integridade do projeto e trabalho simultaneo entre IAs
 
 **Obrigatorio Git local:** ler tambem `docs/GIT-LOCAL-E-IA.md`, executar `git status --short --branch` e preferir uma worktree separada por tarefa (`python tools/ai_worktree.py create <tarefa>` no MAIN limpo). Nao usar a branch `main` como laboratorio de alteracoes concorrentes. Commitar somente arquivos revisados e testados; jamais usar `--no-verify`, `git clean -fdx` ou `git reset --hard` como atalho. Integracao no MAIN apenas por merge revisado. Nenhum remoto Git esta configurado.
