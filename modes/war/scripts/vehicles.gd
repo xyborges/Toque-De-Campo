@@ -740,6 +740,19 @@ func release(id: int,forced := false,promote_driver := true) -> bool:
 		_send_occupancy(current)
 	return true
 
+func _exit_endpoint_outside_hull(vehicle: WarVehicle,actor: WarPlayer,point: Vector3,shape: Shape3D,space: PhysicsDirectSpaceState3D) -> bool:
+	# Seat and departure path must ignore the vehicle collider, but the
+	# destination must NOT: on slopes the floor ray can land below its hull.
+	# Horizontal clearance also rejects a point under a suspended vehicle.
+	var half: Vector3=Vector3(vehicle.spec.size)*.5
+	var planar: Vector3=Basis(Vector3.UP,vehicle.rotation.y).inverse()*(point-vehicle.global_position)
+	if absf(planar.x)<half.x+.45 and absf(planar.z)<half.z+.45:return false
+	var endpoint:=PhysicsShapeQueryParameters3D.new()
+	endpoint.shape=shape;endpoint.collision_mask=1|16
+	endpoint.exclude=[actor.get_rid()]
+	endpoint.transform=Transform3D(Basis.IDENTITY,point+Vector3.UP*.95)
+	return space.intersect_shape(endpoint,1).is_empty()
+
 func safe_exit(vehicle: WarVehicle,actor: WarPlayer) -> Dictionary:
 	var half: Vector3=Vector3(vehicle.spec.size)*.5
 	var offsets: Array[Vector3]=[]
@@ -780,6 +793,7 @@ func safe_exit(vehicle: WarVehicle,actor: WarPlayer) -> Dictionary:
 			if floor_hit.is_empty() or not floor_hit.collider is StaticBody3D or Vector3(floor_hit.normal).y<.7: continue
 			point=Vector3(floor_hit.position)+Vector3.UP*.08
 			if point.y<WarCoast.wave(point,game.war_clock)+.1 and WarCoast.wet(point.x,point.z): continue
+			if not _exit_endpoint_outside_hull(vehicle,actor,point,shape,space):continue
 		# Reject steep edges, occupied spaces, other hulls and routes through
 		# walls. Excluding only this hull permits leaving its interior safely.
 		var query:=PhysicsShapeQueryParameters3D.new();query.shape=shape;query.collision_mask=1|4|16|32;query.exclude=excluded

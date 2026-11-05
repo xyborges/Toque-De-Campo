@@ -553,14 +553,21 @@ func war_identity(id: int,data: Dictionary) -> void:
 	if actor.deployed:
 		var weapon_before_identity:=actor.weapon_id
 		var approved:=GameLoadouts.validate(data.get("loadout",GameLoadouts.defaults("war",GameWeapons.INFANTRY_IDS,actor.war_class,actor.war_team)),"war",GameWeapons.INFANTRY_IDS,actor.war_class,actor.war_team,true)
+		var needs_weapon_rebuild:=false
 		if approved.ok:
-			# Preserve the current equipped item and grenade count on seat/class
-			# identity refreshes. Only a new life grants fresh inventory.
-			var equipped:=actor.weapon_id;var count:=actor.grenades
-			GameLoadouts.apply(actor,approved,true)
-			if equipped in actor.active_weapons(): actor.weapon_id=equipped
-			actor.grenades=mini(count,2) if actor.grenades_enabled else 0
-		if actor.weapon_id!=weapon_before_identity:
+			# A seat update usually carries the SAME loadout. Reapplying it
+			# temporarily equips the primary while the mesh remains a pistol,
+			# which can mount the primary's scope directly on that old mesh.
+			var changed_loadout: bool=actor.get_meta("approved_loadout",{})!=approved.slots or actor.loadout!=approved.choices or actor.owned!=approved.choices
+			if changed_loadout:
+				var equipped:=actor.weapon_id;var count:=actor.grenades
+				GameLoadouts.apply(actor,approved,true)
+				if equipped in actor.active_weapons(): actor.weapon_id=equipped
+				actor.grenades=mini(count,2) if actor.grenades_enabled else 0
+				needs_weapon_rebuild=true
+		# Rebuild AFTER restoring the actual equipped item, never with the
+		# temporary primary ID. Recover mismatched copies left by older states.
+		if needs_weapon_rebuild or actor.weapon_id!=weapon_before_identity or actor.weapon_optics.selected_weapon!=actor.weapon_id:
 			actor._refresh_weapon()
 	var aboard := not actor.vehicle_id.is_empty() and not actor.vehicle_id.begins_with("drone_")
 	var occupied: Node3D=vehicle_system.find_target(actor.vehicle_id) if is_instance_valid(vehicle_system) else null
