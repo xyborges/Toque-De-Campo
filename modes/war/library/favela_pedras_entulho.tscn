@@ -1,0 +1,60 @@
+[gd_scene load_steps=5 format=3]
+[sub_resource type="StandardMaterial3D" id="Stone"]
+albedo_color = Color(0.48, 0.46, 0.42, 1)
+roughness = 1.0
+[sub_resource type="StandardMaterial3D" id="Concrete"]
+albedo_color = Color(0.67, 0.65, 0.60, 1)
+roughness = 0.99
+[sub_resource type="SphereMesh" id="Rock"]
+radius = 0.43
+height = 0.66
+radial_segments = 6
+rings = 3
+[sub_resource type="BoxMesh" id="Block"]
+size = Vector3(0.46, 0.22, 0.28)
+[node name="FavelaPedrasEntulho" type="Node3D"]
+metadata/library_id = "favela_pedras_entulho"
+metadata/footprint = Vector2(1.6, 1.4)
+metadata/origin = "ground"
+metadata/surface = "stone"
+metadata/asset_revision = 1
+metadata/lod_near = 45.0
+metadata/lod_far = 150.0
+metadata/destructible = false
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(-0.35, 0.22, 0.20)
+rotation = Vector3(0, 0.33, -0.11)
+mesh = SubResource("Rock")
+material_override = SubResource("Stone")
+cast_shadow = 0
+visibility_range_end = 150.0
+[node name="PedraB" type="MeshInstance3D" parent="."]
+position = Vector3(0.37, 0.18, -0.16)
+rotation = Vector3(0.05, 1.1, 0.08)
+scale = Vector3(0.83, 0.70, 1.02)
+mesh = SubResource("Rock")
+material_override = SubResource("Stone")
+cast_shadow = 0
+visibility_range_end = 150.0
+[node name="PedraC" type="MeshInstance3D" parent="."]
+position = Vector3(0.03, 0.12, 0.43)
+scale = Vector3(0.69, 0.58, 0.84)
+mesh = SubResource("Rock")
+material_override = SubResource("Concrete")
+cast_shadow = 0
+visibility_range_end = 130.0
+[node name="BlocoRachado" type="MeshInstance3D" parent="."]
+position = Vector3(0.50, 0.13, 0.27)
+rotation = Vector3(0.04, 0.8, 0.12)
+mesh = SubResource("Block")
+material_override = SubResource("Concrete")
+cast_shadow = 0
+visibility_range_end = 115.0
+[node name="PedacoCimento" type="MeshInstance3D" parent="."]
+position = Vector3(-0.48, 0.11, -0.31)
+rotation = Vector3(0.15, -0.4, 0.10)
+scale = Vector3(0.88, 0.90, 0.74)
+mesh = SubResource("Block")
+material_override = SubResource("Concrete")
+cast_shadow = 0
+visibility_range_end = 115.0
