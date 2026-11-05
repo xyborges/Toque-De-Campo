@@ -91,7 +91,7 @@ static func transport_spawn(kind: String,copy: int) -> Vector3:
 const CLASSES := {
 	"medic":{"name":"Médico","primary":["ak"],"description":"Cura aliados próximos com recursos limitados.","gadget":"Kit médico","charges":4},
 	"soldier":{"name":"Soldado","primary":["ak"],"description":"Fuzil, granadas e apoio de munição.","gadget":"Granada / munição","charges":3},
-	"antitank":{"name":"Antitanque","primary":["ak"],"description":"RPG-7 ou Javelin.","gadget":"RPG-7 / Javelin","charges":3},
+	"antitank":{"name":"Antitanque","primary":["ak"],"description":"RPG-7 ou Stinger.","gadget":"RPG-7 / Stinger","charges":3},
 	"marksman":{"name":"Atirador","primary":["sniper"],"description":"Precisão e reconhecimento com óptica de longo alcance.","gadget":"Observação","charges":4}}
 const VEHICLES := {
 	"bike_0":{"name":"Moto","team":0,"transport":true,"count":3,"hp":220.,"speed":25.,"reverse":4.,"acceleration":7.,"turn":1.15,"tracked":false,"size":Vector3(.70,1.30,2.20),"gun":"","ammo":0,"reload":0.,"cooldown":999.,"damage":0.,"speed_shot":0.,"gravity":0.,"blast":0.,"pitch_min":0.,"pitch_max":0.},

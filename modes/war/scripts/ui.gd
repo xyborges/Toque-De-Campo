@@ -420,7 +420,7 @@ func _refresh_equipment(hud: GameInfantryHUD) -> void:
 		status="SEM ALVO" if game.vehicle_system.lock_target.is_empty() else ("ALVO TRAVADO" if game.vehicle_system.lock_progress>=1.0 else "TRAVANDO ALVO")
 	var amount:="×%d"%charges if known else "—"
 	var titles:={"medic":"G · KIT MÉDICO","soldier":"H · REABASTECER","marksman":"G · BINÓCULOS"}
-	var name_text: String=("KIT MÉDICO" if actor.utility_mode=="medic" else "BINÓCULOS") if not actor.utility_mode.is_empty() else ("JAVELIN" if actor.gadget=="stinger" else "RPG-7")
+	var name_text: String=("KIT MÉDICO" if actor.utility_mode=="medic" else "BINÓCULOS") if not actor.utility_mode.is_empty() else ("STINGER" if actor.gadget=="stinger" else "RPG-7")
 	var is_binoculars: bool=role=="marksman"
 	hud.set_equipment_context({"visible":true,"launchers":launcher,"active":active,"id":actor.gadget,"allowed":[WarRules.launcher_for_team(actor.war_team)],"name":name_text,"amount":"" if is_binoculars else amount+" DISPONÍVEIS","can_select":launcher,"title":str(titles.get(role,"EQUIPAMENTO")),"state":"" if is_binoculars else (amount+" CARGAS · "+status if known else "—"),"empty":not is_binoculars and known and charges==0})
 
