@@ -57,7 +57,11 @@ static func bind(actor: WarPlayer,region_source: Dictionary={}) -> Dictionary:
 		var knee: Node3D=leg.get_node("Knee"+side)
 		var foot: Node3D=knee.get_node("Shoe"+side)
 		var thigh: Node3D=leg.get_node("Leg"+side+"Mesh")
-		legs[side]={"base_position":Vector3(rest["leg_"+side.to_lower()]),"thigh":thigh.transform,"knee":knee.transform,"shoe":foot.transform,"sole_y":float(actor.stance.leg_parts[side].sole_y),"foot_centre":Vector3(actor.stance.leg_parts[side].foot_centre),"foot_half":Vector3(actor.stance.leg_parts[side].foot_half),"leg_scale":leg.scale}
+		# Stance animates these pivots. Binding after equipping in a low
+		# posture must retain the neutral bases or solve() adds the bend twice.
+		var knee_rest:=Transform3D(Basis.from_scale(knee.scale),knee.position)
+		var shoe_rest:=Transform3D(Basis.from_scale(foot.scale),foot.position)
+		legs[side]={"base_position":Vector3(rest["leg_"+side.to_lower()]),"thigh":thigh.transform,"knee":knee_rest,"shoe":shoe_rest,"sole_y":float(actor.stance.leg_parts[side].sole_y),"foot_centre":Vector3(actor.stance.leg_parts[side].foot_centre),"foot_half":Vector3(actor.stance.leg_parts[side].foot_half),"leg_scale":leg.scale}
 	var weapon_id: String=GameWeapons.canonical(actor.weapon_id)
 	var model:=actor.weapon_root.get_node_or_null("Imported_"+weapon_id) as Node3D
 	var hand_basis_world: Basis=actor.weapon_root.global_basis
@@ -68,22 +72,24 @@ static func bind(actor: WarPlayer,region_source: Dictionary={}) -> Dictionary:
 	# Treat arm, muzzle and model reference as static offsets for THIS weapon.
 	# No scene data from the avatar will be consulted by solve().
 	var weapon_space: Transform3D=actor.weapon_root.global_transform.affine_inverse()
-	var model_rest:=model.transform if is_instance_valid(model) else Transform3D.IDENTITY
 	var model_rest_basis:=Basis(model.get_meta("rest_basis",model.basis)) if is_instance_valid(model) else Basis.IDENTITY
 	var model_rest_position:=Vector3(model.get_meta("rest_position",model.position)) if is_instance_valid(model) else Vector3.ZERO
 	var muzzle_model_local:=model.global_transform.affine_inverse()*actor.muzzle_marker.global_transform if is_instance_valid(model) and is_instance_valid(actor.muzzle_marker) else Transform3D.IDENTITY
 	var right_model_local:=model.global_transform.affine_inverse()*actor.weapon_hand_target(false) if is_instance_valid(model) else Vector3.ZERO
 	var optic_id:=str(actor.weapon_optics.selected_optic)
 	var optic_aimed_offset:=actor.weapon_optics.aimed_offset(weapon_id) if actor.weapon_optics.enabled(actor) else Vector3.ZERO
+	var support_target:=actor.weapon_hand_target(true)
+	if weapon_id in ["fal","glock","g3"] and is_instance_valid(model):
+		support_target=(model.get_node("SupportGrip") as Marker3D).global_position
+	var hand_basis_local:=actor.weapon_root.global_basis.inverse()*hand_basis_world
 	return {"offsets":offsets,"rest":rest.duplicate(true),"legs":legs,
 		"weapon_id":weapon_id,
-		"grip_left":weapon_space*((actor.avatar_parts.arm_l.get_node("HandL") as Node3D).global_position if weapon_id=="g3" else actor.weapon_hand_target(true)),
-		"grip_right":weapon_space*actor.weapon_hand_target(false),
-		"hand_basis_local":actor.weapon_root.global_basis.inverse()*hand_basis_world,
-		"muzzle_local":weapon_space*actor.muzzle_marker.global_transform,
+		"neutral_grip":{"grip_left":weapon_space*support_target,
+			"grip_right":weapon_space*actor.weapon_hand_target(false),"hand_basis_local":hand_basis_local,
+			"muzzle_local":weapon_space*actor.muzzle_marker.global_transform,"grabbing":false},
+		"hand_basis_local":hand_basis_local,
 		"muzzle_model_local":muzzle_model_local,
 		"right_model_local":right_model_local,
-		"model_rest":model_rest,
 		"model_rest_basis":model_rest_basis,
 		"model_rest_position":model_rest_position,
 		"optic_id":optic_id,
@@ -100,9 +106,8 @@ static func bind(actor: WarPlayer,region_source: Dictionary={}) -> Dictionary:
 static func supported(state: Dictionary) -> bool:
 	var c: float=float(state.get("crouch_weight",0.))
 	var p: float=float(state.get("prone_weight",0.))
-	# Mid-transition pose currently depends on the visual frame before stance
-	# interpolation; reject it until a previous-pose state is modeled explicitly.
-	var steady_posture: bool=c>=0. and c<=1. and (absf(p)<.00001 or (absf(p-1.)<.00001 and c<.00001))
+	# Match WarStance's continuous weights, including crouch/prone overlap.
+	var valid_posture: bool=c>=0. and c<=1. and p>=0. and p<=1.
 	var moving: float=float(state.get("moving",0.))
 	var sprint: float=float(state.get("sprint",0.))
 	var walking: bool=moving>=0. and moving<=1. and sprint>=0. and sprint<=1. and (moving<.00001 or bool(state.get("grounded",false)))
@@ -126,7 +131,7 @@ static func supported(state: Dictionary) -> bool:
 	var reload_weapon: String=GameWeapons.canonical(str(state.get("reload_weapon","")))
 	var reload_active: bool=reload_left>.00001
 	var reload_safe: bool=not reload_active or (reload_total>.00001 and reload_weapon==GameWeapons.canonical(str(state.get("weapon",""))))
-	return str(state.get("weapon","")) in SUPPORTED_WEAPONS and ads_safe and steady_posture and valid_motion and reload_safe and float(state.get("fire_cooldown",0.))<=0. and float(state.get("reaction",0.))==0. and float(state.get("attack",0.))==0. and float(state.get("recoil",0.))==0. and not bool(state.get("special",false))
+	return str(state.get("weapon","")) in SUPPORTED_WEAPONS and ads_safe and valid_posture and valid_motion and reload_safe and float(state.get("fire_cooldown",0.))<=0. and float(state.get("reaction",0.))==0. and float(state.get("attack",0.))==0. and float(state.get("recoil",0.))==0. and not bool(state.get("special",false))
 
 static func state(actor: WarPlayer) -> Dictionary:
 	return {"weapon":actor.weapon_id,"pitch":actor.pitch,"lean":actor.lean,"scoped":actor.weapon_optics.presented(),"iron":actor.iron_sights,"aiming":actor.aiming,"optic_enabled":actor.weapon_optics.enabled(actor),"optic_weight":actor.weapon_optics.aim_weight,"optic_id":str(actor.weapon_optics.selected_optic),"fire_cooldown":actor.fire_cooldown,
@@ -137,7 +142,7 @@ static func state(actor: WarPlayer) -> Dictionary:
 		"crouch_weight":actor.stance.crouch_weight,"prone_weight":actor.stance.prone_weight,
 		"moving":actor.locomotion.moving,"sprint":actor.locomotion.sprint,"reaction":actor.reaction,
 		"reload_left":actor.reload_left,"reload_total":actor.reload_total,"reload_weapon":actor.reload_weapon,"attack":actor.attack_anim,"recoil":actor.recoil,
-		"special":actor.gadget_equipped or not actor.utility_mode.is_empty() or actor._grenade_active() or actor.in_water() or not actor.deployed or actor.hp<=0 or not actor.vehicle_id.is_empty()}
+		"special":actor.is_npc or actor.gadget_equipped or not actor.utility_mode.is_empty() or actor._grenade_active() or actor.in_water() or not actor.deployed or actor.hp<=0 or not actor.vehicle_id.is_empty() or ((float(actor.limbs.armL)<=0. or float(actor.limbs.armR)<=0.) and CombatRules.limb_disability_enabled(actor.game))}
 
 static func _gait_angles(input: Dictionary,side: String,lean: float) -> Vector3:
 	var moving: float=clampf(float(input.get("moving",0.)),0.,1.)
@@ -200,38 +205,26 @@ static func _reload_geometry(bindings: Dictionary,input: Dictionary) -> Dictiona
 	var weapon_id: String=str(bindings.weapon_id)
 	var left: float=float(input.get("reload_left",0.))
 	var total: float=float(input.get("reload_total",0.))
-	var reload_weapon: String=GameWeapons.canonical(str(input.get("reload_weapon","")))
-	var active: bool=left>.00001 and total>.00001 and reload_weapon==weapon_id
-	var pose: Dictionary=GameReloadPose.state(weapon_id,left if active else 0.,total)
-	var model_local: Transform3D=Transform3D(bindings.model_rest)
-	var grip_left: Vector3=bindings.grip_left
-	var grip_right: Vector3=bindings.grip_right
-	var hand_basis_local: Basis=bindings.hand_basis_local
-	var grabbing:=false
-	var muzzle_local: Transform3D=Transform3D(bindings.muzzle_local)
-	if active:
-		var rest_basis: Basis=bindings.model_rest_basis
-		var rest_position: Vector3=bindings.model_rest_position
-		var pose_basis:=Basis.from_euler(Vector3(pose.angles))
-		model_local=Transform3D(pose_basis if weapon_id in ["fal","glock","g3"] else pose_basis*rest_basis,rest_position+Vector3(pose.offset))
-		if weapon_id=="sniper":
-			grip_left=model_local*(rest_basis.inverse()*(Vector3(pose.hand)-rest_position))
-			grip_right=model_local*(rest_basis.inverse()*(Vector3(pose.right_hand)-rest_position))
-			# Sniper hands intentionally stay aligned to the weapon root while
-			# the imported one-piece rifle rocks below them.
-			hand_basis_local=Basis(bindings.hand_basis_local)
-		elif weapon_id=="ak":
-			grip_left=model_local*Vector3(pose.hand)
-			grip_right=model_local*Vector3(pose.right_hand)
-			hand_basis_local=model_local.basis*rest_basis.inverse()
-		else:
-			grip_left=model_local*Vector3(pose.hand)
-			grip_right=model_local*Vector3(bindings.right_model_local)
-			hand_basis_local=model_local.basis
-		grabbing=bool(pose.get("hand_grabbing",false))
-		muzzle_local=model_local*Transform3D(bindings.muzzle_model_local)
-	return {"active":active,"pose":pose,"grip_left":grip_left,"grip_right":grip_right,
-		"hand_basis_local":hand_basis_local,"grabbing":grabbing,"muzzle_local":muzzle_local}
+	if left<=.00001 or total<=.00001:
+		return bindings.neutral_grip
+	var pose: Dictionary=GameReloadPose.state(weapon_id,left,total)
+	var rest_basis: Basis=bindings.model_rest_basis
+	var rest_position: Vector3=bindings.model_rest_position
+	var pose_basis:=Basis.from_euler(Vector3(pose.angles))
+	var model_local:=Transform3D(pose_basis if weapon_id in ["fal","glock","g3"] else pose_basis*rest_basis,rest_position+Vector3(pose.offset))
+	var grip_left:=model_local*Vector3(pose.hand)
+	var grip_right:=model_local*Vector3(bindings.right_model_local)
+	var hand_basis_local:=model_local.basis
+	if weapon_id=="sniper":
+		grip_left=model_local*(rest_basis.inverse()*(Vector3(pose.hand)-rest_position))
+		grip_right=model_local*(rest_basis.inverse()*(Vector3(pose.right_hand)-rest_position))
+		# Sniper hands remain aligned to the weapon root.
+		hand_basis_local=Basis(bindings.hand_basis_local)
+	elif weapon_id=="ak":
+		grip_right=model_local*Vector3(pose.right_hand)
+		hand_basis_local=model_local.basis*rest_basis.inverse()
+	return {"grip_left":grip_left,"grip_right":grip_right,"hand_basis_local":hand_basis_local,
+		"grabbing":bool(pose.hand_grabbing),"muzzle_local":model_local*Transform3D(bindings.muzzle_model_local)}
 
 static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	if not supported(input) or str(input.get("weapon",""))!=str(bindings.get("weapon_id","")):
@@ -254,7 +247,7 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	var body:=Transform3D(Basis.IDENTITY,Vector3(0,body_height,0))
 	# WarPlayer clamps muzzle aim more tightly while prone; the torso still
 	# uses the raw pose pitch when matching the current procedural rig.
-	var weapon_pitch: float=clampf(pitch,-.38 if prone>.99999 else -1.30,1.25)
+	var weapon_pitch: float=clampf(pitch,-.38 if bool(input.get("prone",false)) else -1.30,1.25)
 	var basis_pitch:=Basis(Vector3.RIGHT,weapon_pitch)
 	var aim:=basis_pitch*Basis(Vector3.BACK,-lean*.18)
 	var shoulder: Vector3=(upper*Vector3(0,1.42,0)).lerp(Vector3(lean*.04,.13,-.64),prone)
@@ -308,20 +301,23 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 		var position: Vector3=(Vector3(leg.base_position)+Vector3(lean*.04,0,0)).lerp(Vector3(sign_value*.16,0,.10),prone)
 		var gait_angles: Vector3=_gait_angles(input,side,lean)
 		var leg_roll: float=gait_angles.z+sign_value*.07*prone
-		var crawl: float=sin(phase+(0. if side=="L" else PI))*.20*moving
-		var foot_z: float=-.055+sin(phase+(0. if side=="L" else PI))*.10*moving
-		var dy: float=float(bindings.reference_foot_y)-float(leg.sole_y)*float(bindings.leg_scale)-body_height-position.y
-		var dz: float=foot_z-position.z
-		var a: float=.42*float(bindings.leg_scale)
-		var b: float=.36*float(bindings.leg_scale)
-		var reach: float=clampf(Vector2(dy,dz).length(),absf(a-b)+.001,a+b-.001)
-		var thigh: float=atan2(-dz,-dy)+acos(clampf((a*a+reach*reach-b*b)/(2*a*reach),-1,1))
-		var bend: float=-acos(clampf((reach*reach-a*a-b*b)/(2*a*b),-1,1))
-		var thigh_angle: float=lerpf(lerpf(gait_angles.x,thigh,crouch),-PI*.5+(.04+crawl)*prone,prone)
-		var knee_y: float=body_height+position.y-a*cos(thigh_angle)
-		var ankle_y: float=.22*float(bindings.leg_scale)+.02+maxf(0.,crawl)*.04
-		var prone_bend: float=-acos(clampf((knee_y-ankle_y)/b,-1.,1.))-thigh_angle
-		var knee_angle: float=bend*crouch+prone_bend*prone
+		var thigh_angle:=gait_angles.x
+		var knee_angle:=0.
+		if crouch>0. or prone>0.:
+			var crawl: float=sin(phase+(0. if side=="L" else PI))*.20*moving
+			var foot_z: float=-.055+sin(phase+(0. if side=="L" else PI))*.10*moving
+			var dy: float=float(bindings.reference_foot_y)-float(leg.sole_y)*float(bindings.leg_scale)-body_height-position.y
+			var dz: float=foot_z-position.z
+			var a: float=.42*float(bindings.leg_scale)
+			var b: float=.36*float(bindings.leg_scale)
+			var reach: float=clampf(Vector2(dy,dz).length(),absf(a-b)+.001,a+b-.001)
+			var thigh: float=atan2(-dz,-dy)+acos(clampf((a*a+reach*reach-b*b)/(2*a*reach),-1,1))
+			var bend: float=-acos(clampf((reach*reach-a*a-b*b)/(2*a*b),-1,1))
+			thigh_angle=lerpf(lerpf(gait_angles.x,thigh,crouch),-PI*.5+(.04+crawl)*prone,prone)
+			var knee_y: float=body_height+position.y-a*cos(thigh_angle)
+			var ankle_y: float=.22*float(bindings.leg_scale)+.02+maxf(0.,crawl)*.04
+			var prone_bend: float=-acos(clampf((knee_y-ankle_y)/b,-1.,1.))-thigh_angle
+			knee_angle=bend*crouch+prone_bend*prone
 		var shoe_angle: float=-(thigh_angle+knee_angle)*crouch
 		var leg_pose:=body*Transform3D(Basis.from_euler(Vector3(thigh_angle,0.,leg_roll))*Basis.from_scale(Vector3(leg.leg_scale)),position)
 		var knee_pose:=Transform3D(Basis(Vector3.RIGHT,knee_angle)*Transform3D(leg.knee).basis,Vector3(Transform3D(leg.knee).origin))
@@ -332,10 +328,11 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 	for side: String in ["L","R"]:
 		var point:=Vector3(rest.left if side=="L" else rest.right)
 		point.x=signf(point.x)*(.325*torso_scale+.025)
-		var arm_position: Vector3=(upper*point).lerp(Vector3(-(.325*torso_scale+.025) if side=="L" else (.325*torso_scale+.025),.13,-.64),prone)
+		var arm_position: Vector3=upper*point
+		if prone>.001: arm_position=arm_position.lerp(Vector3(point.x,.13,-.64),prone)
 		var target: Vector3=weapon*Vector3(reload_geometry.grip_left if side=="L" else reload_geometry.grip_right)
-		var relative_grip:=body.affine_inverse()*target
-		var relative_hand_basis:=body.basis.inverse()*weapon.basis*Basis(reload_geometry.hand_basis_local)
+		var relative_grip:=target-body.origin
+		var relative_hand_basis:=weapon.basis*Basis(reload_geometry.hand_basis_local)
 		var result: Dictionary=_arm(arm_position,relative_grip,relative_hand_basis,upper,side,clampf(float(bindings.arm_proportion),.65,1.5),str(bindings.weapon_id)=="glock",side=="L" and bool(reload_geometry.grabbing))
 		if result.is_empty():return {"supported":false,"reason":"Invalid arm target"}
 		mounts["upper"+side]=body*result.arm*result.upper

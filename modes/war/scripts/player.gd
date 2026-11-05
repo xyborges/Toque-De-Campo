@@ -37,7 +37,10 @@ var p1g_authority_collision_pilot:=false
 var p1g_collision_rig: WarCollisionRigProxy
 var p1g_collision_bindings: Dictionary={}
 var p1g_collision_binding_key:=""
+var _p1g_bound_muzzle: Marker3D
+var _p1g_visual_pose_updated:=false
 var p1g_solver_frames:=0
+var p1g_visual_reuse_frames:=0
 var p1g_legacy_fallback_frames:=0
 
 func _exit_tree() -> void:
@@ -81,50 +84,73 @@ func _p1g_prepare_collision_rig() -> bool:
 	p1g_collision_rig.name="CollisionRigP1G"
 	add_child(p1g_collision_rig)
 	var count: int=p1g_collision_rig.build_from(self)
-	return count>=13
+	if count>=13: return true
+	p1g_collision_rig.queue_free()
+	p1g_collision_rig=null
+	return false
 
 func _p1g_binding_key() -> String:
 	return GameWeapons.canonical(weapon_id)+"|"+str(weapon_optics.selected_optic)
 
 func _p1g_can_rebind() -> bool:
 	if GameWeapons.canonical(weapon_id) not in COLLISION_POSE_SOLVER.SUPPORTED_WEAPONS: return false
-	if hp<=0 or not deployed or not vehicle_id.is_empty() or swimming or in_water(): return false
+	if not is_instance_valid(muzzle_marker) or is_npc or swimming or in_water(): return false
 	if gadget_equipped or not utility_mode.is_empty() or _grenade_active(): return false
 	if reload_left>.00001 or attack_anim>.00001 or recoil>.00001: return false
 	if aiming or iron_sights or weapon_optics.aim_weight>.001: return false
 	return true
 
-func _p1g_rebind_if_possible() -> bool:
-	if not is_instance_valid(p1g_collision_rig): return false
-	var key:=_p1g_binding_key()
-	if not p1g_collision_bindings.is_empty() and p1g_collision_binding_key==key: return true
-	if not _p1g_can_rebind(): return false
-	p1g_collision_bindings=COLLISION_POSE_SOLVER.bind(self,p1g_collision_rig.legacy_regions)
-	p1g_collision_binding_key=key if not p1g_collision_bindings.is_empty() else ""
-	return not p1g_collision_bindings.is_empty()
+func _p1g_binding_matches() -> bool:
+	return is_instance_valid(_p1g_bound_muzzle) and _p1g_bound_muzzle==muzzle_marker and p1g_collision_binding_key==_p1g_binding_key()
 
-func _p1g_collision_tick() -> void:
+func _p1g_collision_tick(visual_pose_current:=false) -> void:
 	if not p1g_authority_collision_pilot: return
-	if not _p1g_prepare_collision_rig(): return
-	# Dead/unspawned avatars return cleanly to the legacy dictionary so the
-	# ordinary respawn and deployment code keeps its established semantics.
-	if hp<=0 or not deployed:
-		p1g_collision_rig.sync_legacy(self)
-		if p1g_collision_rig.using_authority: p1g_collision_rig.restore(self)
+	if hp<=0 or not deployed or not vehicle_id.is_empty():
+		# Transport riders may still be shootable. Use the live seated pivots
+		# and carry over the enabled state from the infantry rig.
+		if is_instance_valid(p1g_collision_rig) and p1g_collision_rig.using_authority:
+			p1g_collision_rig.restore(self)
 		return
-	var solved:=false
-	if _p1g_rebind_if_possible():
+	if not _p1g_prepare_collision_rig():
+		_update_utility_presentation()
+		return
+
+	var binding_matches:=_p1g_binding_matches()
+	var synced:=false
+	if not visual_pose_current and binding_matches:
 		var frame: Dictionary=COLLISION_POSE_SOLVER.solve(p1g_collision_bindings,COLLISION_POSE_SOLVER.state(self))
 		if bool(frame.get("supported",false)):
-			solved=p1g_collision_rig.sync(frame)
-			if solved: p1g_solver_frames+=1
-	if not solved:
-		# Unsupported actions (gadgets, water, recoil, etc.) remain safe by
-		# mirroring the old articulated regions into the independent hierarchy.
-		p1g_collision_rig.sync_legacy(self)
+			synced=p1g_collision_rig.sync(frame)
+			if synced: p1g_solver_frames+=1
+
+	if not synced and not visual_pose_current:
+		# When LOD skipped presentation and this state needs the existing
+		# rig (utility, recoil, etc.), evaluate it before using its pivots.
+		# This does not advance action clocks or change the LOD deadline.
+		if in_water():
+			_swim_pose()
+		else:
+			_pose_infantry()
+			if _grenade_active(): _update_grenade_pose()
 		p1g_legacy_fallback_frames+=1
-	if not p1g_collision_rig.using_authority:
+
+	_update_utility_presentation()
+	if not synced:
+		if not binding_matches and _p1g_can_rebind():
+			p1g_collision_bindings=COLLISION_POSE_SOLVER.bind(self,p1g_collision_rig.legacy_regions)
+			p1g_collision_binding_key=_p1g_binding_key()
+			_p1g_bound_muzzle=muzzle_marker
+		synced=p1g_collision_rig.sync_legacy(self)
+		if synced and visual_pose_current: p1g_visual_reuse_frames+=1
+
+	if synced and not p1g_collision_rig.using_authority:
 		p1g_collision_rig.activate(self)
+	elif not synced and p1g_collision_rig.using_authority:
+		p1g_collision_rig.restore(self)
+
+func _update_utility_presentation() -> void:
+	if not utility_mode.is_empty(): _utility_pose()
+	elif is_instance_valid(utility_model): utility_model.hide()
 
 func _update_view() -> void:
 	# The base presentation refresh assigns its own camera offset. Preserve
@@ -247,16 +273,16 @@ func _physics_process(delta: float) -> void:
 			else: set_utility("")
 		weapon_optics.advance(self,delta)
 		GameInfantryPose.reset(self);_swim_physics(delta)
-		_p1g_collision_tick()
+		_p1g_collision_tick(true)
 		return
 	elif swimming:
 		swimming=false;body_root.rotation.x=0;body_root.position.y=stance.visual_ground_offset(self);camera_pivot.position.y=swim_camera_height+stance.visual_ground_offset(self);camera_pivot.position.z=0;_update_view()
+	_p1g_visual_pose_updated=false
 	super._physics_process(delta)
-	if not utility_mode.is_empty(): _utility_pose()
-	elif is_instance_valid(utility_model): utility_model.hide()
-	# P1g runs independently of visual articulation LOD. Unsupported special
-	# actions mirror the legacy pivots into the proxy instead of leaving gaps.
-	_p1g_collision_tick()
+	if p1g_authority_collision_pilot:
+		_p1g_collision_tick(_p1g_visual_pose_updated)
+	else:
+		_update_utility_presentation()
 	# Only the authority may recover a fallen actor. Spread expensive
 	# procedural terrain checks across six ticks for bots, keeping movement,
 	# collision, hitboxes and the real physics solver at 60 Hz.
@@ -282,6 +308,7 @@ func _drone_controller_pose() -> void:
 	WarHumanRig.pose(self,avatar_parts.arm_r,centre+global_basis*Vector3(.13,0,0),"armR")
 
 func _animate_walk() -> void:
+	_p1g_visual_pose_updated=false
 	# P1a opt-in host audit. Physical hit regions are still children of
 	# visual pivots. The existing distance LOD can leave hitboxes stale on
 	# listen servers. Full articulation at 60 Hz corrects that, but the 28
@@ -296,7 +323,12 @@ func _animate_walk() -> void:
 		var distance:=global_position.distance_squared_to(observer.global_position if is_instance_valid(observer) else game.local_player.global_position)
 		next_pose_usec=now+(33333 if distance<6400 else (66666 if distance<62500 else 125000))
 	if in_water():
-		_swim_pose();return
+		_swim_pose()
+	else:
+		_pose_infantry()
+	_p1g_visual_pose_updated=p1g_authority_collision_pilot
+
+func _pose_infantry() -> void:
 	# Network velocity is the last packet's derivative and can outlive motion.
 	# Keep it for authority/ballistics, but do not feed it to the base gait
 	# after interpolation has actually stopped at the replicated position.

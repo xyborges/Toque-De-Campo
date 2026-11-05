@@ -66,6 +66,7 @@ func run() -> void:
 	var passed:=true
 	var evaluated:=0
 	var movement_evaluated:=0
+	var transitions_evaluated:=0
 	var rejected:=0
 	var soft_supported:=0
 	var summary: Array[Dictionary]=[]
@@ -123,10 +124,6 @@ func run() -> void:
 				notable.append(str(pose)+" "+top_id+"="+str(snappedf(top_error,.0001)))
 			cases+=1
 			evaluated+=1
-		var unsafe: Dictionary=Solver.state(actor)
-		unsafe.prone_weight=.55
-		if not bool(Solver.solve(bind,unsafe).get("supported",true)):
-			rejected+=1
 		var movement_cases:=0
 		var movement_origin:=0.
 		var movement_basis:=0.
@@ -187,6 +184,29 @@ func run() -> void:
 			if not changed_pose:
 				notable.append("No physical gait for posture="+str(mode.posture)+" sprint="+str(mode.sprint))
 				movement_varied=false
+		var transition_cases:=0
+		for postures: Array in [[0,2],[2,0],[1,2],[2,1]]:
+			actor.set_posture(postures[0],false,true)
+			actor.stance.advance(actor,1.)
+			actor.set_posture(postures[1],false,true)
+			actor.locomotion.phase=1.6
+			actor.pitch=-.36 if actor.prone else -.64
+			actor.lean=.25
+			for sample in 3:
+				actor.stance.advance(actor,1./60.)
+				actor.next_pose_usec=0
+				actor._animate_walk()
+				var state:=Solver.state(actor)
+				var frame:=Solver.solve(bind,state)
+				if not bool(frame.get("supported",false)):
+					notable.append("unsupported transition "+str(postures))
+					continue
+				var diff:=Snapshot.compare(Snapshot.capture(actor),frame)
+				if not diff.missing.is_empty() or diff.max_origin_m>=.001 or diff.max_basis_delta>=.005 or diff.muzzle_origin_m>=.001:
+					notable.append("transition "+str(postures)+": "+str(diff))
+					continue
+				transition_cases+=1
+				transitions_evaluated+=1
 		var invalid_motion: Dictionary=Solver.state(actor)
 		for field: String in ["grounded","legs_intact","fire_cooldown"]:
 			var forbidden: Dictionary=invalid_motion.duplicate(true)
@@ -200,17 +220,17 @@ func run() -> void:
 		else:
 			notable.append("soft aim unexpectedly rejected")
 		var motion_cost: Dictionary=benchmark_28_moving(bind,Solver.state(actor))
-		var ok: bool=full_prone and int(motion_cost.calls)==2128 and movement_varied and cases==POSES.size() and movement_cases==12 and bind.bound_regions==16 and max_origin<.001 and max_basis<.005 and max_muzzle<.001 and movement_origin<.001 and movement_basis<.005 and movement_muzzle<.001
+		var ok: bool=full_prone and int(motion_cost.calls)==2128 and movement_varied and cases==POSES.size() and movement_cases==12 and transition_cases==12 and bind.bound_regions==16 and max_origin<.001 and max_basis<.005 and max_muzzle<.001 and movement_origin<.001 and movement_basis<.005 and movement_muzzle<.001
 		passed=passed and ok
 		var row: Dictionary={
-			"weapon":weapon,"prone_applied":full_prone,"cases":cases,"movement_cases":movement_cases,"regions":bind.bound_regions,
+			"weapon":weapon,"prone_applied":full_prone,"cases":cases,"movement_cases":movement_cases,"transition_cases":transition_cases,"regions":bind.bound_regions,
 			"movement_origin_m":movement_origin,"movement_basis":movement_basis,"movement_muzzle_m":movement_muzzle,"motion_cost_28":motion_cost,
 			"origin_m":max_origin,"basis_delta":max_basis,"muzzle_m":max_muzzle,
 			"notes":notable,"pass":ok}
 		summary.append(row)
 		print("P1B_PRONE_WEAPON ",JSON.stringify(row))
-	passed=passed and evaluated==25 and movement_evaluated==60 and rejected==20 and soft_supported==5
-	print("P1B_PRONE_RESULT ",JSON.stringify({"pass":passed,"cases":evaluated,"motion_cases":movement_evaluated,"transition_rejected":rejected,"soft_aim_supported":soft_supported,"weapons":WEAPONS.size()}))
+	passed=passed and evaluated==25 and movement_evaluated==60 and transitions_evaluated==60 and rejected==15 and soft_supported==5
+	print("P1B_PRONE_RESULT ",JSON.stringify({"pass":passed,"cases":evaluated,"motion_cases":movement_evaluated,"transition_cases":transitions_evaluated,"invalid_motion_rejected":rejected,"soft_aim_supported":soft_supported,"weapons":WEAPONS.size()}))
 	game.queue_free()
 	await process_frame
 	quit(0 if passed else 1)

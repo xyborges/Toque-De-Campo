@@ -130,25 +130,57 @@ func run() -> void:
 	check(visual_motion.max_origin_m<.000001 and visual_motion.muzzle_origin_m<.000001,"legacy visual hitboxes remain stale in the forced LOD scenario")
 	check(rig.using_authority and actor.hit_regions==rig.regions,"LOD skip does not relinquish proxy authority")
 
-	# Unsupported action mirrors legacy geometry but does not swap back mid-life.
-	actor.gadget_equipped=true
-	var fallbacks_before:=actor.p1g_legacy_fallback_frames
-	actor._p1g_collision_tick()
-	var fallback_parity: Dictionary=Snapshot.compare(rig.legacy_snapshot(actor),rig.snapshot())
-	check(actor.p1g_legacy_fallback_frames>fallbacks_before,"unsupported gadget state records legacy fallback")
-	check(fallback_parity.max_origin_m<.000001 and fallback_parity.max_basis_delta<.000001 and fallback_parity.muzzle_origin_m<.000001,"fallback mirrors legacy transforms into proxy")
-	check(rig.using_authority and actor.hit_regions==rig.regions,"fallback keeps one authoritative collision hierarchy")
-	actor.gadget_equipped=false
+	# Reuse only the pose just produced by presentation, without solving again.
+	actor.next_pose_usec=0
+	actor._animate_walk()
+	var reuse_before:=actor.p1g_visual_reuse_frames
+	var solves_before:=actor.p1g_solver_frames
+	actor._p1g_collision_tick(actor._p1g_visual_pose_updated)
+	check(actor.p1g_visual_reuse_frames==reuse_before+1 and actor.p1g_solver_frames==solves_before,"fresh presentation supplies physics without a second solve")
 
-	# Weapon change must rebind from preserved legacy regions while proxy remains live.
+	# A grenade changes the required pose within that same physics frame.
+	# The next attempt at visual articulation is deliberately skipped by LOD.
+	var before_grenade:=rig.snapshot()
+	actor.grenade_selected=true
+	actor.grenade_throw_left=.35
+	actor.pitch=-.21
+	actor.lean=-.25
+	actor.next_pose_usec=Time.get_ticks_usec()+1000000
+	actor._animate_walk()
+	var fallbacks_before:=actor.p1g_legacy_fallback_frames
+	actor._p1g_collision_tick(actor._p1g_visual_pose_updated)
+	var after_grenade:=rig.snapshot()
+	var fallback_parity:=Snapshot.compare(rig.legacy_snapshot(actor),after_grenade)
+	var grenade_motion:=Snapshot.compare(before_grenade,after_grenade)
+	check(actor.p1g_legacy_fallback_frames==fallbacks_before+1,"same-frame grenade change evaluates a fresh fallback after LOD skip")
+	check(grenade_motion.per_region.handR.origin_m>.04,"physical grenade hand moves from the preceding firearm pose")
+	check(fallback_parity.max_origin_m<.000001 and fallback_parity.max_basis_delta<.000001 and fallback_parity.muzzle_origin_m<.000001,"fallback mirrors the freshly evaluated transforms")
+	check(rig.using_authority and actor.hit_regions==rig.regions,"fallback keeps one authoritative collision hierarchy")
+	actor.grenade_selected=false
+	actor.grenade_throw_left=0.
+
+	# Equipping in crouch must not bind the already bent knees as rest geometry.
 	configure_neutral(actor,"ak")
+	actor.set_posture(1,false,true)
+	actor.stance.advance(actor,1.)
+	actor._animate_walk()
+	actor._p1g_collision_tick(actor._p1g_visual_pose_updated)
+	check(actor.p1g_collision_binding_key.begins_with("ak|"),"weapon change recalibrates binding from authored regions")
+	var crouched_reference:=rig.legacy_snapshot(actor)
 	var old_solver_frames:=actor.p1g_solver_frames
 	actor._p1g_collision_tick()
-	check(actor.p1g_collision_binding_key.begins_with("ak|"),"weapon change recalibrates binding from legacy authored regions")
-	check(actor.p1g_solver_frames>old_solver_frames,"AK returns to independent solver after rebind")
-	var ak_frame: Dictionary=Solver.solve(actor.p1g_collision_bindings,Solver.state(actor))
-	var ak_parity: Dictionary=Snapshot.compare(ak_frame,rig.snapshot())
-	check(bool(ak_frame.get("supported",false)) and ak_parity.max_origin_m<.00001 and ak_parity.muzzle_origin_m<.00001,"AK proxy matches recalibrated solver")
+	check(actor.p1g_solver_frames==old_solver_frames+1,"AK returns to independent solver after crouched rebind")
+	var ak_parity:=Snapshot.compare(crouched_reference,rig.snapshot())
+	check(ak_parity.missing.is_empty() and ak_parity.max_origin_m<.001 and ak_parity.max_basis_delta<.005 and ak_parity.muzzle_origin_m<.001,"crouched rebind preserves region and muzzle parity")
+
+	# Boarding can leave riders exposed. Preserve the area's enabled state and
+	# keep it attached to the pivots driven by the vehicle's seat updates.
+	actor.vehicle_id="qa_transport"
+	actor._p1g_collision_tick()
+	check(not rig.using_authority and actor.hit_regions==legacy and all_enabled(legacy) and all_disabled(rig.regions),"boarding restores a single live seat-driven hierarchy")
+	actor.vehicle_id=""
+	actor._p1g_collision_tick()
+	check(rig.using_authority and all_enabled(rig.regions) and all_disabled(legacy),"disembarking resumes independent authority")
 
 	# Preserve disabled state through a full restoration, then prove legacy can re-enable.
 	actor._set_hitboxes_enabled(false)

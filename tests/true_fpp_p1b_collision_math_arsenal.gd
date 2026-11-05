@@ -137,6 +137,7 @@ func run() -> void:
 		for field: String in ["prone_weight","moving","reload_left","scoped","special"]:
 			var bad: Dictionary=invalid.duplicate(true)
 			bad[field]=true if field in ["scoped","special"] else .8
+			if field=="prone_weight": bad[field]=1.2
 			if not bool(Solver.solve(bind,bad).get("supported",true)):
 				rejected_ok+=1
 		var wrong_weapon: Dictionary=invalid.duplicate(true)

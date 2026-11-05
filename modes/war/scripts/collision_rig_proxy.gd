@@ -124,7 +124,14 @@ func legacy_snapshot(actor: GamePlayer) -> Dictionary:
 	return {"regions":transforms,"has_muzzle":has_muzzle,"muzzle":muzzle_transform}
 
 func sync_legacy(actor: GamePlayer) -> bool:
-	return sync(legacy_snapshot(actor))
+	var inverse:=actor.global_transform.affine_inverse()
+	for id: String in regions:
+		var source:=legacy_regions.get(id) as Area3D
+		if not is_instance_valid(source): return false
+		(regions[id] as Area3D).transform=inverse*source.global_transform
+	if is_instance_valid(actor.muzzle_marker):
+		muzzle.transform=inverse*actor.muzzle_marker.global_transform
+	return true
 
 func snapshot() -> Dictionary:
 	var out: Dictionary={}
