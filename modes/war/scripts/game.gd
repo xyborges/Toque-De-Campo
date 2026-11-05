@@ -532,7 +532,10 @@ func war_identity(id: int,data: Dictionary) -> void:
 	actor.deployed = bool(data.deployed)
 	if newly_deployed: actor.stance.reset(actor)
 	if actor.deployed: actor.set_posture(int(data.get("posture",0)),false,true)
+	var former_vehicle := actor.vehicle_id
 	actor.vehicle_id = str(data.vehicle)
+	if not former_vehicle.is_empty() and former_vehicle!=actor.vehicle_id and is_instance_valid(vehicle_system):
+		vehicle_system.reset_transport_pose(vehicle_system.find_target(former_vehicle),actor)
 	actor.set_utility(str(data.get("utility","")) if actor.deployed and actor.vehicle_id.is_empty() else "")
 	# Older state has no zoom field. Apply only after occupancy and mode so
 	# a late snapshot cannot activate binoculars inside a vehicle.
@@ -700,20 +703,28 @@ func find_spawn(id: int) -> Vector3:
 	var data: Dictionary = members.get(id,{"team":0,"spawn":"base"})
 	var team := maxi(0,int(data.team))
 	var p: Vector3 = WarRules.BASES[team]
-	if offline_operation and bool(data.get("bot",false)):
-		# Put offline AI on the active front so matches produce combat quickly.
-		# The online spawns and the human-selected rally/base positions are unchanged.
+	var spawn_id:=str(data.get("spawn","base"))
+	if spawn_id!="base" and _valid_deployment_spawn(team,spawn_id):
+		# A friendly captured sector takes precedence over offline bot-lane
+		# staging. Previously every offline bot ignored its selected rally flag.
+		p=WarRules.OBJECTIVES[spawn_id].position
+	elif offline_operation and bool(data.get("bot",false)):
 		var lane:=clampi(int(data.get("bot_lane",0)),0,8)
 		if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN:
-			var base: Vector3=WarRules.BASES[team];var front: Vector3=WarRules.OBJECTIVES["D" if team==0 else "B"].position
-			p=base.lerp(front,.12+.06*lane)+Vector3((lane%3-1)*7,0,((lane/3)-1)*6)
+			if lane<4:
+				# Vehicle crews must start close enough to board from either base.
+				p=WarRules.BASES[team]+Vector3((lane%2)*7-4,0,-8+(lane/2)*8)
+			else:
+				var base: Vector3=WarRules.BASES[team]
+				var front: Vector3=WarRules.OBJECTIVES["D" if team==0 else "B"].position
+				p=base.lerp(front,.12+.06*lane)+Vector3((lane%3-1)*7,0,((lane/3)-1)*6)
 		elif lane<4: p=WarRules.BASES[team]+Vector3((lane%2)*5-3,0,-10+(lane/2)*7)
 		else: p=Vector3(-190 if team==0 else 190,0,-180+(lane-4)*57)
-	elif objective_states.has(str(data.get("spawn",""))): p = WarRules.OBJECTIVES[str(data.spawn)].position
 	var best := p
 	var score := -INF
 	for offset: Vector2 in [Vector2(0,9),Vector2(-9,12),Vector2(9,12),Vector2(-16,6),Vector2(16,6),Vector2(0,20)]:
 		var candidate := WarTerrain.point(p.x+offset.x,p.z+offset.y)+Vector3.UP*.12
+		if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and (not BRAfghanMap.accessible(candidate) or BRAfghanMap.is_water(candidate)): continue
 		var distance := 100000.0
 		for other in players.values():
 			if other.peer_id!=id and other.hp>0: distance = minf(distance,other.global_position.distance_squared_to(candidate))
@@ -839,7 +850,7 @@ func _peer_disconnected(id: int) -> void:
 		if humans==0 and is_instance_valid(bot_director): bot_director.clear_online()
 		if humans==0: reset_operation()
 
-func _server_accept_shot(id: int,sequence: int,life: int,camera_origin: Vector3,direction: Vector3,weapon: String,aim_level := -1) -> void:
+func _server_accept_shot(id: int,sequence: int,life: int,camera_origin: Vector3,direction: Vector3,weapon: String,aim_level := -1,zero_range := 0) -> void:
 	if water_restricted(players.get(id)) or not _eligible(id) or not _battle_active():
 		var rejected:=players.get(id) as GamePlayer
 		if is_instance_valid(rejected) and rejected.life_id==life:
@@ -853,7 +864,7 @@ func _server_accept_shot(id: int,sequence: int,life: int,camera_origin: Vector3,
 		sync_inventory(actor)
 		return
 	members[id].shield = 0.0
-	super._server_accept_shot(id,sequence,life,camera_origin,direction,weapon,aim_level)
+	super._server_accept_shot(id,sequence,life,camera_origin,direction,weapon,aim_level,zero_range)
 
 func _eligible(id: int) -> bool:
 	return players.has(id) and members.has(id) and bool(members[id].deployed) and int(members[id].team)>=0 and players[id].hp>0 and str(members[id].vehicle).is_empty()
@@ -1197,6 +1208,10 @@ func _process_queued_deployments() -> void:
 		var gadget:=WarRules.launcher_for_team(team)
 		if role=="antitank" and WarRules.launcher_allowed(team,str(selection.get("gadget",gadget))): gadget=str(selection.get("gadget",gadget))
 		var spawn_id:=str(selection.get("spawn",state.get("spawn","base")))
+		if bool(state.get("bot",false)) and is_instance_valid(bot_director):
+			# Authoritative bot rally selection is recalculated after each death.
+			# Humans keep their saved deployment/menu choice unchanged.
+			spawn_id=bot_director.preferred_spawn(id)
 		if not _valid_deployment_spawn(team,spawn_id): spawn_id="base"
 		state.pending={}
 		var accepted:=_deploy(id,team,role,weapon,gadget,spawn_id,approved.slots if bool(approved.get("ok",false)) else loadout)

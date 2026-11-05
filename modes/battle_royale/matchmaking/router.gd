@@ -1,7 +1,7 @@
 extends Node
 class_name BRMatchRouter
 signal completed(result: Dictionary)
-const PROTOCOL:=9
+const PROTOCOL:=10
 const PORT:=3016
 var network_api: SceneMultiplayer
 var transport: ENetMultiplayerPeer

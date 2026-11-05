@@ -1,38 +1,46 @@
 {
-  "version": "1.13.2",
+  "version": "1.13.3",
   "date": "04/11/2026",
-  "title": "G3 refinado, lunetas reconstruídas e mira mais consistente",
-  "summary": "Revisão visual e funcional do G3 e das lunetas, mais redução dos picos de upload da vegetação que podem pressionar a GPU ao carregar ou atravessar o mapa.",
+  "title": "Fumaça tática, motos completas e combate mais preciso",
+  "summary": "Uma atualização ampla com granada M18, cortinas de fumaça nos blindados, zeragem balística, melhorias nas motos e blindados, acessos do Afegão, marcadores estáveis nas lunetas e telas de carregamento.",
   "changes": [
     {
-      "title": "G3 com detalhes mais fiéis",
-      "text": "Refinamentos da coronha, guarda-mão e receptor. Dioptro traseiro alinhado à massa dianteira; o aro frontal permanece presente mesmo com a óptica instalada."
+      "title": "Granada M18 e fumaça de blindados",
+      "text": "Soldados podem escolher a M18; Abrams, T-90, BMP-2 e Guarani lançam cortinas de fumaça duradouras. Os efeitos usam agrupamento, limites de desenho e áudio 3D com vozes reutilizadas."
     },
     {
-      "title": "Hensoldt 4× e Telescópica 8× reconstruídas",
-      "text": "Suportes aproximados das armas, anéis e ocular da 8× fechados e torres da Hensoldt detalhadas. Pontos de contato revisados na sniper, G3, AK e FAL."
+      "title": "Zeragem balística das miras",
+      "text": "Ao mirar, a roda do mouse ajusta a zeragem em passos de 50 m. O servidor valida a distância e calcula a elevação com a balística de cada arma."
     },
     {
-      "title": "Ampliação real das lunetas",
-      "text": "A lente 8× mostra o alvo com aproximadamente o dobro da largura da 4× no teste renderizado. A ampliação foi conferida na sniper, G3, AK e FAL."
+      "title": "Moto com piloto e garupa",
+      "text": "A moto ganhou geometria revisada, guidão articulado, apoio correto de mãos e pés, inclinação do corpo e um assento de garupa sincronizado no Guerra e no Battle Royale."
     },
     {
-      "title": "Transições de mira da sniper",
-      "text": "A arma permanece visível ao mirar; entrada e saída do ADS ajustadas de acordo com a óptica: 0,18 s na 4× e 0,26 s na 8×."
+      "title": "Blindados com encaixes revisados",
+      "text": "Abrams e T-90 receberam colares de torre e suportes do canhão; lançadores e coaxiais foram realinhados, com os mesmos ajustes nos modelos de distância."
     },
     {
-      "title": "Carregamento gradual da vegetação",
-      "text": "As atualizações de células de vegetação agora têm um limite por quadro, distribuindo o envio dos buffers ao longo de vários quadros para evitar picos concentrados durante deslocamento e carregamento do mapa."
+      "title": "Afegão com acessos para blindados",
+      "text": "Bases e baias foram reposicionadas, a estrada de descida foi nivelada e os veículos dos bots seguem vias largas. Jogadores podem assumir o volante ocupado por um piloto bot."
+    },
+    {
+      "title": "Objetivos estáveis nas lunetas",
+      "text": "Os marcadores A–E agora acompanham a imagem ampliada das ópticas 4× e 8×, inclusive durante pequenos movimentos da câmera."
+    },
+    {
+      "title": "Carregamento antes das partidas",
+      "text": "Os modos exibem uma tela de preparação imediatamente após o clique, com transições suaves na entrada e no retorno ao menu."
     }
   ],
   "fixes": [
     {
-      "title": "Frestas na luneta 8×",
-      "text": "Corpo, bordas e junções da lente com as torres remodelados para reduzir aberturas visuais, inclusive na vista lateral."
+      "title": "Nascimento e deslocamento no Afegão",
+      "text": "Bots reaparecem em setores aliados seguros e tripulações de veículos nascem perto das baias, evitando rotas diretas por montanhas e água."
     },
     {
-      "title": "Apresentação de mira da sniper",
-      "text": "Corrigida a antiga ocultação da arma em ADS, preservando o modelo e as lentes durante a transição visual."
+      "title": "Postura ao sair da moto",
+      "text": "Piloto e garupa restauram a pose de infantaria ao desembarcar, morrer ou trocar de assento."
     }
   ]
 }

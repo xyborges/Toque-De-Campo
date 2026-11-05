@@ -1,8 +1,8 @@
 extends WarGame
 class NoLocomotion extends WarLocomotion:
-	func advance(_actor: WarPlayer,_delta: float) -> void: pass
-	func pose_body(_actor: WarPlayer) -> void: pass
-	func pose_weapon(_actor: WarPlayer) -> void: pass
+	func advance(_actor: GamePlayer,_delta: float) -> void: pass
+	func pose_body(_actor: GamePlayer) -> void: pass
+	func pose_weapon(_actor: GamePlayer) -> void: pass
 
 func _new_player() -> GamePlayer:
 	var actor:=super._new_player() as WarPlayer
@@ -50,10 +50,10 @@ func bench_begin() -> void:
 func gameplay_input_allowed() -> bool:
 	return join_ready and is_instance_valid(local_player) and local_player.deployed and local_player.hp>0 and not ui_focus.blocked()
 func _battle_active() -> bool: return not members.is_empty() and not match_ended
-func _server_accept_shot(id: int,sequence: int,life: int,origin: Vector3,direction: Vector3,weapon: String,aim_level := -1) -> void:
+func _server_accept_shot(id: int,sequence: int,life: int,origin: Vector3,direction: Vector3,weapon: String,aim_level := -1,zero_range:=0) -> void:
 	var previous:=dedicated_pvp
 	if players.size()==1: dedicated_pvp=false
-	super._server_accept_shot(id,sequence,life,origin,direction,weapon,aim_level)
+	super._server_accept_shot(id,sequence,life,origin,direction,weapon,aim_level,zero_range)
 	dedicated_pvp=previous
 func _apply_hit(_owner_id: int,_hit: Dictionary,_damage: float,_region := "chest",_weapon := "fal",_direction := Vector3.ZERO) -> void:
 	# Test-only immortality keeps all twelve clients firing throughout a

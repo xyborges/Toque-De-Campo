@@ -42,7 +42,7 @@ static func merge(parent: Node3D,key: String,roots: Array[Node],protection_slot:
 static func _collect(node: Node3D,relative: Transform3D,groups: Dictionary,heat := "body") -> void:
 	var label:=str(node.name)
 	if label.begins_with("Engine"): heat="engine"
-	elif label.begins_with("Coaxial"): heat="coax"
+	elif label.contains("Coaxial"): heat="coax"
 	elif label.begins_with("Gun") or label.begins_with("Muzzle"): heat="gun"
 	if node is MeshInstance3D and node.mesh:
 		for index in node.mesh.get_surface_count():

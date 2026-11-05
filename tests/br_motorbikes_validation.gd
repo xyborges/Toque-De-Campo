@@ -48,7 +48,8 @@ func run() -> void:
 	check(not actor.prone and not actor.crouched and actor.stance.prone_weight==0. and actor.body_root.get_node("Pelvis").rotation.is_zero_approx(),"boarding from prone resets on-foot hip and head displacement before the seated pose")
 	check(not actor.view_root.visible and actor.camera.global_position.distance_to(actor.camera_pivot.global_position)>2.8 and not game.third_person,"riding uses an external camera while preserving the selected on-foot FPP mode")
 	await enter(rival,bike)
-	check(bike.driver==1 and rival.vehicle_id.is_empty(),"second rider cannot steal the occupied single seat")
+	check(bike.driver==1 and bike.seat_of(2)==1 and system.occupied(rival) and rival.body_collision.disabled,
+		"second rider boards the rear seat without taking control")
 	var current_epoch:=bike.control_epoch
 	system._accept_control(1,1,7,3,1.,.4,bike.vehicle_id,current_epoch)
 	check(system.controls.has(1) and system.controls[1].throttle==1.,"current operator control accepted")
@@ -56,7 +57,13 @@ func run() -> void:
 		system._accept_control(1,int(data[0]),int(data[1]),int(data[2]),float(data[3]),float(data[4]),str(data[5]),int(data[6]))
 	check(int(system.sequences[1])==1,"wrong life, round, bike, occupancy epoch and nonfinite control are rejected")
 	system._accept_control(2,100,7,3,1.,1.,bike.vehicle_id,current_epoch)
-	check(not system.controls.has(2),"another peer cannot drive a foreign rider's bike")
+	check(not system.controls.has(2),"a passenger cannot drive the motorcycle")
+	var occupied_batch: Array = []
+	for _index in 6: occupied_batch.append(bike.network_state())
+	check(var_to_bytes([1,game.br_generation,occupied_batch]).size()<1200,
+		"six snapshots with passengers stay below the UDP payload budget")
+	check(system.release(2) and bike.driver==1 and bike.control_epoch==current_epoch,
+		"passenger can dismount without interrupting the driver")
 	rival.position=Vector3(30,.08,15)
 	system.pose(actor);actor.camera_pivot.rotation.y=.8
 	check(system.release(1) and not system.occupied(actor),"rider can leave a clear bike")
@@ -105,8 +112,11 @@ func run() -> void:
 	check(absf(angle_difference(other_bike.heading,other_bike.rotation.y))<.001 and absf(angle_difference(actor.rotation.y,other_bike.rotation.y))<.001,"remote interpolation uses the visible hull heading for the seated rider")
 	await capture("rider")
 	var original: Vector3=other_bike.spawn_position
+	rival.global_position=other_bike.global_position+Vector3(-1.6,.08,0)
+	await enter(rival,other_bike)
+	check(other_bike.seat_of(2)==1,"second rider is present before round reset")
 	system.reset_round();await frames(2)
-	check(other_bike.driver==0 and other_bike.seats.is_empty() and actor.vehicle_id.is_empty() and other_bike.position.is_equal_approx(original) and other_bike.hp==220.,"round reset clears every reservation and restores original bike position and health")
+	check(other_bike.driver==0 and other_bike.seats.is_empty() and actor.vehicle_id.is_empty() and rival.vehicle_id.is_empty() and other_bike.position.is_equal_approx(original) and other_bike.hp==220.,"round reset clears every reservation and restores original bike position and health")
 	var batch: Array=[]
 	for _index in 6:batch.append(bike.network_state())
 	metrics.snapshot_batch_bytes=var_to_bytes([1,game.br_generation,batch]).size()

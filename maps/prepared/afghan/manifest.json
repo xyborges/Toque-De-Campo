@@ -2,11 +2,11 @@
 	"artifacts": [
 		{
 			"path": "res://maps/prepared/afghan/cartography.res",
-			"sha256": "ffa992d12c4d60f0a69437a3504e0983934352895f87469dfb428aed1ea53cbd"
+			"sha256": "8ad0e0ef1e16376a9c27549d50ea36b42fe45442ab345b55fa582bbfc9b83040"
 		},
 		{
 			"path": "res://maps/prepared/afghan/grass.res",
-			"sha256": "c265971fe35d95f6a296e95c90f2e0ac29f8f8ad7303a718e22002d44eef7f08"
+			"sha256": "3d130bb257aaa886540f4d5b716549d245317518647f3b9735f0a329aa32ffef"
 		},
 		{
 			"path": "res://maps/prepared/afghan/grass_far_mesh.res",
@@ -47,7 +47,7 @@
 		2000.0,
 		2000.0
 	],
-	"content_hash": "bede88b57222bd7c634e1cdad47e24fad77ae8dc09988edc96b681cf3af303b6",
+	"content_hash": "89db424ed6976f0bc4f3f778fa1b3f5848305f0d25bb02aaa5fa83cec93e9ff2",
 	"grass_approved": false,
 	"grass_enabled": false,
 	"id": "afghan",
@@ -1936,7 +1936,7 @@
 		"farmland",
 		"property_access"
 	],
-	"source_hash": "df2f4b1428d1287f2a441dc5dfe507f252657c0798a4989680b0e7ea07cdbfec",
+	"source_hash": "4f642ad0abb12ef3a6b1feb6ceeb21bd49819ecbd298b70b1c10fc644d6d364a",
 	"sources": [
 		"res://modes/battle_royale/library/adobe_house.tscn",
 		"res://modes/battle_royale/library/adobe_house_v2.tscn",
@@ -2868,5 +2868,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 10
+	"version": 12
 }

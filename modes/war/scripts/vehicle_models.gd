@@ -3,7 +3,7 @@ class_name WarVehicleModels
 
 # Visual construction only. Turret/elevation/muzzle nodes belong to WarVehicle
 # and are identical on the dedicated server and every client.
-const REFERENCE_VERSION:=3
+const REFERENCE_VERSION:=4
 const RUBBER:="252b28"
 const STEEL:="384039"
 const DIRT:="635f4a"
@@ -81,6 +81,15 @@ func turret_shell(label: String,outline: Array[Vector2],bottom: float,height: fl
 		tri(surface,Vector3(0,bottom+height,0),c,d)
 		tri(surface,Vector3(0,bottom,0),a,b)
 	mesh_node(v.turret,label,surface,color)
+
+func turret_neck(label: String,hull_roof: float,shell_bottom: float,radius: float) -> void:
+	# Bridge the rotating turret race to the hull roof. Tanks previously left
+	# an exposed ~20 cm air gap here, which made the whole turret look detached.
+	var local_roof:=hull_roof-v.turret.position.y
+	var height:=maxf(.06,shell_bottom-local_roof)
+	var center:=(local_roof+shell_bottom)*.5
+	tube(v.turret,label+"TurretRace",Vector3(0,center,0),radius,height,STEEL)
+	tube(v.turret,label+"TurretCollar",Vector3(0,shell_bottom-.025,0),radius*1.06,.07,paint)
 
 func grilles(parent: Node3D,pos: Vector3,size: Vector2,count: int,label: String) -> void:
 	box(parent,label+"Recess",pos,Vector3(size.x,.035,size.y),STEEL)
@@ -267,6 +276,7 @@ func abrams() -> void:
 	hatch(v,Vector3(0,1.65,-1.57),.31)
 	for x in [-.21,0.,.21]: box(v,"AbramsDriverPeriscope",Vector3(x,1.67,-1.91),Vector3(.16,.10,.13),GLASS)
 	var outline: Array[Vector2]=[Vector2(-.48,-1.69),Vector2(-1.56,-1.12),Vector2(-1.61,.76),Vector2(-1.34,2.34),Vector2(1.34,2.34),Vector2(1.61,.76),Vector2(1.56,-1.12),Vector2(.48,-1.69)]
+	turret_neck("Abrams",1.71,-.24,1.24)
 	turret_shell("AbramsWeldedAngularTurret",outline,-.24,.87,.83,paint,.64)
 	box(v.turret,"AbramsBustleAmmoCompartment",Vector3(0,.24,2.06),Vector3(2.54,.68,.89),paint)
 	for x in [-.64,.64]: box(v.turret,"BustleBlowoffPanel",Vector3(x,.62,2.05),Vector3(1.20,.05,.82),EDGE)
@@ -301,6 +311,7 @@ func t90() -> void:
 		for x in [-.31,.31]: tube(v,"FuelDrumStrap",Vector3(side*.78+x,1.28,3.56),.322,.045,STEEL,Vector3(0,0,PI/2))
 	box(v,"UnditchingLog",Vector3(0,.74,3.47),Vector3(2.67,.18,.18),"685b43")
 	hatch(v,Vector3(0,1.62,-1.42),.27)
+	turret_neck("T90",1.57,-.13,1.08)
 	turret_shell("T90LowWeldedTurret",t90_outline(),-.13,.66,.82,paint)
 	for side in [-1,1]:
 		for i in 4:
@@ -314,7 +325,14 @@ func t90() -> void:
 	main_tank_gun("2A46",.125)
 
 func main_tank_gun(label: String,calibre: float) -> void:
-	box(v.elevation,"GunMantlet",Vector3(0,0,.13),Vector3(.57,.45,.56),paint)
+	# The mantlet now has an actual trunnion/yoke instead of a lone box
+	# intersecting the barrel. This keeps the cannon visually attached while
+	# preserving the authoritative elevation pivot and muzzle marker.
+	box(v.elevation,"GunMantletShield",Vector3(0,0,.18),Vector3(.82,.52,.22),paint)
+	box(v.elevation,"GunMantlet",Vector3(0,0,.02),Vector3(.62,.46,.44),paint)
+	for side in [-1,1]:
+		tube(v.elevation,"GunTrunnion",Vector3(side*.36,0,.16),.17,.18,STEEL,Vector3(0,0,PI/2))
+		box(v.elevation,"GunTrunnionCheek",Vector3(side*.31,-.02,.08),Vector3(.14,.38,.34),paint)
 	barrel(v.elevation,v.muzzle.position,-.10,.091,calibre,label)
 	tube(v.elevation,"GunThermalSleeve",Vector3(0,0,-1.10),.113,1.42,paint,Vector3(PI/2,0,0))
 	tube(v.elevation,"GunFumeExtractor",Vector3(0,0,-1.92),.155,.55,paint,Vector3(PI/2,0,0),.88)
@@ -324,9 +342,14 @@ func main_tank_gun(label: String,calibre: float) -> void:
 func common() -> void:
 	var width:=float(v.spec.size.x);var length:=float(v.spec.size.z)
 	for side in [-1,1]:
-		for i in (3 if v.kind in ["guarani","bmp2"] else 6):
-			var pos:=Vector3(side*(.49 if v.kind=="guarani" else .93),.22,-.10+i*.115)
-			tube(v.turret,"SmokeDischarger",pos,.048,.24,STEEL,Vector3(.8,0,side*.70))
+		# Paired multi-tube dischargers on the turret cheeks, angled outwards.
+		var launcher_width: float={"guarani":.71,"bmp2":1.02,"abrams":1.22,"t90":1.12}[v.kind]
+		var count:=3 if v.kind in ["guarani","bmp2"] else 6
+		box(v.turret,"SmokeLauncherBracket",Vector3(side*launcher_width,.27,-.18),Vector3(.23,.17,.51),STEEL)
+		for i in count:
+			var row:=i/3
+			var pos:=Vector3(side*(launcher_width+.055),.33+row*.13,-.32+(i%3)*.145)
+			tube(v.turret,"SmokeDischarger",pos,.059,.26,STEEL,Vector3(.95,0,side*.68))
 		box(v,"FrontHeadlampGuard",Vector3(side*width*.36,1.02,-length*.47),Vector3(.26,.23,.17),STEEL)
 		box(v,"Headlamp",Vector3(side*width*.36,1.03,-length*.47-.09),Vector3(.15,.115,.025),"a6ad95")
 		for z in [-length*.43,length*.43]:
@@ -364,8 +387,11 @@ func distance_lod() -> void:
 		else: box(v,"FarTrack",Vector3(side*width*.415,.66,0),Vector3(.60,1.0,length*.87),RUBBER)
 	if v.kind=="abrams":
 		var outline: Array[Vector2]=[Vector2(-.48,-1.69),Vector2(-1.56,-1.12),Vector2(-1.34,2.34),Vector2(1.34,2.34),Vector2(1.56,-1.12),Vector2(.48,-1.69)]
+		tube(v.turret,"FarAbramsTurretNeck",Vector3(0,-.34,0),1.24,.20,STEEL)
 		turret_shell("FarAbramsTurret",outline,-.24,.87,.83,paint,.64)
-	elif v.kind=="t90": turret_shell("FarT90Turret",t90_outline(),-.13,.66,.82,paint)
+	elif v.kind=="t90":
+		tube(v.turret,"FarT90TurretNeck",Vector3(0,-.23,0),1.08,.20,STEEL)
+		turret_shell("FarT90Turret",t90_outline(),-.13,.66,.82,paint)
 	elif v.kind=="bmp2": tube(v.turret,"FarBMPTurret",Vector3(0,.25,0),.94,.48,paint,Vector3.ZERO,.68)
 	else: box(v.turret,"FarRemax",Vector3(0,.16,-.15),Vector3(.63,.39,.66),paint)
 	var length_gun:=absf(v.muzzle.position.z)
@@ -382,8 +408,17 @@ func distance_lod() -> void:
 
 func tv_launcher() -> void:
 	var tip:=v.secondary_muzzle.position
+	# Articulated pedestal ties the launcher to the gun elevation pivot.
+	# Previously the cradle started above the turret roof with nothing below it.
+	box(v.elevation,"TVLauncherPivotBridge",Vector3(tip.x*.50,-.06,-.10),Vector3(absf(tip.x)*1.12,.13,.40),paint)
+	tube(v.elevation,"TVLauncherBasePivot",Vector3(tip.x*.15,-.05,-.02),.11,.26,STEEL,Vector3(0,0,PI/2))
+	for side in [-1,1]:
+		box(v.elevation,"TVLauncherRiser",Vector3(tip.x+side*.11,.15,-.31),Vector3(.075,.40,.15),STEEL)
+		box(v.elevation,"TVLauncherRiserFoot",Vector3(tip.x+side*.11,-.015,-.18),Vector3(.12,.10,.26),paint)
+	tube(v.elevation,"TVLauncherTrunnion",Vector3(tip.x,.35,-.31),.095,.48,STEEL,Vector3(0,0,PI/2))
 	box(v.elevation,"TVLauncherCradle",tip+Vector3(0,-.12,.64),Vector3(.42,.18,.42),paint)
 	tube(v.elevation,"TVLaunchContainer",tip+Vector3(0,0,.64),.16,1.28,paint,Vector3(PI*.5,0,0))
 	tube(v.elevation,"TVLaunchCollar",tip+Vector3(0,0,.04),.175,.08,EDGE,Vector3(PI*.5,0,0))
 	tube(v.elevation,"TVLaunchAperture",tip+Vector3(0,0,-.007),.13,.01,RUBBER,Vector3(PI*.5,0,0))
 	for z in [.35,.95]: box(v.elevation,"TVClamp",tip+Vector3(0,-.05,z),Vector3(.37,.09,.08),STEEL)
+	v.elevation.set_meta("secondary_tip",tip)

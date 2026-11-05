@@ -47,4 +47,5 @@ func refresh() -> void:
 		var color:=FieldTheme.BAD if float(round.left)<1.2 else FieldTheme.ACCENT
 		if widget.text.get_meta("color",Color.TRANSPARENT)!=color:
 			widget.text.add_theme_color_override("font_color",color);widget.text.set_meta("color",color)
+		widget.bar.max_value=GameGrenades.SMOKE_FUSE if str(round.get("kind","grenade"))=="smoke" else GameGrenades.FUSE
 		widget.bar.value=float(round.left);widget.node.show()

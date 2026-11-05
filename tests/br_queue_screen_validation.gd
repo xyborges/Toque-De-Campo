@@ -36,7 +36,7 @@ func capture() -> void:
 func pending_router() -> BRMatchRouter:
 	var router:=ROUTER.new();root.add_child(router);router.pending=true;router.request_started=Time.get_ticks_msec();game.queue_router=router;return router
 func run() -> void:
-	check(BattleRoyaleGame.BR_PROTOCOL==9 and ROUTER.PROTOCOL==BattleRoyaleGame.BR_PROTOCOL and POOL.PROTOCOL==BattleRoyaleGame.BR_PROTOCOL,"game/router/pool agree on corrected map protocol9")
+	check(BattleRoyaleGame.BR_PROTOCOL==10 and ROUTER.PROTOCOL==BattleRoyaleGame.BR_PROTOCOL and POOL.PROTOCOL==BattleRoyaleGame.BR_PROTOCOL,"game/router/pool agree on release protocol 10")
 	app=APP.new();app.set_meta("test_mode",true);root.add_child(app)
 	var previous: NavalAccounts=app.main_accounts
 	account=ACCOUNTS.new();root.add_child(account);app.main_accounts=account;previous.queue_free()

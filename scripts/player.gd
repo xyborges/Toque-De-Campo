@@ -1,6 +1,8 @@
 extends CharacterBody3D
 class_name GamePlayer
 
+const WEAPON_ZEROING=preload("res://scripts/weapon_zeroing.gd")
+
 signal shot_requested(shooter: GamePlayer, origin: Vector3, direction: Vector3, weapon_id: String, is_melee: bool)
 signal player_died(victim: GamePlayer, killer_id: int)
 
@@ -45,6 +47,7 @@ var mouse_captured := false
 var aiming := false
 var iron_sights := false
 var scope_level := 0
+var zeroing_ranges: Dictionary={}
 var recoil := 0.0
 var hit_regions: Dictionary = {}
 var avatar_parts: Dictionary = {}
@@ -416,11 +419,17 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.keycode == KEY_V:
 			game.third_person = not game.third_person
 			_update_view()
+		elif event.keycode == KEY_Y and game.get_meta("battle_royale",false):
+			if not is_npc and grenades>0 and grenades_enabled and grenade_held_id.is_empty() and not grenade_prime_pending:
+				var next_kind: String="grenade" if str(get_meta("grenade_kind","grenade"))=="smoke" else "smoke"
+				if game.has_method("request_grenade_kind_choice"): game.request_grenade_kind_choice(self,next_kind)
 		elif event.keycode == KEY_R: start_reload()
 		elif event.keycode == KEY_F and game.has_method("request_supplies"): game.request_supplies(self)
 		elif event.keycode == KEY_G and game.has_method("request_grenade") and not game.get_meta("war_mode",false):
 			equip_grenade()
 		elif event.keycode >= KEY_1 and event.keycode <= KEY_9: equip_quick_slot(event.keycode - KEY_1+1)
+	if _handle_zeroing_scroll(event):
+		get_viewport().set_input_as_handled();return
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if grenade_selected:
@@ -444,6 +453,29 @@ func apply_look(relative: Vector2) -> void:
 
 func optic_fovs() -> Array:
 	return GameWeapons.ITEMS.get(weapon_id,{}).get("optic_fovs",[])
+
+func zeroing_distance(id: String=weapon_id) -> int:
+	var item:=weapon_spec(id)
+	var requested:=int(zeroing_ranges.get(id,0))
+	var clean:=WEAPON_ZEROING.sanitize(requested,item)
+	if requested!=clean:zeroing_ranges[id]=clean
+	return clean
+
+func adjust_zeroing(amount: int) -> bool:
+	var item:=weapon_spec(weapon_id)
+	if not WEAPON_ZEROING.supported(item):return false
+	var current:=zeroing_distance(weapon_id)
+	var next:=WEAPON_ZEROING.step(current,amount,item)
+	if next==current:return false
+	zeroing_ranges[weapon_id]=next
+	if game:game.update_hud()
+	return true
+
+func _handle_zeroing_scroll(event: InputEvent) -> bool:
+	if not event is InputEventMouseButton or not event.pressed:return false
+	if event.button_index not in [MOUSE_BUTTON_WHEEL_UP,MOUSE_BUTTON_WHEEL_DOWN]:return false
+	if not iron_sights or _grenade_active():return false
+	return adjust_zeroing(1 if event.button_index==MOUSE_BUTTON_WHEEL_UP else -1)
 
 func uses_telescopic_sight() -> bool:
 	return iron_sights and not optic_fovs().is_empty()
@@ -1428,6 +1460,7 @@ func _update_grenade_pose() -> void:
 	if grenade_selected and not is_instance_valid(grenade_prop):
 		grenade_prop=GameGrenades.make_prop();body_root.add_child(grenade_prop)
 	if is_instance_valid(grenade_prop):
+		GameGrenades.tune_prop(grenade_prop,str(get_meta("grenade_display_kind",get_meta("grenade_kind","grenade"))))
 		grenade_prop.visible=hp>0 and grenade_selected and not holding and not _uses_first_person_presentation()
 		grenade_prop.global_position=grenade_hand_position()
 	if active:
@@ -1447,6 +1480,7 @@ func _update_grenade_pose() -> void:
 		grenade_view_mesh=GameGrenades.make_prop();grenade_view.add_child(grenade_view_mesh)
 	if is_instance_valid(grenade_view):
 		grenade_view.visible=active and in_first
+		GameGrenades.tune_prop(grenade_view_mesh,str(get_meta("grenade_display_kind",get_meta("grenade_kind","grenade"))))
 		grenade_view_mesh.visible=holding or (grenade_selected and grenades>0)
 		var progress:=1-grenade_throw_left/.75
 		# The FPP mesh occupies exactly the world hand's location. Changing

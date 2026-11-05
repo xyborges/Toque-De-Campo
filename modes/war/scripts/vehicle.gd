@@ -406,6 +406,28 @@ func allocate_seat(peer: int) -> int:
 	if seat==0: driver=peer;control_epoch+=1
 	return seat
 
+# Authoritative human takeover: swap only the bot occupying seat zero
+# into an empty passenger seat. The caller validates both player identities.
+# A single revision/epoch keeps remote occupancy and driver controls atomic.
+func hand_over_driver(peer: int,expected_bot_driver: int) -> bool:
+	# Reject a stale command if the operator changed after validation.
+	if destroyed or driver<=0 or driver!=expected_bot_driver or peer<=0 or peer==driver or seat_of(peer)>=0: return false
+	var passenger_seat:=-1
+	for slot in range(1,seat_capacity()):
+		if not seats.has(slot):
+			passenger_seat=slot
+			break
+	if passenger_seat<0: return false
+	var old_driver:=driver
+	seats[0]=peer
+	seats[passenger_seat]=old_driver
+	boarding_serial+=1
+	seat_order[peer]=boarding_serial
+	driver=peer
+	seats_revision+=1
+	control_epoch+=1
+	return true
+
 func vacate_seat(peer: int,promote:=true) -> int:
 	var seat:=seat_of(peer)
 	if seat<0: return 0

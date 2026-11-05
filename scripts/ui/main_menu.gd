@@ -164,12 +164,12 @@ func _build_play() -> void:
 	hero_detail=GameUI.label(sidebar,"",13,FieldTheme.MUTED);hero_detail.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;hero_detail.custom_minimum_size.x=200
 	play_button = GameUI.button(sidebar,"JOGAR",_play,true)
 	play_button.name = "Deploy"
-	desert_training_button = GameUI.button(sidebar,"TREINO NO DESERTO",func(): game.start_offline("desert"))
+	desert_training_button = GameUI.button(sidebar,"TREINO NO DESERTO",func(): game.launch_from_menu("desert",true))
 	desert_training_button.add_theme_font_size_override("font_size",12)
 	war_offline_button=GameUI.button(sidebar,"TREINO OFFLINE · BOTS",func():
-		if selected_mode=="br": game.open_battle_royale(true)
-		elif selected_mode=="war_afghan": game.open_war(true,WarOperation.AFGHAN)
-		else: game.open_war(true,WarOperation.UKRAINE)
+		if selected_mode=="br": game.launch_from_menu("br",true)
+		elif selected_mode=="war_afghan": game.launch_from_menu("war_afghan",true)
+		else: game.launch_from_menu("war",true)
 	)
 	war_offline_button.name="WarOffline"
 	war_offline_button.add_theme_font_size_override("font_size",13)
@@ -217,12 +217,7 @@ func _select_mode(id: String) -> void:
 	war_offline_button.visible=id in ["war","war_afghan","br"]
 	_configure_preparation()
 func _play() -> void:
-	if selected_mode=="office": game.start_offline("training")
-	elif selected_mode=="naval": game.open_naval()
-	elif selected_mode=="war": game.open_war(false,WarOperation.UKRAINE)
-	elif selected_mode=="war_afghan": game.open_war(false,WarOperation.AFGHAN)
-	elif selected_mode=="br": game.open_battle_royale(false)
-	else: game.join_game("pvp")
+	game.launch_from_menu(selected_mode)
 func _build_arsenal() -> void:
 	_page_head("arsenal","COLEÇÃO / INFANTARIA","SEU ARMAMENTO.","Selecione seu equipamento inicial entre as armas adquiridas.")
 	var row := HBoxContainer.new()

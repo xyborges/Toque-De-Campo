@@ -58,11 +58,18 @@ func _ready() -> void:
 			vehicle.vehicle_id="v_"+kind+("_"+str(copy) if transport else "")
 			var base: Vector3=WarRules.BASES[int(data.team)]
 			vehicle.position=WarTerrain.point(base.x+(8 if kind in ["guarani","bmp2"] else -8),base.z-12)
+			# In Afghanistan the infantry outpost can be uphill. Park armour on
+			# preselected road-access bays rather than inside its ravines.
+			if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and kind in ["guarani","bmp2","abrams","t90"]:
+				var bay:=WarOperation.armor_bay(WarRules.CURRENT_OPERATION,int(data.team),kind in ["abrams","t90"])
+				vehicle.position=WarTerrain.point(bay.x,bay.z)
 			if transport:
 				var transport_spawn:=WarRules.transport_spawn(kind,copy)
 				vehicle.position=WarTerrain.point(transport_spawn.x,transport_spawn.z)
 			if data.has("naval"): vehicle.position=WarCoast.BERTHS[int(data.team)][0 if str(kind).contains("assault") else 1]
 			vehicle.heading=PI*.5 if data.has("naval") and int(data.team)==0 else (-PI*.5 if data.has("naval") else (-PI*.5 if int(data.team)==0 else PI*.5))
+			if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and not data.has("naval"):
+				vehicle.heading=WarOperation.armor_heading(WarRules.CURRENT_OPERATION,int(data.team))
 			vehicle.rotation.y=vehicle.heading
 			if not data.has("naval"): vehicle.position=_land_spawn_height(vehicle.position,vehicle.heading,data)
 			add_child(vehicle);vehicles[vehicle.vehicle_id]=vehicle
@@ -139,6 +146,9 @@ func _own_id() -> String:
 
 func _transport(vehicle: Node) -> bool:
 	return is_instance_valid(vehicle) and vehicle is WarVehicle and bool(vehicle.spec.get("transport",false))
+
+func reset_transport_pose(vehicle: Node, actor: GamePlayer) -> void:
+	if _transport(vehicle): MOTORBIKE.reset_rider_pose(actor)
 
 func _local_is_operator() -> bool:
 	return is_instance_valid(game.local_player) and is_operator(game.local_player.peer_id)
@@ -426,7 +436,7 @@ func send_initial(id: int,include_aircraft:=true) -> void:
 	else:rpc_id(id,"baseline_vehicles",_states())
 	for key in smoke_screens:
 		var smoke: Dictionary=smoke_screens[key]
-		if float(smoke.until)>game.war_clock: rpc_id(id,"smoke_event",str(key),smoke.point,float(smoke.until))
+		if float(smoke.until)>game.war_clock: rpc_id(id,"smoke_event",str(key),smoke.point,float(smoke.until),smoke.get("forward",Vector3.FORWARD),str(smoke.get("kind","abrams")))
 	# A late observer receives the current physical missile, not its old
 	# launch position. Guidance remains reserved to the original operator.
 	for key in tv.flights:
@@ -538,13 +548,19 @@ func boarding_distance(actor: GamePlayer,vehicle: WarVehicle) -> float:
 	var p:=vehicle.to_local(actor.global_position);var half:=Vector3(vehicle.spec.size)*.5
 	return Vector2(maxf(0,absf(p.x)-half.x),maxf(0,absf(p.z)-half.z)).length() if absf(p.y)<6 else INF
 
+func _can_take_bot_driver(actor: GamePlayer,vehicle: WarVehicle) -> bool:
+	if not is_instance_valid(actor) or not is_instance_valid(vehicle): return false
+	var requester: Dictionary=game.members.get(actor.peer_id,{})
+	var current_driver: Dictionary=game.members.get(vehicle.driver,{})
+	return not requester.is_empty() and not bool(requester.get("bot",false)) and not current_driver.is_empty() and bool(current_driver.get("bot",false)) and vehicle.driver>0 and not vehicle.destroyed and vehicle.team==actor.war_team
+
 func _nearby(actor: GamePlayer) -> WarVehicle:
 	if not is_instance_valid(actor): return null
 	var nearest: WarVehicle
 	var best := 5.5
 	for vehicle: WarVehicle in vehicles.values():
 		var distance_to := boarding_distance(actor,vehicle)
-		if vehicle.first_available_seat()>=0 and not vehicle.destroyed and vehicle.team==actor.war_team and distance_to<best:
+		if (vehicle.first_available_seat()>=0 or _can_take_bot_driver(actor,vehicle)) and not vehicle.destroyed and vehicle.team==actor.war_team and distance_to<best:
 			nearest=vehicle;best=distance_to
 	return nearest
 
@@ -576,7 +592,33 @@ func command_for(id: int,action: String,data: Dictionary) -> void:
 				if other.seat_of(id)>=0: return
 			var query:=PhysicsRayQueryParameters3D.create(actor.global_position+Vector3.UP,actor.global_position.lerp(vehicle.global_position,.2)+Vector3.UP if vehicle is WarShip else vehicle.global_position+Vector3.UP,1|16,[actor.get_rid(),vehicle.get_rid()])
 			if not get_world_3d().direct_space_state.intersect_ray(query).is_empty(): game._notice(id,"Entrada bloqueada por um obstáculo.");return
-			var seat:=vehicle.allocate_seat(id)
+			var taking_over:=_can_take_bot_driver(actor,vehicle)
+			var previous_driver:=vehicle.driver if taking_over else 0
+			if taking_over and vehicle.first_available_seat()<0:
+				# Prefer dismounting a BOT passenger; leave every human
+				# passenger in place. With no BOT passenger, dismount only the
+				# BOT driver without promoting an existing human passenger.
+				var bot_to_exit:=0
+				for peer: int in vehicle.occupant_ids():
+					if peer!=previous_driver and bool(game.members.get(peer,{}).get("bot",false)):
+						bot_to_exit=peer
+						break
+				if bot_to_exit==0: bot_to_exit=previous_driver
+				if not release(bot_to_exit,false,bot_to_exit!=previous_driver):
+					game._notice(id,"Sem saída segura para assumir o piloto.")
+					return
+			var seat:=-1
+			if taking_over and vehicle.driver==previous_driver and vehicle.hand_over_driver(id,previous_driver):
+				seat=0
+				controls.erase(previous_driver);sequences.erase(previous_driver)
+				locks.erase(previous_driver);healing.erase(previous_driver)
+				var old_member: Dictionary=game.members.get(previous_driver,{})
+				if not old_member.is_empty():
+					old_member.vehicle_seat=vehicle.seat_of(previous_driver)
+					old_member.vehicle_role="passenger"
+					game._broadcast("war_identity",[previous_driver,old_member])
+			else:
+				seat=vehicle.allocate_seat(id)
 			if seat<0: game._notice(id,"Veículo lotado.");return
 			actor.grenade_selected=false;actor.grenade_aiming=false;actor.clear_aim();_set_utility(id,"")
 			actor.stance.reset(actor);member.posture=0
@@ -648,7 +690,7 @@ func select_gadget(id: String) -> void:
 	actor.set_gadget(enabled,id)
 	request_command("select",{"gadget":id,"enabled":enabled})
 
-func release(id: int,forced := false) -> bool:
+func release(id: int,forced := false,promote_driver := true) -> bool:
 	var member: Dictionary=game.members.get(id,{})
 	var current := find_target(str(member.get("vehicle","")))
 	# Clean stale reservations even if the member was already erased by a
@@ -672,13 +714,14 @@ func release(id: int,forced := false) -> bool:
 		exit_position=exit.get("position",game.find_spawn(id) if forced else actor.global_position)
 	tv.release_owner(id)
 	var promoted:=0
-	if current is WarVehicle: promoted=current.vacate_seat(id,not current.destroyed)
+	if current is WarVehicle: promoted=current.vacate_seat(id,promote_driver and not current.destroyed)
 	elif current is WarDrone: current.begin_fall()
 	controls.erase(id);sequences.erase(id);locks.erase(id);healing.erase(id)
 	if not member.is_empty(): member.vehicle="";member.vehicle_seat=-1;member.vehicle_role=""
 	if is_instance_valid(actor):
 		actor.vehicle_id="";actor.velocity=Vector3.ZERO;actor.trigger_held=false
 		actor.fire_cooldown=0;actor.cancel_reload();actor.cancel_melee();actor.clear_aim()
+		reset_transport_pose(current,actor)
 		if actor.hp>0:
 			if current is WarVehicle: actor.global_position=exit_position
 			actor.body_root.show();actor._set_hitboxes_enabled(true);actor.body_collision.set_deferred("disabled",false)
@@ -762,10 +805,14 @@ func reset_occupancy() -> void:
 	tv.clear()
 	controls.clear();sequences.clear();locks.clear();healing.clear();shot_events.clear();blast_events.clear();last_damage_confirmation.clear();impact_events.clear();runover_recent.clear();point_supply_at.clear();smoke_screens.clear();smoke_cooldowns.clear();hull_shock=0
 	if is_instance_valid(smoke_overlay): smoke_overlay.color=Color(.36,.37,.35,0.)
+	if is_instance_valid(game.grenades_system) and is_instance_valid(game.grenades_system.smoke_clouds): game.grenades_system.smoke_clouds.clear_clouds()
 	for vehicle: WarVehicle in vehicles.values():
 		for id: int in vehicle.clear_seats():
 			if game.members.has(id): game.members[id].vehicle="";game.members[id].vehicle_seat=-1;game.members[id].vehicle_role=""
-			if game.players.has(id): game.players[id].vehicle_id="";game.players[id].trigger_held=false
+			var actor := game.players.get(id) as WarPlayer
+			if is_instance_valid(actor):
+				actor.vehicle_id="";actor.trigger_held=false
+				reset_transport_pose(vehicle,actor)
 		_send_occupancy(vehicle)
 	for drone: WarDrone in drones.values(): drone.driver=0
 	last_controlled="";last_control_role="";fire_held=false;zoom=false;vehicle_view.reset(false)
@@ -777,7 +824,9 @@ func exit_confirmed(point: Vector3) -> void:
 		# The identity packet that clears this field is sent immediately after
 		# this reliable confirmation.  Clear the local presentation state here
 		# as well so the restoration below cannot be skipped by packet order.
+		var former := find_target(actor.vehicle_id)
 		actor.vehicle_id=""
+		reset_transport_pose(former,actor)
 		actor.global_position=point;actor.velocity=Vector3.ZERO
 		actor.restore_infantry_presentation_after_vehicle_exit()
 
@@ -911,7 +960,7 @@ func context_text() -> String:
 		return "OPERADOR · F SAIR · C CÂMERA · RMB ZOOM · T TÉRMICA · R RECARGA · "+keys+" ARMAS"+extra if _local_is_operator() else "PASSAGEIRO · F · SAIR    MOUSE · OBSERVAR"
 	if game.local_player.gadget_equipped and game.local_player.gadget=="stinger": return "SEM ALVO" if lock_target.is_empty() else ("ALVO TRAVADO" if lock_progress>=1 else "TRAVANDO · %d%%" % int(lock_progress*100))
 	var nearby:=_nearby(game.local_player)
-	if nearby: return "F · ENTRAR NO %s · %s · %d/%d" % [str(nearby.spec.name).to_upper(),"OPERADOR" if nearby.driver==0 else "PASSAGEIRO",nearby.seats.size(),nearby.seat_capacity()]
+	if nearby: return "F · ENTRAR NO %s · %s · %d/%d" % [str(nearby.spec.name).to_upper(),"OPERADOR" if nearby.driver==0 or _can_take_bot_driver(game.local_player,nearby) else "PASSAGEIRO",nearby.seats.size(),nearby.seat_capacity()]
 	if not supply_point_for(game.local_player).is_empty(): return "H · MUNIÇÃO"
 	var returning: PackedStringArray=[]
 	for vehicle: WarVehicle in vehicles.values():
@@ -1011,6 +1060,8 @@ func _clear_land_spawn(vehicle: WarVehicle,yaw: float) -> Variant:
 
 func _respawn_vehicle(vehicle: WarVehicle) -> void:
 	var spawn_yaw: float=(PI*.5 if vehicle.team==0 else -PI*.5) if vehicle is WarShip else (-PI*.5 if vehicle.team==0 else PI*.5)
+	if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and not vehicle.spec.has("naval"):
+		spawn_yaw=WarOperation.armor_heading(WarRules.CURRENT_OPERATION,vehicle.team)
 	var safe_spawn: Variant=vehicle.spawn_position if vehicle is WarShip else _clear_land_spawn(vehicle,spawn_yaw)
 	if safe_spawn==null:
 		# Retry rather than materialise inside another occupant or obstruction.
@@ -1386,17 +1437,20 @@ func resupply_point(id: int) -> void:
 func deploy_smoke(id: int) -> void:
 	if not multiplayer.is_server() or not game._battle_active() or not is_operator(id): return
 	var vehicle:=find_target(str(game.members[id].vehicle)) as WarVehicle
-	if not is_instance_valid(vehicle) or vehicle.kind not in ["abrams","t90"] or vehicle.destroyed: return
-	if game.war_clock-float(smoke_cooldowns.get(vehicle.vehicle_id,-100.))<45.: return
+	# All land armor uses the same smoke protocol: Abrams, T-90, BMP-2, Guarani.
+	if not is_instance_valid(vehicle) or vehicle.kind not in ["abrams","t90","bmp2","guarani"] or vehicle.destroyed: return
+	if game.war_clock-float(smoke_cooldowns.get(vehicle.vehicle_id,-1000.))<90.: return
 	smoke_cooldowns[vehicle.vehicle_id]=game.war_clock
 	var event:=vehicle.vehicle_id+":"+str(game.war_clock)
-	var point:=vehicle.global_position+Vector3.UP*1.2
-	register_smoke(event,point,game.war_clock+12.)
-	_broadcast("smoke_event",[event,point,game.war_clock+12.])
+	var point:=vehicle.global_position+Vector3.UP*.35
+	var forward: Vector3=-vehicle.turret.global_basis.z if is_instance_valid(vehicle.turret) else -vehicle.global_basis.z
+	var expires:=game.war_clock+GameSmokeClouds.VEHICLE_DURATION
+	register_smoke(event,point,expires,forward,vehicle.kind)
+	_broadcast("smoke_event",[event,point,expires,forward,vehicle.kind])
 
 @rpc("authority","call_remote","reliable")
-func smoke_event(id: String,point: Vector3,until: float) -> void:
-	register_smoke(id,point,until)
+func smoke_event(id: String,point: Vector3,until: float,forward: Vector3=Vector3.FORWARD,kind: String="abrams") -> void:
+	register_smoke(id,point,until,forward,kind)
 
 func _update_smoke_overlay(delta: float) -> void:
 	if not is_instance_valid(smoke_overlay): return
@@ -1406,17 +1460,21 @@ func _update_smoke_overlay(delta: float) -> void:
 		var remaining: float=float(screen.until)-game.war_clock
 		if remaining<=0: smoke_screens.erase(key);continue
 		if tv.viewing():
-			var proximity:=1.0-smoothstep(7.,14.,camera.global_position.distance_to(screen.point))
-			var fade:=smoothstep(0.,1.,remaining)*smoothstep(0.,1.2,12.-remaining)
+			var proximity:=1.0-smoothstep(10.,23.,camera.global_position.distance_to(screen.point))
+			var fade:=smoothstep(0.,5.,remaining)*smoothstep(0.,1.2,GameSmokeClouds.VEHICLE_DURATION-remaining)
 			opacity=maxf(opacity,.94*proximity*fade)
 	var color:=smoke_overlay.color
 	color.a=lerpf(color.a,opacity,1.-exp(-delta*8.))
 	smoke_overlay.color=color
 
-func register_smoke(id: String,point: Vector3,until: float) -> void:
-	if id.is_empty() or not point.is_finite() or not is_finite(until) or smoke_screens.has(id): return
-	smoke_screens[id]={"point":point,"until":until}
-	if is_instance_valid(game.combat_effects): game.combat_effects.smoke_screen(point,hash(id))
+func register_smoke(id: String,point: Vector3,until: float,forward: Vector3=Vector3.FORWARD,kind: String="abrams") -> void:
+	if id.is_empty() or not point.is_finite() or not forward.is_finite() or not is_finite(until) or smoke_screens.has(id): return
+	if kind not in ["abrams","t90","guarani","bmp2"]: return
+	var remaining:=until-game.war_clock
+	if remaining<=0. or remaining>GameSmokeClouds.VEHICLE_DURATION+1.: return
+	smoke_screens[id]={"point":point,"until":until,"forward":forward,"kind":kind}
+	if is_instance_valid(game.grenades_system) and is_instance_valid(game.grenades_system.smoke_clouds):
+		game.grenades_system.smoke_clouds.add_vehicle(id,point,forward,GameSmokeClouds.VEHICLE_DURATION-remaining,kind)
 
 @rpc("authority","call_remote","unreliable_ordered")
 func tv_state(id: String,sequence_value: int,point: Vector3,velocity_value: Vector3,left: float,linked: bool,stamp: float) -> void:

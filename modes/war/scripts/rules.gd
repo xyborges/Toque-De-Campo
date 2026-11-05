@@ -1,7 +1,7 @@
 extends RefCounted
 class_name WarRules
 
-const PROTOCOL := 35
+const PROTOCOL := 36
 const OFFLINE_PARTICIPANTS:=18
 const TEAMKILL_PENALTY := 100
 const PORT := 3014
@@ -43,9 +43,10 @@ static func launcher_allowed(team: int,id: String) -> bool:
 	return not id.is_empty() and id==launcher_for_team(team)
 # Feet positions in the hull's local coordinates. Seat zero is the sole
 # operator; seats 1..N are passengers, never a second turret controller.
+const BIKE_SEATS := [Vector3(0,.07,0),Vector3(0,.07,.52)]
 const VEHICLE_SEATS := {
-	"bike_0":[Vector3(0,.07,0)],
-	"bike_1":[Vector3(0,.07,0)],
+	"bike_0":BIKE_SEATS,
+	"bike_1":BIKE_SEATS,
 	"naval_assault_0":[Vector3(0,1.05,-1.7),Vector3(-2.016,.60,5.5),Vector3(2.016,.60,5.5),Vector3(-2.016,.60,7.0),Vector3(2.016,.60,7.0),Vector3(-2.016,.60,8.5),Vector3(2.016,.60,8.5)],
 	"naval_frigate_0":[Vector3(0,1.05,-1.7),Vector3(-1.624,.60,4.5),Vector3(1.624,.60,4.5),Vector3(-1.624,.60,6.0),Vector3(1.624,.60,6.0),Vector3(-1.624,.60,7.5),Vector3(1.624,.60,7.5)],
 	"naval_assault_1":[Vector3(0,1.05,-1.7),Vector3(-2.016,.60,5.5),Vector3(2.016,.60,5.5),Vector3(-2.016,.60,7.0),Vector3(2.016,.60,7.0),Vector3(-2.016,.60,8.5),Vector3(2.016,.60,8.5)],
