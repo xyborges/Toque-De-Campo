@@ -565,6 +565,7 @@ func _refresh_weapon() -> void:
 	if is_local and is_instance_valid(camera):_update_view()
 
 func _weapon_offset() -> Vector3:
+	if weapon_id=="stinger": return Vector3(.43,-.38,-.55)
 	if GameWeapons.is_launcher(weapon_id): return Vector3(.26,-.28,-.36)
 	return super._weapon_offset()
 

@@ -81,7 +81,7 @@ func _ready() -> void:
 	equipment_title=GameUI.label(equipment_box,"",12,FieldTheme.ACCENT);equipment_title.autowrap_mode=TextServer.AUTOWRAP_OFF
 	equipment_actions=HBoxContainer.new();equipment_actions.add_theme_constant_override("separation",4);equipment_box.add_child(equipment_actions)
 	for id in ["rpg","stinger"]:
-		var button:=GameUI.button(equipment_actions,"7 · RPG-7" if id=="rpg" else "8 · JAVELIN",func(): equipment_selected.emit(id))
+		var button:=GameUI.button(equipment_actions,"7 · RPG-7" if id=="rpg" else "8 · STINGER",func(): equipment_selected.emit(id))
 		button.custom_minimum_size.y=27;button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;button.add_theme_font_size_override("font_size",12)
 		equipment_buttons[id]=button
 	equipment_state=GameUI.label(equipment_box,"",11,FieldTheme.MUTED);equipment_state.autowrap_mode=TextServer.AUTOWRAP_OFF

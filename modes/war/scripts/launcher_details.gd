@@ -140,5 +140,7 @@ static func guard(root: Node3D,position: Vector3,mat: Material) -> void:
 static func scope(root: Node3D,position: Vector3,length: float,radius: float,metal: Material,glass: Material) -> void:
 	tube(root,"OpticBody",position,length,radius,radius,metal);tube(root,"OpticObjective",position+Vector3(0,0,-length*.5),.055,radius*1.3,radius*1.2,metal)
 	tube(root,"OpticLens",position+Vector3(0,0,-length*.5-.03),.004,radius*1.05,radius*1.05,glass);tube(root,"OpticEyepiece",position+Vector3(0,0,length*.5),.045,radius*1.25,radius*1.3,metal)
+	tube(root,"OpticRearLens",position+Vector3(0,0,length*.5+.025),.004,radius*1.13,radius*1.13,glass)
+	ring(root,"OpticEyecupLip",position+Vector3(0,0,length*.5+.028),radius*1.26,.004,metal)
 static func marker(root: Node3D,label: String,position: Vector3) -> void:
 	var node:=Marker3D.new();node.name=label;node.position=position;root.add_child(node)

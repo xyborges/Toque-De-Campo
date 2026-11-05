@@ -297,7 +297,7 @@ static func _rocket_mesh(kind: String) -> Mesh:
 		var theta:=TAU*float(fin)/4.0
 		var radial:=Vector3(cos(theta),sin(theta),0)
 		var base_radius:=.020 if kind=="rpg" else .039
-		var fin_radius:=.126 if kind=="rpg" else .105
+		var fin_radius:=.102 if kind=="rpg" else .086
 		var fin_z:=.27 if kind=="rpg" else .42
 		var a:=radial*base_radius+Vector3(0,0,fin_z-.105)
 		var b:=radial*fin_radius+Vector3(0,0,fin_z+.025)
