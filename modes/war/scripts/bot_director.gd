@@ -1,4 +1,4 @@
-extends Node
+﻿extends Node
 class_name WarBotDirector
 
 # The authority owns this director in offline operations and online bot-filled
@@ -332,9 +332,9 @@ func _physics_process(delta: float) -> void:
 		return
 	var ids:=bot_ids
 	if game.war_clock>=strategy_at:
-		# A point can change from secure to contested quickly in the dense Favela.
-		# This remains squad-level work, not a per-bot expensive query.
-		strategy_at=game.war_clock+(1.5 if WarRules.CURRENT_OPERATION==WarOperation.FAVELA else 3.);_assign_objectives()
+		# Objective pressure changes faster than the old 3 s cadence. This is
+		# squad-level work, so 1.5 s remains cheap even with 57 future bots.
+		strategy_at=game.war_clock+1.5;_assign_objectives()
 	if game.war_clock>=spatial_at:
 		spatial_at=game.war_clock+.2;_index_actors()
 	think_accumulator=minf(.05,think_accumulator+delta)
@@ -997,11 +997,10 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 		return
 	var point: Vector3=WarRules.OBJECTIVES[record.objective].position
 	var goal:=WarTerrain.point(point.x,point.z)
-	if bool(vehicle.spec.get("transport",false)) and vehicle.driver==actor.peer_id and vehicle.position.distance_to(goal)<48.:
-		manager.release(actor.peer_id);return
-	if vehicle.driver!=actor.peer_id:
-		if vehicle.position.distance_to(goal)<65: manager.release(actor.peer_id)
-		return
+	var transport:=bool(vehicle.spec.get("transport",false))
+	# Passengers stay aboard while the vehicle captures or advances. The old
+	# 48/65 m dismount rule threw away the mobility advantage before the flag.
+	if vehicle.driver!=actor.peer_id: return
 	var follow_road:=WarRules.CURRENT_OPERATION in [WarOperation.AFGHAN,WarOperation.FAVELA]
 	if record.vehicle_goal!=record.objective or record.vehicle_path.is_empty():
 		record.vehicle_path=transit.path(vehicle.position,goal,follow_road);record.vehicle_index=0;record.vehicle_goal=record.objective
@@ -1013,8 +1012,11 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 		manager.controls[actor.peer_id]={"throttle":0.,"steer":0.,"brake":true,"aim":goal,"fire":false,"at":game.war_clock}
 		return
 	while int(record.vehicle_index)<path.size()-1 and vehicle.position.distance_to(path[int(record.vehicle_index)])<10: record.vehicle_index+=1
-	var endpoint: Vector3=path[-1] if follow_road else goal
-	if follow_road and bool(vehicle.spec.get("transport",false)) and vehicle.position.distance_to(endpoint)<15.:
+	var road_endpoint: Vector3=path[-1] if follow_road else goal
+	var final_approach:=follow_road and road_endpoint.distance_to(goal)<=WarRules.CAPTURE_RADIUS+14. and _vehicle_grade_clear(vehicle,goal)
+	var endpoint: Vector3=goal if final_approach else road_endpoint
+	if follow_road and transport and not final_approach and vehicle.position.distance_to(road_endpoint)<15.:
+		# If the road cannot safely reach capture range, finish on foot.
 		manager.release(actor.peer_id)
 		return
 	var traffic:=_traffic_plan(vehicle,record)
@@ -1027,6 +1029,8 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 			traffic={"brake":true,"reason":"afghan_road_no_overtake"}
 			record.traffic=traffic
 	var next_point: Vector3=traffic.get("point",path[int(record.vehicle_index)])
+	if final_approach and int(record.vehicle_index)>=path.size()-1 and vehicle.position.distance_to(road_endpoint)<12.:
+		next_point=goal
 	var detour: Vector3=record.get("terrain_detour",Vector3.INF)
 	if detour.is_finite() and game.war_clock<float(record.get("terrain_detour_until",0.)) and vehicle.position.distance_to(detour)>4.:
 		next_point=detour
@@ -1051,11 +1055,17 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	else: record.terrain_blocked_since=0.
 	var towards: Vector3=next_point-vehicle.position;towards.y=0
 	var error:=angle_difference(vehicle.heading,atan2(-towards.x,-towards.z))
-	var throttle:=.30 if absf(error)<.6 else (.12 if absf(error)<1.4 else 0.)
-	# A wheeled APC cannot pivot in place like a tracked tank. Back up and
-	# counter-steer when the next road point is behind it, then drive forward.
-	if not bool(vehicle.spec.tracked) and absf(error)>1.4:
-		throttle=-.18;error=-error
+	var tracked:=bool(vehicle.spec.tracked)
+	# The old controller requested only 30% throttle even on a straight road.
+	# Keep full vehicle specs unchanged for humans; bots now use a useful share
+	# of the available speed and slow progressively for corners.
+	var straight_throttle:=.72 if transport else (.64 if tracked else .62)
+	var corner_throttle:=.42 if transport else (.36 if tracked else .34)
+	var throttle:=straight_throttle if absf(error)<.58 else (corner_throttle if absf(error)<1.18 else (.08 if tracked else 0.))
+	# Wheeled vehicles cannot pivot. Reverse decisively on a hairpin rather
+	# than spending several seconds at zero throttle.
+	if not tracked and absf(error)>1.4:
+		throttle=-.24;error=-error
 	if vehicle.position.distance_to(endpoint)<14 or game.war_clock<float(record.boarding_until): throttle=0
 	if bool(record.get("terrain_blocked",false)): throttle=0.
 	if bool(traffic.get("brake",false)):
@@ -1098,7 +1108,14 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 			var real_direction: Vector3=-marker.global_basis.z
 			var aligned:=real_direction.dot((aim-marker.global_position).normalized())>.995
 			fire=aligned and _friendly_lane(actor,aim,2.) and fmod(game.war_clock+actor.peer_id,3.2)<(1. if tank else 2.) and distance>18.
-			if distance<180.: throttle=0.
+			# Turreted vehicles can fight while advancing. Only hold position
+			# once actually inside the capture zone; very close aligned targets
+			# reduce speed instead of freezing the entire approach.
+			var objective_gap:=vehicle.position.distance_to(goal)
+			if objective_gap<WarRules.CAPTURE_RADIUS*.82:
+				throttle=0.
+			elif distance<55. and aligned:
+				throttle=minf(throttle,.24 if tank else .30)
 	# Commands still use the server's existing ammunition, projectile and hit rules.
 	if vehicle.selected=="secondary":
 		if vehicle.secondary_ammo==0: vehicle.start_secondary_reload()
