@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3]
+
+[sub_resource type="StandardMaterial3D" id="MatConcrete"]
+albedo_color = Color(0.31, 0.30, 0.28, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="MatDark"]
+albedo_color = Color(0.12, 0.14, 0.13, 1)
+roughness = 0.94
+
+[sub_resource type="BoxMesh" id="MeshSide"]
+size = Vector3(0.18, 0.30, 4.8)
+
+[sub_resource type="BoxMesh" id="MeshBottom"]
+size = Vector3(0.78, 0.10, 4.8)
+
+[sub_resource type="BoxMesh" id="MeshLip"]
+size = Vector3(0.16, 0.10, 4.8)
+
+[node name="FavelaCanaletaDrenagem" type="Node3D"]
+metadata/library_id = "favela_canaleta_drenagem"
+metadata/footprint = Vector2(1.2, 4.8)
+metadata/origin = "ground"
+metadata/asset_revision = 1
+metadata/lod_near = 90.0
+metadata/lod_far = 190.0
+metadata/surface = "concrete"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(-0.47, 0.15, 0)
+mesh = SubResource("MeshSide")
+material_override = SubResource("MatConcrete")
+cast_shadow = 0
+visibility_range_end = 190.0
+
+[node name="LateralDireita" type="MeshInstance3D" parent="."]
+position = Vector3(0.47, 0.15, 0)
+mesh = SubResource("MeshSide")
+material_override = SubResource("MatConcrete")
+cast_shadow = 0
+visibility_range_end = 190.0
+
+[node name="Fundo" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.05, 0)
+mesh = SubResource("MeshBottom")
+material_override = SubResource("MatDark")
+cast_shadow = 0
+visibility_range_end = 150.0
+
+[node name="Borda" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.30, 0)
+mesh = SubResource("MeshLip")
+material_override = SubResource("MatConcrete")
+cast_shadow = 0
+visibility_range_end = 120.0

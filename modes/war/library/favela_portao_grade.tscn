@@ -1,0 +1,84 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="StandardMaterial3D" id="MatFrame"]
+albedo_color = Color(0.20, 0.23, 0.22, 1)
+metallic = 0.42
+roughness = 0.70
+
+[sub_resource type="BoxMesh" id="MeshPost"]
+size = Vector3(0.10, 2.25, 0.10)
+
+[sub_resource type="BoxMesh" id="MeshRail"]
+size = Vector3(2.8, 0.10, 0.10)
+
+[sub_resource type="BoxMesh" id="MeshBar"]
+size = Vector3(0.06, 1.95, 0.06)
+
+[node name="FavelaPortaoGrade" type="Node3D"]
+metadata/library_id = "favela_portao_grade"
+metadata/footprint = Vector2(2.9, 0.25)
+metadata/origin = "ground"
+metadata/asset_revision = 1
+metadata/lod_near = 90.0
+metadata/lod_far = 220.0
+metadata/surface = "steel"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(-1.38, 1.12, 0)
+mesh = SubResource("MeshPost")
+material_override = SubResource("MatFrame")
+cast_shadow = 0
+visibility_range_end = 220.0
+
+[node name="PosteDireito" type="MeshInstance3D" parent="."]
+position = Vector3(1.38, 1.12, 0)
+mesh = SubResource("MeshPost")
+material_override = SubResource("MatFrame")
+cast_shadow = 0
+visibility_range_end = 220.0
+
+[node name="TravessaTopo" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.12, 0)
+mesh = SubResource("MeshRail")
+material_override = SubResource("MatFrame")
+cast_shadow = 0
+visibility_range_end = 220.0
+
+[node name="TravessaBaixa" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.30, 0)
+mesh = SubResource("MeshRail")
+material_override = SubResource("MatFrame")
+cast_shadow = 0
+visibility_range_end = 180.0
+
+[node name="BarraA" type="MeshInstance3D" parent="."]
+position = Vector3(-0.92, 1.17, 0)
+mesh = SubResource("MeshBar")
+material_override = SubResource("MatFrame")
+cast_shadow = 0
+visibility_range_end = 180.0
+[node name="BarraB" type="MeshInstance3D" parent="."]
+position = Vector3(-0.46, 1.17, 0)
+mesh = SubResource("MeshBar")
+material_override = SubResource("MatFrame")
+cast_shadow = 0
+visibility_range_end = 180.0
+[node name="BarraC" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.17, 0)
+mesh = SubResource("MeshBar")
+material_override = SubResource("MatFrame")
+cast_shadow = 0
+visibility_range_end = 180.0
+[node name="BarraD" type="MeshInstance3D" parent="."]
+position = Vector3(0.46, 1.17, 0)
+mesh = SubResource("MeshBar")
+material_override = SubResource("MatFrame")
+cast_shadow = 0
+visibility_range_end = 180.0
+[node name="BarraE" type="MeshInstance3D" parent="."]
+position = Vector3(0.92, 1.17, 0)
+mesh = SubResource("MeshBar")
+material_override = SubResource("MatFrame")
+cast_shadow = 0
+visibility_range_end = 180.0
