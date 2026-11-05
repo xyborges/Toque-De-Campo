@@ -35,10 +35,15 @@ func run() -> void:
 	var started:=Time.get_ticks_usec()
 	for frame in 20000:metrics.sample(now+frame*10000,frame/2,1.,.5)
 	print("SAMPLE_MEAN_USEC ",(Time.get_ticks_usec()-started)/20000.)
+	for i in range(result.size(), 34):
+		result["context_%d" % i] = i
+	result.render = {"draw_calls": 1234}
+	result.rtt_ms = 54
 	GameDiagnostics.record("frame_pacing_test",result)
 	var session:=GameDiagnostics.session()
 	session.flush()
 	var rows:=FileAccess.get_file_as_string(session.path).strip_edges().split("\n")
 	var saved: Dictionary=JSON.parse_string(rows[-1])
 	check(saved.event=="frame_pacing_test" and saved.details.frame.samples==1200 and saved.details.has("vehicle_snapshot_age_ms"),"actual diagnostics writer retains the timing payload")
+	check(saved.details.get("render", {}).get("draw_calls") == 1234 and saved.details.get("rtt_ms") == 54, "render and network context survive after the first 32 fields")
 	quit(0 if failures.is_empty() else 1)

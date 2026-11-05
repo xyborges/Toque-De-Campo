@@ -492,7 +492,7 @@ func vehicle_state(state: Dictionary) -> void:
 		vehicle.receive(state)
 		if vehicle.received_state_sequence>previous_sequence and is_instance_valid(game) and is_instance_valid(game.local_player) and game.local_player.vehicle_id==vehicle.vehicle_id:
 			var pacing: Variant=game.get("frame_pacing")
-			if pacing!=null:pacing.snapshot(Time.get_ticks_usec())
+			if pacing!=null:pacing.snapshot(Time.get_ticks_usec(),absf(vehicle.speed)>.5)
 
 @rpc("authority","call_remote","reliable")
 func vehicle_occupancy(id: String,seats: Dictionary,revision: int,epoch: int) -> void:
@@ -525,6 +525,8 @@ func drone_state(state: Dictionary) -> void:
 		drone.drone_id=str(state.id);drone.position=state.position
 		add_child(drone);drones[state.id]=drone
 	drones[state.id].receive(state)
+	if is_instance_valid(game.local_player) and game.local_player.vehicle_id==str(state.id):
+		game.frame_pacing.snapshot(Time.get_ticks_usec(),drones[state.id].velocity.length_squared()>.25)
 
 @rpc("authority","call_remote","reliable")
 func drone_removed(id: String) -> void:
