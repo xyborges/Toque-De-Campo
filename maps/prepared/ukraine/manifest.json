@@ -6,7 +6,7 @@
 		},
 		{
 			"path": "res://maps/prepared/ukraine/grass.res",
-			"sha256": "4c40688ab9f091eb52ad6806006f669ba39e8787a3ab065a69490a2bc485c33f"
+			"sha256": "fbacccca87460b7f7b2c73f20915d9903c0d5c2f9c38748d2bc9f7c7ed08295b"
 		},
 		{
 			"path": "res://maps/prepared/ukraine/grass_far_mesh.res",
@@ -30,7 +30,7 @@
 		},
 		{
 			"path": "res://maps/prepared/ukraine/navigation.res",
-			"sha256": "4c8265ea23fe8a44dc2c9062d83c3f58126f3152e4f889655040b6014d6e577a"
+			"sha256": "10edb6a39c22df4bbc725004c52df9fd89f9f70c75e5911298c84709d96bfed0"
 		}
 	],
 	"benchmark": {
@@ -51,7 +51,7 @@
 		3500.0,
 		3500.0
 	],
-	"content_hash": "7dae9e1b6ca0ffcf549537054619d4592fdbc9eff72dad0dc0905aac10aecd09",
+	"content_hash": "58a353d6a098584708433fdde909c11a8b816a611594d04ea92f43751cf932d5",
 	"grass_approved": false,
 	"grass_enabled": true,
 	"id": "ukraine",
@@ -105,7 +105,7 @@
 		"objectives",
 		"authored_terrain"
 	],
-	"source_hash": "01cb0aef6c016c7df3ec4d5cb7bd4dbcbd589b9abeac8ecdde9f50df197dc1f6",
+	"source_hash": "e95c5d18349c012c9c02de6b817535eef0025b7c98b0d0a7de3f7054b3bada7b",
 	"sources": [
 		"res://assets/war/biomes/nova_grama.png",
 		"res://modes/naval/scripts/catalog.gd",
@@ -138,6 +138,7 @@
 		"res://modes/war/library/favela_barricada_pneus.tscn",
 		"res://modes/war/library/favela_caixa_dagua.tscn",
 		"res://modes/war/library/favela_caixa_eletrica.tscn",
+		"res://modes/war/library/favela_caixa_fibra_optica.tscn",
 		"res://modes/war/library/favela_canaleta_drenagem.tscn",
 		"res://modes/war/library/favela_carro_compacto.tscn",
 		"res://modes/war/library/favela_casa_laje.tscn",
@@ -149,10 +150,12 @@
 		"res://modes/war/library/favela_kit_obra.tscn",
 		"res://modes/war/library/favela_laje_domestica.tscn",
 		"res://modes/war/library/favela_laje_obra.tscn",
+		"res://modes/war/library/favela_lixeira_rua.tscn",
 		"res://modes/war/library/favela_lixo_calcada.tscn",
 		"res://modes/war/library/favela_moto_estacionada.tscn",
 		"res://modes/war/library/favela_muro_contencao.tscn",
 		"res://modes/war/library/favela_nevoa_encosta.tscn",
+		"res://modes/war/library/favela_pedras_entulho.tscn",
 		"res://modes/war/library/favela_pixacao.tscn",
 		"res://modes/war/library/favela_porta_entrada.tscn",
 		"res://modes/war/library/favela_portao_grade.tscn",
@@ -235,6 +238,7 @@
 		"res://modes/war/scripts/ship_guide.gd",
 		"res://modes/war/scripts/soundscape.gd",
 		"res://modes/war/scripts/stance.gd",
+		"res://modes/war/scripts/stinger_lock_audio.gd",
 		"res://modes/war/scripts/structures.gd",
 		"res://modes/war/scripts/tactical_map.gd",
 		"res://modes/war/scripts/terrain.gd",
@@ -301,5 +305,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 18
+	"version": 19
 }
