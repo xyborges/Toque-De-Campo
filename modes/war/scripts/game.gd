@@ -884,6 +884,23 @@ func _server_accept_shot(id: int,sequence: int,life: int,camera_origin: Vector3,
 func _eligible(id: int) -> bool:
 	return players.has(id) and members.has(id) and bool(members[id].deployed) and int(members[id].team)>=0 and players[id].hp>0 and str(members[id].vehicle).is_empty()
 
+func _capture_eligible(id: int) -> bool:
+	if not players.has(id) or not members.has(id): return false
+	if not bool(members[id].deployed) or int(members[id].team)<0 or players[id].hp<=0: return false
+	var vehicle_id:=str(members[id].vehicle)
+	if vehicle_id.is_empty(): return true
+	if not is_instance_valid(vehicle_system): return false
+	var vehicle: Node3D=vehicle_system.find_target(vehicle_id)
+	return vehicle is WarVehicle and not vehicle.destroyed and vehicle.seat_of(id)>=0
+
+func _capture_position(id: int) -> Vector3:
+	var vehicle_id:=str(members[id].vehicle)
+	if not vehicle_id.is_empty() and is_instance_valid(vehicle_system):
+		var vehicle: Node3D=vehicle_system.find_target(vehicle_id)
+		if vehicle is WarVehicle and not vehicle.destroyed and vehicle.seat_of(id)>=0:
+			return vehicle.global_position
+	return players[id].global_position
+
 func request_posture(actor: WarPlayer,value: int) -> void:
 	if members.has(actor.peer_id): members[actor.peer_id].posture=value
 	if online and not multiplayer.is_server(): rpc_id(1,"war_posture_request",actor.life_id,value)
@@ -1134,16 +1151,16 @@ func _physics_process(delta: float) -> void:
 			var counts := [0,0]
 			var point: Vector3 = WarRules.OBJECTIVES[id].position
 			for peer in members:
-				if not _eligible(peer): continue
-				var p: Vector3 = players[peer].global_position
+				if not _capture_eligible(peer): continue
+				var p: Vector3=_capture_position(peer)
 				if Vector2(p.x-point.x,p.z-point.z).length()<WarRules.CAPTURE_RADIUS: counts[int(members[peer].team)]+=1
 			var previous_owner:=int(objective_states[id].owner)
 			var side:=0 if counts[0]>counts[1] else 1
 			objective_states[id] = WarRules.capture(objective_states[id],counts,delta)
 			if previous_owner!=int(objective_states[id].owner):
 				for peer in members:
-					if not _eligible(peer) or int(members[peer].team)!=side: continue
-					var at: Vector3=players[peer].global_position
+					if not _capture_eligible(peer) or int(members[peer].team)!=side: continue
+					var at: Vector3=_capture_position(peer)
 					if Vector2(at.x-point.x,at.z-point.z).length()>=WarRules.CAPTURE_RADIUS: continue
 					_register_match_stat(players[peer])
 					match_stats.award(peer,75 if int(objective_states[id].owner)<0 else 150,"objective:"+str(id)+":"+str(war_tick),"objective")
