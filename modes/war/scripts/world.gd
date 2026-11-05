@@ -6,6 +6,9 @@ static func build(parent: Node3D,visuals: bool) -> void:
 	parent.set_meta("sector_colliders",true)
 	parent.set_meta("war_detail_lod",true)
 	parent.set_meta("war_operation",WarRules.CURRENT_OPERATION)
+	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+		_build_favela(parent,visuals)
+		return
 	if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN:
 		_build_afghan(parent,visuals)
 		return
@@ -72,6 +75,14 @@ static func build(parent: Node3D,visuals: bool) -> void:
 	objective_cover(parent,visuals)
 	if visuals: atmosphere(parent)
 	parent.set_meta("war_map_size",3500)
+
+static func _build_favela(parent: Node3D,visuals: bool) -> void:
+	var map:=WarFavelaMap.new()
+	map.name="FavelaWar";map.render_visuals=visuals
+	parent.add_child(map);map.build()
+	parent.set_meta("war_map_size",1500)
+	parent.set_meta("favela_war",true)
+	parent.set_meta("favela_build_metrics",map.build_metrics)
 
 static func _build_afghan(parent: Node3D,visuals: bool) -> void:
 	var map:=BRAfghanMap.new()

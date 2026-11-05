@@ -50,12 +50,13 @@ func _ready() -> void:
 	name = "WarVehicles"
 	tv.manager=self
 	for kind in WarRules.VEHICLES:
+		if not WarRules.vehicle_enabled(kind):continue
 		var data: Dictionary = WarRules.VEHICLES[kind]
-		for copy in int(data.get("count",1)):
+		for copy in WarRules.vehicle_count(kind):
 			var transport:=bool(data.get("transport",false))
 			var vehicle: WarVehicle=MOTORBIKE.new() if transport else (WarShip.new() if data.has("naval") else WarVehicle.new())
 			vehicle.kind=kind
-			vehicle.vehicle_id="v_"+kind+("_"+str(copy) if transport else "")
+			vehicle.vehicle_id="v_"+kind+("_"+str(copy) if transport or WarRules.vehicle_count(kind)>1 else "")
 			var base: Vector3=WarRules.BASES[int(data.team)]
 			vehicle.position=WarTerrain.point(base.x+(8 if kind in ["guarani","bmp2"] else -8),base.z-12)
 			# In Afghanistan the infantry outpost can be uphill. Park armour on
@@ -63,12 +64,15 @@ func _ready() -> void:
 			if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and kind in ["guarani","bmp2","abrams","t90"]:
 				var bay:=WarOperation.armor_bay(WarRules.CURRENT_OPERATION,int(data.team),kind in ["abrams","t90"])
 				vehicle.position=WarTerrain.point(bay.x,bay.z)
+			if WarRules.CURRENT_OPERATION==WarOperation.FAVELA and kind=="guarani":
+				var bay: Vector3=WarOperation.data(WarOperation.FAVELA).armor_bays[0][copy]
+				vehicle.position=WarTerrain.point(bay.x,bay.z)
 			if transport:
 				var transport_spawn:=WarRules.transport_spawn(kind,copy)
 				vehicle.position=WarTerrain.point(transport_spawn.x,transport_spawn.z)
 			if data.has("naval"): vehicle.position=WarCoast.BERTHS[int(data.team)][0 if str(kind).contains("assault") else 1]
 			vehicle.heading=PI*.5 if data.has("naval") and int(data.team)==0 else (-PI*.5 if data.has("naval") else (-PI*.5 if int(data.team)==0 else PI*.5))
-			if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and not data.has("naval"):
+			if WarRules.CURRENT_OPERATION in [WarOperation.AFGHAN,WarOperation.FAVELA] and not data.has("naval"):
 				vehicle.heading=WarOperation.armor_heading(WarRules.CURRENT_OPERATION,int(data.team))
 			vehicle.rotation.y=vehicle.heading
 			if not data.has("naval"): vehicle.position=_land_spawn_height(vehicle.position,vehicle.heading,data)
@@ -1060,7 +1064,7 @@ func _clear_land_spawn(vehicle: WarVehicle,yaw: float) -> Variant:
 
 func _respawn_vehicle(vehicle: WarVehicle) -> void:
 	var spawn_yaw: float=(PI*.5 if vehicle.team==0 else -PI*.5) if vehicle is WarShip else (-PI*.5 if vehicle.team==0 else PI*.5)
-	if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and not vehicle.spec.has("naval"):
+	if WarRules.CURRENT_OPERATION in [WarOperation.AFGHAN,WarOperation.FAVELA] and not vehicle.spec.has("naval"):
 		spawn_yaw=WarOperation.armor_heading(WarRules.CURRENT_OPERATION,vehicle.team)
 	var safe_spawn: Variant=vehicle.spawn_position if vehicle is WarShip else _clear_land_spawn(vehicle,spawn_yaw)
 	if safe_spawn==null:

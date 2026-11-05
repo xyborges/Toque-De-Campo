@@ -1,0 +1,80 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ctkjy"]
+albedo_color = Color(0.1882353, 0.20392157, 0.18431373, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_wybkj"]
+radial_segments = 7
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5thih"]
+albedo_color = Color(0.4745098, 0.48235294, 0.43137255, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3rndq"]
+albedo_color = Color(0.5058824, 0.4392157, 0.31764707, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gwp03"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tlfc5"]
+albedo_color = Color(0.6666667, 0.6627451, 0.58431375, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_llp8g"]
+albedo_color = Color(0.3254902, 0.43529412, 0.39215687, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ble6s"]
+top_radius = 0.035
+bottom_radius = 0.045
+height = 0.2
+radial_segments = 6
+
+[node name="favela_lixo_calcada" type="Node3D" unique_id=1701470197]
+metadata/library_id = "favela_lixo_calcada"
+metadata/footprint = Vector2(1.2, 0.9)
+metadata/origin = "ground"
+metadata/asset_revision = 1
+metadata/surface = "debris"
+metadata/war_detail_lod = true
+metadata/detail_range = 96.0
+metadata/decorative = true
+
+[node name="SacoEscuro" type="MeshInstance3D" parent="." unique_id=496186134]
+transform = Transform3D(0.51, 0, 0, 0, 0.4, 0, 0, 0, 0.43, -0.18, 0.19, 0)
+material_override = SubResource("StandardMaterial3D_ctkjy")
+cast_shadow = 0
+visibility_range_end = 96.0
+mesh = SubResource("SphereMesh_wybkj")
+
+[node name="SacoDesbotado" type="MeshInstance3D" parent="." unique_id=2027894808]
+transform = Transform3D(0.37, 0, 0, 0, 0.3, 0, 0, 0, 0.38, 0.22, 0.14, -0.12)
+material_override = SubResource("StandardMaterial3D_5thih")
+cast_shadow = 0
+visibility_range_end = 96.0
+mesh = SubResource("SphereMesh_wybkj")
+
+[node name="No" type="MeshInstance3D" parent="." unique_id=1283067763]
+transform = Transform3D(0.08, 0, 0, 0, 0.1, 0, 0, 0, 0.08, -0.17, 0.41, 0.02)
+material_override = SubResource("StandardMaterial3D_ctkjy")
+cast_shadow = 0
+visibility_range_end = 96.0
+mesh = SubResource("SphereMesh_wybkj")
+
+[node name="Papelao" type="MeshInstance3D" parent="." unique_id=286664019]
+transform = Transform3D(0.5106725, -0.0004035232, 0.09590332, 0.02116786, 0.015967224, -0.017992502, -0.14023368, 0.00094074156, 0.34652394, 0.14, 0.025, 0.23)
+material_override = SubResource("StandardMaterial3D_3rndq")
+cast_shadow = 0
+visibility_range_end = 96.0
+mesh = SubResource("BoxMesh_gwp03")
+
+[node name="Papel" type="MeshInstance3D" parent="." unique_id=385254826]
+transform = Transform3D(0.23273323, -0.00054407225, -0.06122582, 0.007468525, 0.008959541, -0.015279354, 0.09099156, 0.0006562052, 0.15785417, -0.49, 0.025, 0.15)
+material_override = SubResource("StandardMaterial3D_tlfc5")
+cast_shadow = 0
+visibility_range_end = 96.0
+mesh = SubResource("BoxMesh_gwp03")
+
+[node name="Garrafa" type="MeshInstance3D" parent="." unique_id=1222839513]
+transform = Transform3D(0.9800666, 0.19866934, -2.0956357e-08, -1.29175985e-08, -4.1759087e-08, -1, -0.19866934, 0.9800666, -3.836035e-08, 0.43, 0.055, 0.2)
+material_override = SubResource("StandardMaterial3D_llp8g")
+cast_shadow = 0
+visibility_range_end = 96.0
+mesh = SubResource("CylinderMesh_ble6s")

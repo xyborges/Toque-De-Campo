@@ -1,6 +1,6 @@
 extends RefCounted
 ## Shared, export-safe identity. Generated files are never hashed at connection time.
-const IDS:=["ukraine","afghan","desert","office","naval"]
+const IDS:=["ukraine","afghan","favela","desert","office","naval"]
 const ROOT:="res://maps/prepared/"
 static var cache: Dictionary={}
 static var checked: Dictionary={}

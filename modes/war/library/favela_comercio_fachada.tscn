@@ -1,0 +1,279 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ydtao"]
+albedo_color = Color(0.34901962, 0.3372549, 0.30588236, 1)
+roughness = 0.92
+
+[sub_resource type="BoxMesh" id="BoxMesh_l4hgi"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rysjv"]
+albedo_color = Color(0.41960785, 0.4392157, 0.41568628, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yoa2j"]
+albedo_color = Color(0.27058825, 0.2784314, 0.2627451, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_arfuu"]
+albedo_color = Color(0.3254902, 0.34509805, 0.31764707, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g370v"]
+albedo_color = Color(0.23137255, 0.2509804, 0.23921569, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ansps"]
+albedo_color = Color(0.3254902, 0.39215687, 0.32156864, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hy2qp"]
+albedo_color = Color(0.5176471, 0.24313726, 0.2, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0nuqc"]
+albedo_color = Color(0.43137255, 0.2, 0.16862746, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_imc3r"]
+albedo_color = Color(0.52156866, 0.5058824, 0.47843137, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ikli"]
+albedo_color = Color(0.21568628, 0.23921569, 0.23137255, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2sicp"]
+albedo_color = Color(0.6666667, 0.654902, 0.59607846, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0gwj0"]
+albedo_color = Color(0.31764707, 0.32941177, 0.3254902, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_25n6s"]
+albedo_color = Color(0.3764706, 0.44313726, 0.34509805, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gcchu"]
+albedo_color = Color(0.27450982, 0.34117648, 0.2901961, 1)
+roughness = 0.92
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g4hlw"]
+size = Vector3(0.64, 0.38, 0.59)
+
+[node name="ComercioFavela" type="Node3D" unique_id=1713466926]
+metadata/library_id = "favela_comercio_fachada"
+metadata/footprint = Vector2(4.6, 1.02)
+metadata/origin = "ground"
+metadata/surface = "metal"
+metadata/destructible = false
+metadata/asset_revision = 1
+metadata/lod_near = 105.0
+metadata/lod_far = 105.0
+
+[node name="Moldura" type="MeshInstance3D" parent="." unique_id=317225110]
+transform = Transform3D(3.3, 0, 0, 0, 2.23, 0, 0, 0, 0.17, 0, 1.12, 0.06)
+material_override = SubResource("StandardMaterial3D_ydtao")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="PortaDeAco" type="MeshInstance3D" parent="." unique_id=1033321347]
+transform = Transform3D(2.92, 0, 0, 0, 2.06, 0, 0, 0, 0.06, 0, 1.12, 0.16)
+material_override = SubResource("StandardMaterial3D_rysjv")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso0" type="MeshInstance3D" parent="." unique_id=1330622395]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 0.18, 0.199)
+material_override = SubResource("StandardMaterial3D_yoa2j")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso1" type="MeshInstance3D" parent="." unique_id=435645583]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 0.337, 0.199)
+material_override = SubResource("StandardMaterial3D_arfuu")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso2" type="MeshInstance3D" parent="." unique_id=1827522895]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 0.494, 0.199)
+material_override = SubResource("StandardMaterial3D_arfuu")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso3" type="MeshInstance3D" parent="." unique_id=1523778152]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 0.651, 0.199)
+material_override = SubResource("StandardMaterial3D_arfuu")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso4" type="MeshInstance3D" parent="." unique_id=1235596393]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 0.808, 0.199)
+material_override = SubResource("StandardMaterial3D_yoa2j")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso5" type="MeshInstance3D" parent="." unique_id=797618399]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 0.965, 0.199)
+material_override = SubResource("StandardMaterial3D_arfuu")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso6" type="MeshInstance3D" parent="." unique_id=599865513]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 1.122, 0.199)
+material_override = SubResource("StandardMaterial3D_arfuu")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso7" type="MeshInstance3D" parent="." unique_id=1378852830]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 1.279, 0.199)
+material_override = SubResource("StandardMaterial3D_arfuu")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso8" type="MeshInstance3D" parent="." unique_id=866448440]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 1.436, 0.199)
+material_override = SubResource("StandardMaterial3D_yoa2j")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso9" type="MeshInstance3D" parent="." unique_id=1595108429]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 1.593, 0.199)
+material_override = SubResource("StandardMaterial3D_arfuu")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso10" type="MeshInstance3D" parent="." unique_id=1961841186]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 1.75, 0.199)
+material_override = SubResource("StandardMaterial3D_arfuu")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso11" type="MeshInstance3D" parent="." unique_id=1582757842]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 1.907, 0.199)
+material_override = SubResource("StandardMaterial3D_arfuu")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Friso12" type="MeshInstance3D" parent="." unique_id=1370847936]
+transform = Transform3D(2.92, 0, 0, 0, 0.028, 0, 0, 0, 0.027, 0, 2.064, 0.199)
+material_override = SubResource("StandardMaterial3D_yoa2j")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Trilho-1" type="MeshInstance3D" parent="." unique_id=409022677]
+transform = Transform3D(0.12, 0, 0, 0, 2.1, 0, 0, 0, 0.09, -1.49, 1.1, 0.205)
+material_override = SubResource("StandardMaterial3D_g370v")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Trilho1" type="MeshInstance3D" parent="." unique_id=506208868]
+transform = Transform3D(0.12, 0, 0, 0, 2.1, 0, 0, 0, 0.09, 1.49, 1.1, 0.205)
+material_override = SubResource("StandardMaterial3D_g370v")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="PlacaPintada" type="MeshInstance3D" parent="." unique_id=1821663349]
+transform = Transform3D(3.16, 0, 0, 0, 0.44, 0, 0, 0, 0.09, 0, 2.58, 0.25)
+material_override = SubResource("StandardMaterial3D_ansps")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Toldo" type="MeshInstance3D" parent="." unique_id=1019070605]
+transform = Transform3D(3.41, 0, 0, 0, 0.06406301, -0.16241504, 0, 0.010996852, 0.9461614, 0, 2.3, 0.51)
+material_override = SubResource("StandardMaterial3D_hy2qp")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="SaiaDoToldo" type="MeshInstance3D" parent="." unique_id=1956674767]
+transform = Transform3D(3.41, 0, 0, 0, 0.18, 0, 0, 0, 0.055, 0, 2.17, 0.98)
+material_override = SubResource("StandardMaterial3D_0nuqc")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="CaixaEnergia" type="MeshInstance3D" parent="." unique_id=280491484]
+transform = Transform3D(0.31, 0, 0, 0, 0.4, 0, 0, 0, 0.2, 2.03, 1.78, 0.11)
+material_override = SubResource("StandardMaterial3D_imc3r")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Eletroduto" type="MeshInstance3D" parent="." unique_id=794586182]
+transform = Transform3D(0.044, 0, 0, 0, 1.7, 0, 0, 0, 0.045, 2.03, 2.83, 0.069)
+material_override = SubResource("StandardMaterial3D_2ikli")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Suporte" type="MeshInstance3D" parent="." unique_id=1499901183]
+transform = Transform3D(0.28, 0, 0, 0, 0.1, 0, 0, 0, 0.41, -1.98, 2.34, 0.2)
+material_override = SubResource("StandardMaterial3D_g370v")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="ArCondicionado" type="MeshInstance3D" parent="." unique_id=1528795598]
+transform = Transform3D(0.61, 0, 0, 0, 0.35, 0, 0, 0, 0.4, -1.98, 2.55, 0.21)
+material_override = SubResource("StandardMaterial3D_2sicp")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="GradeAr" type="MeshInstance3D" parent="." unique_id=741169235]
+transform = Transform3D(0.39, 0, 0, 0, 0.2, 0, 0, 0, 0.03, -1.98, 2.55, 0.419)
+material_override = SubResource("StandardMaterial3D_0gwj0")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="CaixaRetornavel" type="MeshInstance3D" parent="." unique_id=1296716834]
+transform = Transform3D(0.64, 0, 0, 0, 0.34, 0, 0, 0, 0.59, 1.26, 0.18, 0.49)
+material_override = SubResource("StandardMaterial3D_25n6s")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="BordaCaixa" type="MeshInstance3D" parent="." unique_id=2014757246]
+transform = Transform3D(0.68, 0, 0, 0, 0.05, 0, 0, 0, 0.63, 1.26, 0.37, 0.49)
+material_override = SubResource("StandardMaterial3D_gcchu")
+cast_shadow = 0
+visibility_range_end = 105.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="ContatoCaixa" type="StaticBody3D" parent="." unique_id=281135008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.26, 0.19, 0.49)
+collision_mask = 0
+metadata/surface = "plastic"
+
+[node name="@CollisionShape3D@2" type="CollisionShape3D" parent="ContatoCaixa" unique_id=2140051560]
+shape = SubResource("BoxShape3D_g4hlw")
+
+[node name="Nome" type="Label3D" parent="." unique_id=74061643]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.59, 0.304)
+visibility_range_end = 46.0
+pixel_size = 0.0075
+modulate = Color(0.83137256, 0.7882353, 0.6627451, 1)
+outline_modulate = Color(0.2627451, 0.24705882, 0.21568628, 1)
+text = "MERCEARIA"
+font_size = 42
+outline_size = 2
