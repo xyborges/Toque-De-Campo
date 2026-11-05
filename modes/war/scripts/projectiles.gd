@@ -8,6 +8,7 @@ var rounds: Array[Dictionary] = []
 var available: Array[int] = []
 var active_slots: Array[int]=[]
 var cores: MultiMesh
+var rocket_bodies: Dictionary={}
 var trails: MultiMesh
 var flashes: MultiMesh
 var flash_ages := PackedFloat32Array()
@@ -30,6 +31,8 @@ func _ready() -> void:
 	core_mesh.radius = .025;core_mesh.height = .05
 	core_mesh.radial_segments = 6;core_mesh.rings = 3
 	cores = _pool(core_mesh,LIMIT,false)
+	for launcher in ["rpg","stinger"]:
+		rocket_bodies[launcher]=_pool(_rocket_mesh(launcher),LIMIT,false,true)
 	var quad := QuadMesh.new()
 	quad.size = Vector2.ONE
 	trails = _pool(quad,LIMIT*TRAIL_SEGMENTS,true)
@@ -37,7 +40,7 @@ func _ready() -> void:
 	flash_mesh.radius=.13;flash_mesh.height=.26;flash_mesh.radial_segments=8;flash_mesh.rings=4
 	flashes = _pool(flash_mesh,48,false)
 
-func _pool(mesh: Mesh,count: int,ribbon: bool) -> MultiMesh:
+func _pool(mesh: Mesh,count: int,ribbon: bool,rocket_body:=false) -> MultiMesh:
 	var pool := MultiMesh.new()
 	pool.transform_format = MultiMesh.TRANSFORM_3D
 	pool.use_colors = true
@@ -52,7 +55,7 @@ func _pool(mesh: Mesh,count: int,ribbon: bool) -> MultiMesh:
 		var shader := ShaderMaterial.new()
 		shader.shader = preload("res://modes/war/shaders/tracer.gdshader")
 		node.material_override = shader
-	else:
+	elif not rocket_body:
 		var mat := ShaderMaterial.new()
 		mat.shader=preload("res://modes/war/shaders/projectile_core.gdshader")
 		node.material_override = mat
@@ -78,6 +81,7 @@ func spawn(owner_id: int,origin: Vector3,direction: Vector3,weapon: String,autho
 	if float(shot.drag)<=0: shot.drag=float({"rpg":.016,"stinger":.008,"tv":.006,"hmg":.02}.get(weapon,0))
 	shot.waterborne=bool(extra.get("waterborne",false))
 	shot.tracer=GameTracerStyle.visible_for(weapon,shot_id)
+	shot.exhaust_clock=0.0
 	shot.guided=bool(extra.get("guided",false));shot.tv_vehicle=str(extra.get("tv_vehicle",""));shot.tv_life=int(extra.get("tv_life",-1));shot.tv_epoch=int(extra.get("tv_epoch",-1));shot.correction=Vector3.ZERO;shot.visual_wait=false;shot.tv_linked=bool(extra.get("tv_linked",true))
 	by_id[shot_id]=slot
 	if shot.guided and authoritative:
@@ -152,6 +156,9 @@ func _physics_process(delta: float) -> void:
 		highest=maxi(highest,index)
 		if cores!=null: _draw_round(index,shot,camera)
 	if cores!=null:
+		for rocket_pool in rocket_bodies.values():
+			var pool: MultiMesh=rocket_pool
+			pool.visible_instance_count=highest+1
 		cores.visible_instance_count=highest+1
 		trails.visible_instance_count=(highest+1)*TRAIL_SEGMENTS
 	if flashes!=null:
@@ -205,6 +212,14 @@ func _step(shot: Dictionary,delta: float) -> void:
 	if not shot.get("near_played",false) and is_instance_valid(game.combat_feedback) and is_instance_valid(game.local_player):
 		if game.combat_feedback.near_miss(old,next,game.local_player,int(shot.owner),shot.velocity,str(shot.weapon)): shot.near_played=true
 	shot.position = next
+	if str(shot.weapon) in ["rpg","stinger"] and shot.active and DisplayServer.get_name()!="headless":
+		shot.exhaust_clock=float(shot.exhaust_clock)+delta
+		if float(shot.exhaust_clock)>=.075:
+			shot.exhaust_clock=0.0
+			var camera:=get_viewport().get_camera_3d()
+			if is_instance_valid(camera) and camera.global_position.distance_squared_to(next)<62500. and is_instance_valid(game.combat_effects):
+				var wake: Vector3=-Vector3(shot.velocity).normalized()*.50+Vector3.UP*.28
+				game.combat_effects.spawn(next,wake,.10,.48,Color(.70,.70,.64,.31),.30)
 	if float(shot.distance)>=float(shot.range): shot.active=false
 	var history: Array = shot.history
 	if history.is_empty() or history.back().distance_squared_to(next)>.01:
@@ -220,7 +235,11 @@ static func projectile_width(camera: Camera3D,point: Vector3,pixels: float,minim
 	return clampf(units_per_pixel*pixels,minimum,maximum)
 
 func _draw_round(index: int,shot: Dictionary,camera: Camera3D) -> void:
-	if not bool(shot.get("tracer",true)): _hide(index);return
+	_draw_rocket(index,shot)
+	if not bool(shot.get("tracer",true)):
+		cores.set_instance_transform(index,Transform3D(Basis.from_scale(Vector3.ZERO),Vector3.ZERO))
+		for i in TRAIL_SEGMENTS: trails.set_instance_transform(index*TRAIL_SEGMENTS+i,Transform3D(Basis.from_scale(Vector3.ZERO),Vector3.ZERO))
+		return
 	var color: Color = GameTracerStyle.color_for(str(shot.weapon)) if GameTracerStyle.COLORS.has(str(shot.weapon)) else COLORS.get(str(shot.weapon),Color("ffb457"))
 	if NavalCatalog.WEAPONS.has(str(shot.weapon)): color=NavalCatalog.WEAPONS[str(shot.weapon)].color
 	var radius := 1.0 if str(shot.weapon) in ["glock","ak","fal","g3","sniper"] else 2.0
@@ -254,8 +273,63 @@ func _draw_round(index: int,shot: Dictionary,camera: Camera3D) -> void:
 		tint.a = float(segment+1)/TRAIL_SEGMENTS*(.9 if heavy or str(shot.weapon)=="sniper" else .65)*clampf(float(shot.fade)/.075,0,1)
 		trails.set_instance_color(slot,tint)
 
+# Shared low-poly missile silhouettes; one MultiMesh per type, no per-shot nodes.
+static func _rocket_mesh(kind: String) -> Mesh:
+	var profile: Array[Vector2]=[]
+	if kind=="rpg":
+		profile=[Vector2(-.38,.006),Vector2(-.33,.025),Vector2(-.21,.068),Vector2(-.09,.079),Vector2(.04,.071),Vector2(.11,.027),Vector2(.34,.019),Vector2(.39,.008)]
+	else:
+		profile=[Vector2(-.61,.007),Vector2(-.55,.030),Vector2(-.43,.040),Vector2(.34,.040),Vector2(.48,.033),Vector2(.58,.010)]
+	var surface:=SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for ring_index in range(profile.size()-1):
+		var front: Vector2=profile[ring_index]
+		var back: Vector2=profile[ring_index+1]
+		for side in 12:
+			var a:=TAU*float(side)/12.0
+			var b:=TAU*float(side+1)/12.0
+			var p0:=Vector3(cos(a)*front.y,sin(a)*front.y,front.x)
+			var p1:=Vector3(cos(b)*front.y,sin(b)*front.y,front.x)
+			var p2:=Vector3(cos(b)*back.y,sin(b)*back.y,back.x)
+			var p3:=Vector3(cos(a)*back.y,sin(a)*back.y,back.x)
+			for corner in [p0,p1,p2,p0,p2,p3]: surface.add_vertex(corner)
+	for fin in 4:
+		var theta:=TAU*float(fin)/4.0
+		var radial:=Vector3(cos(theta),sin(theta),0)
+		var base_radius:=.020 if kind=="rpg" else .039
+		var fin_radius:=.102 if kind=="rpg" else .086
+		var fin_z:=.27 if kind=="rpg" else .42
+		var a:=radial*base_radius+Vector3(0,0,fin_z-.105)
+		var b:=radial*fin_radius+Vector3(0,0,fin_z+.025)
+		var c:=radial*base_radius+Vector3(0,0,fin_z+.125)
+		for corner in [a,b,c,c,b,a]: surface.add_vertex(corner)
+	surface.generate_normals()
+	var mesh:=surface.commit() as ArrayMesh
+	var matte:=StandardMaterial3D.new()
+	matte.albedo_color=Color("5e6753") if kind=="rpg" else Color("62665c")
+	matte.metallic=.28
+	matte.roughness=.75
+	matte.cull_mode=BaseMaterial3D.CULL_DISABLED
+	mesh.surface_set_material(0,matte)
+	return mesh
+
+func _draw_rocket(index: int,shot: Dictionary) -> void:
+	var weapon:=str(shot.weapon)
+	for id in rocket_bodies:
+		var pool: MultiMesh=rocket_bodies[id]
+		if id!=weapon or not bool(shot.active) or Vector3(shot.velocity).length_squared()<.001:
+			pool.set_instance_transform(index,Transform3D(Basis.from_scale(Vector3.ZERO),Vector3.ZERO))
+			continue
+		var forward: Vector3=Vector3(shot.velocity).normalized()
+		var up:=Vector3.UP if absf(forward.y)<.98 else Vector3.FORWARD
+		var basis:=Basis.looking_at(forward,up)
+		pool.set_instance_transform(index,Transform3D(basis,shot.position))
+
 func _hide(index: int) -> void:
 	if cores==null: return
+	for rocket_pool in rocket_bodies.values():
+		var pool: MultiMesh=rocket_pool
+		pool.set_instance_transform(index,Transform3D(Basis.from_scale(Vector3.ZERO),Vector3.ZERO))
 	cores.set_instance_transform(index,Transform3D(Basis.from_scale(Vector3.ZERO),Vector3.ZERO))
 	for i in TRAIL_SEGMENTS: trails.set_instance_transform(index*TRAIL_SEGMENTS+i,Transform3D(Basis.from_scale(Vector3.ZERO),Vector3.ZERO))
 

@@ -1,6 +1,6 @@
 extends RefCounted
 class_name WarLauncherDetails
-const VERSION:=3
+const VERSION:=4
 static var materials: Dictionary={}
 static var grain: ImageTexture
 
@@ -32,6 +32,20 @@ static func build(id: String) -> Node3D:
 		box(root,"OpticSideRail",Vector3(-.059,.012,-.19),Vector3(.035,.11,.27),dark)
 		scope(root,Vector3(-.108,.137,-.20),.30,.033,dark,glass)
 		tube(root,"OpticAdjustmentDrum",Vector3(-.15,.14,-.17),.048,.028,.028,metal,Vector3(0,0,PI*.5))
+		# Permanently mounted PGO-7: side dovetail, turrets, focus ring and rubber eye cup.
+		box(root,"PGO7MountFoot",Vector3(-.081,.056,-.18),Vector3(.055,.047,.16),metal)
+		for z in [-.25,-.11]:
+			tube(root,"PGO7MountBolt",Vector3(-.122,.065,z),.024,.008,.008,edge,Vector3(0,0,PI*.5))
+		ring(root,"PGO7ObjectiveSunshade",Vector3(-.108,.137,-.372),.040,.005,rubber)
+		ring(root,"PGO7EyepieceRubber",Vector3(-.108,.137,-.013),.043,.009,rubber)
+		ring(root,"PGO7EyepieceFocus",Vector3(-.108,.137,-.025),.035,.004,edge)
+		tube(root,"PGO7ElevationTurret",Vector3(-.108,.185,-.19),.048,.020,.023,dark,Vector3.ZERO)
+		ring(root,"PGO7TurretRim",Vector3(-.108,.211,-.19),.021,.004,metal)
+		for tick in 8:
+			var a:=float(tick)*TAU/8.
+			box(root,"PGO7TurretGraduation",Vector3(-.108+cos(a)*.024,.217,-.19+sin(a)*.024),Vector3(.004,.003,.009),edge)
+		tube(root,"PGO7IlluminationKnob",Vector3(-.149,.154,-.29),.042,.016,.016,dark,Vector3(0,0,PI*.5))
+		box(root,"PGO7IlluminatorHousing",Vector3(-.133,.090,-.26),Vector3(.031,.045,.095),dark)
 		for z in [-.50,.18]:
 			box(root,"IronSightBracket",Vector3(0,.068,z),Vector3(.027,.073,.028),dark)
 			ring(root,"IronSightRing",Vector3(0,.110,z),.018,.003,metal)
@@ -63,6 +77,20 @@ static func build(id: String) -> Node3D:
 		var window:=box(root,"SightGlass",Vector3(-.035,.277,-.32),Vector3(.12,.09,.005),glass);window.rotation.x=-.12
 		for x in [-.078,.018]: box(root,"SightProtectiveRail",Vector3(x,.27,-.22),Vector3(.008,.085,.24),metal)
 		box(root,"IFFSideModule",Vector3(.085,.056,-.20),Vector3(.045,.070,.13),dark)
+		# FIM-92 removable gripstock, BCU socket and sight/IFF assembly.
+		box(root,"GripstockSafetySelector",Vector3(.105,-.13,.035),Vector3(.014,.025,.045),edge)
+		box(root,"GripstockConnector",Vector3(-.070,-.143,.14),Vector3(.026,.058,.10),metal)
+		for z in [-.005,.085,.17]: ring(root,"BCUSealingRib",Vector3(.105,-.18,z),.041,.003,rubber)
+		box(root,"BCUCouplingLatch",Vector3(.137,-.205,.12),Vector3(.028,.037,.045),dark)
+		box(root,"IFFReceiverHousing",Vector3(.077,.175,-.10),Vector3(.11,.055,.14),olive)
+		box(root,"IFFAntennaHinge",Vector3(.092,.221,-.14),Vector3(.037,.020,.045),metal)
+		var iff_arm:=box(root,"IFFAntennaRaised",Vector3(.09,.291,-.16),Vector3(.014,.145,.014),dark);iff_arm.rotation.z=-.18
+		box(root,"SightingApertureRear",Vector3(-.06,.273,-.07),Vector3(.075,.055,.011),metal)
+		ring(root,"SightingEyeSeal",Vector3(-.060,.254,-.08),.031,.006,rubber)
+		for z in [-.34,-.13]: ring(root,"SightFocusingRing",Vector3(-.060,.254,z),.030,.004,edge)
+		box(root,"CheekboneToneIndicator",Vector3(-.104,.20,-.075),Vector3(.023,.045,.065),rubber)
+		box(root,"OpticalGuardLowerRail",Vector3(-.04,.202,-.22),Vector3(.12,.012,.26),metal)
+		box(root,"LaunchTubeWarningPlate",Vector3(.018,.067,.30),Vector3(.095,.002,.16),edge)
 		for side in [-1,1]:
 			var serial:=Label3D.new();serial.text="FIM-92   /   416";serial.font_size=40;serial.pixel_size=.00048;serial.modulate=Color("c7cbb4");serial.outline_size=0
 			serial.position=Vector3(side*.065,.005,-.19);serial.rotation.y=side*PI*.5;serial.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;serial.visibility_range_end=35;root.add_child(serial)
@@ -112,5 +140,7 @@ static func guard(root: Node3D,position: Vector3,mat: Material) -> void:
 static func scope(root: Node3D,position: Vector3,length: float,radius: float,metal: Material,glass: Material) -> void:
 	tube(root,"OpticBody",position,length,radius,radius,metal);tube(root,"OpticObjective",position+Vector3(0,0,-length*.5),.055,radius*1.3,radius*1.2,metal)
 	tube(root,"OpticLens",position+Vector3(0,0,-length*.5-.03),.004,radius*1.05,radius*1.05,glass);tube(root,"OpticEyepiece",position+Vector3(0,0,length*.5),.045,radius*1.25,radius*1.3,metal)
+	tube(root,"OpticRearLens",position+Vector3(0,0,length*.5+.025),.004,radius*1.13,radius*1.13,glass)
+	ring(root,"OpticEyecupLip",position+Vector3(0,0,length*.5+.028),radius*1.26,.004,metal)
 static func marker(root: Node3D,label: String,position: Vector3) -> void:
 	var node:=Marker3D.new();node.name=label;node.position=position;root.add_child(node)

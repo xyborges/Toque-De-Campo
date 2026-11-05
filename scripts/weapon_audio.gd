@@ -4,6 +4,12 @@ class_name GameWeaponAudio
 # Each trigger owns a fixed world-space origin. A tail is never moved with
 # another shot, even when a pool is full or the emitter walks away.
 const LIMIT := 96
+const FILTER_OPEN_HZ := 18000.0
+const FILTER_DISTANT_HZ := 9200.0
+const FILTER_REAR_HZ := 10800.0
+const FILTER_BLOCKED_HZ := 4300.0
+const FILTER_INTERIOR_HZ := 14500.0
+const FILTER_SMOOTH_RATE := 8.0
 const PATHS := {"fists":"melee_swing_generated.wav","ak":"ak-005.wav","fal":"fal-098.wav","g3":"g3_near.mp3","glock":"pistol-109.wav","sniper":"sound_026.wav","lightMG":"light-mg.wav","heavyMG":"heavy-mg.wav","hmg":"heavy-mg.wav","autocannon":"apc30mm/APC_30mm_disparo_01.wav","tank":"missile.wav","rpg":"missile.wav","stinger":"missile.wav","tv":"missile.wav","missile":"missile.wav","torpedo":"torpedo.wav","grenade":"melee_swing_generated.wav","broom":"melee_swing_generated.wav","squeegee":"melee_swing_generated.wav","axe":"melee_swing_generated.wav"}
 var pools: Dictionary = {}
 var streams: Dictionary = {}
@@ -51,6 +57,31 @@ static func source_behind(viewport: Viewport, point: Vector3) -> bool:
 	# leave the original stereo panning and real world-space origin intact.
 	return relative.length_squared()>9.0 and relative.normalized().dot(observer.basis.z)>0.25
 
+static func source_rear_blend(viewport: Viewport, point: Vector3) -> float:
+	if not is_instance_valid(viewport): return 0.0
+	var listener:=viewport.get_audio_listener_3d()
+	var observer: Transform3D
+	if is_instance_valid(listener): observer=listener.get_listener_transform()
+	else:
+		var camera:=viewport.get_camera_3d()
+		if not is_instance_valid(camera): return 0.0
+		observer=camera.global_transform
+	var relative:=point-observer.origin
+	if relative.length_squared()<=9.0: return 0.0
+	# Use a gradual rear cue instead of a binary timbre change at one angle.
+	var rear_amount:=relative.normalized().dot(observer.basis.z)
+	return smoothstep(-0.08,0.92,rear_amount)
+
+static func filter_target_hz(distance_to: float,max_distance: float,blocked: bool,enclosed: bool,rear_blend: float) -> float:
+	var start:=maxf(25.0,minf(120.0,max_distance*.06))
+	var finish:=maxf(start+80.0,minf(1400.0,max_distance*.60))
+	var distance_blend:=smoothstep(start,finish,maxf(0.0,distance_to))
+	var cutoff:=lerpf(FILTER_OPEN_HZ,FILTER_DISTANT_HZ,distance_blend)
+	cutoff=lerpf(cutoff,minf(cutoff,FILTER_REAR_HZ),clampf(rear_blend,0.0,1.0)*.55)
+	if enclosed: cutoff=minf(cutoff,FILTER_INTERIOR_HZ)
+	if blocked: cutoff=minf(cutoff,FILTER_BLOCKED_HZ)
+	return cutoff
+
 static func elevation_pitch(viewport: Viewport,point: Vector3) -> float:
 	var relative:=point-listener_position(viewport)
 	var horizontal:=Vector2(relative.x,relative.z).length()
@@ -65,9 +96,26 @@ static func acoustic_bus(distance_to: float,blocked: bool,enclosed: bool,rear:=f
 
 static func apply_acoustics(voice: AudioStreamPlayer3D,distance_to: float,blocked: bool,enclosed: bool,smoothing:=1.0) -> void:
 	voice.bus=acoustic_bus(distance_to,blocked,enclosed,source_behind(voice.get_viewport(),voice.global_position))
+	voice.set_meta("acoustic_blocked",blocked)
+	voice.set_meta("acoustic_enclosed",enclosed)
 	var edge:=1.0-smoothstep(voice.max_distance*.78,voice.max_distance,distance_to)
 	var goal:=float(voice.get_meta("base_db",-12))+GameSoundPropagation.distant_gain_db(distance_to)-(8.0 if blocked else 0.0)+linear_to_db(maxf(.001,edge))
 	voice.volume_db=lerpf(voice.volume_db,goal,clampf(smoothing,0,1))
+
+func _update_voice_filters(delta: float) -> void:
+	if voices.is_empty(): return
+	var viewport:=get_viewport()
+	var listener:=listener_position(viewport)
+	var blend:=1.0-exp(-FILTER_SMOOTH_RATE*delta)
+	for voice: AudioStreamPlayer3D in voices:
+		if not voice.playing: continue
+		var distance_to:=listener.distance_to(voice.global_position)
+		var blocked:=bool(voice.get_meta("acoustic_blocked",false))
+		var enclosed:=bool(voice.get_meta("acoustic_enclosed",false))
+		var target_hz:=filter_target_hz(distance_to,voice.max_distance,blocked,enclosed,source_rear_blend(viewport,voice.global_position))
+		var target_db: float=-18.0 if blocked else (-14.0 if enclosed else -12.0)
+		voice.attenuation_filter_cutoff_hz=lerpf(voice.attenuation_filter_cutoff_hz,target_hz,blend)
+		voice.attenuation_filter_db=lerpf(voice.attenuation_filter_db,target_db,blend)
 
 static func _bus(label: String,parent: String) -> int:
 	var index := AudioServer.get_bus_index(label)
@@ -85,29 +133,52 @@ func _ready() -> void:
 	var shots := _bus("WeaponShots","Armas")
 	if AudioServer.get_bus_effect_count(shots)==0:
 		AudioServer.add_bus_effect(shots,AudioEffectLimiter.new())
-	for entry in [["WeaponMid",5500.0],["WeaponFar",3300.0],["WeaponBlocked",1100.0],["WeaponInterior",4800.0],["WeaponInteriorFar",2200.0]]:
+	# Keep the legacy routes for compatibility, but let each 3D source apply
+	# the continuous distance/direction filter instead of stepping between EQs.
+	for entry in [["WeaponMid",19500.0],["WeaponFar",19500.0],["WeaponBlocked",19500.0],["WeaponInterior",19500.0],["WeaponInteriorFar",19500.0]]:
 		var index := _bus(entry[0],"WeaponShots")
-		if AudioServer.get_bus_effect_count(index)>0: continue
-		var low := AudioEffectLowPassFilter.new()
+		var low: AudioEffectLowPassFilter
+		for effect_index in AudioServer.get_bus_effect_count(index):
+			low=AudioServer.get_bus_effect(index,effect_index) as AudioEffectLowPassFilter
+			if low: break
+		if not low:
+			low=AudioEffectLowPassFilter.new()
+			AudioServer.add_bus_effect(index,low)
 		low.cutoff_hz=float(entry[1])
-		AudioServer.add_bus_effect(index,low)
+		var has_reverb:=false
+		for effect_index in AudioServer.get_bus_effect_count(index):
+			if AudioServer.get_bus_effect(index,effect_index) is AudioEffectReverb: has_reverb=true
+		if has_reverb: continue
 		var room := AudioEffectReverb.new()
 		room.wet=.012 if entry[0]=="WeaponFar" else (0.0 if entry[0] in ["WeaponMid","WeaponBlocked"] else (.10 if entry[0]=="WeaponInterior" else .08))
 		room.dry=1.0
 		room.room_size=.65
 		AudioServer.add_bus_effect(index,room)
-	# Rear sounds receive a light shared spectral cue. These effects are
-	# fixed buses, never allocated for each player, bullet or shot.
+	# Keep the legacy rear routes and their shared filters. Their cutoff stays
+	# neutral; each source applies its smooth directional cue in the 3D player.
 	var rear_index:=_bus("WeaponRear","WeaponShots")
-	if AudioServer.get_bus_effect_count(rear_index)==0:
-		var rear_low:=AudioEffectLowPassFilter.new();rear_low.cutoff_hz=4100.
+	var rear_low: AudioEffectLowPassFilter
+	for effect_index in AudioServer.get_bus_effect_count(rear_index):
+		rear_low=AudioServer.get_bus_effect(rear_index,effect_index) as AudioEffectLowPassFilter
+		if rear_low: break
+	if not rear_low:
+		rear_low=AudioEffectLowPassFilter.new()
 		AudioServer.add_bus_effect(rear_index,rear_low)
-	for entry in [["WeaponMid",5500.0],["WeaponFar",3300.0],["WeaponBlocked",1100.0],["WeaponInterior",4800.0],["WeaponInteriorFar",2200.0]]:
+	rear_low.cutoff_hz=19500.0
+	for entry in [["WeaponMid",19500.0],["WeaponFar",19500.0],["WeaponBlocked",19500.0],["WeaponInterior",19500.0],["WeaponInteriorFar",19500.0]]:
 		var rear_route:=_bus(str(entry[0])+"Rear","WeaponRear")
-		if AudioServer.get_bus_effect_count(rear_route)>0: continue
-		var rear_filter:=AudioEffectLowPassFilter.new()
-		rear_filter.cutoff_hz=float(entry[1])*(.72 if entry[0] in ["WeaponFar","WeaponInteriorFar"] else 1.0)
-		AudioServer.add_bus_effect(rear_route,rear_filter)
+		var rear_filter: AudioEffectLowPassFilter
+		for effect_index in AudioServer.get_bus_effect_count(rear_route):
+			rear_filter=AudioServer.get_bus_effect(rear_route,effect_index) as AudioEffectLowPassFilter
+			if rear_filter: break
+		if not rear_filter:
+			rear_filter=AudioEffectLowPassFilter.new()
+			AudioServer.add_bus_effect(rear_route,rear_filter)
+		rear_filter.cutoff_hz=float(entry[1])
+		var has_reverb:=false
+		for effect_index in AudioServer.get_bus_effect_count(rear_route):
+			if AudioServer.get_bus_effect(rear_route,effect_index) is AudioEffectReverb: has_reverb=true
+		if has_reverb: continue
 		var tail:=AudioEffectReverb.new()
 		tail.wet=.012 if entry[0]=="WeaponFar" else (0.0 if entry[0] in ["WeaponMid","WeaponBlocked"] else (.10 if entry[0]=="WeaponInterior" else .08))
 		tail.dry=1.0
@@ -216,7 +287,8 @@ func _play_now(emitter: int,weapon: String,point: Vector3) -> AudioStreamPlayer3
 	voice.unit_size=float(settings.unit)
 	voice.max_distance=float(settings.range)
 	voice.attenuation_model=AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
-	voice.attenuation_filter_cutoff_hz=7500
+	voice.attenuation_filter_cutoff_hz=FILTER_OPEN_HZ
+	voice.attenuation_filter_db=-12.0
 	voice.set_meta("base_db",float(settings.db))
 	voice.set_meta("pool",key)
 	voice.set_meta("weapon",weapon)
@@ -227,6 +299,7 @@ func _play_now(emitter: int,weapon: String,point: Vector3) -> AudioStreamPlayer3
 
 func _process(delta: float) -> void:
 	for event in propagation.take_due(delta): _play_now(int(event.emitter),str(event.weapon),event.point)
+	_update_voice_filters(delta)
 	if external_acoustics or voices.is_empty(): return
 	acoustic_clock+=delta
 	if acoustic_clock<.1: return

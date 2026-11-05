@@ -63,6 +63,11 @@ var shop_connections: Array[Vector3]=[]
 var house_connections: Array[Vector3]=[]
 var roof_paths: Array[PackedVector3Array]=[]
 var parked_cars:=0
+var urban_parked_cars:=0
+var street_bins:=0
+var loose_rubble:=0
+var fiber_boxes:=0
+var fiber_spans:=0
 var service_drops:=0
 var facade_modules:=0
 var roof_modules:=0
@@ -205,6 +210,7 @@ func build() -> void:
 	var edge_summary:=_edge_infrastructure(kit)
 	_landmarks(kit)
 	_street_wiring(kit)
+	_urban_clutter(kit)
 	for site: Dictionary in litter_sites:
 		_place_litter(site.position, site.yaw)
 	litter_sites.clear()
@@ -223,7 +229,10 @@ func build() -> void:
 		"wall_tags":tag_count,"litter_clusters":litter_count,"parked_cars":parked_cars,
 		"service_drops":service_drops,"facade_modules":facade_modules,"roof_modules":roof_modules,
 		"covered_passages":underpasses,"roof_lean_tos":lean_tos,
-		"parked_bikes":parked_bikes,"fixture_moves":fixture_moves,"fixture_skips":fixture_skips,
+		"parked_bikes":parked_bikes,"urban_parked_cars":urban_parked_cars,
+		"street_bins":street_bins,"loose_rubble":loose_rubble,
+		"fiber_boxes":fiber_boxes,"fiber_spans":fiber_spans,
+		"fixture_moves":fixture_moves,"fixture_skips":fixture_skips,
 		"build_ms":Time.get_ticks_msec()-begun,"visuals":render_visuals}
 	build_metrics.merge(neighborhood)
 	build_metrics.merge(edge_summary)
@@ -288,18 +297,15 @@ func _edge_infrastructure(k: EnvironmentKit) -> Dictionary:
 
 func _ground_color(x: float,z: float) -> Color:
 	var mix:=.5+.5*sin(x*.073+z*.052)*cos(z*.019)
-	var soil:=Color("9a806b").lerp(Color("b3977c"),mix)
-	var urban:=1.0-smoothstep(530.0,665.0,absf(x))
-	urban*=smoothstep(-570.0,-530.0,z)*(1.0-smoothstep(400.0,505.0,z))
-	# Roads are painted exclusively by STREET_SPACE's mask. Outside that mask,
-	# dense urban ground stays warm/earthy instead of becoming a continuous
-	# grey concrete slab between the asphalt and the houses.
-	var packed:=Color("857765").lerp(Color("a08b72"),mix)
-	var near_road:=1.0-smoothstep(7.0,22.0,road_distance(Vector2(x,z)))
-	var result:=soil.lerp(packed,urban*.62)
-	result=result.lerp(Color("796d5e").lerp(Color("92806b"),mix),urban*near_road*.16)
-	return result.lerp(Color("59654a").lerp(Color("444a35"),mix),
-		1.0-smoothstep(-620.0,-555.0,z))
+	var soil:=Color("ac9a83").lerp(Color("c0a68a"),mix)
+	var urban:=1.0-smoothstep(600.0,745.0,absf(x))
+	urban*=smoothstep(-710.0,-570.0,z)*(1.0-smoothstep(720.0,785.0,z))
+	# Urbano = cimento claro e remendado; mata, cortes de barranco e
+	# periferia mantêm a terra. Shader faz o blend real de texturas.
+	var cement:=Color("c8c9c5").lerp(Color("aeb1ae"),mix)
+	var result:=soil.lerp(cement,urban*.92)
+	return result.lerp(Color("67725b").lerp(Color("56654c"),mix),
+		1.0-smoothstep(-650.0,-570.0,z))
 
 func _terrain_tile(ix: int,iz: int) -> void:
 	var corner:=Vector3(ix*TILE-HALF,0,iz*TILE-HALF)
@@ -761,8 +767,21 @@ func _wire_route(k: EnvironmentKit,anchors: Array,width: float,interval: float) 
 			pole.rotation.y = yaw
 			pole_count+=1
 			if number%3==0:_litter(p+right*side*.28,float(number)*.73)
+			if number%2==0:
+				ARCHITECTURE.place(k,"favela_caixa_fibra_optica",
+					Transform3D(Basis(Vector3.UP,yaw),
+						at+Vector3.UP*5.35),false)
+				fiber_boxes+=1
 			var top:=at+Vector3.UP*7.71
-			if previous.is_finite() and previous.distance_to(top)<interval*2.45:_cable_span(previous,top)
+			if previous.is_finite() and previous.distance_to(top)<interval*2.45:
+				_cable_span(previous,top)
+				if render_visuals:
+					var fiber_start:=previous-Vector3.UP*.59
+					var fiber_end:=top-Vector3.UP*.59
+					var middle: Vector3=(fiber_start+fiber_end)*.5-Vector3.UP*.25
+					k.pipe(fiber_start,middle,.017,"steel:232a2c",false)
+					k.pipe(middle,fiber_end,.017,"steel:232a2c",false)
+				fiber_spans+=1
 			previous=top
 			if number%3!=0:continue
 			var branch:=Vector3.INF
@@ -783,12 +802,66 @@ func _wire_route(k: EnvironmentKit,anchors: Array,width: float,interval: float) 
 			if home.is_finite():_service_wire(k,top-Vector3.UP*.92,home)
 
 func _street_wiring(k: EnvironmentKit) -> void:
-	_wire_route(k,PRIMARY.slice(2),AVENUE_WIDTH,36.0)
+	_wire_route(k,PRIMARY.slice(2),AVENUE_WIDTH,28.0)
 	for z: float in CROSS_STREETS:
-		_wire_route(k,[Vector2(-455,z),Vector2(455,z)],CROSS_WIDTH,39.0)
+		_wire_route(k,[Vector2(-455,z),Vector2(455,z)],CROSS_WIDTH,31.0)
 	for x: float in [-320.0,-105.0,105.0,355.0]:
-		_wire_route(k,[Vector2(x,-490),Vector2(x,340)],ALLEY_WIDTH,33.0)
-	for route: Array in MINI_STREETS:_wire_route(k,route,MINI_STREET_WIDTH,29.0)
+		_wire_route(k,[Vector2(x,-490),Vector2(x,340)],ALLEY_WIDTH,27.0)
+	for route: Array in MINI_STREETS:_wire_route(k,route,MINI_STREET_WIDTH,23.0)
+
+func _urban_clutter(k: EnvironmentKit) -> void:
+	# Fixed deterministic road-edge grammar shared by offline and authority.
+	# Each physically meaningful footprint must be claimed before placement,
+	# preventing cars/bins from occupying lanes, lots, bases or each other.
+	for road: Dictionary in road_envelopes():
+		var route: Array = road.points
+		var width := float(road.width)
+		var road_id := int(road.id)
+		if width < 3.5:continue
+		for segment in route.size()-1:
+			var start: Vector2 = route[segment]
+			var end: Vector2 = route[segment+1]
+			var length := start.distance_to(end)
+			if length < 9.0:continue
+			var tangent := (end-start).normalized()
+			var outward := tangent.orthogonal()
+			var yaw := atan2(tangent.x,tangent.y)
+			var samples := maxi(1,ceili(length/29.0))
+			for sample in samples:
+				var t := (float(sample)+.5)/float(samples)
+				if t < .04 or t > .96:continue
+				var road_center := start.lerp(end,t)
+				for side_index in 2:
+					var side := -1.0 if side_index==0 else 1.0
+					var normal := outward*side
+					var seq := road_id*1171+segment*227+sample*39+side_index*109
+					if width >= 6.5 and seq%7==2 and urban_parked_cars<75:
+						var park := road_center+normal*(width*.5+2.30)
+						var slot := _fixture_slot(park,Vector2(.98,1.90),yaw,3,false)
+						if slot.is_finite():
+							var p := point(slot.x,slot.y)
+							var front := slot+tangent*1.62
+							var back := slot-tangent*1.62
+							if absf(height_at(front.x,front.y)-height_at(back.x,back.y))<.58:
+								ARCHITECTURE.place(k,"carro_compacto",
+									Transform3D(Basis(Vector3.UP,yaw),p),true)
+								urban_parked_cars+=1
+								parked_cars+=1
+					if seq%5==1 and street_bins<180:
+						var near := road_center+normal*(width*.5+1.02)
+						var bin_slot := _fixture_slot(near,Vector2(.47,.44),yaw,2,false)
+						if bin_slot.is_finite():
+							ARCHITECTURE.place(k,"favela_lixeira_rua",
+								Transform3D(Basis(Vector3.UP,yaw),point(bin_slot.x,bin_slot.y)),true)
+							street_bins+=1
+					if seq%3==0 and loose_rubble<260:
+						var rubble_pos := road_center+normal*(width*.5+1.32)
+						var rubble_slot := _fixture_slot(rubble_pos,Vector2(.86,.74),yaw,2,false)
+						if rubble_slot.is_finite():
+							ARCHITECTURE.place(k,"favela_pedras_entulho",
+								Transform3D(Basis(Vector3.UP,yaw+float(seq%5)*.13),
+									point(rubble_slot.x,rubble_slot.y)),false)
+							loose_rubble+=1
 
 func _landmarks(k: EnvironmentKit) -> void:
 	for i in OBJECTIVES_2D.size():

@@ -97,7 +97,24 @@ void fragment() {
 		cos(world_xz.x * 0.57 + world_xz.y * 0.17));
 	vec3 surface = texture(street_mask, (world_xz + edge + vec2(half_map)) / (2.0 * half_map)).rgb;
 	float coverage = clamp(surface.r + surface.g, 0.0, 1.0);
-	vec3 ground = texture(ground_tex, UV * 0.72).rgb * COLOR.rgb;
+	// Concrete is the default flooring of the built-up Favela, not an
+	// uninterrupted brown soil plane. Exposed soil survives at hillside,
+	// construction pockets, broken pavement and the wooded map boundary.
+	float city_x = 1.0 - smoothstep(590.0, 745.0, abs(world_xz.x));
+	float city_z = smoothstep(-710.0, -570.0, world_xz.y)
+		* (1.0 - smoothstep(720.0, 785.0, world_xz.y));
+	float city = city_x * city_z;
+	float cut_slope = smoothstep(0.15, 0.43, hillside_gradient);
+	float patch_noise = sin(world_xz.x * .095 + cos(world_xz.y * .065))
+		* cos(world_xz.y * .087 - world_xz.x * .041);
+	float exposed = smoothstep(.31, .74, patch_noise);
+	float cement_amount = city * (0.93 - 0.46 * cut_slope)
+		* (1.0 - exposed * 0.32);
+	vec3 soil_ground = texture(ground_tex, UV * .72).rgb;
+	vec3 concrete_ground = texture(concrete_tex, UV * .67).rgb
+		* mix(vec3(.91), vec3(1.10), smoothstep(-.5, .7, patch_noise));
+	vec3 ground = mix(soil_ground, concrete_ground,
+		clamp(cement_amount, 0.0, 1.0)) * COLOR.rgb;
 	// Thin downhill runoff streaks and fragmented bare sediment break up
 	// smooth slopes without changing any terrain collision or road surface.
 	float channel = 1.0 - smoothstep(0.03, 0.20, abs(sin(

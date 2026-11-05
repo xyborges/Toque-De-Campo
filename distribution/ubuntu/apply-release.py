@@ -25,12 +25,14 @@ APP = pathlib.Path('/opt/toque-de-campo')
 GAME_DATA = pathlib.Path('/var/lib/toque-de-campo/game')
 WAR_UNIT = pathlib.Path('/etc/systemd/system/toque-war.service')
 WAR_AFGHAN_UNIT = pathlib.Path('/etc/systemd/system/toque-war-afghan.service')
+WAR_FAVELA_UNIT = pathlib.Path('/etc/systemd/system/toque-war-favela.service')
 BR_UNIT = pathlib.Path('/etc/systemd/system/toque-br.service')
 PUBLIC_KEY = '/etc/toque-de-campo/release-public.pem'
 SERVICE_STATUS = {'toque-naval': ('naval-status.json', 3012),
                   'toque-pvp': ('pvp-status.json', 3010),
                   'toque-war': ('war-status.json', 3014),
                   'toque-war-afghan': ('war-afghan-status.json', 3015),
+                  'toque-war-favela': ('war-favela-status.json', 3017),
                   'toque-br': ('br-broker-status.json', 3016)}
 BASE_ARTIFACTS = {'server/ToqueDeCampo.x86_64', 'server/ToqueDeCampo.pck',
                   'public/api.php', 'public/index.html', 'public/ToqueDeCampo.exe',
@@ -66,6 +68,24 @@ WAR_AFGHAN_DIRECTIVES = {
     'Service': {'Type': 'simple', 'User': 'toque-server', 'Group': 'toque-server',
                 'WorkingDirectory': '/opt/toque-de-campo/current',
                 'ExecStart': WAR_AFGHAN_EXEC, 'Restart': 'on-failure', 'RestartSec': '3',
+                'TimeoutStopSec': '15', 'NoNewPrivileges': 'true',
+                'PrivateTmp': 'true', 'ProtectSystem': 'strict',
+                'ProtectHome': 'true',
+                'ReadWritePaths': '/var/lib/toque-de-campo/game',
+                'RestrictAddressFamilies': 'AF_INET AF_INET6 AF_UNIX',
+                'MemoryMax': '2G', 'TasksMax': '128', 'LimitNOFILE': '65536'},
+    'Install': {'WantedBy': 'multi-user.target'}}
+WAR_FAVELA_EXEC = ('/opt/toque-de-campo/current/ToqueDeCampo.x86_64 --headless '
+                   '--max-fps 60 --log-file /var/lib/toque-de-campo/game/war-favela.log '
+                   '-- --war-server --war-map=favela --naval-data=/var/lib/toque-de-campo/game '
+                   '--accounts-service-token=/etc/toque-de-campo/service-token')
+WAR_FAVELA_DIRECTIVES = {
+    'Unit': {'Description': 'Toque de Campo - Guerra Favela',
+             'After': 'network-online.target nginx.service php8.3-fpm.service',
+             'Wants': 'network-online.target'},
+    'Service': {'Type': 'simple', 'User': 'toque-server', 'Group': 'toque-server',
+                'WorkingDirectory': '/opt/toque-de-campo/current',
+                'ExecStart': WAR_FAVELA_EXEC, 'Restart': 'on-failure', 'RestartSec': '3',
                 'TimeoutStopSec': '15', 'NoNewPrivileges': 'true',
                 'PrivateTmp': 'true', 'ProtectSystem': 'strict',
                 'ProtectHome': 'true',
@@ -165,7 +185,7 @@ def validate_artifacts(metadata, client):
     if not isinstance(hashes, dict):
         raise ValueError('Invalid artifact list')
     required = BASE_ARTIFACTS | {'public/' + archive}
-    if not required.issubset(hashes) or set(hashes) - required - {'server/toque-war.service', 'server/toque-war-afghan.service', 'server/toque-br.service'}:
+    if not required.issubset(hashes) or set(hashes) - required - {'server/toque-war.service', 'server/toque-war-afghan.service', 'server/toque-war-favela.service', 'server/toque-br.service'}:
         raise ValueError('Incomplete release or unexpected artifact')
     if any(not isinstance(digest, str) or not re.fullmatch(r'[a-f0-9]{64}', digest)
            for digest in hashes.values()):
@@ -213,6 +233,10 @@ def validate_war_unit(path):
 
 def validate_war_afghan_unit(path):
     validate_unit(path, WAR_AFGHAN_DIRECTIVES, 'War Afghan')
+
+
+def validate_war_favela_unit(path):
+    validate_unit(path, WAR_FAVELA_DIRECTIVES, 'War Favela')
 
 
 def validate_br_unit(path):
@@ -346,11 +370,14 @@ def activate(stage, client, archive, release):
     """Restore the previous API/site/unit/enable state as well as the game."""
     unit_source = stage / 'server/toque-war.service'
     afghan_unit_source = stage / 'server/toque-war-afghan.service'
+    favela_unit_source = stage / 'server/toque-war-favela.service'
     units = ['toque-naval', 'toque-pvp']
     if unit_source.is_file() or WAR_UNIT.is_file():
         units.append('toque-war')
     if afghan_unit_source.is_file() or WAR_AFGHAN_UNIT.is_file():
         units.append('toque-war-afghan')
+    if favela_unit_source.is_file() or WAR_FAVELA_UNIT.is_file():
+        units.append('toque-war-favela')
     br_source = stage / 'server/toque-br.service'
     if br_source.is_file() or BR_UNIT.is_file():
         units.append('toque-br')
@@ -358,6 +385,7 @@ def activate(stage, client, archive, release):
     previous_active = [unit for unit in units if active(unit)]
     enabled_state = run('systemctl', 'is-enabled', 'toque-war', check=False).stdout.strip()
     afghan_enabled_state = run('systemctl', 'is-enabled', 'toque-war-afghan', check=False).stdout.strip() if 'toque-war-afghan' in units else None
+    favela_enabled_state = run('systemctl', 'is-enabled', 'toque-war-favela', check=False).stdout.strip() if 'toque-war-favela' in units else None
     br_enabled_state = run('systemctl', 'is-enabled', 'toque-br', check=False).stdout.strip() if 'toque-br' in units else None
     destinations = [(stage / 'public/api.php', WEB / 'accounts/api.php'),
                     (stage / 'public' / archive, WEB / archive),
@@ -368,6 +396,8 @@ def activate(stage, client, archive, release):
         destinations.append((unit_source, WAR_UNIT))
     if afghan_unit_source.is_file():
         destinations.append((afghan_unit_source, WAR_AFGHAN_UNIT))
+    if favela_unit_source.is_file():
+        destinations.append((favela_unit_source, WAR_FAVELA_UNIT))
     if br_source.is_file():
         destinations.append((br_source, BR_UNIT))
     with tempfile.TemporaryDirectory(prefix='toque-rollback-') as folder:
@@ -387,9 +417,11 @@ def activate(stage, client, archive, release):
                 atomic_copy(unit_source, WAR_UNIT)
             if afghan_unit_source.is_file():
                 atomic_copy(afghan_unit_source, WAR_AFGHAN_UNIT)
+            if favela_unit_source.is_file():
+                atomic_copy(favela_unit_source, WAR_FAVELA_UNIT)
             if br_source.is_file():
                 atomic_copy(br_source, BR_UNIT)
-            if unit_source.is_file() or afghan_unit_source.is_file() or br_source.is_file():
+            if unit_source.is_file() or afghan_unit_source.is_file() or favela_unit_source.is_file() or br_source.is_file():
                 run('systemctl', 'daemon-reload')
             atomic_copy(stage / 'public/api.php', WEB / 'accounts/api.php')
             started_ns = time.time_ns()
@@ -404,6 +436,8 @@ def activate(stage, client, archive, release):
                 run('systemctl', 'enable', 'toque-war')
             if afghan_unit_source.is_file():
                 run('systemctl', 'enable', 'toque-war-afghan')
+            if favela_unit_source.is_file():
+                run('systemctl', 'enable', 'toque-war-favela')
             if br_source.is_file():
                 run('systemctl', 'enable', 'toque-br')
         except BaseException:
@@ -422,6 +456,8 @@ def activate(stage, client, archive, release):
                 recover('disable new War unit', lambda: run('systemctl', 'disable', 'toque-war', check=False))
             if afghan_enabled_state is not None and afghan_enabled_state not in ('enabled', 'enabled-runtime'):
                 recover('disable new Afghan War unit', lambda: run('systemctl', 'disable', 'toque-war-afghan', check=False))
+            if favela_enabled_state is not None and favela_enabled_state not in ('enabled', 'enabled-runtime'):
+                recover('disable new Favela War unit', lambda: run('systemctl', 'disable', 'toque-war-favela', check=False))
             if br_enabled_state is not None and br_enabled_state not in ('enabled', 'enabled-runtime'):
                 recover('disable new BR unit', lambda: run('systemctl', 'disable', 'toque-br', check=False))
             for destination, saved, mode in reversed(backups):
@@ -437,6 +473,9 @@ def activate(stage, client, archive, release):
             if afghan_enabled_state in ('enabled', 'enabled-runtime'):
                 command = ('systemctl', 'enable', '--runtime', 'toque-war-afghan') if afghan_enabled_state == 'enabled-runtime' else ('systemctl', 'enable', 'toque-war-afghan')
                 recover('restore Afghan War enable state', lambda: run(*command))
+            if favela_enabled_state in ('enabled', 'enabled-runtime'):
+                command = ('systemctl', 'enable', '--runtime', 'toque-war-favela') if favela_enabled_state == 'enabled-runtime' else ('systemctl', 'enable', 'toque-war-favela')
+                recover('restore Favela War enable state', lambda: run(*command))
             if br_enabled_state in ('enabled', 'enabled-runtime'):
                 command = ('systemctl', 'enable', '--runtime', 'toque-br') if br_enabled_state == 'enabled-runtime' else ('systemctl', 'enable', 'toque-br')
                 recover('restore BR enable state', lambda: run(*command))
@@ -479,6 +518,10 @@ def deploy():
             validate_war_afghan_unit(verified_stage / 'server/toque-war-afghan.service')
         elif WAR_AFGHAN_UNIT.is_file():
             raise ValueError('Release omits the installed Afghan War service artifact')
+        if (verified_stage / 'server/toque-war-favela.service').is_file():
+            validate_war_favela_unit(verified_stage / 'server/toque-war-favela.service')
+        elif WAR_FAVELA_UNIT.is_file():
+            raise ValueError('Release omits the installed Favela War service artifact')
         if (verified_stage / 'server/toque-br.service').is_file():
             validate_br_unit(verified_stage / 'server/toque-br.service')
         elif BR_UNIT.is_file():

@@ -1,0 +1,45 @@
+[gd_scene load_steps=7 format=3]
+[sub_resource type="StandardMaterial3D" id="Cabinet"]
+albedo_color = Color(0.29, 0.33, 0.34, 1)
+roughness = 0.84
+[sub_resource type="StandardMaterial3D" id="Label"]
+albedo_color = Color(0.68, 0.77, 0.75, 1)
+roughness = 0.91
+[sub_resource type="StandardMaterial3D" id="Cable"]
+albedo_color = Color(0.11, 0.15, 0.15, 1)
+roughness = 0.86
+[sub_resource type="BoxMesh" id="Case"]
+size = Vector3(0.54, 0.67, 0.20)
+[sub_resource type="BoxMesh" id="Sticker"]
+size = Vector3(0.30, 0.16, 0.02)
+[sub_resource type="CylinderMesh" id="Conduit"]
+top_radius = 0.025
+bottom_radius = 0.025
+height = 1.3
+radial_segments = 6
+[node name="FavelaCaixaFibraOptica" type="Node3D"]
+metadata/library_id = "favela_caixa_fibra_optica"
+metadata/footprint = Vector2(0.65, 0.38)
+metadata/origin = "wall"
+metadata/surface = "steel"
+metadata/asset_revision = 1
+metadata/lod_near = 50.0
+metadata/lod_far = 240.0
+metadata/destructible = false
+[node name="Forma" type="MeshInstance3D" parent="."]
+mesh = SubResource("Case")
+material_override = SubResource("Cabinet")
+cast_shadow = 0
+visibility_range_end = 240.0
+[node name="Etiqueta" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.12, 0.112)
+mesh = SubResource("Sticker")
+material_override = SubResource("Label")
+cast_shadow = 0
+visibility_range_end = 150.0
+[node name="DutoFibra" type="MeshInstance3D" parent="."]
+position = Vector3(0.16, -0.89, -0.02)
+mesh = SubResource("Conduit")
+material_override = SubResource("Cable")
+cast_shadow = 0
+visibility_range_end = 190.0
