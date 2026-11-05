@@ -7,9 +7,9 @@ A intervenção desta branch altera **a ocupação espacial**: fecha bolsões re
 às vias com lotes menores e irregulares, amplia a verticalidade percebida e acrescenta
 microarquitetura doméstica e de infraestrutura, preservando envelopes de circulação.
 
-Branch: `ia/favela-detail-max`  
-Base: `f8a5654` (Favela v4)  
-Worktree: `C:\Users\Joao Borges\Documents\campo-worktrees\favela-detail-max`
+- Branch de origem: `ia/favela-detail-max`
+- Base: `f8a5654` (Favela v4)
+- Worktree de origem: `C:\Users\Joao Borges\Documents\campo-worktrees\favela-detail-max`
 
 Os arquivos de pavimento/shader continuam pertencendo à sessão concorrente
 `chat-favela-sobreposicoes`; esta branch não os sobrescreve.
