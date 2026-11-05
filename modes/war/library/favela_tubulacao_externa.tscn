@@ -1,0 +1,53 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="StandardMaterial3D" id="MatPVC"]
+albedo_color = Color(0.72, 0.73, 0.68, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="MatBlue"]
+albedo_color = Color(0.18, 0.38, 0.48, 1)
+roughness = 0.82
+
+[sub_resource type="CylinderMesh" id="MeshPipe"]
+top_radius = 0.04
+bottom_radius = 0.04
+height = 2.9
+radial_segments = 7
+
+[sub_resource type="CylinderMesh" id="MeshShort"]
+top_radius = 0.045
+bottom_radius = 0.045
+height = 0.72
+radial_segments = 7
+
+[node name="FavelaTubulacaoExterna" type="Node3D"]
+metadata/library_id = "favela_tubulacao_externa"
+metadata/footprint = Vector2(0.45, 0.45)
+metadata/origin = "wall"
+metadata/asset_revision = 1
+metadata/lod_near = 70.0
+metadata/lod_far = 180.0
+metadata/surface = "pvc"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(-0.12, 1.45, 0)
+mesh = SubResource("MeshPipe")
+material_override = SubResource("MatPVC")
+cast_shadow = 0
+visibility_range_end = 180.0
+
+[node name="TuboAgua" type="MeshInstance3D" parent="."]
+position = Vector3(0.15, 1.30, 0.015)
+mesh = SubResource("MeshPipe")
+material_override = SubResource("MatBlue")
+cast_shadow = 0
+visibility_range_end = 180.0
+
+[node name="Saida" type="MeshInstance3D" parent="."]
+position = Vector3(0.15, 2.72, 0.33)
+rotation = Vector3(1.570796, 0, 0)
+mesh = SubResource("MeshShort")
+material_override = SubResource("MatBlue")
+cast_shadow = 0
+visibility_range_end = 135.0

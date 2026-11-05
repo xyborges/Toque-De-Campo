@@ -54,3 +54,13 @@
 *.otf binary
 *.woff binary
 *.woff2 binary
+
+# Navigation BR v13 was baked against byte-exact mixed CRLF inputs.
+# Preserve these seven source files byte-for-byte until navigation is fully rebaked.
+modes/battle_royale/library/catalog_v2.tscn -text -eol whitespace=cr-at-eol
+modes/battle_royale/library/cliff_buttress_v8.tscn -text -eol whitespace=cr-at-eol
+modes/battle_royale/library/courtyard_wall_v2.tscn -text -eol whitespace=cr-at-eol
+modes/battle_royale/library/rural_bridge_v2.tscn -text -eol whitespace=cr-at-eol
+modes/battle_royale/map/afghan_context.gd -text -eol whitespace=cr-at-eol
+modes/battle_royale/map/afghan_environment.gd -text -eol whitespace=cr-at-eol
+modes/battle_royale/map/afghan_map.gd -text -eol whitespace=cr-at-eol

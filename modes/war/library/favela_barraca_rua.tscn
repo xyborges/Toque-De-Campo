@@ -1,0 +1,81 @@
+[gd_scene load_steps=8 format=3]
+
+[sub_resource type="StandardMaterial3D" id="MatCanopy"]
+albedo_color = Color(0.73, 0.26, 0.19, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="MatWood"]
+albedo_color = Color(0.34, 0.23, 0.16, 1)
+roughness = 0.98
+
+[sub_resource type="StandardMaterial3D" id="MatSteel"]
+albedo_color = Color(0.24, 0.27, 0.26, 1)
+metallic = 0.3
+roughness = 0.78
+
+[sub_resource type="BoxMesh" id="MeshCanopy"]
+size = Vector3(2.9, 0.10, 1.7)
+
+[sub_resource type="BoxMesh" id="MeshCounter"]
+size = Vector3(2.2, 0.78, 0.62)
+
+[sub_resource type="CylinderMesh" id="MeshPost"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 2.25
+radial_segments = 6
+
+[sub_resource type="BoxMesh" id="MeshCrate"]
+size = Vector3(0.52, 0.38, 0.48)
+
+[node name="FavelaBarracaRua" type="Node3D"]
+metadata/library_id = "favela_barraca_rua"
+metadata/footprint = Vector2(3.1, 1.9)
+metadata/origin = "ground"
+metadata/asset_revision = 1
+metadata/lod_near = 95.0
+metadata/lod_far = 240.0
+metadata/surface = "mixed"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.18, 0)
+rotation = Vector3(0, 0, -0.05)
+mesh = SubResource("MeshCanopy")
+material_override = SubResource("MatCanopy")
+cast_shadow = 0
+visibility_range_end = 240.0
+
+[node name="Balcao" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.58, 0.18)
+mesh = SubResource("MeshCounter")
+material_override = SubResource("MatWood")
+cast_shadow = 0
+visibility_range_end = 190.0
+
+[node name="PosteA" type="MeshInstance3D" parent="."]
+position = Vector3(-1.32, 1.12, -0.58)
+mesh = SubResource("MeshPost")
+material_override = SubResource("MatSteel")
+cast_shadow = 0
+visibility_range_end = 190.0
+[node name="PosteB" type="MeshInstance3D" parent="."]
+position = Vector3(1.32, 1.12, -0.58)
+mesh = SubResource("MeshPost")
+material_override = SubResource("MatSteel")
+cast_shadow = 0
+visibility_range_end = 190.0
+
+[node name="CaixoteA" type="MeshInstance3D" parent="."]
+position = Vector3(-0.78, 0.19, -0.55)
+mesh = SubResource("MeshCrate")
+material_override = SubResource("MatWood")
+cast_shadow = 0
+visibility_range_end = 120.0
+[node name="CaixoteB" type="MeshInstance3D" parent="."]
+position = Vector3(-0.25, 0.19, -0.55)
+rotation = Vector3(0, 0.18, 0)
+mesh = SubResource("MeshCrate")
+material_override = SubResource("MatWood")
+cast_shadow = 0
+visibility_range_end = 120.0

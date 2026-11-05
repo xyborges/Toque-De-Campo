@@ -44,6 +44,7 @@ const MODES := {
 	"desert":["PVP DESERTO","DOMINAÇÃO · CASINHA","Cada jogador por si. Capture a casa, acumule pontos e reponha munição no interior.","2–6 JOGADORES · ONLINE"],
 	"war":["GUERRA","LINHA DE FRENTE","Conquista, trincheiras, classes e blindados. Treine sozinho com bots ou dispute uma operação online.","OFFLINE COM BOTS · ONLINE 6v6"],
 	"war_afghan":["GUERRA · AFEGÃO","DESERTO AFEGÃO","A mesma Conquista do modo Guerra no vale afegão. EUA contra Mujahidins, com bases, classes, blindados e bots.","OFFLINE COM BOTS · ONLINE 6v6"],
+	"war_favela":["GUERRA · FAVELA","FAVELA","Conquista urbana: polícia contra bandidos, lajes, becos, motos e Guaranis. Mapa de 1,5 km.","OFFLINE COM BOTS"],
 	"br":["BATTLE ROYALE","DESERTO AFEGÃO","Explore os vilarejos, encontre equipamento e sobreviva ao fechamento da zona.","INDIVIDUAL · 2 km × 2 km"]}
 func _ready() -> void:
 	name = "MainMenu"
@@ -135,7 +136,7 @@ func _build_play() -> void:
 	GameUI.label(sidebar,"OPERAÇÕES",18,FieldTheme.ACCENT)
 	play_cards=VBoxContainer.new();sidebar.add_child(play_cards)
 	for id in MODES:
-		if id in ["war","war_afghan"] and not ProjectSettings.get_setting("gameplay/war_enabled",false): continue
+		if id in ["war","war_afghan","war_favela"] and not ProjectSettings.get_setting("gameplay/war_enabled",false): continue
 		var b := GameUI.button(play_cards,MODES[id][0],_select_mode.bind(id))
 		b.name = "Mode_"+id
 		b.custom_minimum_size.y = 42
@@ -169,6 +170,7 @@ func _build_play() -> void:
 	war_offline_button=GameUI.button(sidebar,"TREINO OFFLINE · BOTS",func():
 		if selected_mode=="br": game.launch_from_menu("br",true)
 		elif selected_mode=="war_afghan": game.launch_from_menu("war_afghan",true)
+		elif selected_mode=="war_favela": game.launch_from_menu("war_favela",true)
 		else: game.launch_from_menu("war",true)
 	)
 	war_offline_button.name="WarOffline"
@@ -185,10 +187,10 @@ func _process(_delta: float) -> void:
 
 func _configure_preparation() -> void:
 	if not is_instance_valid(preparation_editor):return
-	var applicable:=selected_mode in ["office","desert","war","war_afghan"]
-	preparation_panel.visible=applicable;preparation_slots.visible=applicable;preparation_roles.visible=selected_mode in ["war","war_afghan"]
+	var applicable:=selected_mode in ["office","desert","war","war_afghan","war_favela"]
+	preparation_panel.visible=applicable;preparation_slots.visible=applicable;preparation_roles.visible=selected_mode in ["war","war_afghan","war_favela"]
 	if not applicable:preparation_preview.show_item("person",game.profile);preparation_preview.available={};return
-	var kind: String={"office":"offline_training","desert":"desert","war":"war","war_afghan":"war"}[selected_mode]
+	var kind: String={"office":"offline_training","desert":"desert","war":"war","war_afghan":"war","war_favela":"war"}[selected_mode]
 	preparation_editor.configure(game,kind,str(preparation_class.get_item_metadata(preparation_class.selected)),preparation_team.selected)
 	preparation_preview.available=preparation_editor.choices
 	for button in preparation_slots.get_children():button.visible=preparation_editor.choices.has(str({"Pistola":"sidearm","Granada":"grenade","Arma branca":"melee"}.get(button.text,"")))
@@ -208,16 +210,19 @@ func _select_mode(id: String) -> void:
 	for key in mode_buttons: GameUI.accent(mode_buttons[key],key==id)
 	hero_title.text = MODES[id][1]
 	hero_detail.text = MODES[id][2]
-	play_button.text = "INICIAR TREINO" if id=="office" else ("VER SALAS NAVAIS" if id=="naval" else ("CONECTAR ONLINE" if id in ["war","war_afghan"] else "ENTRAR NO PVP"))
+	play_button.text = "INICIAR TREINO" if id=="office" else ("VER SALAS NAVAIS" if id=="naval" else ("CONECTAR ONLINE" if id in ["war","war_afghan","war_favela"] else "ENTRAR NO PVP"))
 	if id=="br":play_button.text="INICIAR"
-	if id in ["war","war_afghan"]:
-		preparation_team.set_item_text(0,"EUA" if id=="war_afghan" else "Ucrânia")
-		preparation_team.set_item_text(1,"Mujahidins" if id=="war_afghan" else "Rússia")
+	if id=="war_favela":play_button.text="JOGAR COM BOTS"
+	if id in ["war","war_afghan","war_favela"]:
+		preparation_team.set_item_text(0,"Polícia" if id=="war_favela" else ("EUA" if id=="war_afghan" else "Ucrânia"))
+		preparation_team.set_item_text(1,"Bandidos" if id=="war_favela" else ("Mujahidins" if id=="war_afghan" else "Rússia"))
 	desert_training_button.visible=id=="office"
 	war_offline_button.visible=id in ["war","war_afghan","br"]
 	_configure_preparation()
 func _play() -> void:
-	game.launch_from_menu(selected_mode)
+	# The Favela online server is not deployed yet. Keep the launch playable and
+	# avoid connecting to the BR broker, which owns the old shared port 3016.
+	game.launch_from_menu(selected_mode,selected_mode=="war_favela")
 func _build_arsenal() -> void:
 	_page_head("arsenal","COLEÇÃO / INFANTARIA","SEU ARMAMENTO.","Selecione seu equipamento inicial entre as armas adquiridas.")
 	var row := HBoxContainer.new()

@@ -1,0 +1,70 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="StandardMaterial3D" id="SteelMat"]
+albedo_color = Color(0.18, 0.20, 0.20, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="ClothA"]
+albedo_color = Color(0.73, 0.24, 0.18, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="ClothB"]
+albedo_color = Color(0.18, 0.42, 0.56, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="RodMesh"]
+size = Vector3(0.045, 1.15, 0.045)
+
+[sub_resource type="BoxMesh" id="LineMesh"]
+size = Vector3(2.30, 0.018, 0.018)
+
+[sub_resource type="BoxMesh" id="ClothMesh"]
+size = Vector3(0.52, 0.64, 0.025)
+
+[node name="FavelaVaral" type="Node3D"]
+metadata/library_id = "favela_varal"
+metadata/footprint = Vector2(2.5, 0.7)
+metadata/origin = "roof_surface"
+metadata/asset_revision = 1
+metadata/lod_near = 95.0
+metadata/lod_far = 125.0
+metadata/surface = "mixed"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(-1.10, 0.575, 0)
+mesh = SubResource("RodMesh")
+material_override = SubResource("SteelMat")
+cast_shadow = 0
+visibility_range_end = 125.0
+
+[node name="PosteB" type="MeshInstance3D" parent="."]
+position = Vector3(1.10, 0.575, 0)
+mesh = SubResource("RodMesh")
+material_override = SubResource("SteelMat")
+cast_shadow = 0
+visibility_range_end = 125.0
+
+[node name="Fio" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.04, 0)
+mesh = SubResource("LineMesh")
+material_override = SubResource("SteelMat")
+cast_shadow = 0
+visibility_range_end = 115.0
+
+[node name="RoupaA" type="MeshInstance3D" parent="."]
+position = Vector3(-0.48, 0.74, 0.025)
+rotation = Vector3(0, 0, 0.08)
+mesh = SubResource("ClothMesh")
+material_override = SubResource("ClothA")
+cast_shadow = 0
+visibility_range_end = 90.0
+
+[node name="RoupaB" type="MeshInstance3D" parent="."]
+position = Vector3(0.28, 0.77, -0.025)
+rotation = Vector3(0, 0, -0.05)
+scale = Vector3(0.82, 0.88, 1)
+mesh = SubResource("ClothMesh")
+material_override = SubResource("ClothB")
+cast_shadow = 0
+visibility_range_end = 90.0

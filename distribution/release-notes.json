@@ -1,46 +1,50 @@
 {
-  "version": "1.13.3",
-  "date": "04/11/2026",
-  "title": "Fumaça tática, motos completas e combate mais preciso",
-  "summary": "Uma atualização ampla com granada M18, cortinas de fumaça nos blindados, zeragem balística, melhorias nas motos e blindados, acessos do Afegão, marcadores estáveis nas lunetas e telas de carregamento.",
+  "version": "1.13.4",
+  "date": "05/11/2026",
+  "title": "Favela renovada, mata viva e melhorias do combate",
+  "summary": "Novo cen?rio Favela para jogar offline com bots: ruas e casas mais densas, becos, lajes, mata no morro e nuvens. A atualiza??o tamb?m aprimora motos, desembarque, ?pticas, resultados de partida e fuma?a de ve?culos. O modo Favela online permanece indispon?vel nesta vers?o.",
   "changes": [
     {
-      "title": "Granada M18 e fumaça de blindados",
-      "text": "Soldados podem escolher a M18; Abrams, T-90, BMP-2 e Guarani lançam cortinas de fumaça duradouras. Os efeitos usam agrupamento, limites de desenho e áudio 3D com vozes reutilizadas."
+      "title": "Novo mapa Favela offline",
+      "text": "Pol?cia contra Bandidos num mapa de 1,5 km, com cinco objetivos, becos, lajes acess?veis, motos e blindados Guarani. JOGAR COM BOTS abre a opera??o pelo menu offline."
     },
     {
-      "title": "Zeragem balística das miras",
-      "text": "Ao mirar, a roda do mouse ajusta a zeragem em passos de 50 m. O servidor valida a distância e calcula a elevação com a balística de cada arma."
+      "title": "Comunidade mais densa",
+      "text": "Mais de 4.100 lotes, com fachadas pr?ximas, moradias sobrepostas, com?rcio, grades, tubula??o, conten??es, drenagem, escadarias e passarelas, respeitando o espa?o das vias."
     },
     {
-      "title": "Moto com piloto e garupa",
-      "text": "A moto ganhou geometria revisada, guidão articulado, apoio correto de mãos e pés, inclinação do corpo e um assento de garupa sincronizado no Guerra e no Battle Royale."
+      "title": "Mata e encostas vivas",
+      "text": "Vegeta??o em manchas, ?rvores, arbustos, capim, rochas e eros?o superficial nas encostas; dist?ncias das ruas e objetivos preservadas para n?o bloquear a circula??o."
     },
     {
-      "title": "Blindados com encaixes revisados",
-      "text": "Abrams e T-90 receberam colares de torre e suportes do canhão; lançadores e coaxiais foram realinhados, com os mesmos ajustes nos modelos de distância."
+      "title": "Atmosfera de morro",
+      "text": "C?u com nuvens e aberturas azuis, neblina discreta nas baixadas e condensa??o distante, com efeitos leves para o renderizador Compatibility."
     },
     {
-      "title": "Afegão com acessos para blindados",
-      "text": "Bases e baias foram reposicionadas, a estrada de descida foi nivelada e os veículos dos bots seguem vias largas. Jogadores podem assumir o volante ocupado por um piloto bot."
+      "title": "Resultados de vit?ria e derrota",
+      "text": "Apresenta??o audiovisual das partidas com vit?ria, derrota, empate e resultados neutros, preservando as c?meras dos demais modos."
     },
     {
-      "title": "Objetivos estáveis nas lunetas",
-      "text": "Os marcadores A–E agora acompanham a imagem ampliada das ópticas 4× e 8×, inclusive durante pequenos movimentos da câmera."
+      "title": "Fuma?a distante dos tanques",
+      "text": "Carca?as de tanques destru?dos recebem plumas vis?veis de longe com limites de desenho e processamento."
     },
     {
-      "title": "Carregamento antes das partidas",
-      "text": "Os modos exibem uma tela de preparação imediatamente após o clique, com transições suaves na entrada e no retorno ao menu."
+      "title": "Bots de moto mais cont?nuos",
+      "text": "Corre??o do acelera-e-freia repetitivo de motos pilotadas por bots e das rotas de acesso dos ve?culos."
     }
   ],
   "fixes": [
     {
-      "title": "Nascimento e deslocamento no Afegão",
-      "text": "Bots reaparecem em setores aliados seguros e tripulações de veículos nascem perto das baias, evitando rotas diretas por montanhas e água."
+      "title": "Desembarque mais seguro",
+      "text": "A sa?da de Guarani, BMP-2, Abrams e T-90 evita surgimento sob a blindagem ou em solo inadequado."
     },
     {
-      "title": "Postura ao sair da moto",
-      "text": "Piloto e garupa restauram a pose de infantaria ao desembarcar, morrer ou trocar de assento."
+      "title": "?pticas n?o migram para a pistola",
+      "text": "A sele??o de arma recupera corretamente a apresenta??o da luneta ap?s entrar ou sair do ve?culo."
+    },
+    {
+      "title": "Identidade do mapa",
+      "text": "Manifesto da Favela consolidado e verific?vel, com as fontes reais das altera??es arquitet?nicas e de combate."
     }
   ]
 }

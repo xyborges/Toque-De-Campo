@@ -1,0 +1,57 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="StandardMaterial3D" id="MatSteel"]
+albedo_color = Color(0.66, 0.56, 0.16, 1)
+metallic = 0.35
+roughness = 0.72
+
+[sub_resource type="CylinderMesh" id="MeshPost"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 1.05
+radial_segments = 6
+
+[sub_resource type="CylinderMesh" id="MeshRail"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 3.8
+radial_segments = 6
+
+[node name="FavelaCorrimaoBeco" type="Node3D"]
+metadata/library_id = "favela_corrimao_beco"
+metadata/footprint = Vector2(0.18, 3.8)
+metadata/origin = "ground"
+metadata/asset_revision = 1
+metadata/lod_near = 75.0
+metadata/lod_far = 170.0
+metadata/surface = "steel"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.525, -1.82)
+mesh = SubResource("MeshPost")
+material_override = SubResource("MatSteel")
+cast_shadow = 0
+visibility_range_end = 170.0
+
+[node name="PosteCentro" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.525, 0)
+mesh = SubResource("MeshPost")
+material_override = SubResource("MatSteel")
+cast_shadow = 0
+visibility_range_end = 170.0
+
+[node name="PosteFim" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.525, 1.82)
+mesh = SubResource("MeshPost")
+material_override = SubResource("MatSteel")
+cast_shadow = 0
+visibility_range_end = 170.0
+
+[node name="BarraSuperior" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.02, 0)
+rotation = Vector3(1.570796, 0, 0)
+mesh = SubResource("MeshRail")
+material_override = SubResource("MatSteel")
+cast_shadow = 0
+visibility_range_end = 170.0

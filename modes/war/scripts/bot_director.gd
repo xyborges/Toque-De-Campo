@@ -37,13 +37,19 @@ class BotRoutes extends OfflineDirector:
 	var heights:=PackedFloat32Array()
 	func setup(owner_game: Node3D) -> void:
 		game=owner_game;cell=4.
-		origin=Vector2(-600,-260) if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN else Vector2(-350,-250)
+		var favela:=WarRules.CURRENT_OPERATION==WarOperation.FAVELA
+		if favela:
+			cell=3.0
+			origin=Vector2(-650,-555)
+		elif WarRules.CURRENT_OPERATION==WarOperation.AFGHAN:
+			origin=Vector2(-600,-260)
+		else:origin=Vector2(-350,-250)
 		# Never load a Ukrainian baked navgrid on Afghan terrain. Afghan
 		# currently uses a local grid around the central village plus transit.
 		if load("res://scripts/maps/navigation_cache.gd").install(self,WarRules.map_content()):return
 		# Central cover uses a fine local grid. Long transit uses the road graph
 		# instead of searching a dense grid across all 3.5 kilometres.
-		grid.region=Rect2i(Vector2i.ZERO,Vector2i(176,126))
+		grid.region=Rect2i(Vector2i.ZERO,Vector2i(434,370)) if favela else Rect2i(Vector2i.ZERO,Vector2i(176,126))
 		grid.cell_size=Vector2.ONE*cell;grid.offset=origin
 		grid.diagonal_mode=AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
 		grid.update()
@@ -81,7 +87,7 @@ class BotRoutes extends OfflineDirector:
 			# A regional cell represents its full square, not only its centre.
 			# Including half a cell keeps thin walls between centres from vanishing
 			# from navigation. Fine steering still uses the real physics geometry.
-			var clearance:=.42+cell*.5
+			var clearance:=.55 if favela else .42+cell*.5
 			var low:=Vector2i(ceil((bounds.position.x-clearance-origin.x)/cell),ceil((bounds.position.z-clearance-origin.y)/cell))
 			var high:=Vector2i(floor((bounds.end.x+clearance-origin.x)/cell),floor((bounds.end.z+clearance-origin.y)/cell))
 			var rect:=Rect2i(low,high-low+Vector2i.ONE).intersection(grid.region)
@@ -115,6 +121,9 @@ func setup(owner_game: WarGame,fill_online:=false) -> void:
 	set_physics_process(enabled)
 	if not enabled: return
 	transit.configure(WarRules.map_content())
+	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+		var map:=game.world_root.get_node_or_null("FavelaWar") as WarFavelaMap
+		if map!=null:transit.install_rooftops(map.roof_paths)
 	navigation=BotRoutes.new();navigation.setup(game)
 
 func populate(human_team: int) -> void:
@@ -259,8 +268,7 @@ func preferred_spawn(id: int) -> String:
 	if team not in [0,1]: return "base"
 	var slot:=int(record.slot)
 	if slot<2 and is_instance_valid(game.vehicle_system):
-		var kind: String=("guarani" if team==0 else "bmp2") if slot==0 else ("abrams" if team==0 else "t90")
-		var vehicle:=game.vehicle_system.vehicles.get("v_"+kind) as WarVehicle
+		var vehicle:=_assigned_armor(team,slot)
 		if is_instance_valid(vehicle) and not vehicle.destroyed and vehicle.driver<=0 and vehicle.global_position.distance_to(WarRules.BASES[team])<125.:
 			return "base"
 	var focus_key:=str(record.get("objective","C"))
@@ -373,6 +381,8 @@ func _think(id: int) -> void:
 		record.target_vehicle=enemy_armor.vehicle_id if is_instance_valid(enemy_armor) else ""
 		record.line_clear=is_instance_valid(enemy)
 		return
+	var favela:=WarRules.CURRENT_OPERATION==WarOperation.FAVELA
+	if favela:record.roof_follow=false
 	var target:=_visible_enemy(actor)
 	if actor.war_class=="soldier": _grenade_tactics(actor,record,target)
 	var armored:=_visible_vehicle(actor) if actor.war_class=="antitank" and int(game.members[id].get("charges",0))>0 else null
@@ -396,6 +406,8 @@ func _think(id: int) -> void:
 		# squad advances and they still move when the front changes objective.
 		formation+=Vector3(-34. if actor.war_team==0 else 34.,0,(id%3-1)*13.)
 	var goal:=WarTerrain.point(data.position.x+cos(phase)*9+formation.x,data.position.z+sin(phase)*9+formation.z)
+	if favela and not target and actor.war_class=="marksman":
+		goal=transit.rooftop_overwatch(actor.global_position,goal)
 	record.goal=goal
 	var direction:=_route_direction(actor,goal,record)
 	diagnostics.routes=int(diagnostics.routes)+1
@@ -404,10 +416,15 @@ func _think(id: int) -> void:
 		if not bool(record.line_clear):
 			# A wall should make a bot maneuver toward a firing lane, not forget
 			# the enemy and idle on its current objective.
-			direction=navigation.direction_to(actor,target.global_position,game.war_clock)
+			if favela:direction=_route_direction(actor,target.global_position,record)
+			else:direction=navigation.direction_to(actor,target.global_position,game.war_clock)
 		elif actor.global_position.distance_to(target.global_position)<(110 if actor.war_class=="marksman" else 65):
 			var cover:=_cover_goal(actor,target,record)
-			direction=_route_direction(actor,cover,record) if cover.is_finite() and actor.global_position.distance_squared_to(cover)>1. else Vector3.ZERO
+			if cover.is_finite() and actor.global_position.distance_squared_to(cover)>1.:
+				direction=_route_direction(actor,cover,record)
+			else:
+				direction=Vector3.ZERO
+				if favela:record.roof_follow=false
 	elif direction.length_squared()>.01:
 		actor.yaw=atan2(-direction.x,-direction.z);actor.pitch=0;actor.rotation.y=actor.yaw
 		actor.camera_pivot.rotation.x=0;actor.aiming=false
@@ -641,6 +658,14 @@ func _avoid(actor: WarPlayer,direction: Vector3) -> Vector3:
 
 func _move(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	var direction: Vector3=record.direction
+	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA and bool(record.get("roof_follow",false)):
+		var vertical_path: PackedVector3Array=record.roof_path
+		if not vertical_path.is_empty() and (int(record.roof_index)>0 or actor.global_position.distance_squared_to(vertical_path[0])<4.0):
+			var vertical:=_roof_direction(actor,record.roof_goal,record)
+			if vertical.is_finite():direction=vertical
+			else:
+				record.roof_follow=false
+				direction=Vector3.ZERO
 	var separation:=Vector3.ZERO
 	for ally: WarPlayer in _near_actors(actor.global_position):
 		if not is_instance_valid(ally) or not ally.is_inside_tree() or ally==actor or ally.hp<=0 or not ally.deployed or not ally.vehicle_id.is_empty(): continue
@@ -738,6 +763,38 @@ func _formation(actor: WarPlayer,record: Dictionary) -> Vector3:
 	return Vector3.ZERO
 
 func _route_direction(actor: WarPlayer,goal: Vector3,record: Dictionary) -> Vector3:
+	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+		var vertical:=_roof_direction(actor,goal,record)
+		record.roof_follow=vertical.is_finite()
+		if vertical.is_finite():return vertical
+	return _ground_direction(actor,goal,record)
+
+func _roof_direction(actor: WarPlayer,goal: Vector3,record: Dictionary) -> Vector3:
+	var path: PackedVector3Array=record.get("roof_path",PackedVector3Array())
+	var previous_goal: Vector3=record.get("roof_goal",Vector3.INF)
+	var origin:=actor.global_position
+	if previous_goal.distance_squared_to(goal)>2.25 or (path.is_empty() and game.war_clock>float(record.get("roof_retry",0.0))):
+		path=transit.roof_path(origin,goal)
+		record.roof_goal=goal
+		record.roof_path=path
+		record.roof_index=0
+		record.roof_retry=game.war_clock+1.0
+	if path.is_empty():return Vector3.INF
+	var index: int=record.roof_index
+	while index<path.size():
+		var offset:=path[index]-origin
+		var vertical:=absf(offset.y)
+		offset.y=0
+		if offset.length_squared()>.18 or vertical>.48:
+			if index==0 and offset.length_squared()>4.0 and path[0].y-WarTerrain.height_at(path[0].x,path[0].z)<.2:
+				return _ground_direction(actor,path[0],record)
+			return offset.normalized()
+		index+=1
+		record.roof_index=index
+	record.roof_path=PackedVector3Array()
+	return Vector3.INF
+
+func _ground_direction(actor: WarPlayer,goal: Vector3,record: Dictionary) -> Vector3:
 	if absf(actor.position.x)<340 and actor.position.z>-245 and actor.position.z<245 and absf(goal.x)<340 and goal.z>-245 and goal.z<245:
 		return navigation.direction_to(actor,goal,game.war_clock)
 	if record.get("transit_goal",Vector3.INF).distance_to(goal)>25 or record.get("foot_path",[]).is_empty():
@@ -757,23 +814,32 @@ func _friendly_lane(actor: WarPlayer,point: Vector3,radius:=.8) -> bool:
 		if nearest.distance_to(centre)<radius: return false
 	return true
 
+func _assigned_armor(team: int,slot: int) -> WarVehicle:
+	var vehicle_id: String
+	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+		if team!=0:return null
+		vehicle_id="v_guarani_"+str(slot%2)
+	else:
+		var kind: String=("guarani" if team==0 else "bmp2") if slot!=1 else ("abrams" if team==0 else "t90")
+		vehicle_id="v_"+kind
+	return game.vehicle_system.vehicles.get(vehicle_id) as WarVehicle
+
 func _board(actor: WarPlayer,record: Dictionary) -> bool:
 	var slot:=int(record.slot)
 	if record.get("boarded_once",false): return false
 	var human:=game.local_player as WarPlayer
 	# Leave the human's two vehicles untouched during initial preparation.
-	if WarRules.CURRENT_OPERATION!=WarOperation.AFGHAN and is_instance_valid(human) and actor.war_team==human.war_team and game.war_clock<35 and human.vehicle_id.is_empty() and human.position.distance_to(WarRules.BASES[human.war_team])<85:
+	var favela:=WarRules.CURRENT_OPERATION==WarOperation.FAVELA
+	if not favela and WarRules.CURRENT_OPERATION!=WarOperation.AFGHAN and is_instance_valid(human) and actor.war_team==human.war_team and game.war_clock<35 and human.vehicle_id.is_empty() and human.position.distance_to(WarRules.BASES[human.war_team])<85:
 		record.direction=Vector3.ZERO;return true
 	var vehicle: WarVehicle
-	if slot<=3:
-		var kind: String=("guarani" if actor.war_team==0 else "bmp2") if slot!=1 else ("abrams" if actor.war_team==0 else "t90")
-		vehicle=game.vehicle_system.vehicles.get("v_"+kind) as WarVehicle
+	if slot<=3 and (not favela or actor.war_team==0):
+		vehicle=_assigned_armor(actor.war_team,slot)
 	else:
 		vehicle=_nearby_transport(actor,record)
 	if not is_instance_valid(vehicle) or vehicle.destroyed: return false
-	# Keep the tank available to a player at the start of an Afghan match.
-	# Unlike the old rule, this does not immobilize every infantry bot.
-	if WarRules.CURRENT_OPERATION==WarOperation.AFGHAN and slot==1 and game.war_clock<65.:
+	# Leave one heavy vehicle available without holding infantry in place.
+	if (favela or WarRules.CURRENT_OPERATION==WarOperation.AFGHAN) and slot==1 and not bool(vehicle.spec.get("transport",false)) and game.war_clock<65.:
 		for human_id in game.members:
 			var member: Dictionary=game.members[human_id]
 			if bool(member.get("bot",false)) or int(member.get("team",-1))!=actor.war_team: continue
@@ -888,7 +954,7 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	if vehicle.driver!=actor.peer_id:
 		if vehicle.position.distance_to(goal)<65: manager.release(actor.peer_id)
 		return
-	var follow_road:=WarRules.CURRENT_OPERATION==WarOperation.AFGHAN
+	var follow_road:=WarRules.CURRENT_OPERATION in [WarOperation.AFGHAN,WarOperation.FAVELA]
 	if record.vehicle_goal!=record.objective or record.vehicle_path.is_empty():
 		record.vehicle_path=transit.path(vehicle.position,goal,follow_road);record.vehicle_index=0;record.vehicle_goal=record.objective
 		record.terrain_detour=Vector3.INF;record.grade_check_at=0.
@@ -906,8 +972,12 @@ func _drive(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	var traffic:=_traffic_plan(vehicle,record)
 	# A passing maneuver must not take a tank off the engineered mountain road.
 	if follow_road and traffic.has("point"):
-		traffic={"brake":true,"reason":"afghan_road_no_overtake"}
-		record.traffic=traffic
+		# Large hulls stay on the centreline. A bike can pass only when both
+		# local bypass points fit inside the authored road's physical width.
+		var bike_pass:=bool(vehicle.spec.get("transport",false)) and transit.motorcycle_lane_clear(Vector3(traffic.point),float(vehicle.spec.size.x)*.5) and (not traffic.has("after") or transit.motorcycle_lane_clear(Vector3(traffic.after),float(vehicle.spec.size.x)*.5))
+		if not bike_pass:
+			traffic={"brake":true,"reason":"afghan_road_no_overtake"}
+			record.traffic=traffic
 	var next_point: Vector3=traffic.get("point",path[int(record.vehicle_index)])
 	var detour: Vector3=record.get("terrain_detour",Vector3.INF)
 	if detour.is_finite() and game.war_clock<float(record.get("terrain_detour_until",0.)) and vehicle.position.distance_to(detour)>4.:
@@ -1088,12 +1158,12 @@ func _traffic_plan(vehicle: WarVehicle,record: Dictionary) -> Dictionary:
 	if hull_gap<stop_gap:record.traffic={"brake":true,"reason":"vehicle_stopping_distance"};return record.traffic
 	# A wheeled APC needs turning room before it can acquire a parallel lane.
 	# When already too close, wait rather than curling into the lead's rear.
-	if not bool(vehicle.spec.tracked) and nearest_dist<26.:record.traffic={"brake":true,"reason":"vehicle_turning_clearance"};return record.traffic
+	if not bool(vehicle.spec.tracked) and not bool(vehicle.spec.get("transport",false)) and nearest_dist<26.:record.traffic={"brake":true,"reason":"vehicle_turning_clearance"};return record.traffic
 	if nearest.speed>vehicle.speed+.5 and nearest_dist>float(vehicle.spec.size.z)+5.:
 		record.traffic={};return {}
 	# A close vehicle or obstructed side requires stopping; only pass on a
 	# corridor large enough for the hull and with room ahead of the slower one.
-	var gap: float=(float(nearest.spec.size.x)+float(vehicle.spec.size.x))*.5+3.0
+	var gap: float=(float(nearest.spec.size.x)+float(vehicle.spec.size.x))*.5+(1.0 if bool(vehicle.spec.get("transport",false)) else 3.0)
 	var beyond: float=(float(nearest.spec.size.z)+float(vehicle.spec.size.z))*.5+8.0
 	var approach: float=clampf(nearest_dist-(float(nearest.spec.size.z)+float(vehicle.spec.size.z))*.5-6.,6.,22.)
 	for side in [-1.,1.]:
@@ -1101,4 +1171,9 @@ func _traffic_plan(vehicle: WarVehicle,record: Dictionary) -> Dictionary:
 		var destination: Vector3=nearest.global_position+right*gap*float(side)+forward*beyond
 		if _traffic_clear(vehicle,vehicle.global_position,beside) and _traffic_clear(vehicle,beside,destination):
 			record.traffic={"point":beside,"after":destination,"expires":game.war_clock+35.,"brake":false};return record.traffic
-	record.traffic={"brake":true};return record.traffic
+	# A failed pass at 30+ metres is not a reason for an instant full stop.
+	# Approach until the conservative stopping gap, then hold safely.
+	if hull_gap>stop_gap+maxf(3.,absf(vehicle.speed)*.45):
+		record.traffic={}
+		return {}
+	record.traffic={"brake":true,"reason":"vehicle_no_safe_pass"};return record.traffic

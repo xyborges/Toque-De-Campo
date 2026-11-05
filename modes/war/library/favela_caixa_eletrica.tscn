@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="StandardMaterial3D" id="BoxMat"]
+albedo_color = Color(0.36, 0.39, 0.37, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="FaceMat"]
+albedo_color = Color(0.16, 0.18, 0.17, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="BoxMesh"]
+size = Vector3(0.34, 0.46, 0.16)
+
+[sub_resource type="BoxMesh" id="FaceMesh"]
+size = Vector3(0.22, 0.14, 0.025)
+
+[node name="FavelaCaixaEletrica" type="Node3D"]
+metadata/library_id = "favela_caixa_eletrica"
+metadata/footprint = Vector2(0.45, 0.24)
+metadata/origin = "facade_center"
+metadata/asset_revision = 1
+metadata/lod_near = 105.0
+metadata/lod_far = 130.0
+metadata/surface = "metal"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh")
+material_override = SubResource("BoxMat")
+cast_shadow = 0
+visibility_range_end = 130.0
+
+[node name="Mostrador" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.05, 0.093)
+mesh = SubResource("FaceMesh")
+material_override = SubResource("FaceMat")
+cast_shadow = 0
+visibility_range_end = 85.0

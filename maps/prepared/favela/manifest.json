@@ -1,0 +1,116 @@
+{
+  "id": "favela",
+  "version": 6,
+  "status": "testing",
+  "bounds": [
+    -750,
+    -750,
+    1500,
+    1500
+  ],
+  "content_hash": "b522792b6e8ecb9d6be685cf7bb506d5908e99d053f64929dde01db19666e9fc",
+  "source_hash": "8f85ae7c590a71edce25eabbe29fe4cff09ed55f82eed071b592d23b76fc8114",
+  "sources": [
+    "res://modes/war/equipment/motorbike.tscn",
+    "res://modes/war/library/favela_antena_parabolica.tscn",
+    "res://modes/war/library/favela_ar_condicionado.tscn",
+    "res://modes/war/library/favela_arbusto_encosta.tscn",
+    "res://modes/war/library/favela_barraca_rua.tscn",
+    "res://modes/war/library/favela_barricada_pneus.tscn",
+    "res://modes/war/library/favela_caixa_dagua.tscn",
+    "res://modes/war/library/favela_caixa_eletrica.tscn",
+    "res://modes/war/library/favela_canaleta_drenagem.tscn",
+    "res://modes/war/library/favela_carro_compacto.tscn",
+    "res://modes/war/library/favela_casa_laje.tscn",
+    "res://modes/war/library/favela_comercio_fachada.tscn",
+    "res://modes/war/library/favela_corrimao_beco.tscn",
+    "res://modes/war/library/favela_escada_externa.tscn",
+    "res://modes/war/library/favela_janela_grade.tscn",
+    "res://modes/war/library/favela_janela_madeira.tscn",
+    "res://modes/war/library/favela_kit_obra.tscn",
+    "res://modes/war/library/favela_laje_domestica.tscn",
+    "res://modes/war/library/favela_laje_obra.tscn",
+    "res://modes/war/library/favela_lixo_calcada.tscn",
+    "res://modes/war/library/favela_moto_estacionada.tscn",
+    "res://modes/war/library/favela_muro_contencao.tscn",
+    "res://modes/war/library/favela_nevoa_encosta.tscn",
+    "res://modes/war/library/favela_pixacao.tscn",
+    "res://modes/war/library/favela_porta_entrada.tscn",
+    "res://modes/war/library/favela_portao_grade.tscn",
+    "res://modes/war/library/favela_poste_cabos.tscn",
+    "res://modes/war/library/favela_puxadinho_chapa.tscn",
+    "res://modes/war/library/favela_rede_aerea.tscn",
+    "res://modes/war/library/favela_rocha_encosta.tscn",
+    "res://modes/war/library/favela_sacada.tscn",
+    "res://modes/war/library/favela_tanque_lavanderia.tscn",
+    "res://modes/war/library/favela_toldo.tscn",
+    "res://modes/war/library/favela_tubulacao_externa.tscn",
+    "res://modes/war/library/favela_varal.tscn",
+    "res://modes/war/scripts/bot_director.gd",
+    "res://modes/war/scripts/bot_transit.gd",
+    "res://modes/war/scripts/favela_architecture.gd",
+    "res://modes/war/scripts/favela_atmosphere.gd",
+    "res://modes/war/scripts/favela_edge_composition.gd",
+    "res://modes/war/scripts/favela_hillside.gd",
+    "res://modes/war/scripts/favela_layout.gd",
+    "res://modes/war/scripts/favela_map.gd",
+    "res://modes/war/scripts/favela_street_art.gd",
+    "res://modes/war/scripts/favela_street_space.gd",
+    "res://modes/war/scripts/favela_uniform.gd",
+    "res://modes/war/scripts/operation.gd",
+    "res://modes/war/scripts/rules.gd",
+    "res://modes/war/scripts/vehicles.gd"
+  ],
+  "grass_enabled": false,
+  "grass_approved": false,
+  "objectives": [
+    {
+      "id": "A",
+      "x": -265,
+      "z": 345
+    },
+    {
+      "id": "B",
+      "x": -440,
+      "z": 35
+    },
+    {
+      "id": "C",
+      "x": -85,
+      "z": -20
+    },
+    {
+      "id": "D",
+      "x": 270,
+      "z": -205
+    },
+    {
+      "id": "E",
+      "x": -290,
+      "z": -405
+    }
+  ],
+  "benchmark": {
+    "renderer": "gl_compatibility",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "vram_limit_mib": 4096,
+    "median_loss_max_percent": 5,
+    "worst_frame_max_ms": 50,
+    "seconds": 120
+  },
+  "stages": [
+    "layout",
+    "terrain",
+    "roads",
+    "buildings",
+    "edge_infrastructure",
+    "microdetails",
+    "rules",
+    "multiplayer",
+    "benchmark"
+  ],
+  "artifacts": []
+}

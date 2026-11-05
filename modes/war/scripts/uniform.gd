@@ -48,6 +48,9 @@ static func apply(actor: GamePlayer,team: int,role: String) -> void:
 		for knee: Node3D in part.find_children("Knee?","Node3D",false,false):
 			for child in knee.get_children():
 				if child.has_meta("uniform_attachment"): knee.remove_child(child);child.queue_free()
+	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+		WarFavelaUniform.apply(actor,team,role)
+		return
 	if team==1 and WarRules.CURRENT_OPERATION==WarOperation.AFGHAN:
 		WarAfghanUniform.apply(actor,role)
 		return
@@ -139,6 +142,9 @@ static func apply(actor: GamePlayer,team: int,role: String) -> void:
 	actor.apply_body_colors(actor.get_meta("body_colors",GameCharacterColors.DEFAULTS))
 
 static func refresh_materials(actor: GamePlayer,team: int) -> void:
+	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
+		WarFavelaUniform.refresh_materials(actor,team)
+		return
 	if team==1 and WarRules.CURRENT_OPERATION==WarOperation.AFGHAN:
 		WarAfghanUniform.refresh_materials(actor)
 		return

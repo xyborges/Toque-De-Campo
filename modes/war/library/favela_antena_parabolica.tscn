@@ -1,0 +1,57 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="StandardMaterial3D" id="MatMetal"]
+albedo_color = Color(0.49, 0.51, 0.49, 1)
+metallic = 0.45
+roughness = 0.72
+
+[sub_resource type="StandardMaterial3D" id="MatDish"]
+albedo_color = Color(0.72, 0.72, 0.67, 1)
+roughness = 0.86
+
+[sub_resource type="CylinderMesh" id="MeshPole"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 1.35
+radial_segments = 6
+
+[sub_resource type="SphereMesh" id="MeshDish"]
+radius = 0.62
+height = 0.18
+radial_segments = 12
+rings = 5
+is_hemisphere = true
+
+[node name="FavelaAntenaParabolica" type="Node3D"]
+metadata/library_id = "favela_antena_parabolica"
+metadata/footprint = Vector2(1.4, 1.4)
+metadata/origin = "roof_surface"
+metadata/asset_revision = 1
+metadata/lod_near = 120.0
+metadata/lod_far = 360.0
+metadata/surface = "steel"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.68, 0)
+mesh = SubResource("MeshPole")
+material_override = SubResource("MatMetal")
+cast_shadow = 0
+visibility_range_end = 300.0
+
+[node name="Prato" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.30, 0.18)
+rotation = Vector3(-0.78, 0.35, 0)
+mesh = SubResource("MeshDish")
+material_override = SubResource("MatDish")
+cast_shadow = 0
+visibility_range_end = 360.0
+
+[node name="Braco" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.38, 0.48)
+rotation = Vector3(1.570796, 0, 0)
+scale = Vector3(0.6, 0.34, 0.6)
+mesh = SubResource("MeshPole")
+material_override = SubResource("MatMetal")
+cast_shadow = 0
+visibility_range_end = 240.0

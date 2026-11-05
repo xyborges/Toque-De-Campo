@@ -14,6 +14,8 @@ var account_summary: Label
 var main_menu: GameMainMenu
 var infantry_hud: GameInfantryHUD
 var loading_screen: GameLoadingScreen
+var desert_result_panel: GameMatchResultPanel
+var desert_result_open:=false
 var launch_layer: CanvasLayer
 var launch_curtain: GameLoadingScreen
 var launch_epoch := 0
@@ -470,6 +472,7 @@ func launch_from_menu(selected: String, offline := false) -> void:
 		"desert": title = "PREPARANDO DESERTO"; detail = "Iniciando treino..." if offline else "Conectando ao PVP..."
 		"naval": title = "PREPARANDO FROTA"; detail = "Abrindo as salas navais..."
 		"war": title = "PREPARANDO GUERRA"; detail = "Carregando a linha de frente..."
+		"war_favela": title = "PREPARANDO FAVELA"; detail = "Carregando becos e lajes..."
 		"war_afghan": title = "PREPARANDO AFEGÃO"; detail = "Carregando o vale afegão..."
 		"br": title = "PREPARANDO BATTLE ROYALE"; detail = "Carregando mapa e pareamento..."
 		_: return
@@ -487,6 +490,7 @@ func launch_from_menu(selected: String, offline := false) -> void:
 		"naval": open_naval()
 		"war": open_war(offline,WarOperation.UKRAINE)
 		"war_afghan": open_war(offline,WarOperation.AFGHAN)
+		"war_favela": open_war(offline,WarOperation.FAVELA)
 		"br": open_battle_royale(offline)
 	# As telas próprias de espera/matchmaking continuam gerindo a partida.
 	# A cortina global desaparece suavemente depois de a UI de destino existir.
@@ -509,6 +513,7 @@ func show_menu() -> void:
 	offline_frozen=false;deployment_wait_until=0.0
 	if is_instance_valid(deployment_panel): deployment_panel.pending=false
 	pvp_join_sent = false
+	desert_result_open=false
 	pvp_join_nonce = ""
 	pvp_ticket.clear()
 	last_net_state = 0.0
@@ -1463,7 +1468,37 @@ func _present_impact(shot_id: String, point: Vector3, _normal: Vector3, blood: b
 	if not is_instance_valid(world_root): return
 	if is_instance_valid(combat_visuals): combat_visuals.impact(point,blood)
 
+func _update_desert_result() -> void:
+	if not is_instance_valid(desert_result_panel) or dedicated_pvp or DisplayServer.get_name()=="headless": return
+	if mode!="pvp" or not online or not is_instance_valid(domination):
+		desert_result_open=false
+		return
+	if domination.phase=="finished":
+		if not desert_result_open:
+			var player:=local_player as GamePlayer
+			var peer_id:=player.peer_id if is_instance_valid(player) else 0
+			var winner_id:=domination.winner_id
+			var outcome:="draw" if winner_id==0 else ("neutral" if peer_id==0 else ("victory" if winner_id==peer_id else "defeat"))
+			var details:="SEM VENCEDOR" if winner_id==0 else ("VENCEDOR: "+domination.winner_name.to_upper())
+			var stats: Array=[
+				["SEUS PONTOS",str(domination.scores.get(peer_id,0))],
+				["ABATES",str(player.kills if is_instance_valid(player) else 0)],
+				["MORTES",str(player.deaths if is_instance_valid(player) else 0)]
+			]
+			desert_result_panel.present(outcome,"PVP DESERTO","DOMINAÇÃO · CASINHA",details,stats)
+			ui_focus.close_all()
+			ui_focus.open(desert_result_panel)
+			desert_result_panel.intro()
+			desert_result_open=true
+		desert_result_panel.set_countdown("PRÓXIMA RODADA EM %02d:%02d" % [int(ceilf(domination.break_left))/60,int(ceilf(domination.break_left))%60])
+	elif desert_result_open:
+		desert_result_open=false
+		if desert_result_panel in ui_focus.stack:
+			ui_focus.close_all()
+			if is_instance_valid(local_player) and local_player.hp>0: Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
+
 func _process(delta: float) -> void:
+	_update_desert_result()
 	if is_instance_valid(loading_screen) and loading_screen.visible: loading_screen.detail.text = status_label.text
 	if not is_instance_valid(music_player) or music_player.stream == null: return
 	if is_instance_valid(naval_mode): return
@@ -2663,6 +2698,9 @@ func _focus_changed() -> void:
 func _build_modal_ui() -> void:
 	ui_focus = GameUIFocus.new()
 	add_child(ui_focus)
+	desert_result_panel=GameMatchResultPanel.new()
+	ui_focus.add_child(desert_result_panel)
+	GameUI.button(desert_result_panel.actions,"VOLTAR AO MENU",show_menu)
 	ui_focus.changed.connect(_focus_changed)
 	ui_focus.shield.theme = GameUI.THEME
 	for panel in [appearance_panel,shop_panel]:

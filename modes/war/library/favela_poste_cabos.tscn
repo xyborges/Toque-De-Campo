@@ -1,0 +1,111 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ldd0j"]
+albedo_color = Color(0.44313726, 0.42352942, 0.38431373, 1)
+roughness = 0.92
+
+[sub_resource type="BoxMesh" id="BoxMesh_l4hgi"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g3oe7"]
+albedo_color = Color(0.34901962, 0.34117648, 0.3019608, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pkocn"]
+albedo_color = Color(0.28235295, 0.27450982, 0.24313726, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_21b0y"]
+albedo_color = Color(0.3254902, 0.34509805, 0.32156864, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xgd5b"]
+albedo_color = Color(0.23921569, 0.25490198, 0.23921569, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pputd"]
+albedo_color = Color(0.59607846, 0.5803922, 0.49803922, 1)
+roughness = 0.92
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ywa4c"]
+size = Vector3(0.22, 7.85, 0.24)
+
+[node name="PosteFavela" type="Node3D" unique_id=862351372]
+metadata/library_id = "favela_poste_cabos"
+metadata/footprint = Vector2(0.29, 0.3)
+metadata/origin = "ground"
+metadata/surface = "concrete"
+metadata/destructible = false
+metadata/asset_revision = 1
+metadata/lod_near = 225.0
+metadata/lod_far = 225.0
+
+[node name="Concreto" type="MeshInstance3D" parent="." unique_id=1193875225]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.23, 0, 3.92, 0)
+material_override = SubResource("StandardMaterial3D_ldd0j")
+cast_shadow = 0
+visibility_range_end = 225.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="BaseEscurecida" type="MeshInstance3D" parent="." unique_id=344215224]
+transform = Transform3D(0.27, 0, 0, 0, 0.89, 0, 0, 0, 0.29, 0, 0.44, 0)
+material_override = SubResource("StandardMaterial3D_g3oe7")
+cast_shadow = 0
+visibility_range_end = 225.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Travessa" type="MeshInstance3D" parent="." unique_id=43770234]
+transform = Transform3D(1.18, 0, 0, 0, 0.1, 0, 0, 0, 0.17, 0, 7.45, 0)
+material_override = SubResource("StandardMaterial3D_pkocn")
+cast_shadow = 0
+visibility_range_end = 225.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="CaixaDistribuicao" type="MeshInstance3D" parent="." unique_id=1284203443]
+transform = Transform3D(0.44, 0, 0, 0, 0.56, 0, 0, 0, 0.44, 0.25, 6.32, 0)
+material_override = SubResource("StandardMaterial3D_21b0y")
+cast_shadow = 0
+visibility_range_end = 225.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Eletroduto" type="MeshInstance3D" parent="." unique_id=124148939]
+transform = Transform3D(0.055, 0, 0, 0, 5.77, 0, 0, 0, 0.065, 0.09, 3.42, 0.14)
+material_override = SubResource("StandardMaterial3D_xgd5b")
+cast_shadow = 0
+visibility_range_end = 225.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Isolador0" type="MeshInstance3D" parent="." unique_id=1295307145]
+transform = Transform3D(0.095, 0, 0, 0, 0.18, 0, 0, 0, 0.09, -0.47, 7.59, 0)
+material_override = SubResource("StandardMaterial3D_pputd")
+cast_shadow = 0
+visibility_range_end = 225.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Isolador1" type="MeshInstance3D" parent="." unique_id=34063844]
+transform = Transform3D(0.095, 0, 0, 0, 0.18, 0, 0, 0, 0.09, -0.16, 7.59, 0)
+material_override = SubResource("StandardMaterial3D_pputd")
+cast_shadow = 0
+visibility_range_end = 225.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Isolador2" type="MeshInstance3D" parent="." unique_id=1841808444]
+transform = Transform3D(0.095, 0, 0, 0, 0.18, 0, 0, 0, 0.09, 0.15, 7.59, 0)
+material_override = SubResource("StandardMaterial3D_pputd")
+cast_shadow = 0
+visibility_range_end = 225.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="Isolador3" type="MeshInstance3D" parent="." unique_id=1064514914]
+transform = Transform3D(0.095, 0, 0, 0, 0.18, 0, 0, 0, 0.09, 0.46, 7.59, 0)
+material_override = SubResource("StandardMaterial3D_pputd")
+cast_shadow = 0
+visibility_range_end = 225.0
+mesh = SubResource("BoxMesh_l4hgi")
+
+[node name="ContatoPoste" type="StaticBody3D" parent="." unique_id=790476740]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.9, 0)
+collision_mask = 0
+metadata/surface = "concrete"
+
+[node name="@CollisionShape3D@3" type="CollisionShape3D" parent="ContatoPoste" unique_id=1289490742]
+shape = SubResource("BoxShape3D_ywa4c")

@@ -37,10 +37,11 @@ const VEHICLE_SENSORS := {
 	"t90":{"fov":55.,"yaw_rate":.95,"pitch_rate":.60,"optic":Vector3(.35,.48,.20)}}
 
 static func launcher_for_team(team: int) -> String:
+	if CURRENT_OPERATION==WarOperation.FAVELA and team==0:return ""
 	return TEAM_LAUNCHERS[team] if team in [0,1] else ""
 
 static func launcher_allowed(team: int,id: String) -> bool:
-	return not id.is_empty() and id==launcher_for_team(team)
+	return id==launcher_for_team(team) and (not id.is_empty() or CURRENT_OPERATION==WarOperation.FAVELA and team==0)
 # Feet positions in the hull's local coordinates. Seat zero is the sole
 # operator; seats 1..N are passengers, never a second turret controller.
 const BIKE_SEATS := [Vector3(0,.07,0),Vector3(0,.07,.52)]
@@ -77,6 +78,18 @@ static func configure(operation: String) -> void:
 			var p: Vector3=BASES[i];p.y=BRAfghanMap.height_at(p.x,p.z);BASES[i]=p
 		for id in OBJECTIVES:
 			var p: Vector3=OBJECTIVES[id].position;p.y=BRAfghanMap.height_at(p.x,p.z);OBJECTIVES[id].position=p
+	elif CURRENT_OPERATION==WarOperation.FAVELA:
+		for i in BASES.size():
+			var p: Vector3=BASES[i];p.y=WarFavelaMap.height_at(p.x,p.z);BASES[i]=p
+		for id in OBJECTIVES:
+			var p: Vector3=OBJECTIVES[id].position;p.y=WarFavelaMap.height_at(p.x,p.z);OBJECTIVES[id].position=p
+
+static func vehicle_enabled(kind: String) -> bool:
+	return CURRENT_OPERATION!=WarOperation.FAVELA or kind in ["bike_0","bike_1","guarani"]
+
+static func vehicle_count(kind: String) -> int:
+	if CURRENT_OPERATION==WarOperation.FAVELA and kind=="guarani":return 2
+	return int(VEHICLES[kind].get("count",1))
 
 static func team_name(team: int) -> String:return WarOperation.team_name(CURRENT_OPERATION,team)
 static func map_name() -> String:return WarOperation.map_name(CURRENT_OPERATION)

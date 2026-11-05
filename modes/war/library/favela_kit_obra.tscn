@@ -1,0 +1,83 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="StandardMaterial3D" id="BrickMat"]
+albedo_color = Color(0.48, 0.22, 0.14, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="BagMat"]
+albedo_color = Color(0.72, 0.69, 0.58, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="SteelMat"]
+albedo_color = Color(0.22, 0.23, 0.21, 1)
+roughness = 0.82
+
+[sub_resource type="BoxMesh" id="BrickMesh"]
+size = Vector3(0.42, 0.22, 0.22)
+
+[sub_resource type="BoxMesh" id="BagMesh"]
+size = Vector3(0.58, 0.18, 0.34)
+
+[sub_resource type="BoxMesh" id="RebarMesh"]
+size = Vector3(0.035, 1.7, 0.035)
+
+[node name="FavelaKitObra" type="Node3D"]
+metadata/library_id = "favela_kit_obra"
+metadata/footprint = Vector2(2.2, 1.6)
+metadata/origin = "roof_surface"
+metadata/asset_revision = 1
+metadata/lod_near = 105.0
+metadata/lod_far = 150.0
+metadata/surface = "mixed"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(-0.58, 0.11, -0.22)
+mesh = SubResource("BrickMesh")
+material_override = SubResource("BrickMat")
+cast_shadow = 0
+visibility_range_end = 150.0
+
+[node name="TijoloB" type="MeshInstance3D" parent="."]
+position = Vector3(-0.10, 0.11, -0.22)
+mesh = SubResource("BrickMesh")
+material_override = SubResource("BrickMat")
+cast_shadow = 0
+visibility_range_end = 150.0
+
+[node name="TijoloC" type="MeshInstance3D" parent="."]
+position = Vector3(-0.36, 0.33, -0.22)
+mesh = SubResource("BrickMesh")
+material_override = SubResource("BrickMat")
+cast_shadow = 0
+visibility_range_end = 150.0
+
+[node name="SacoA" type="MeshInstance3D" parent="."]
+position = Vector3(0.58, 0.09, 0.28)
+rotation = Vector3(0, 0.15, 0)
+mesh = SubResource("BagMesh")
+material_override = SubResource("BagMat")
+cast_shadow = 0
+visibility_range_end = 115.0
+
+[node name="SacoB" type="MeshInstance3D" parent="."]
+position = Vector3(0.50, 0.27, 0.19)
+rotation = Vector3(0, -0.10, 0)
+mesh = SubResource("BagMesh")
+material_override = SubResource("BagMat")
+cast_shadow = 0
+visibility_range_end = 115.0
+
+[node name="VergalhaoA" type="MeshInstance3D" parent="."]
+position = Vector3(-0.88, 0.85, 0.52)
+mesh = SubResource("RebarMesh")
+material_override = SubResource("SteelMat")
+cast_shadow = 0
+visibility_range_end = 125.0
+
+[node name="VergalhaoB" type="MeshInstance3D" parent="."]
+position = Vector3(-0.68, 0.85, 0.48)
+mesh = SubResource("RebarMesh")
+material_override = SubResource("SteelMat")
+cast_shadow = 0
+visibility_range_end = 125.0

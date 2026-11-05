@@ -9,6 +9,16 @@ var persistent:=0.0
 var emitted_at: Dictionary={}
 # Client-only cinematic sequence: never spawns physics, collision or extra audio.
 const MAX_CINEMATIC := 8
+# Huge wreck plumes are drawn separately from the 900m close-up particle pool.
+# 8 wrecks x 3 cards = 24 pooled billboards in ONE MultiMesh draw.
+const WRECK_PLUME_LIMIT := 8
+const WRECK_PLUME_CARDS := 3
+const WRECK_PLUME_LIFETIME := 75.0
+const WRECK_PLUME_MAX_RANGE := 6500.0
+var wreck_plumes: Array[Dictionary]=[]
+var wreck_plume_pool: MultiMesh
+var wreck_plume_visible:=0
+var wreck_plume_tick:=0.0
 var cinematic: Array[Dictionary]=[]
 var rings: Array[MeshInstance3D]=[]
 var ring_events: Array[Dictionary]=[]
@@ -30,6 +40,24 @@ func _ready() -> void:
 	add_child(instance)
 	for i in LIMIT: pool.set_instance_transform(i,Transform3D(Basis.from_scale(Vector3.ZERO),Vector3.ZERO))
 	pool.visible_instance_count=0
+	var plume_mesh:=QuadMesh.new()
+	plume_mesh.size=Vector2(2.,2.)
+	wreck_plume_pool=MultiMesh.new()
+	wreck_plume_pool.transform_format=MultiMesh.TRANSFORM_3D
+	wreck_plume_pool.use_colors=true
+	wreck_plume_pool.use_custom_data=true
+	wreck_plume_pool.mesh=plume_mesh
+	wreck_plume_pool.instance_count=WRECK_PLUME_LIMIT*WRECK_PLUME_CARDS
+	var plume_instance:=MultiMeshInstance3D.new()
+	plume_instance.name="DistantTankWreckPlumes"
+	plume_instance.multimesh=wreck_plume_pool
+	plume_instance.custom_aabb=AABB(Vector3(-8500.,-800.,-8500.),Vector3(17000.,2500.,17000.))
+	plume_instance.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var plume_material:=ShaderMaterial.new()
+	plume_material.shader=preload("res://modes/war/shaders/wreck_smoke_far.gdshader")
+	plume_instance.material_override=plume_material
+	add_child(plume_instance)
+	wreck_plume_pool.visible_instance_count=0
 	var ring_shader:=Shader.new()
 	ring_shader.code="shader_type spatial; render_mode unshaded, blend_mix, depth_draw_never, cull_disabled, shadows_disabled; uniform vec4 tint : source_color = vec4(0.78,0.69,0.49,0.40); void fragment(){ vec2 uv=UV*2.0-1.0; float r=length(uv); float outer=smoothstep(0.64,0.81,r)*(1.0-smoothstep(0.89,0.99,r)); float inner=smoothstep(0.34,0.52,r)*(1.0-smoothstep(0.56,0.74,r)); ALBEDO=tint.rgb; ALPHA=tint.a*(outer+inner*0.27); }"
 	for index in MAX_CINEMATIC:
@@ -53,6 +81,10 @@ func explosion(point: Vector3,radius: float,seed_value: int,kind:="") -> void:
 	var near:=distance<190.0
 	var heavy:=kind in ["tank","tv","drone","destroy","tank_wreck","armor_wreck"]
 	if heavy: radius=maxf(6.,radius)*1.18
+	# The distant wreck exists even when every short-range explosion particle
+	# is culled. Keep this BEFORE the 900m early return.
+	if kind=="tank_wreck":
+		_register_wreck_plume(point,seed_value)
 	if is_instance_valid(camera) and camera.global_position.distance_squared_to(point)>900.*900.: return
 	if kind in ["tank_wreck","armor_wreck"]:
 		# Scheduled muzzle-like ammunition flashes are visual only: the original
@@ -225,7 +257,67 @@ func _cinematic_step(delta: float) -> void:
 		r.node.scale=Vector3.ONE*(.3+float(r.radius)*t)
 		r.node.material_override.set_shader_parameter("tint",Color(.78,.67,.49,(1.0-t)*(1.0-t)*.42))
 
+# Keep the apparent angle of a plume even beyond the camera far plane.
+# Render at <=72% of camera.far instead of raising far clipping and terrain cost.
+static func wreck_plume_profile(distance: float, far_clip: float, age: float) -> Dictionary:
+	if not is_finite(distance) or not is_finite(far_clip) or not is_finite(age): return {}
+	if distance<220.0 or distance>WRECK_PLUME_MAX_RANGE or far_clip<=10.0 or age<0.0 or age>=WRECK_PLUME_LIFETIME: return {}
+	var opacity:=smoothstep(220.0,470.0,distance)*(1.0-smoothstep(5750.0,WRECK_PLUME_MAX_RANGE,distance))
+	opacity*=smoothstep(.55,4.0,age)*(1.0-smoothstep(54.0,WRECK_PLUME_LIFETIME,age))
+	if opacity<.008: return {}
+	var mapped_distance:=minf(distance,far_clip*.72)
+	var growth:=smoothstep(.5,12.0,age)
+	return {"mapped_distance":mapped_distance,"scale":mapped_distance/distance,
+		"height":lerpf(16.0,145.0,growth),"width":lerpf(14.0,64.0,growth),
+		"opacity":opacity}
+
+func _register_wreck_plume(point: Vector3,seed_value: int) -> void:
+	if wreck_plume_pool==null or not point.is_finite(): return
+	if wreck_plumes.size()>=WRECK_PLUME_LIMIT: wreck_plumes.pop_front()
+	wreck_plumes.append({"point":point,"age":0.0,"seed":seed_value})
+
+func _wreck_plume_step(delta: float,camera: Camera3D) -> void:
+	if wreck_plume_pool==null: return
+	# Fixed-size pool: never allocate geometry, collisions, lights, audio or particles.
+	for i in range(wreck_plumes.size()-1,-1,-1):
+		var record: Dictionary=wreck_plumes[i]
+		record.age=float(record.age)+delta
+		if float(record.age)>=WRECK_PLUME_LIFETIME: wreck_plumes.remove_at(i)
+	var drawn:=0
+	if is_instance_valid(camera):
+		var eye:=camera.global_position
+		var forward: Vector3=-camera.global_basis.z
+		for record in wreck_plumes:
+			var offset: Vector3=record.point-eye
+			var distance:=offset.length()
+			var params:=wreck_plume_profile(distance,camera.far,float(record.age))
+			if params.is_empty() or offset.dot(forward)<-25.0: continue
+			var proxy_origin:=eye+offset*(float(params.mapped_distance)/distance)
+			var projected_height:=float(params.height)*float(params.scale)
+			var projected_width:=float(params.width)*float(params.scale)
+			var alpha:=float(params.opacity)
+			var seed_fraction:=float(posmod(int(record.seed),997))/997.0
+			for layer in WRECK_PLUME_CARDS:
+				# Avoid allocating per-layer arrays in the render loop.
+				var y:=.30 if layer==0 else (.57 if layer==1 else .82)
+				var w:=.72 if layer==0 else (1.0 if layer==1 else 1.28)
+				var h:=.70 if layer==0 else (.86 if layer==1 else .39)
+				var center:=proxy_origin+Vector3.UP*(projected_height*y)
+				wreck_plume_pool.set_instance_transform(drawn,Transform3D(Basis.from_scale(Vector3(projected_width*w*.5,projected_height*h*.5,1.0)),center))
+				var shade:=Color(.11,.11,.11,.55) if layer==0 else (Color(.16,.16,.16,.58) if layer==1 else Color(.21,.21,.20,.49))
+				shade.a*=alpha
+				wreck_plume_pool.set_instance_color(drawn,shade)
+				wreck_plume_pool.set_instance_custom_data(drawn,Color(fposmod(seed_fraction+layer*.257,1.0),0.0,0.0,0.0))
+				drawn+=1
+	wreck_plume_pool.visible_instance_count=drawn
+	wreck_plume_visible=drawn
+
 func _process(delta: float) -> void:
+	# Far smoke geometry only needs ~12.5 updates/s; shader animation is smooth.
+	wreck_plume_tick+=delta
+	if wreck_plume_tick>=.08:
+		_wreck_plume_step(wreck_plume_tick,get_viewport().get_camera_3d())
+		wreck_plume_tick=0.0
 	_shock_step(delta)
 	_cinematic_step(delta)
 	clock+=delta;persistent+=delta

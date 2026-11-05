@@ -21,6 +21,9 @@ var grenade_hint: Label
 var reload_text: Label
 var prompt: Label
 var death_text: Label
+var death_banner: PanelContainer
+var elimination_shown:=false
+var last_result_key:=""
 var minimap: BRMinimap
 var waiting: PanelContainer
 var waiting_count: Label
@@ -30,7 +33,7 @@ var waiting_signature:=-1
 var live_widgets: Array[CanvasItem]=[]
 var inventory_dividers: Array[Control]=[]
 var start_button: Button
-var result_panel: PanelContainer
+var result_panel: GameMatchResultPanel
 var result_heading: Label
 var result_detail: Label
 var inventory_panel: PanelContainer
@@ -84,12 +87,22 @@ func _ready() -> void:
 	GameUI.label(weaponbox,"1 / 2 · ARMAS   3 · SOCOS",11,FieldTheme.MUTED)
 	minimap=BRMinimap.new();GameUI.rect(minimap,-200,118,-20,298,Vector2(1,0));add_child(minimap)
 	prompt=GameUI.label(self,"",16,FieldTheme.ACCENT);GameUI.rect(prompt,-240,55,240,86,Vector2(.5,.5));prompt.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	death_text=GameUI.label(self,"",18,FieldTheme.BAD);GameUI.rect(death_text,-350,96,350,182,Vector2(.5,.5));death_text.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	dead_results=GameUI.button(self,"RESULTADOS",_open_statistics);GameUI.rect(dead_results,-85,189,85,231,Vector2(.5,.5));dead_results.hide()
+	death_banner=GameUI.panel(self,18)
+	GameUI.rect(death_banner,-375,55,375,207,Vector2(.5,.5))
+	death_banner.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var death_content:=VBoxContainer.new()
+	death_content.add_theme_constant_override("separation",8)
+	death_banner.add_child(death_content)
+	var death_kicker:=GameUI.label(death_content,"BATTLE ROYALE / RESULTADO",12,FieldTheme.MUTED)
+	death_kicker.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	death_text=GameUI.label(death_content,"ELIMINADO",21,FieldTheme.BAD)
+	death_text.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	death_banner.hide()
+	dead_results=GameUI.button(self,"RESULTADOS",_open_statistics);GameUI.rect(dead_results,-85,218,85,260,Vector2(.5,.5));dead_results.hide()
 	var menu:=GameUI.hud_menu_button(self,func():
 		if is_instance_valid(game) and is_instance_valid(game.ui_focus): game.ui_focus.open(game.pause_panel)
 	)
-	live_widgets.assign([heading,alert,microphone,speech,life,weapon,minimap,prompt,death_text,dead_results,menu])
+	live_widgets.assign([heading,alert,microphone,speech,life,weapon,minimap,prompt,death_banner,dead_results,menu])
 	waiting=GameUI.panel(self,24);GameUI.rect(waiting,-255,-285,255,285,Vector2(.5,.5));waiting.name="BRWaiting"
 	var waitbox:=VBoxContainer.new();waitbox.add_theme_constant_override("separation",14);waiting.add_child(waitbox)
 	GameUI.label(waitbox,"BATTLE ROYALE",25,FieldTheme.ACCENT)
@@ -108,13 +121,13 @@ func _ready() -> void:
 		if is_instance_valid(pause_menu): pause_menu.confirm_leave()
 		else: game.leave_match()
 	)
-	result_panel=GameUI.panel(self,22);GameUI.rect(result_panel,-300,-180,300,180,Vector2(.5,.5))
-	result_panel.set_meta("preferred_size",Vector2(620,460))
-	result_panel.set_meta("ui_back_locked",true)
-	var results:=VBoxContainer.new();results.add_theme_constant_override("separation",12);result_panel.add_child(results)
-	result_heading=GameUI.label(results,"FIM DE PARTIDA",27,FieldTheme.ACCENT)
-	result_detail=GameUI.label(results,"",16)
-	GameUI.button(results,"VOLTAR",func():
+	result_panel=GameMatchResultPanel.new()
+	add_child(result_panel)
+	GameUI.rect(result_panel,-380,-230,380,230,Vector2(.5,.5))
+	result_panel.set_meta("preferred_size",Vector2(760,480))
+	result_heading=result_panel.headline
+	result_detail=result_panel.note
+	GameUI.button(result_panel.actions,"VOLTAR AO MENU",func():
 		if is_instance_valid(game): game.leave_match()
 	)
 	result_panel.hide()
@@ -231,7 +244,7 @@ func refresh(state: Dictionary,own_inventory: Dictionary,loot: Array) -> void:
 	if phase!=shown_phase:
 		shown_phase=phase
 		if phase=="waiting":GameUI.fade(waiting)
-		elif phase=="finished":GameUI.fade(result_panel)
+		elif phase=="finished":GameUI.fade(result_panel);last_result_key=""
 		elif phase=="active":GameUI.scene_fade(self)
 	for widget in live_widgets:widget.visible=phase!="waiting"
 	var alive:=int(state.get("alive",0));var total:=int(state.get("total",alive))
@@ -242,7 +255,14 @@ func refresh(state: Dictionary,own_inventory: Dictionary,loot: Array) -> void:
 	zone_text.text=("ZONA FECHANDO" if bool(zone.get("closing",false)) else "PRÓXIMA ZONA")+"  %d:%02d"%[seconds/60,seconds%60]
 	if phase=="waiting": zone_text.text="DESERTO AFEGÃO"
 	var actor: GamePlayer=game.local_player if is_instance_valid(game) else null
-	dead_results.visible=is_instance_valid(actor) and actor.hp<=0 and phase=="active"
+	var eliminated:=is_instance_valid(actor) and actor.hp<=0 and phase=="active"
+	dead_results.visible=eliminated
+	death_banner.visible=eliminated
+	if eliminated and not elimination_shown:
+		GameUI.fade(death_banner)
+		death_banner.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		elimination_shown=true
+	elif not eliminated: elimination_shown=false
 	if phase=="finished" and is_instance_valid(game.ui_focus) and statistics_panel in game.ui_focus.stack:game.ui_focus.close_top()
 	if is_instance_valid(actor):
 		health.text="+ %d"%maxi(0,int(ceil(actor.hp)));health_bar.value=actor.hp
@@ -274,8 +294,25 @@ func refresh(state: Dictionary,own_inventory: Dictionary,loot: Array) -> void:
 	_update_inventory()
 	if phase=="finished":
 		var result: Dictionary=state.get("result",{})
-		result_heading.text="VITÓRIA" if bool(result.get("victory",int(result.get("placement",0))==1)) else "FIM DE PARTIDA"
-		result_detail.text=_result_text(state,result)
+		var placement:=int(result.get("placement",0))
+		var victorious:=bool(result.get("victory",false)) and placement==1
+		var winner_name:=str(state.get("winner_name","")).strip_edges()
+		var signature:="%s:%d:%s" % [str(victorious),placement,winner_name]
+		if signature!=last_result_key:
+			last_result_key=signature
+			var outcome:="victory" if victorious else ("defeat" if placement>0 else "neutral")
+			var explanation:="VOCÊ FOI O ÚLTIMO SOBREVIVENTE" if victorious else ("COLOCAÇÃO FINAL · #%d" % placement if placement>0 else "AGUARDANDO RESULTADO FINAL")
+			var detail:="CAMPEÃO DA RODADA" if victorious else ("VENCEDOR: "+winner_name.to_upper() if not winner_name.is_empty() else "PARTIDA ENCERRADA")
+			var survival:=maxi(0,int(result.get("survival",state.get("elapsed",0))))
+			var stats: Array=[
+				["COLOCAÇÃO","#%d" % placement if placement>0 else "--"],
+				["ABATES",str(result.get("kills",state.get("kills",0)))],
+				["SOBREVIVÊNCIA","%02d:%02d" % [survival/60,survival%60]]
+			]
+			result_panel.present(outcome,"BATTLE ROYALE",explanation,detail,stats)
+			result_panel.intro()
+		result_panel.set_countdown("NOVA PARTIDA EM %02d:%02d" % [int(ceilf(float(state.get("countdown",0))))/60,int(ceilf(float(state.get("countdown",0))))%60])
+
 
 func _update_waiting(state: Dictionary) -> void:
 	var countdown:=maxi(0,ceili(float(state.get("countdown",0))))

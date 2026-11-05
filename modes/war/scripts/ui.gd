@@ -40,7 +40,7 @@ var capture_progress: ProgressBar
 var invalid_spawn:=false
 var spawn_signature:=""
 var waiting_panel: PanelContainer
-var round_panel: PanelContainer
+var round_panel: GameMatchResultPanel
 var round_result: Label
 var round_timer: Label
 
@@ -107,18 +107,31 @@ func _ready() -> void:
 	var waiting_title:=GameUI.label(waiting_box,"AGUARDANDO OPONENTE",20,FieldTheme.ACCENT);waiting_title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	var waiting_detail:=GameUI.label(waiting_box,"É preciso um jogador em cada equipe.",14,FieldTheme.MUTED);waiting_detail.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	waiting_panel.hide()
-	round_panel=GameUI.panel(game.ui_focus)
-	round_panel.set_meta("preferred_size",Vector2(460,220))
-	round_panel.set_meta("ui_back_locked",true)
-	var round_box:=VBoxContainer.new();round_box.add_theme_constant_override("separation",16);round_panel.add_child(round_box)
-	round_result=GameUI.label(round_box,"",25,FieldTheme.ACCENT);round_result.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	round_timer=GameUI.label(round_box,"",18,FieldTheme.INK);round_timer.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	GameUI.button(round_box,"VOLTAR AO MENU",func(): game.show_menu())
+	round_panel=GameMatchResultPanel.new()
+	game.ui_focus.add_child(round_panel)
+	round_result=round_panel.headline
+	round_timer=round_panel.timer
+	GameUI.button(round_panel.actions,"VOLTAR AO MENU",func(): game.show_menu())
 	round_panel.hide()
 
 func show_round_end() -> void:
 	if not is_instance_valid(round_panel) or round_panel.visible: return
-	game.ui_focus.close_all();game.ui_focus.open(round_panel);Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
+	var actor:=game.local_player as WarPlayer
+	var team_id:=actor.war_team if is_instance_valid(actor) else -1
+	var outcome:="draw"
+	if game.winner>=0: outcome="victory" if team_id==game.winner else ("defeat" if team_id>=0 else "neutral")
+	var winner_text:="TICKETS IGUAIS" if game.winner<0 else ("EQUIPE VENCEDORA: "+WarRules.team_name(game.winner).to_upper())
+	var elapsed:=maxi(0,int(game.war_clock))
+	var stats: Array=[
+		["TICKETS "+WarRules.team_name(0),str(game.tickets[0])],
+		["TICKETS "+WarRules.team_name(1),str(game.tickets[1])],
+		["DURAÇÃO","%02d:%02d" % [elapsed/60,elapsed%60]]
+	]
+	round_panel.present(outcome,"GUERRA / "+WarRules.map_name().to_upper(),"CONQUISTA · OPERAÇÃO ENCERRADA",winner_text,stats)
+	game.ui_focus.close_all()
+	game.ui_focus.open(round_panel)
+	round_panel.intro()
+	Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 
 func close_round_end() -> void:
 	if is_instance_valid(round_panel) and round_panel.visible: game.ui_focus.close_all()
@@ -335,9 +348,9 @@ func _process(delta: float) -> void:
 	var actor:=game.local_player as WarPlayer
 	if game.match_ended:
 		if not round_panel.visible: show_round_end()
-		var own_team:=actor.war_team if is_instance_valid(actor) else -1
-		round_result.text="EMPATE" if game.winner<0 else ("VITÓRIA" if game.winner==own_team else "DERROTA")
-		round_timer.text="PRÓXIMA PARTIDA · %02d:%02d"%[int(ceilf(game.round_restart_left))/60,int(ceilf(game.round_restart_left))%60]
+		round_panel.stat_values[0].text=str(game.tickets[0])
+		round_panel.stat_values[1].text=str(game.tickets[1])
+		round_panel.set_countdown("PRÓXIMA PARTIDA EM %02d:%02d" % [int(ceilf(game.round_restart_left))/60,int(ceilf(game.round_restart_left))%60])
 	waiting_panel.visible=is_instance_valid(actor) and actor.hp>0 and actor.deployed and not game._battle_active() and not game.match_ended and not game.ui_focus.blocked()
 	_refresh_capture(actor)
 	minimap.visible=is_instance_valid(actor) and actor.hp>0 and actor.deployed and not game.ui_focus.blocked()

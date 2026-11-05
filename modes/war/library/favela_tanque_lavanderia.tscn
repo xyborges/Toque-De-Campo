@@ -1,0 +1,66 @@
+[gd_scene load_steps=7 format=3]
+
+[sub_resource type="StandardMaterial3D" id="MatConcrete"]
+albedo_color = Color(0.68, 0.65, 0.57, 1)
+roughness = 0.98
+
+[sub_resource type="StandardMaterial3D" id="MatWater"]
+albedo_color = Color(0.17, 0.40, 0.49, 1)
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="MatMetal"]
+albedo_color = Color(0.42, 0.44, 0.42, 1)
+metallic = 0.5
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="MeshBasin"]
+size = Vector3(1.35, 0.72, 0.72)
+
+[sub_resource type="BoxMesh" id="MeshWater"]
+size = Vector3(0.96, 0.025, 0.48)
+
+[sub_resource type="CylinderMesh" id="MeshTap"]
+top_radius = 0.025
+bottom_radius = 0.025
+height = 0.48
+radial_segments = 6
+
+[node name="FavelaTanqueLavanderia" type="Node3D"]
+metadata/library_id = "favela_tanque_lavanderia"
+metadata/footprint = Vector2(1.5, 0.9)
+metadata/origin = "ground"
+metadata/asset_revision = 1
+metadata/lod_near = 65.0
+metadata/lod_far = 150.0
+metadata/surface = "concrete"
+metadata/destructible = false
+
+[node name="Forma" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.36, 0)
+mesh = SubResource("MeshBasin")
+material_override = SubResource("MatConcrete")
+cast_shadow = 0
+visibility_range_end = 150.0
+
+[node name="Agua" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.735, 0)
+mesh = SubResource("MeshWater")
+material_override = SubResource("MatWater")
+cast_shadow = 0
+visibility_range_end = 70.0
+
+[node name="Torneira" type="MeshInstance3D" parent="."]
+position = Vector3(0.50, 0.94, -0.18)
+mesh = SubResource("MeshTap")
+material_override = SubResource("MatMetal")
+cast_shadow = 0
+visibility_range_end = 110.0
+
+[node name="Bico" type="MeshInstance3D" parent="."]
+position = Vector3(0.50, 1.12, 0)
+rotation = Vector3(1.570796, 0, 0)
+scale = Vector3(1, 0.48, 1)
+mesh = SubResource("MeshTap")
+material_override = SubResource("MatMetal")
+cast_shadow = 0
+visibility_range_end = 110.0
