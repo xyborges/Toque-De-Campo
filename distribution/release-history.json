@@ -1,5 +1,23 @@
 [
   {
+    "version": "1.13.5",
+    "title": "Atualização 1.13.5 — Favela online, RPG/Stinger e combate mais intenso",
+    "additions": [
+      "Favela disponível no multiplayer com serviço dedicado próprio na porta UDP 3017, além do fluxo offline com bots.",
+      "RPG-7 e FIM-92 Stinger revisados em FPP, TPP e ADS, com PGO-7, retículas próprias, lock sonoro do Stinger e projéteis 3D.",
+      "Favela mais urbana, com concreto nas áreas construídas, terra nas encostas, carros, lixeiras, entulho, postes, fibra óptica e caixas de infraestrutura.",
+      "Bots pressionam objetivos com reavaliação estratégica em 1,5 s e passam à defesa quando a equipe controla todos os pontos.",
+      "Áudio de armas com transições mais contínuas por distância e direção; APCs usam o novo pacote de sons do canhão de 30 mm."
+    ],
+    "fixes": [
+      "Captura de objetivos a partir de motos e blindados ocupados corrigida.",
+      "Bots em assalto urbano só escolhem cobertura lateral quando ela também aproxima do objetivo, evitando pausas na linha de tiro.",
+      "HUD identifica corretamente o equipamento como STINGER.",
+      "Guard de publicação ignora status BR antigo quando o PID foi reciclado por processo que não pertence àquela sala, mantendo bloqueio para salas reais.",
+      "Ucrânia preparada novamente como v19; manifesto da Favela atualizado para v10."
+    ]
+  },
+  {
     "version": "1.13.4",
     "title": "Atualiza??o 1.13.4 ? Favela renovada, mata e melhorias do combate",
     "additions": [

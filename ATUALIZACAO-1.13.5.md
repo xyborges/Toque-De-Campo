@@ -1,6 +1,6 @@
 # Atualização 1.13.5 — Favela online, lançadores e combate
 
-**Estado:** DEPLOY BLOQUEADO POR PROTEÇÃO DE JOGADORES — build 92 (1.13.5) assinada, mas servidor permanece na build 91 (1.13.4).
+**Estado:** PUBLICADA em 05/11/2026 — build 92 (1.13.5).
 
 Data: 05/11/2026. Branch de integração: `ia/release-1135`.
 
@@ -40,15 +40,17 @@ FPP/TPP CollisionRig experimental permanece fora desta atualização.
 - Mapas: Afegão, Deserto, Escritório e Naval **PASS**; Ucrânia regenerada para v19 e validada **PASS** com 802.579 patches de grama. Afegão mantém o aviso conhecido de 1/162 âncoras rejeitada.
 - Favela ENet/DTLS: servidor local + 2 clientes **PASS**.
 
-## Publicação e impedimento (05/11/2026)
+## Publicação (05/11/2026)
 
 - Build **92 / 1.13.5** preparada e assinada: `SIGNED_UBUNTU_RELEASE 92`; 11 artefatos autenticados.
-- Instalação real do pacote assinado: **13/13 PASS**, incluindo boot protegido, DLL carregada e hashes do pacote imutáveis.
+- Instalação real do pacote assinado: **13/13 PASS**, incluindo boot protegido, DLL carregada e pacote inalterado.
 - Preflight: **PASS**, `PREFLIGHT build=92 publicado=91` e `PREFLIGHT_OK build=92`.
-- Primeira tentativa: helper privilegiado legado rejeitou o novo artefato do serviço multiplayer da Favela; o helper remoto foi atualizado, e a tentativa seguinte avançou até a proteção de jogadores.
-- Tentativas posteriores: `guard_players()` recusou a ativação com `Cannot confirm an empty BR room` por `Stale live BR room heartbeat` da sala `70b3f706e42c706d4c41422553d05cde`. A ausência transitória da sala numa reinspeção não resolveu o bloqueio, reproduzido no retry autenticado.
-- **Não remover heartbeat, encerrar processos de partidas ou desabilitar a proteção sem confirmar que não há jogadores ativos.** A verificação live da build 92 ainda não passou e nenhum serviço foi reiniciado por esta tentativa.
-- Manifesto público consultado por HTTPS após o último retry: **build 91 / 1.13.4**. O pacote 92 permanece preparado; não refazer build nem sobrescrever o staging assinado.
-- Logs: `work/release1135-publication.log`, `work/release1135-signed-install.log`, `work/release1135-preflight.log`.
+- O primeiro deploy foi recusado porque o helper privilegiado instalado ainda não reconhecia o novo serviço da Favela. O helper foi atualizado com backup e verificação SHA-256.
+- O guard de jogadores detectou depois um `status.json` BR cancelado e antigo cujo PID já podia ser reutilizado por outro processo. A correção `8a550cf` mantém o comportamento fail-closed para salas BR reais, mas confirma executável, `--br-room` e `room_id` antes de confiar no PID. A suíte `release_deployment.py` passou **24/24** após a correção.
+- Deploy final: **PASS**, com `VERIFIED_READY build=92` e `DEPLOYED build=92 version=1.13.5`.
+- Verificação live: **9/9 PASS**. O manifesto HTTPS é byte a byte igual ao assinado; `/opt/toque-de-campo/current` aponta para `build-92`; os seis serviços estão ativos; `toque-war-favela` possui PID próprio e socket UDP **3017**; hashes do executável Linux e PCK são idênticos ao manifesto assinado.
+- Arquivo publicado do cliente: `releases/game-92-5e2905fc7475.zip`.
+- Download interno: `https://192.168.101.24/`.
+- Logs de evidência: `work/release1135-signed-install.log`, `work/release1135-preflight.log`, `work/release1135-deploy-guardfix.log` e `work/release1135-live-guardfix.log`.
 
-**Próxima ação segura:** inspecionar o PID registrado no `status.json` da sala BR, confirmar se pertence a um servidor de partida e verificar `humans`, heartbeat e participantes na autoridade do broker. Se for estado órfão, reconciliar pelo mecanismo oficial da sala, sem exclusão cega. Depois repetir o `--deploy-only` e a verificação live dos seis serviços, incluindo `toque-war-favela` na UDP 3017, antes de marcar esta versão como publicada.
+O FPP/TPP CollisionRig experimental continua fora desta versão.
