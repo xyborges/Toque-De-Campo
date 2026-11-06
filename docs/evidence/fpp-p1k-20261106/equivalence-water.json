@@ -1,0 +1,12 @@
+{
+  "reference_commit": "3670699e7e6bc96434a187c9c35f6882a72bb187",
+  "result": {
+    "cases": 1200,
+    "comparisons": 158540,
+    "failures": [],
+    "max_error": 0.0,
+    "pass": true,
+    "rejected": 35
+  },
+  "solver_sha256": "520f999dd4b87a107e6d9a3cc789d1120a1bc32550dc179beef80ab6929f8d4f"
+}

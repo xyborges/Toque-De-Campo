@@ -129,7 +129,7 @@ for index in range(args.pairs):
     for arm in ("A", "B") if index % 2 == 0 else ("B", "A"):
         group[arm] = run_trial(index, arm)
         trials.append(group[arm])
-    if any(group["A"][key] != group["B"][key] for key in ("state_sha256", "visual_updates")):
+    if any(group["A"][key] != group["B"][key] for key in ("state_sha256", "visual_updates", "water_checks", "water_errors")):
         raise RuntimeError(f"Different logical state or scheduled visual work in pair {index}")
     deltas.append({key: 100*(group["B"]["metrics_ms"][key]/a-1) for key, a in group["A"]["metrics_ms"].items()})
 

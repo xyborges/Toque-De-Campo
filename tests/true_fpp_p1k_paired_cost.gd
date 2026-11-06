@@ -67,8 +67,16 @@ func run() -> void:
 	var raw: PackedFloat64Array=[]
 	var visual_updates:=0
 	var schedule_errors:=0
+	var water_checks:=0
+	var water_errors:=0
 	for tick in range(warmup+samples):
 		await physics_frame
+		# Normal WarPlayer physics checks water in locomotion before this pose
+		# section, for both the legacy and pilot arms. Keep that common work
+		# outside the timer so neither arm pays for an artificial cache miss.
+		for actor in actors:
+			water_checks+=1
+			if actor.in_water(): water_errors+=1
 		var started:=Time.get_ticks_usec()
 		for index in ACTORS:
 			var actor:=actors[index]
@@ -108,11 +116,11 @@ func run() -> void:
 		reuse+=actor.p1g_visual_reuse_frames
 		shared+=actor.p1g_shared_pose_frames
 		fallback+=actor.p1g_legacy_fallback_frames
-	var valid: bool=schedule_errors==0 and (not pilot or (authority==ACTORS and fallback==0 and shared==reuse and reuse==visual_updates and solved+reuse==ACTORS*(warmup+samples)))
+	var valid: bool=schedule_errors==0 and water_errors==0 and water_checks==ACTORS*(warmup+samples) and (not pilot or (authority==ACTORS and fallback==0 and shared==reuse and reuse==visual_updates and solved+reuse==ACTORS*(warmup+samples)))
 	print("P1K_COST ",JSON.stringify({"pass":valid,"pilot":pilot,"raw_ms":Array(raw),
 		"state_sha256":JSON.stringify(states).sha256_text(),"visual_updates":visual_updates,
 		"authority":authority,"solved":solved,"reuse":reuse,"shared":shared,"fallback":fallback,
-		"schedule_errors":schedule_errors}))
+		"schedule_errors":schedule_errors,"water_checks":water_checks,"water_errors":water_errors}))
 	game.queue_free()
 	await process_frame
 	quit(0 if valid else 1)

@@ -345,7 +345,7 @@ static func capture(actor: WarPlayer,out: PoseInput) -> void:
 	out.recoil=actor.recoil
 	out.special=actor.is_npc or actor.gadget_equipped or not actor.utility_mode.is_empty() or actor._grenade_active() or actor.in_water() or not actor.deployed or actor.hp<=0 or not actor.vehicle_id.is_empty() or ((float(actor.limbs.armL)<=0. or float(actor.limbs.armR)<=0.) and CombatRules.limb_disability_enabled(actor.game))
 
-static func _gait_angles(input: PoseInput,side: String,lean: float) -> Vector3:
+static func _gait_angles(input: PoseInput,lean: float) -> Array[Vector3]:
 	var moving: float=clampf(input.moving,0.,1.)
 	var sprint: float=clampf(input.sprint,0.,1.)
 	var phase: float=input.phase
@@ -354,8 +354,9 @@ static func _gait_angles(input: PoseInput,side: String,lean: float) -> Vector3:
 	var stride: float=sin(phase)*amount
 	var forward: float=clampf(-direction.z,-1.,1.)
 	var lateral: float=clampf(direction.x,-1.,1.)
-	var sign_value: float=-1. if side=="L" else 1.
-	return Vector3(sign_value*stride*forward,0.,sign_value*stride*lateral*.55-atan2(lean*.04,.78))
+	var roll: float=atan2(lean*.04,.78)
+	return [Vector3(-stride*forward,0.,-stride*lateral*.55-roll),
+		Vector3(stride*forward,0.,stride*lateral*.55-roll)]
 
 static func _walking_height(bindings: Calibration,gait_left: Vector3,gait_right: Vector3,lean: float) -> float:
 	# The authored boot AABB is calibrated once. Keep the exact planted-sole
@@ -458,8 +459,9 @@ static func solve_cached(bindings: Calibration,input: PoseInput,include_presenta
 	var sprint: float=input.sprint
 	var phase: float=input.phase
 	var direction: Vector3=input.direction
-	var gait_left:=_gait_angles(input,"L",lean)
-	var gait_right:=_gait_angles(input,"R",lean)
+	var gait:=_gait_angles(input,lean)
+	var gait_left: Vector3=gait[0]
+	var gait_right: Vector3=gait[1]
 	if crouch<.00001 and prone<.00001 and moving>.00001 and input.grounded:
 		body_height=_walking_height(bindings,gait_left,gait_right,lean)
 	var body:=Transform3D(Basis.IDENTITY,Vector3(0,body_height,0))
@@ -526,6 +528,9 @@ static func solve_cached(bindings: Calibration,input: PoseInput,include_presenta
 		presentation.grabbing=reload_geometry.grabbing
 		presentation.low_posture=crouch>0. or prone>0.
 	var legs: Array[LegCalibration]=bindings.legs
+	var relative_hand_basis:=weapon.basis*Basis(reload_geometry.hand_basis_local)
+	var arm_proportion:=clampf(bindings.arm_proportion,.65,1.5)
+	var pistol: bool=bindings.weapon_id=="glock"
 	for side_index in 2:
 		var side: String=SIDES[side_index]
 		var leg: LegCalibration=legs[side_index]
@@ -575,8 +580,7 @@ static func solve_cached(bindings: Calibration,input: PoseInput,include_presenta
 		if prone>.001: arm_position=arm_position.lerp(Vector3(point.x,.13,-.64),prone)
 		var target: Vector3=weapon*Vector3(reload_geometry.grip_left if side=="L" else reload_geometry.grip_right)
 		var relative_grip:=target-body.origin
-		var relative_hand_basis:=weapon.basis*Basis(reload_geometry.hand_basis_local)
-		var result: Dictionary=_arm(arm_position,relative_grip,relative_hand_basis,upper,side,clampf(bindings.arm_proportion,.65,1.5),bindings.weapon_id=="glock",side=="L" and bool(reload_geometry.grabbing),bindings.arm_results[side_index])
+		var result: Dictionary=_arm(arm_position,relative_grip,relative_hand_basis,upper,side,arm_proportion,pistol,side=="L" and bool(reload_geometry.grabbing),bindings.arm_results[side_index])
 		if result.is_empty():return {"supported":false,"reason":"Invalid arm target"}
 		var arm_local: Transform3D=result.arm
 		var arm_world:=Transform3D(arm_local.basis,body.origin+arm_local.origin)

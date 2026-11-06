@@ -1,0 +1,353 @@
+{
+  "pass": true,
+  "unchanged": true,
+  "source_sha256": {
+    "tests\\true_fpp_p1b_collision_rig_proxy.gd": "9d87e30c842bffe2f6b8bc3b84c767b2a7b5f2a9382eec3b57645e0810708800",
+    "tests\\true_fpp_p1b_collision_math_arsenal.gd": "6bc65671aab22b01d4969006114f8a61d9fceb13e2b788bb2e18f1efa819c641",
+    "tests\\true_fpp_p1b_collision_stance_motion.gd": "cfa5aa3b7531693cc5effe1a0a4ca6d283c60aa732b49f6c7264f57a86cfcf91",
+    "tests\\true_fpp_p1b_pelvis_upright.gd": "567c3f9ba0fc4941ece3d742178c109860047c3224f77dcd9407b12dfff9af99",
+    "tests\\true_fpp_p1c_collision_ads_iron.gd": "6a87b7b4c71776bfc89d37e5cc2cd5f29a8d8ee29d1fee97bff04a2b1870a627",
+    "tests\\true_fpp_p1d_collision_reload.gd": "4a73667a63a26f8e96dae3c68eb7012d5b86250450b4a1c174fce0048960b510",
+    "tests\\true_fpp_p1e_collision_optical_ads.gd": "f397959c4ffe956964422d0d7adb5c113536c2b3b21b7e02b8cc7c98fff7ee0f",
+    "tests\\true_fpp_p1g_collision_authority.gd": "3f89459a20f119ae86beb38d166ed75f07fcbac58cebe41065ed97ad78de21d0",
+    "tests\\true_fpp_p1i_damage_ragdoll.gd": "e8e2f02408f3aa7a20f01cbb643af34eb9b38f5158decc31b76c33bc804ea335",
+    "modes\\war\\scripts\\player.gd": "1fd099b007447c4b7948e32cf6e9a8535caa2b1148546d42d73ba8d71edbce16",
+    "modes\\war\\scripts\\collision_pose_solver.gd": "520f999dd4b87a107e6d9a3cc789d1120a1bc32550dc179beef80ab6929f8d4f",
+    "modes\\war\\scripts\\collision_rig_proxy.gd": "a665d4b30e4946efc80595eb7f73f19da55eb62bf0f39bdfd205d45d1ec0967c"
+  },
+  "suites": {
+    "true_fpp_p1b_collision_rig_proxy": {
+      "pass": true,
+      "exit_code": 0,
+      "reports": [
+        {
+          "independent_hierarchy": true,
+          "isolated_collision_layer": true,
+          "note": "Prototype physical nodes mirror source transforms; still needs independent pure-math solver and authority switch before use in game.",
+          "pass": true,
+          "physical_region_count": 16,
+          "scenarios": [
+            {
+              "muzzle_error_m": 0.0,
+              "posture": 0,
+              "regions": 16,
+              "safe": true,
+              "transform_error_m": 0.0
+            },
+            {
+              "muzzle_error_m": 0.0,
+              "posture": 1,
+              "regions": 16,
+              "safe": true,
+              "transform_error_m": 0.0
+            },
+            {
+              "muzzle_error_m": 0.0,
+              "posture": 2,
+              "regions": 16,
+              "safe": true,
+              "transform_error_m": 0.0
+            }
+          ],
+          "source_hidden_doesnt_change_proxy": true
+        }
+      ]
+    },
+    "true_fpp_p1b_collision_math_arsenal": {
+      "pass": true,
+      "exit_code": 0,
+      "reports": [
+        {
+          "cases": 50,
+          "pass": true,
+          "unsupported_rejected": 30,
+          "weapons": 5
+        }
+      ]
+    },
+    "true_fpp_p1b_collision_stance_motion": {
+      "pass": true,
+      "exit_code": 0,
+      "reports": [
+        {
+          "cases": 25,
+          "invalid_motion_rejected": 20,
+          "motion_cases": 60,
+          "pass": true,
+          "soft_aim_supported": 5,
+          "transition_cases": 60,
+          "weapons": 5
+        }
+      ]
+    },
+    "true_fpp_p1b_pelvis_upright": {
+      "pass": true,
+      "exit_code": 0,
+      "reports": [
+        {
+          "cases": [
+            {
+              "basis_delta": 0.0,
+              "pass": true,
+              "prone_rotated": true,
+              "sequence": [
+                2,
+                0
+              ],
+              "standing_restored": true
+            },
+            {
+              "basis_delta": 0.0,
+              "pass": true,
+              "prone_rotated": true,
+              "sequence": [
+                2,
+                1,
+                0
+              ],
+              "standing_restored": true
+            }
+          ],
+          "pass": true
+        }
+      ]
+    },
+    "true_fpp_p1c_collision_ads_iron": {
+      "pass": true,
+      "exit_code": 0,
+      "reports": [
+        {
+          "checks": 90,
+          "failures": [],
+          "optical_rejected": 10,
+          "pass": true,
+          "rows": [
+            {
+              "basis_delta": 7.47138437873218e-06,
+              "cases": 18,
+              "muzzle_m": 2.16964190258295e-06,
+              "position_m": 3.86331112167682e-06,
+              "weapon": "g3"
+            },
+            {
+              "basis_delta": 3.61874322152289e-06,
+              "cases": 18,
+              "muzzle_m": 2.4519542876078e-06,
+              "position_m": 4.61127729067812e-06,
+              "weapon": "ak"
+            },
+            {
+              "basis_delta": 4.6496397771989e-06,
+              "cases": 18,
+              "muzzle_m": 1.45269132190151e-06,
+              "position_m": 2.80909625871573e-06,
+              "weapon": "fal"
+            },
+            {
+              "basis_delta": 4.65481844003079e-06,
+              "cases": 18,
+              "muzzle_m": 2.02880278266093e-06,
+              "position_m": 3.82678535970626e-06,
+              "weapon": "glock"
+            },
+            {
+              "basis_delta": 6.22697416474693e-06,
+              "cases": 18,
+              "muzzle_m": 2.12434338209277e-06,
+              "position_m": 3.628547574408e-06,
+              "weapon": "sniper"
+            }
+          ]
+        }
+      ]
+    },
+    "true_fpp_p1d_collision_reload": {
+      "pass": true,
+      "exit_code": 0,
+      "reports": [
+        {
+          "checks": 150,
+          "failures": [],
+          "invalid_rejected": 10,
+          "pass": true,
+          "rows": [
+            {
+              "basis_delta": 4.40439589510788e-06,
+              "checks": 30,
+              "muzzle_m": 1.60270633386972e-06,
+              "position_m": 3.92760784961865e-06,
+              "weapon": "g3"
+            },
+            {
+              "basis_delta": 6.39945437796996e-06,
+              "checks": 30,
+              "muzzle_m": 1.28703254631546e-06,
+              "position_m": 3.67790130439971e-06,
+              "weapon": "ak"
+            },
+            {
+              "basis_delta": 5.8011464716401e-06,
+              "checks": 30,
+              "muzzle_m": 2.31684316531755e-06,
+              "position_m": 4.08225378123461e-06,
+              "weapon": "fal"
+            },
+            {
+              "basis_delta": 6.39556719761458e-06,
+              "checks": 30,
+              "muzzle_m": 2.89389595309331e-06,
+              "position_m": 4.43704448116478e-06,
+              "weapon": "glock"
+            },
+            {
+              "basis_delta": 4.77928460895782e-06,
+              "checks": 30,
+              "muzzle_m": 3.2625036965328e-06,
+              "position_m": 4.22752009399119e-06,
+              "weapon": "sniper"
+            }
+          ]
+        }
+      ]
+    },
+    "true_fpp_p1e_collision_optical_ads": {
+      "pass": true,
+      "exit_code": 0,
+      "reports": [
+        {
+          "checks": 120,
+          "failures": [],
+          "invalid_rejected": 16,
+          "pass": true,
+          "rows": [
+            {
+              "basis_delta": 1.24019788927399e-05,
+              "checks": 15,
+              "muzzle_m": 2.94096980724134e-06,
+              "optic": "hensoldt4x",
+              "position_m": 4.70982786282548e-06,
+              "weapon": "g3"
+            },
+            {
+              "basis_delta": 1.19235282909358e-05,
+              "checks": 15,
+              "muzzle_m": 2.81826032733079e-06,
+              "optic": "precision8x",
+              "position_m": 4.19908792537171e-06,
+              "weapon": "g3"
+            },
+            {
+              "basis_delta": 8.16153897176264e-06,
+              "checks": 15,
+              "muzzle_m": 3.76454181605368e-06,
+              "optic": "hensoldt4x",
+              "position_m": 5.4726833695895e-06,
+              "weapon": "ak"
+            },
+            {
+              "basis_delta": 2.78395164059475e-05,
+              "checks": 15,
+              "muzzle_m": 4.41027941633365e-06,
+              "optic": "precision8x",
+              "position_m": 7.15656187821878e-06,
+              "weapon": "ak"
+            },
+            {
+              "basis_delta": 9.16289354790933e-06,
+              "checks": 15,
+              "muzzle_m": 2.5699644083943e-06,
+              "optic": "hensoldt4x",
+              "position_m": 4.22912171416101e-06,
+              "weapon": "fal"
+            },
+            {
+              "basis_delta": 9.16289354790933e-06,
+              "checks": 15,
+              "muzzle_m": 2.93114067062561e-06,
+              "optic": "precision8x",
+              "position_m": 3.96911127609201e-06,
+              "weapon": "fal"
+            },
+            {
+              "basis_delta": 1.02169824458542e-05,
+              "checks": 15,
+              "muzzle_m": 3.79820517082408e-06,
+              "optic": "hensoldt4x",
+              "position_m": 5.27098973179818e-06,
+              "weapon": "sniper"
+            },
+            {
+              "basis_delta": 9.09592290554428e-06,
+              "checks": 15,
+              "muzzle_m": 2.5012654987222e-06,
+              "optic": "precision8x",
+              "position_m": 4.38215784015483e-06,
+              "weapon": "sniper"
+            }
+          ]
+        }
+      ]
+    },
+    "true_fpp_p1g_collision_authority": {
+      "pass": true,
+      "exit_code": 0,
+      "reports": [
+        {
+          "checks": 42,
+          "failures": [],
+          "legacy_fallback_frames": 2,
+          "pass": true,
+          "proxy_motion_m": 0.319314926862717,
+          "solver_frames": 3,
+          "visual_stale_m": 0.0
+        }
+      ]
+    },
+    "true_fpp_p1i_damage_ragdoll": {
+      "pass": true,
+      "exit_code": 0,
+      "reports": [
+        {
+          "arm": {
+            "group": "armL",
+            "hp_loss": 13.0,
+            "id": "armL",
+            "last": "armL",
+            "limb_loss": 20.0,
+            "meta": "armL"
+          },
+          "checks": 24,
+          "death_region": "head",
+          "failures": [],
+          "hand": {
+            "group": "armL",
+            "hp_loss": 8.0,
+            "id": "handL",
+            "last": "handL",
+            "limb_loss": 20.0,
+            "meta": "handL"
+          },
+          "leg": {
+            "group": "legR",
+            "hp_loss": 15.0,
+            "id": "legR",
+            "last": "legR",
+            "limb_loss": 20.0,
+            "meta": "legR"
+          },
+          "pass": true,
+          "pelvis": {
+            "group": "torso",
+            "hp_loss": 18.0,
+            "id": "abdomenPelvis",
+            "last": "abdomen",
+            "limb_loss": 20.0,
+            "meta": "abdomen"
+          },
+          "ragdoll_head_speed": 0.239799097180367,
+          "ragdoll_torso_speed": 0.178062364459038
+        }
+      ]
+    }
+  }
+}

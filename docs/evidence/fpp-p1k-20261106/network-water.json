@@ -1,0 +1,32 @@
+{
+  "pass": true,
+  "transport": "ENet/DTLS localhost",
+  "scope": "three local processes, no full-map exported clients",
+  "roles": {
+    "server": {
+      "checks": 15,
+      "failures": [],
+      "pass": true,
+      "role": "server"
+    },
+    "shooter": {
+      "checks": 2,
+      "failures": [],
+      "pass": true,
+      "role": "shooter"
+    },
+    "victim": {
+      "checks": 2,
+      "failures": [],
+      "pass": true,
+      "role": "victim"
+    }
+  },
+  "source_sha256": {
+    "modes/war/scripts/player.gd": "1fd099b007447c4b7948e32cf6e9a8535caa2b1148546d42d73ba8d71edbce16",
+    "modes/war/scripts/collision_pose_solver.gd": "520f999dd4b87a107e6d9a3cc789d1120a1bc32550dc179beef80ab6929f8d4f",
+    "modes/war/scripts/collision_rig_proxy.gd": "a665d4b30e4946efc80595eb7f73f19da55eb62bf0f39bdfd205d45d1ec0967c",
+    "tests/true_fpp_p1j_network_collision.gd": "db410327218ca4f8434b3c19381fc2c2bb930fea84ce84f2407ff0ccd6d2025c",
+    "tests/run_true_fpp_p1j_network.py": "6e111984a6fa382a52e3242a5a128fbbb42b2965c6b26a9f4178fae22c4509bb"
+  }
+}
