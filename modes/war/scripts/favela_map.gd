@@ -25,6 +25,7 @@ const ATMOSPHERE := preload("res://modes/war/scripts/favela_atmosphere.gd")
 const STREET_SPACE := preload("res://modes/war/scripts/favela_street_space.gd")
 const STREET_ART := preload("res://modes/war/scripts/favela_street_art.gd")
 const RIM := preload("res://modes/war/scripts/favela_rim.gd")
+const PEDESTRIAN_STAIRS := preload("res://modes/war/scripts/favela_pedestrian_stairs.gd")
 const BAILE := preload("res://modes/war/scripts/favela_baile.gd")
 const BAILE_SCENE := preload("res://modes/war/library/favela_campo_baile.tscn")
 const BAILE_CENTER := Vector2(430.0, -275.0)
@@ -232,6 +233,10 @@ func build() -> void:
 	_landmarks(kit)
 	_street_wiring(kit)
 	_urban_clutter(kit)
+	var stair_flights: Array[Dictionary] = PEDESTRIAN_STAIRS.plan(MINI_STREETS,
+		BASES_2D, OBJECTIVES_2D,
+		func(x: float,z: float) -> float: return height_at(x,z))
+	var stair_summary: Dictionary = PEDESTRIAN_STAIRS.populate(kit, stair_flights)
 	for site: Dictionary in litter_sites:
 		_place_litter(site.position, site.yaw)
 	litter_sites.clear()
@@ -259,6 +264,8 @@ func build() -> void:
 	build_metrics.merge(neighborhood)
 	build_metrics.merge(edge_summary)
 	build_metrics.merge(hillside_summary)
+	build_metrics.merge({"pedestrian_stair_flights": int(stair_summary.flights),
+		"pedestrian_stair_treads": int(stair_summary.treads)})
 	set_meta("favela_build_metrics",build_metrics)
 
 func _reserve_buildings_and_spawns() -> void:
@@ -319,13 +326,13 @@ func _edge_infrastructure(k: EnvironmentKit) -> Dictionary:
 
 func _ground_color(x: float,z: float) -> Color:
 	var mix:=.5+.5*sin(x*.073+z*.052)*cos(z*.019)
-	var soil:=Color("ac9a83").lerp(Color("c0a68a"),mix)
-	var urban:=1.0-smoothstep(600.0,745.0,absf(x))
-	urban*=smoothstep(-710.0,-570.0,z)*(1.0-smoothstep(720.0,785.0,z))
+	var soil:=Color("a59481").lerp(Color("c1b09b"),mix)
+	var urban:=1.0-smoothstep(645.0,705.0,absf(x))
+	urban*=smoothstep(-645.0,-565.0,z)*(1.0-smoothstep(645.0,710.0,z))
 	# Urbano = cimento claro e remendado; mata, cortes de barranco e
 	# periferia mantêm a terra. Shader faz o blend real de texturas.
-	var cement:=Color("c8c9c5").lerp(Color("aeb1ae"),mix)
-	var result:=soil.lerp(cement,urban*.92)
+	var cement:=Color("d8d9d6").lerp(Color("c3c5c3"),mix)
+	var result:=soil.lerp(cement,urban*.997)
 	return result.lerp(Color("67725b").lerp(Color("56654c"),mix),
 		1.0-smoothstep(-650.0,-570.0,z))
 
@@ -559,7 +566,7 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 		var top:=Vector3(stair_x,landing_y,stair_end_z)
 		var ramp_scale:=Vector3(1.0,(top.y-foot.y)/2.85,run/8.6)
 		ARCHITECTURE.place(k,"escada_externa",Transform3D(Basis.from_scale(ramp_scale),foot),true)
-		var landing:=Vector3(stair_x+.40,landing_y-.12,stair_end_z-.40)
+		var landing:=Vector3(stair_x+.40,landing_y-.12,stair_end_z-.55)
 		k.box("DesembarqueLaje",landing,Vector3(1.42,.24,1.0),roof_color,true)
 		var approach:=point(foot.x,foot.z+.75)+Vector3.UP*.05
 		var nav:=PackedVector3Array([approach,foot+Vector3.UP*.06])
