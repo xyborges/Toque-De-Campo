@@ -1767,6 +1767,9 @@ var ia2_remote_ragdoll_queue_enabled := OS.get_environment("TDC_IA2_DEFER_REMOTE
 var ia2_remote_ragdoll_jobs: Array[Dictionary] = []
 var ia2_remote_ragdoll_running := false
 var ia2_remote_ragdoll_created := 0
+# Defend the corpse cap against a burst of queue_free calls within one frame.
+# Remains opt-in until this bug fix passes live client regression checks.
+var ia2_ragdoll_strict_cap := OS.get_environment("TDC_IA2_RAGDOLL_STRICT_CAP")=="1"
 
 func spawn_ragdoll(pos: Vector3, _killer_id: int, source: GamePlayer = null) -> void:
 	if not is_instance_valid(source) or not is_instance_valid(world_root) or source.death_presented == source.life_id: return
@@ -1780,7 +1783,20 @@ func spawn_ragdoll(pos: Vector3, _killer_id: int, source: GamePlayer = null) -> 
 
 func _ia2_create_ragdoll_now(pos: Vector3,source: GamePlayer) -> void:
 	var old := get_tree().get_nodes_in_group("death_ragdolls")
-	if old.size() >= 10: old[0].queue_free()
+	if ia2_ragdoll_strict_cap:
+		# A queued node stays in the group until the end of this frame.
+		# Counting it or repeatedly freeing old[0] leaks the intended cap
+		# when many deaths are presented in the same physics frame.
+		var active_count:=0
+		for corpse: Node in old:
+			if is_instance_valid(corpse) and not corpse.is_queued_for_deletion():
+				active_count+=1
+		if active_count>=10:
+			for corpse: Node in old:
+				if is_instance_valid(corpse) and not corpse.is_queued_for_deletion():
+					corpse.queue_free()
+					break
+	elif old.size() >= 10: old[0].queue_free()
 	var body := DeathRagdoll.create(world_root,source,pos)
 	if source.is_local and is_instance_valid(death_view): death_view.follow(body,pos,-source.global_basis.z)
 
