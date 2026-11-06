@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce GTX 1650
+
+PERF_1080P_READY op=afghan bots=28 texture=(1920, 1080) scale=1.0 medium=1 renderer=forward_plus
+PERF_1080P_RESULT {"bots":28,"gpu_ms_mean":24.6853493380259,"label":"ia2p2-20261106-173244-afghan-on-los-1-pair02-B","median_fps":7.45261996854994,"operation":"afghan","over33_per_min":498.0,"p95_ms":202.67,"p99_ms":219.731,"scale":1.0,"texture":"(1920, 1080)"}
