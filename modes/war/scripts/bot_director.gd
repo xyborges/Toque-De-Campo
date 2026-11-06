@@ -39,6 +39,11 @@ var ia2_visible_from:=Vector3.ZERO
 var ia2_visible_to:=Vector3.ZERO
 var ia2_los_reused:=0
 var ia2_los_fallback:=0
+# IA2 independent experiment: cache query objects, never motion or collision results.
+var ia2_reuse_traffic:=OS.get_environment("TDC_IA2_REUSE_TRAFFIC_QUERY")=="1"
+var ia2_traffic_shape: BoxShape3D
+var ia2_traffic_query: PhysicsShapeQueryParameters3D
+var ia2_traffic_reused:=0
 var diagnostics: Dictionary={"moves":0,"shots":0,"reloads":0,"deployments":0,"routes":0,"deploy_failures":0,"target_acquisitions":0,"clear_shot_ticks":0,"shot_attempts":0,"shot_rejections":0,"grenades":0,"armor_engagements":0,"vehicle_evacuations":0,"vehicle_detours":0}
 
 class BotRoutes extends OfflineDirector:
@@ -1156,8 +1161,23 @@ func _traffic_clear(vehicle: WarVehicle,start: Vector3,end: Vector3) -> bool:
 	var direction:=end-start;direction.y=0
 	if direction.length_squared()<.01:return true
 	var space:=game.get_world_3d().direct_space_state
-	var shape:=BoxShape3D.new();shape.size=Vector3(float(vehicle.spec.size.x)+1.4,1.25,float(vehicle.spec.size.z)+.8)
-	var query:=PhysicsShapeQueryParameters3D.new();query.shape=shape;query.collision_mask=1|4|16;query.exclude=[vehicle.get_rid()];query.margin=.03
+	var shape: BoxShape3D
+	var query: PhysicsShapeQueryParameters3D
+	if ia2_reuse_traffic:
+		if ia2_traffic_shape==null:
+			ia2_traffic_shape=BoxShape3D.new()
+			ia2_traffic_query=PhysicsShapeQueryParameters3D.new()
+		shape=ia2_traffic_shape
+		query=ia2_traffic_query
+		ia2_traffic_reused+=1
+	else:
+		shape=BoxShape3D.new()
+		query=PhysicsShapeQueryParameters3D.new()
+	# Every field that depends on this vehicle and sweep is overwritten.
+	# In particular motion must be reset after the previous cast_motion().
+	shape.size=Vector3(float(vehicle.spec.size.x)+1.4,1.25,float(vehicle.spec.size.z)+.8)
+	query.shape=shape;query.collision_mask=1|4|16;query.exclude=[vehicle.get_rid()];query.margin=.03
+	query.motion=Vector3.ZERO
 	query.transform=Transform3D(Basis.looking_at(direction.normalized(),Vector3.UP),start+Vector3.UP*1.05)
 	if not space.intersect_shape(query,1).is_empty():return false
 	query.motion=direction
