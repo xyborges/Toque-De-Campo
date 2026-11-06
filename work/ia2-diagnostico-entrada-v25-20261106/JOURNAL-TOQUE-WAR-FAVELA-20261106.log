@@ -1,0 +1,23 @@
+2026-11-06T00:48:57+00:00 srv-ia systemd[1]: Stopping toque-war-favela.service - Toque de Campo - Guerra Favela...
+2026-11-06T00:48:57+00:00 srv-ia systemd[1]: toque-war-favela.service: Deactivated successfully.
+2026-11-06T00:48:57+00:00 srv-ia systemd[1]: Stopped toque-war-favela.service - Toque de Campo - Guerra Favela.
+2026-11-06T00:48:57+00:00 srv-ia systemd[1]: toque-war-favela.service: Consumed 36min 46.842s CPU time, 304.9M memory peak, 0B memory swap peak.
+2026-11-06T00:48:57+00:00 srv-ia systemd[1]: Started toque-war-favela.service - Toque de Campo - Guerra Favela.
+2026-11-06T01:05:48+00:00 srv-ia systemd[1]: Stopping toque-war-favela.service - Toque de Campo - Guerra Favela...
+2026-11-06T01:05:48+00:00 srv-ia systemd[1]: toque-war-favela.service: Deactivated successfully.
+2026-11-06T01:05:48+00:00 srv-ia systemd[1]: Stopped toque-war-favela.service - Toque de Campo - Guerra Favela.
+2026-11-06T01:05:48+00:00 srv-ia systemd[1]: toque-war-favela.service: Consumed 2min 30.903s CPU time, 296.5M memory peak, 0B memory swap peak.
+2026-11-06T01:05:48+00:00 srv-ia systemd[1]: Started toque-war-favela.service - Toque de Campo - Guerra Favela.
+2026-11-06T16:10:50+00:00 srv-ia systemd[1]: Stopping toque-war-favela.service - Toque de Campo - Guerra Favela...
+2026-11-06T16:10:50+00:00 srv-ia systemd[1]: toque-war-favela.service: Deactivated successfully.
+2026-11-06T16:10:50+00:00 srv-ia systemd[1]: Stopped toque-war-favela.service - Toque de Campo - Guerra Favela.
+2026-11-06T16:10:50+00:00 srv-ia systemd[1]: toque-war-favela.service: Consumed 1h 41min 31.742s CPU time, 307.2M memory peak, 0B memory swap peak.
+2026-11-06T16:10:50+00:00 srv-ia systemd[1]: Started toque-war-favela.service - Toque de Campo - Guerra Favela.
+2026-11-06T20:25:47+00:00 srv-ia ToqueDeCampo.x86_64[525809]: ERROR: Unable to get the RPC configuration for the function "gadget_selected" at path: "/root/ToqueDeCampo/WarGame". This happens when the method is missing or not marked for RPCs in the local script.
+2026-11-06T20:25:47+00:00 srv-ia ToqueDeCampo.x86_64[525809]:    at: rpcp (modules/multiplayer/scene_rpc_interface.cpp:485)
+2026-11-06T20:26:10+00:00 srv-ia ToqueDeCampo.x86_64[525809]: ERROR: Unable to get the RPC configuration for the function "gadget_selected" at path: "/root/ToqueDeCampo/WarGame". This happens when the method is missing or not marked for RPCs in the local script.
+2026-11-06T20:26:10+00:00 srv-ia ToqueDeCampo.x86_64[525809]:    at: rpcp (modules/multiplayer/scene_rpc_interface.cpp:485)
+2026-11-06T20:26:11+00:00 srv-ia ToqueDeCampo.x86_64[525809]: ERROR: Unable to get the RPC configuration for the function "gadget_selected" at path: "/root/ToqueDeCampo/WarGame". This happens when the method is missing or not marked for RPCs in the local script.
+2026-11-06T20:26:11+00:00 srv-ia ToqueDeCampo.x86_64[525809]:    at: rpcp (modules/multiplayer/scene_rpc_interface.cpp:485)
+2026-11-06T20:26:22+00:00 srv-ia ToqueDeCampo.x86_64[525809]: ERROR: Unable to get the RPC configuration for the function "gadget_selected" at path: "/root/ToqueDeCampo/WarGame". This happens when the method is missing or not marked for RPCs in the local script.
+2026-11-06T20:26:22+00:00 srv-ia ToqueDeCampo.x86_64[525809]:    at: rpcp (modules/multiplayer/scene_rpc_interface.cpp:485)
