@@ -1,0 +1,488 @@
+{
+  "cases": [
+    {
+      "scenario": "afghan",
+      "brain_off": false,
+      "file": "ia2-20261106-165100-afghan-on-F1-R1.json",
+      "valid_basic": true,
+      "measured_seconds": 20.0,
+      "frame_count": 515,
+      "fps_mean": 25.73,
+      "one_percent_low_fps": 11.1,
+      "frame_p95_ms": 61.88,
+      "frame_p99_ms": 76.95,
+      "physics_engine_mean_ms": 18.01,
+      "gpu_engine_mean_ms": 10.4,
+      "ticks_ge_2": 504,
+      "ticks_ge_4": 15,
+      "ticks_ge_8": 0,
+      "scope": {
+        "brain.decision": {
+          "mean_ms_per_frame": 0.404,
+          "p95_ms_per_frame": 1.098,
+          "p99_ms_per_frame": 1.718,
+          "calls_per_frame": 1.553,
+          "calls": 800
+        },
+        "brain_and_movement.bot_move_inclusive": {
+          "mean_ms_per_frame": 6.045,
+          "p95_ms_per_frame": 8.624,
+          "p99_ms_per_frame": 14.389,
+          "calls_per_frame": 52.654,
+          "calls": 27117
+        },
+        "actor.physics_inclusive": {
+          "mean_ms_per_frame": 7.278,
+          "p95_ms_per_frame": 13.689,
+          "p99_ms_per_frame": 19.539,
+          "calls_per_frame": 67.573,
+          "calls": 34800
+        },
+        "actor.pose_visual_and_hitbox_inclusive": {
+          "mean_ms_per_frame": 3.186,
+          "p95_ms_per_frame": 8.624,
+          "p99_ms_per_frame": 10.494,
+          "calls_per_frame": 55.072,
+          "calls": 28362
+        },
+        "actor.weapon_pose": {
+          "mean_ms_per_frame": 0.928,
+          "p95_ms_per_frame": 2.184,
+          "p99_ms_per_frame": 2.57,
+          "calls_per_frame": 9.134,
+          "calls": 4704
+        },
+        "actor.arm_ik": {
+          "mean_ms_per_frame": 0.896,
+          "p95_ms_per_frame": 2.715,
+          "p99_ms_per_frame": 3.12,
+          "calls_per_frame": 17.744,
+          "calls": 9138
+        },
+        "actor.body_pose": {
+          "mean_ms_per_frame": 0.328,
+          "p95_ms_per_frame": 1.007,
+          "p99_ms_per_frame": 1.203,
+          "calls_per_frame": 8.872,
+          "calls": 4569
+        },
+        "actor.hitbox_toggle": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.01,
+          "calls": 5
+        },
+        "queries.enemy_scan_inclusive": {
+          "mean_ms_per_frame": 0.077,
+          "p95_ms_per_frame": 0.217,
+          "p99_ms_per_frame": 0.329,
+          "calls_per_frame": 1.256,
+          "calls": 647
+        },
+        "queries.clear_shot_ray": {
+          "mean_ms_per_frame": 0.016,
+          "p95_ms_per_frame": 0.09,
+          "p99_ms_per_frame": 0.175,
+          "calls_per_frame": 0.913,
+          "calls": 470
+        },
+        "queries.avoid_1_to_9_rays": {
+          "mean_ms_per_frame": 0.023,
+          "p95_ms_per_frame": 0.047,
+          "p99_ms_per_frame": 0.066,
+          "calls_per_frame": 1.247,
+          "calls": 642
+        },
+        "queries.traffic_shape_and_cast": {
+          "mean_ms_per_frame": 0.003,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.086,
+          "calls_per_frame": 0.066,
+          "calls": 34
+        }
+      },
+      "replication": {
+        "actual_network_bytes_per_sec": null,
+        "bots": 28,
+        "mode": "offline serialization estimate only; 20 synthetic ticks at 10 Hz",
+        "model_packets_per_sec_per_peer": 70.0,
+        "model_states_per_sec_per_peer": 280.0,
+        "payload_bytes_per_sec_per_peer": 37240.0,
+        "real_network_peers": 0,
+        "serialization_cpu_ms_per_second": 1.05
+      },
+      "gpu_telemetry": {
+        "measurement_samples": 18,
+        "temp_min": 37.0,
+        "temp_mean": 37.89,
+        "temp_max": 39.0,
+        "thermal_reasons_unavailable": true,
+        "noninactive_thermal_samples": 0
+      }
+    },
+    {
+      "scenario": "afghan",
+      "brain_off": true,
+      "file": "ia2-20261106-165223-afghan-off-F1-R1.json",
+      "valid_basic": true,
+      "measured_seconds": 20.0,
+      "frame_count": 359,
+      "fps_mean": 17.92,
+      "one_percent_low_fps": 7.26,
+      "frame_p95_ms": 107.34,
+      "frame_p99_ms": 131.38,
+      "physics_engine_mean_ms": 21.64,
+      "gpu_engine_mean_ms": 13.22,
+      "ticks_ge_2": 359,
+      "ticks_ge_4": 117,
+      "ticks_ge_8": 6,
+      "scope": {
+        "brain.decision": {
+          "mean_ms_per_frame": 0.003,
+          "p95_ms_per_frame": 0.005,
+          "p99_ms_per_frame": 0.006,
+          "calls_per_frame": 2.228,
+          "calls": 800
+        },
+        "brain_and_movement.bot_move_inclusive": {
+          "mean_ms_per_frame": 10.623,
+          "p95_ms_per_frame": 22.141,
+          "p99_ms_per_frame": 28.126,
+          "calls_per_frame": 86.908,
+          "calls": 31200
+        },
+        "actor.physics_inclusive": {
+          "mean_ms_per_frame": 11.94,
+          "p95_ms_per_frame": 25.722,
+          "p99_ms_per_frame": 30.499,
+          "calls_per_frame": 96.936,
+          "calls": 34800
+        },
+        "actor.pose_visual_and_hitbox_inclusive": {
+          "mean_ms_per_frame": 5.577,
+          "p95_ms_per_frame": 13.182,
+          "p99_ms_per_frame": 15.413,
+          "calls_per_frame": 90.292,
+          "calls": 32415
+        },
+        "actor.weapon_pose": {
+          "mean_ms_per_frame": 1.552,
+          "p95_ms_per_frame": 3.358,
+          "p99_ms_per_frame": 4.117,
+          "calls_per_frame": 14.373,
+          "calls": 5160
+        },
+        "actor.arm_ik": {
+          "mean_ms_per_frame": 1.596,
+          "p95_ms_per_frame": 3.8,
+          "p99_ms_per_frame": 4.43,
+          "calls_per_frame": 28.496,
+          "calls": 10230
+        },
+        "actor.body_pose": {
+          "mean_ms_per_frame": 0.589,
+          "p95_ms_per_frame": 1.435,
+          "p99_ms_per_frame": 1.707,
+          "calls_per_frame": 14.248,
+          "calls": 5115
+        },
+        "actor.hitbox_toggle": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.0,
+          "calls": 0
+        },
+        "queries.enemy_scan_inclusive": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.0,
+          "calls": 0
+        },
+        "queries.clear_shot_ray": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.0,
+          "calls": 0
+        },
+        "queries.avoid_1_to_9_rays": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.0,
+          "calls": 0
+        },
+        "queries.traffic_shape_and_cast": {
+          "mean_ms_per_frame": 0.004,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.14,
+          "calls_per_frame": 0.078,
+          "calls": 28
+        }
+      },
+      "replication": {
+        "actual_network_bytes_per_sec": null,
+        "bots": 28,
+        "mode": "offline serialization estimate only; 20 synthetic ticks at 10 Hz",
+        "model_packets_per_sec_per_peer": 70.0,
+        "model_states_per_sec_per_peer": 280.0,
+        "payload_bytes_per_sec_per_peer": 37200.0,
+        "real_network_peers": 0,
+        "serialization_cpu_ms_per_second": 1.035
+      },
+      "gpu_telemetry": {
+        "measurement_samples": 19,
+        "temp_min": 37.0,
+        "temp_mean": 37.79,
+        "temp_max": 38.0,
+        "thermal_reasons_unavailable": true,
+        "noninactive_thermal_samples": 0
+      }
+    },
+    {
+      "scenario": "favela",
+      "brain_off": false,
+      "file": "ia2-20261106-165925-favela-on-F1-R1.json",
+      "valid_basic": true,
+      "measured_seconds": 20.0,
+      "frame_count": 268,
+      "fps_mean": 13.38,
+      "one_percent_low_fps": 4.23,
+      "frame_p95_ms": 136.05,
+      "frame_p99_ms": 209.39,
+      "physics_engine_mean_ms": 24.09,
+      "gpu_engine_mean_ms": 15.7,
+      "ticks_ge_2": 268,
+      "ticks_ge_4": 164,
+      "ticks_ge_8": 26,
+      "scope": {
+        "brain.decision": {
+          "mean_ms_per_frame": 1.211,
+          "p95_ms_per_frame": 2.571,
+          "p99_ms_per_frame": 4.203,
+          "calls_per_frame": 2.918,
+          "calls": 782
+        },
+        "brain_and_movement.bot_move_inclusive": {
+          "mean_ms_per_frame": 18.909,
+          "p95_ms_per_frame": 38.047,
+          "p99_ms_per_frame": 62.021,
+          "calls_per_frame": 118.552,
+          "calls": 31772
+        },
+        "actor.physics_inclusive": {
+          "mean_ms_per_frame": 24.077,
+          "p95_ms_per_frame": 46.073,
+          "p99_ms_per_frame": 74.354,
+          "calls_per_frame": 127.037,
+          "calls": 34046
+        },
+        "actor.pose_visual_and_hitbox_inclusive": {
+          "mean_ms_per_frame": 12.809,
+          "p95_ms_per_frame": 25.662,
+          "p99_ms_per_frame": 44.323,
+          "calls_per_frame": 122.933,
+          "calls": 32946
+        },
+        "actor.weapon_pose": {
+          "mean_ms_per_frame": 3.32,
+          "p95_ms_per_frame": 6.536,
+          "p99_ms_per_frame": 11.93,
+          "calls_per_frame": 28.791,
+          "calls": 7716
+        },
+        "actor.arm_ik": {
+          "mean_ms_per_frame": 3.853,
+          "p95_ms_per_frame": 7.734,
+          "p99_ms_per_frame": 11.686,
+          "calls_per_frame": 57.582,
+          "calls": 15432
+        },
+        "actor.body_pose": {
+          "mean_ms_per_frame": 1.411,
+          "p95_ms_per_frame": 2.764,
+          "p99_ms_per_frame": 4.259,
+          "calls_per_frame": 28.791,
+          "calls": 7716
+        },
+        "actor.hitbox_toggle": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.004,
+          "calls": 1
+        },
+        "queries.enemy_scan_inclusive": {
+          "mean_ms_per_frame": 0.164,
+          "p95_ms_per_frame": 0.337,
+          "p99_ms_per_frame": 0.476,
+          "calls_per_frame": 2.821,
+          "calls": 756
+        },
+        "queries.clear_shot_ray": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.0,
+          "calls": 0
+        },
+        "queries.avoid_1_to_9_rays": {
+          "mean_ms_per_frame": 0.077,
+          "p95_ms_per_frame": 0.168,
+          "p99_ms_per_frame": 0.252,
+          "calls_per_frame": 2.817,
+          "calls": 755
+        },
+        "queries.traffic_shape_and_cast": {
+          "mean_ms_per_frame": 0.009,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.28,
+          "calls_per_frame": 0.134,
+          "calls": 36
+        }
+      },
+      "replication": {
+        "actual_network_bytes_per_sec": null,
+        "bots": 28,
+        "mode": "offline serialization estimate only; 20 synthetic ticks at 10 Hz",
+        "model_packets_per_sec_per_peer": 70.0,
+        "model_states_per_sec_per_peer": 280.0,
+        "payload_bytes_per_sec_per_peer": 37120.0,
+        "real_network_peers": 0,
+        "serialization_cpu_ms_per_second": 1.145
+      },
+      "gpu_telemetry": {
+        "measurement_samples": 18,
+        "temp_min": 35.0,
+        "temp_mean": 35.89,
+        "temp_max": 36.0,
+        "thermal_reasons_unavailable": false,
+        "noninactive_thermal_samples": 0
+      }
+    },
+    {
+      "scenario": "favela",
+      "brain_off": true,
+      "file": "ia2-20261106-170041-favela-off-F1-R1.json",
+      "valid_basic": true,
+      "measured_seconds": 20.0,
+      "frame_count": 202,
+      "fps_mean": 10.05,
+      "one_percent_low_fps": 3.98,
+      "frame_p95_ms": 199.59,
+      "frame_p99_ms": 246.9,
+      "physics_engine_mean_ms": 29.59,
+      "gpu_engine_mean_ms": 16.4,
+      "ticks_ge_2": 196,
+      "ticks_ge_4": 121,
+      "ticks_ge_8": 68,
+      "scope": {
+        "brain.decision": {
+          "mean_ms_per_frame": 0.005,
+          "p95_ms_per_frame": 0.01,
+          "p99_ms_per_frame": 0.011,
+          "calls_per_frame": 3.45,
+          "calls": 697
+        },
+        "brain_and_movement.bot_move_inclusive": {
+          "mean_ms_per_frame": 28.408,
+          "p95_ms_per_frame": 56.451,
+          "p99_ms_per_frame": 70.076,
+          "calls_per_frame": 144.851,
+          "calls": 29260
+        },
+        "actor.physics_inclusive": {
+          "mean_ms_per_frame": 34.267,
+          "p95_ms_per_frame": 77.495,
+          "p99_ms_per_frame": 99.006,
+          "calls_per_frame": 150.025,
+          "calls": 30305
+        },
+        "actor.pose_visual_and_hitbox_inclusive": {
+          "mean_ms_per_frame": 18.29,
+          "p95_ms_per_frame": 44.813,
+          "p99_ms_per_frame": 59.218,
+          "calls_per_frame": 150.025,
+          "calls": 30305
+        },
+        "actor.weapon_pose": {
+          "mean_ms_per_frame": 4.703,
+          "p95_ms_per_frame": 11.017,
+          "p99_ms_per_frame": 14.842,
+          "calls_per_frame": 33.599,
+          "calls": 6787
+        },
+        "actor.arm_ik": {
+          "mean_ms_per_frame": 5.516,
+          "p95_ms_per_frame": 14.156,
+          "p99_ms_per_frame": 18.204,
+          "calls_per_frame": 67.198,
+          "calls": 13574
+        },
+        "actor.body_pose": {
+          "mean_ms_per_frame": 2.011,
+          "p95_ms_per_frame": 4.948,
+          "p99_ms_per_frame": 7.335,
+          "calls_per_frame": 33.599,
+          "calls": 6787
+        },
+        "actor.hitbox_toggle": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.0,
+          "calls": 0
+        },
+        "queries.enemy_scan_inclusive": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.0,
+          "calls": 0
+        },
+        "queries.clear_shot_ray": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.0,
+          "calls": 0
+        },
+        "queries.avoid_1_to_9_rays": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.0,
+          "calls": 0
+        },
+        "queries.traffic_shape_and_cast": {
+          "mean_ms_per_frame": 0.0,
+          "p95_ms_per_frame": 0.0,
+          "p99_ms_per_frame": 0.0,
+          "calls_per_frame": 0.0,
+          "calls": 0
+        }
+      },
+      "replication": {
+        "actual_network_bytes_per_sec": null,
+        "bots": 28,
+        "mode": "offline serialization estimate only; 20 synthetic ticks at 10 Hz",
+        "model_packets_per_sec_per_peer": 70.0,
+        "model_states_per_sec_per_peer": 280.0,
+        "payload_bytes_per_sec_per_peer": 37120.0,
+        "real_network_peers": 0,
+        "serialization_cpu_ms_per_second": 1.058
+      },
+      "gpu_telemetry": {
+        "measurement_samples": 17,
+        "temp_min": 36.0,
+        "temp_mean": 36.18,
+        "temp_max": 37.0,
+        "thermal_reasons_unavailable": false,
+        "noninactive_thermal_samples": 0
+      }
+    }
+  ]
+}
