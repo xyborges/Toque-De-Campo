@@ -1761,14 +1761,46 @@ func _collision_excludes(owner_id: int, naval: bool) -> Array[RID]:
 				if is_instance_valid(area): excluded.append(area.get_rid())
 	return excluded
 
+# IA2: stagger remote presentation only. The local death camera stays
+# synchronous; server headless never creates a ragdoll. Default disabled.
+var ia2_remote_ragdoll_queue_enabled := OS.get_environment("TDC_IA2_DEFER_REMOTE_RAGDOLL")=="1"
+var ia2_remote_ragdoll_jobs: Array[Dictionary] = []
+var ia2_remote_ragdoll_running := false
+var ia2_remote_ragdoll_created := 0
+
 func spawn_ragdoll(pos: Vector3, _killer_id: int, source: GamePlayer = null) -> void:
 	if not is_instance_valid(source) or not is_instance_valid(world_root) or source.death_presented == source.life_id: return
 	source.death_presented = source.life_id
 	_play_death_sound(source.death_sound,pos)
+	if ia2_remote_ragdoll_queue_enabled and get_meta("war_mode",false) and not source.is_local and (DisplayServer.get_name()!="headless" or (get_meta("test_mode",false) and get_meta("ia2_allow_headless_queue_test",false))):
+		ia2_remote_ragdoll_jobs.append({"position":pos,"source":weakref(source),"life":source.life_id})
+		if not ia2_remote_ragdoll_running: _ia2_drain_remote_ragdolls.call_deferred()
+		return
+	_ia2_create_ragdoll_now(pos,source)
+
+func _ia2_create_ragdoll_now(pos: Vector3,source: GamePlayer) -> void:
 	var old := get_tree().get_nodes_in_group("death_ragdolls")
 	if old.size() >= 10: old[0].queue_free()
 	var body := DeathRagdoll.create(world_root,source,pos)
 	if source.is_local and is_instance_valid(death_view): death_view.follow(body,pos,-source.global_basis.z)
+
+func _ia2_drain_remote_ragdolls() -> void:
+	if ia2_remote_ragdoll_running: return
+	ia2_remote_ragdoll_running=true
+	# Wait one frame even for the first death, then create at most one corpse
+	# per rendered frame; never share animation pose data across player lives.
+	while not ia2_remote_ragdoll_jobs.is_empty() and is_inside_tree() and is_instance_valid(world_root):
+		await get_tree().process_frame
+		if not is_inside_tree() or not is_instance_valid(world_root): break
+		if ia2_remote_ragdoll_jobs.is_empty(): break
+		var entry: Dictionary=ia2_remote_ragdoll_jobs.pop_front()
+		var reference: WeakRef=entry.source
+		var actor:=reference.get_ref() as GamePlayer
+		if not is_instance_valid(actor) or actor.life_id!=int(entry.life): continue
+		_ia2_create_ragdoll_now(entry.position,actor)
+		ia2_remote_ragdoll_created+=1
+	ia2_remote_ragdoll_jobs.clear()
+	ia2_remote_ragdoll_running=false
 
 func _ragdoll_material(color: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
