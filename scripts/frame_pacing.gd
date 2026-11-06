@@ -4,6 +4,8 @@ extends RefCounted
 # messages in the per-frame path. Diagnostics' existing worker writes reports.
 const CAPACITY:=1200
 const WINDOW_USEC:=10000000
+# Operation snapshots are normally sent every 200 ms.
+const WORLD_STALE_USEC:=450000
 var durations:=PackedFloat32Array()
 var process_times:=PackedFloat32Array()
 var physics_times:=PackedFloat32Array()
@@ -24,7 +26,13 @@ var snapshot_at:=0
 var snapshot_max_gap_ms:=0.
 var snapshot_count:=0
 var snapshot_previous:=0
+var snapshot_gaps: Array[Dictionary]=[]
 var camera_previous:=Vector3.ZERO
+var camera_previous_direction:=Vector3.ZERO
+var world_snapshot_max_age_ms:=0.
+var world_snapshot_max_age_at_usec:=0
+var world_stale_frames:=0
+var world_stale_camera_turns:=0
 var camera_known:=false
 var moving_frames:=0
 var repeated_camera_frames:=0
@@ -43,14 +51,18 @@ func reset(now: int=0) -> void:
 	pauses.clear();pause_count=0;no_tick_frames=0;multiple_tick_frames=0
 	correction_count=0;correction_max_m=0.;last_pause=0
 	snapshot_at=0;snapshot_previous=0;snapshot_max_gap_ms=0.;snapshot_count=0
+	snapshot_gaps.clear()
 	camera_known=false;moving_frames=0;repeated_camera_frames=0
+	world_snapshot_max_age_ms=0.;world_snapshot_max_age_at_usec=0;world_stale_frames=0;world_stale_camera_turns=0
 	over_33_frames=0;over_100_frames=0;largest_tick_catchup=0
 	pipeline_last.clear();pipeline_totals.clear();pipeline_coincident_long_frames=0
 
 func correction(distance_m: float) -> void:
 	correction_count+=1;correction_max_m=maxf(correction_max_m,distance_m)
 
-func snapshot(now: int) -> void:
+func snapshot(now: int,moving: bool=false) -> void:
+	if snapshot_previous>0 and now-snapshot_previous>100000 and snapshot_gaps.size()<48:
+		snapshot_gaps.append({"at_usec":now,"gap_ms":(now-snapshot_previous)*.001,"moving_on_receive":moving})
 	if snapshot_previous>0:snapshot_max_gap_ms=maxf(snapshot_max_gap_ms,(now-snapshot_previous)*.001)
 	snapshot_previous=now;snapshot_at=now;snapshot_count+=1
 
@@ -88,7 +100,7 @@ func report(now: int) -> Dictionary:
 	var threshold:=maxf(25.,float(frame.get("p50_ms",0.))*1.5)
 	for pause: Dictionary in pauses:
 		if float(pause.frame_ms)>=threshold:outliers.append(pause)
-	return {"kind":kind,"duration_ms":(now-started)*.001,"frames":count,"frame":frame,"process":stats(process_times),"physics":stats(physics_times),"frames_over_25ms":pause_count,"frames_over_33ms":over_33_frames,"frames_over_100ms":over_100_frames,"max_physics_steps_per_rendered_frame":largest_tick_catchup,"pipeline_compilations":pipeline_totals.duplicate(),"long_frames_coincident_with_pipeline_compilation":pipeline_coincident_long_frames,"outlier_threshold_ms":threshold,"outliers":outliers,"no_physics_step_frames":no_tick_frames,"multiple_physics_step_frames":multiple_tick_frames,"position_corrections":correction_count,"maximum_correction_m":correction_max_m,"vehicle_snapshots":snapshot_count,"maximum_vehicle_snapshot_gap_ms":snapshot_max_gap_ms,"vehicle_snapshot_age_ms":(now-snapshot_at)*.001 if snapshot_at>0 else -1.,"moving_camera_frames":moving_frames,"repeated_moving_camera_frames":repeated_camera_frames,"note":"Wall frame intervals; engine monitors may lag up to one second and are context, not exact attribution of individual spikes. Camera samples use node positions, not interpolated renderer transforms. Physics step counts alone do not prove a visible pause. Up to 1200 recent samples and the first 48 frames over 25 ms per window."}
+	return {"kind":kind,"duration_ms":(now-started)*.001,"frames":count,"frame":frame,"process":stats(process_times),"physics":stats(physics_times),"frames_over_25ms":pause_count,"frames_over_33ms":over_33_frames,"frames_over_100ms":over_100_frames,"max_physics_steps_per_rendered_frame":largest_tick_catchup,"pipeline_compilations":pipeline_totals.duplicate(),"long_frames_coincident_with_pipeline_compilation":pipeline_coincident_long_frames,"outlier_threshold_ms":threshold,"outliers":outliers,"no_physics_step_frames":no_tick_frames,"multiple_physics_step_frames":multiple_tick_frames,"position_corrections":correction_count,"maximum_correction_m":correction_max_m,"vehicle_snapshot_gaps":snapshot_gaps.duplicate(true),"vehicle_snapshots":snapshot_count,"maximum_vehicle_snapshot_gap_ms":snapshot_max_gap_ms,"vehicle_snapshot_age_ms":(now-snapshot_at)*.001 if snapshot_at>0 else -1.,"moving_camera_frames":moving_frames,"repeated_moving_camera_frames":repeated_camera_frames,"note":"Wall frame intervals; engine monitors may lag up to one second and are context, not exact attribution of individual spikes. Camera samples use node positions, not interpolated renderer transforms. Physics step counts alone do not prove a visible pause. Up to 1200 recent samples and the first 48 frames over 25 ms per window."}
 
 # Pipeline counters are cumulative and may be reported a frame late.
 # Record temporal correlations, not an unproven causal attribution.
@@ -113,24 +125,37 @@ func tick(game: Node,now: int=-1) -> void:
 	var moving: bool=game.local_player.velocity.length_squared()>.25
 	if not game.local_player.vehicle_id.is_empty():
 		var vehicle: Node=game.vehicle_system.find_target(game.local_player.vehicle_id)
-		next_kind=str(vehicle.get("kind")) if is_instance_valid(vehicle) and vehicle is WarVehicle else "vehicle"
-		moving=absf(vehicle.speed)>.5 if vehicle is WarVehicle else false
+		next_kind=str(vehicle.get("kind")) if is_instance_valid(vehicle) and vehicle is WarVehicle else ("drone" if vehicle is WarDrone else "vehicle")
+		moving=absf(vehicle.speed)>.5 if vehicle is WarVehicle else (vehicle.velocity.length_squared()>.25 if vehicle is WarDrone else false)
 	if next_kind!=kind:reset(now);kind=next_kind
 	var prior:=previous
 	sample(now,Engine.get_physics_frames(),Performance.get_monitor(Performance.TIME_PROCESS)*1000.,Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS)*1000.)
 	if RenderingServer.get_current_rendering_method()=="forward_plus":
 		track_pipeline_counts({"mesh":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_MESH),"surface":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_SURFACE),"draw":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_DRAW),"specialization":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_SPECIALIZATION)},(now-prior)*.001 if prior>0 else 0.)
+	var operation_received_at: int=game.operation_received_at
+	var operation_age_usec:=now-operation_received_at if game.online and not game.multiplayer.is_server() and operation_received_at>0 else -1
+	if operation_age_usec>=0:
+		if operation_age_usec*.001>world_snapshot_max_age_ms:
+			world_snapshot_max_age_ms=operation_age_usec*.001
+			world_snapshot_max_age_at_usec=now
+		if operation_age_usec>=WORLD_STALE_USEC: world_stale_frames+=1
 	var camera:=game.get_viewport().get_camera_3d() as Camera3D
 	if is_instance_valid(camera):
 		if moving and camera_known:
 			moving_frames+=1
 			if camera.global_position.distance_squared_to(camera_previous)<.0000000001:repeated_camera_frames+=1
+		var direction:=camera.global_transform.basis.z
+		if camera_known and operation_age_usec>=WORLD_STALE_USEC and direction.distance_squared_to(camera_previous_direction)>.000001:
+			world_stale_camera_turns+=1
+		camera_previous_direction=direction
 		camera_previous=camera.global_position;camera_known=true
 	if now-started<WINDOW_USEC:return
 	var details:=report(now)
 	details.online=game.online;details.vsync=DisplayServer.window_get_vsync_mode();details.fps_limit=Engine.max_fps;details.physics_hz=Engine.physics_ticks_per_second
 	details.screen_hz=DisplayServer.screen_get_refresh_rate();details.focused=DisplayServer.window_is_focused()
 	details.state_recoveries=game.state_recovery_received
+	if operation_age_usec>=0:
+		details.world_state={"max_age_ms":world_snapshot_max_age_ms,"max_age_unix_ms":Time.get_unix_time_from_system()*1000.-(now-world_snapshot_max_age_at_usec)*.001,"stale_frames":world_stale_frames,"camera_turns_during_stale_frames":world_stale_camera_turns,"threshold_ms":WORLD_STALE_USEC*.001}
 	details.population={"actors":game.players.size(),"bots":0}
 	for member: Dictionary in game.members.values():
 		if bool(member.get("bot",false)):details.population.bots+=1

@@ -314,18 +314,51 @@ func resolve_runover(vehicle: WarVehicle,impact_speed: float,direction: Vector3)
 			var damage:=clampf(25.0+(impact_speed-3.0)*20.0,25.0,150.0)
 			game._apply_hit(vehicle.driver,{"collider":victim.hit_regions.chest,"position":contact.get_position(hit)},damage,"chest","runover",direction.normalized())
 
-func _vehicle_snapshot_for_send(vehicle: WarVehicle,now_usec: int=-1) -> Dictionary:
+func _vehicle_snapshot_for_send(vehicle: WarVehicle,now_usec: int=-1,force:=false) -> Dictionary:
 	if now_usec<0: now_usec=Time.get_ticks_usec()
 	var state:=vehicle.snapshot()
 	var encoded:=var_to_bytes(state)
 	var id:=vehicle.vehicle_id
-	if encoded==last_sent.get(id,PackedByteArray()) and now_usec-int(vehicle_sent_usec.get(id,0))<VEHICLE_HEARTBEAT_USEC: return {}
-	last_sent[id]=encoded;vehicle_sent_usec[id]=now_usec
+	if not force and encoded==last_sent.get(id,PackedByteArray()) and now_usec-int(vehicle_sent_usec.get(id,0))<VEHICLE_HEARTBEAT_USEC: return {}
+	# A unicast repair must not postpone the shared heartbeat or hide a changed
+	# final pose from the other observers. Only broadcasts advance that cache.
+	if not force:last_sent[id]=encoded;vehicle_sent_usec[id]=now_usec
 	vehicle_state_sequences[id]=int(vehicle_state_sequences.get(id,0))+1
 	# Sequence is per vehicle and survives its respawn. A final lost pose is
 	# repaired by the heartbeat even when the vehicle has stopped moving.
 	state.sequence=vehicle_state_sequences[id]
 	return state
+
+func local_state_stale(now_usec: int) -> bool:
+	if not is_instance_valid(game.local_player) or not game.local_player.deployed or game.local_player.hp<=0:return false
+	var id:=game.local_player.vehicle_id
+	if id.is_empty():return false
+	var target:=find_target(id)
+	if not is_instance_valid(target):return true
+	# Moving vehicles and drones send every 50 ms. Parked vehicles deliberately
+	# heartbeat every 500 ms; do not turn that idle optimization into polling.
+	var limit:=150000
+	if target is WarVehicle and absf(target.speed)<=.5:limit=650000
+	return now_usec-int(target.received_state_usec)>=limit
+
+func _occupied_recovery_state(id: int) -> Dictionary:
+	var actor:=game.players.get(id) as WarPlayer
+	if not is_instance_valid(actor) or not actor.deployed or actor.hp<=0:return {}
+	var member: Dictionary=game.members.get(id,{})
+	if actor.vehicle_id.is_empty() or actor.vehicle_id!=str(member.get("vehicle","")):return {}
+	var target:=find_target(actor.vehicle_id)
+	if target is WarVehicle and target.seat_of(id)>=0:
+		return _vehicle_snapshot_for_send(target,-1,true)
+	if target is WarDrone and target.driver==id and not target.destroyed:
+		return target.snapshot()
+	return {}
+
+func send_state_recovery(id: int) -> void:
+	# Called only after WarGame validates admission, token, serial and quota.
+	var state:=_occupied_recovery_state(id)
+	if state.is_empty():return
+	if vehicles.has(state.id):rpc_id(id,"baseline_vehicles",[state])
+	else:rpc_id(id,"baseline_drone",state)
 
 func _local_control() -> Dictionary:
 	var enabled:=game.gameplay_input_allowed()
@@ -461,7 +494,7 @@ func send_initial(id: int,include_aircraft:=true) -> void:
 @rpc("authority","call_remote","reliable")
 func baseline_vehicles(states: Array) -> void:
 	for state: Dictionary in states:
-		if vehicles.has(state.id):vehicles[state.id].receive(state)
+		vehicle_state(state)
 
 @rpc("authority","call_remote","reliable")
 func baseline_drone(state: Dictionary) -> void:drone_state(state)
@@ -492,7 +525,7 @@ func vehicle_state(state: Dictionary) -> void:
 		vehicle.receive(state)
 		if vehicle.received_state_sequence>previous_sequence and is_instance_valid(game) and is_instance_valid(game.local_player) and game.local_player.vehicle_id==vehicle.vehicle_id:
 			var pacing: Variant=game.get("frame_pacing")
-			if pacing!=null:pacing.snapshot(Time.get_ticks_usec())
+			if pacing!=null:pacing.snapshot(Time.get_ticks_usec(),absf(vehicle.speed)>.5)
 
 @rpc("authority","call_remote","reliable")
 func vehicle_occupancy(id: String,seats: Dictionary,revision: int,epoch: int) -> void:
@@ -524,7 +557,11 @@ func drone_state(state: Dictionary) -> void:
 		var drone := WarDrone.new()
 		drone.drone_id=str(state.id);drone.position=state.position
 		add_child(drone);drones[state.id]=drone
-	drones[state.id].receive(state)
+	var drone:=drones[state.id] as WarDrone
+	var previous_received:=drone.received_state_usec
+	drone.receive(state)
+	if drone.received_state_usec!=previous_received and is_instance_valid(game) and is_instance_valid(game.local_player) and game.local_player.vehicle_id==str(state.id):
+		game.frame_pacing.snapshot(Time.get_ticks_usec(),drones[state.id].velocity.length_squared()>.25)
 
 @rpc("authority","call_remote","reliable")
 func drone_removed(id: String) -> void:

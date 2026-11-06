@@ -52,7 +52,9 @@ func clean(value: Variant, depth := 0) -> Variant:
 			var text_key := str(key).to_lower()
 			if text_key.contains("token") or text_key.contains("password") or text_key.contains("secret") or text_key.contains("proof") or text_key.contains("pem") or text_key.contains("reservation"): continue
 			result[str(key).left(64)] = clean(value[key],depth+1); count+=1
-			if count>=32: break
+			# Keep frame pacing context after its timing counters, while
+			# retaining the tighter cap for nested dictionaries.
+			if count >= (48 if depth == 0 else 32): break
 		return result
 	if value is Array:
 		var result := []

@@ -1,7 +1,7 @@
 extends RefCounted
 class_name WarRules
 
-const PROTOCOL := 36
+const PROTOCOL := 37
 const OFFLINE_PARTICIPANTS:=18
 const TEAMKILL_PENALTY := 100
 const PORT := 3014
