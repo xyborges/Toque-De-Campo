@@ -549,19 +549,37 @@ func equip_quick_slot(number: int) -> void:
 		return
 	super.equip_quick_slot(number)
 
+# IA2: only reuse a complete, same-ID world model for non-local actors.
+# The local first-person presentation still follows the original rebuild path.
+# Default OFF; no change to damage, muzzle or authoritative weapon selection.
+var ia2_respawn_weapon_reuse := OS.get_environment("TDC_IA2_REUSE_RESPAWN_WEAPON")=="1"
+var ia2_weapon_reuse_hits := 0
+var ia2_weapon_full_builds := 0
+
 func _refresh_weapon() -> void:
+	if ia2_respawn_weapon_reuse and not is_local and not GameWeapons.is_launcher(weapon_id):
+		var ready_id: String = str(weapon_root.get_meta("ia2_world_weapon_id",""))
+		var valid_geometry := is_instance_valid(melee_rig) if GameWeapons.ITEMS.get(weapon_id,{}).get("kind","")=="melee" else is_instance_valid(muzzle_marker)
+		if ready_id==weapon_id and valid_geometry and weapon_root.get_child_count()>0:
+			ia2_weapon_reuse_hits+=1
+			stowed_weapon_id=weapon_id
+			refresh_weapon_optics()
+			return
+	ia2_weapon_full_builds+=1
 	if is_instance_valid(view_root): view_root.set_meta("weapon","")
 	launcher_model=null;launcher_muzzle=null
 	gadget_equipped=GameWeapons.is_launcher(weapon_id)
 	if not gadget_equipped:
 		stowed_weapon_id=weapon_id
 		super._refresh_weapon()
+		weapon_root.set_meta("ia2_world_weapon_id",weapon_id)
 		return
 	gadget=weapon_id
 	for child in weapon_root.get_children():
 		weapon_root.remove_child(child);child.queue_free()
 	muzzle_marker=null;melee_rig=null
 	_build_launcher()
+	weapon_root.set_meta("ia2_world_weapon_id",weapon_id)
 	if is_local and is_instance_valid(camera):_update_view()
 
 func _weapon_offset() -> Vector3:
