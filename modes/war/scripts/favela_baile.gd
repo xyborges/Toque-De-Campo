@@ -1,7 +1,7 @@
-extends Node
+extends Node3D
 class_name WarFavelaBaile
 ## Quadra comunitaria com palco e paredao. Visual e fisica compartilham a origem.
-## As seis faixas fornecidas pelo usuario sao usadas quando estao disponiveis.
+## As seis faixas usam a semente e o relogio autoritativos da partida.
 const TRACK_PATHS := [
 	"res://modes/war/audio/baile/ak_do_flamengo.mp3",
 	"res://modes/war/audio/baile/invejoso.mp3",
@@ -17,9 +17,15 @@ const LIME := Color("7dc8a0")
 const STEEL := Color("343a3d")
 const CONCRETE := Color("747e77")
 var voice: AudioStreamPlayer3D
-var queue: Array[int] = []
-var previous := -1
-var rng := RandomNumberGenerator.new()
+var track_streams: Array[AudioStream] = []
+var track_durations: Array[float] = []
+var playlist_tick := 0.0
+var local_start_usec := 0
+var last_track := -1
+var last_seed := -1
+var last_position := -1.0
+const HEARING_RADIUS := 100.0
+const CHECK_INTERVAL := 0.20
 var lights: Array[OmniLight3D] = []
 var beams: Array[MeshInstance3D] = []
 var light_clock := 0.0
@@ -355,6 +361,10 @@ func _light_beam(parent: Node3D, origin: Vector3, target: Vector3, color: Color)
 	return instance
 
 func _process(delta: float) -> void:
+	playlist_tick += delta
+	if playlist_tick >= CHECK_INTERVAL:
+		playlist_tick = 0.0
+		_update_playlist()
 	if lights.is_empty():
 		return
 	light_clock += delta
@@ -373,46 +383,111 @@ func _process(delta: float) -> void:
 			.11 + .04 * sin(beat * 4.5 + float(i)))
 
 func begin() -> void:
-	rng.randomize()
+	local_start_usec = Time.get_ticks_usec()
 	voice = AudioStreamPlayer3D.new()
 	voice.name = "SomDoBaile"
 	voice.bus = "Ambiente" if AudioServer.get_bus_index("Ambiente") >= 0 else "Master"
-	# Audio parte do paredao, nao do centro geometrico do campo.
+	# A fonte sonora permanece no paredao; o som nunca ultrapassa 100 metros.
 	voice.position = Vector3(-39.0, 3.0, 0.0)
-	voice.max_distance = 225.0
-	voice.unit_size = 38.0
+	voice.max_distance = HEARING_RADIUS
+	voice.unit_size = 22.0
 	voice.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 	voice.volume_db = -3.0
-	voice.finished.connect(_next_song)
 	add_child(voice)
-	# A primeira musica deve ser audivel imediatamente, nao apos 8-38 segundos.
-	_next_song()
+	# Carregar as seis duracoes antes de iniciar garante ordem/offset iguais em
+	# todos os clientes, inclusive para quem entrar no meio da musica.
+	for path: String in TRACK_PATHS:
+		var stream := load(path) as AudioStream if ResourceLoader.exists(path) else null
+		track_streams.append(stream)
+		track_durations.append(maxf(1.0, stream.get_length()) if stream != null else 180.0)
+	_update_playlist()
 
-func _next_song() -> void:
-	if not is_instance_valid(voice):
+func _authority_timeline() -> Dictionary:
+	var node := get_parent()
+	while node != null:
+		if node.has_meta("war_mode"):
+			# Evitar dependencia circular do controlador com WarGame.
+			var authority_seed := int(node.get("weather_seed"))
+			if authority_seed <= 0:
+				return {}
+			return {"seed": authority_seed, "time": maxf(0.0, float(node.get("war_clock")))}
+		node = node.get_parent()
+	# Cenas de QA/preview sem WarGame possuem um relogio local previsivel.
+	return {"seed": 1, "time": float(Time.get_ticks_usec() - local_start_usec) * 0.000001}
+
+func _order_for_cycle(seed_value: int, cycle: int, preceding: int) -> Array[int]:
+	var indices: Array[int] = []
+	for i in TRACK_PATHS.size():
+		indices.append(i)
+	var shuffle_rng := RandomNumberGenerator.new()
+	shuffle_rng.seed = seed_value + cycle * 7919
+	for i in range(indices.size() - 1, 0, -1):
+		var j := shuffle_rng.randi_range(0, i)
+		var current: int = indices[i]
+		indices[i] = indices[j]
+		indices[j] = current
+	if indices.size() > 1 and indices[0] == preceding:
+		var first: int = indices[0]
+		indices[0] = indices[1]
+		indices[1] = first
+	return indices
+
+func _song_at(seed_value: int, seconds: float) -> Dictionary:
+	var elapsed := maxf(0.0, seconds)
+	var cycle := 0
+	var preceding := -1
+	# Sem estado aleatorio por cliente: playlist e tempo dependem somente
+	# da semente e do relogio recebidos do servidor.
+	while cycle < 1000:
+		var order := _order_for_cycle(seed_value, cycle, preceding)
+		for index: int in order:
+			var length: float = track_durations[index]
+			if elapsed < length:
+				return {"index": index, "offset": elapsed}
+			elapsed -= length
+		preceding = order.back()
+		cycle += 1
+	return {"index": 0, "offset": 0.0}
+
+func _update_playlist() -> void:
+	if not is_instance_valid(voice) or track_durations.size() != TRACK_PATHS.size():
 		return
-	for attempt in TRACK_PATHS.size():
-		if queue.is_empty():
-			queue.assign(range(TRACK_PATHS.size()))
-			queue.shuffle()
-			if queue.size() > 1 and queue.back() == previous:
-				var swap := rng.randi_range(0, queue.size() - 2)
-				var last: int = queue.back()
-				queue[queue.size() - 1] = queue[swap]
-				queue[swap] = last
-		var index: int = queue.pop_back()
-		previous = index
-		if not ResourceLoader.exists(TRACK_PATHS[index]):
-			continue
-		var stream := load(TRACK_PATHS[index]) as AudioStream
-		if stream == null:
-			continue
+	var timeline := _authority_timeline()
+	if timeline.is_empty():
+		if voice.playing:
+			voice.stop()
+		return
+	var seed_value := int(timeline.seed)
+	var desired := _song_at(seed_value, float(timeline.time))
+	var index := int(desired.index)
+	var offset := float(desired.offset)
+	# O playback continua sincronizado ao longe; apenas o audio local para.
+	# Ao voltar para a quadra, retoma a faixa no instante correto.
+	var camera := get_viewport().get_camera_3d()
+	if is_instance_valid(camera) and camera.global_position.distance_to(voice.global_position) > HEARING_RADIUS:
+		if voice.playing:
+			voice.stop()
+		last_track = -1
+		return
+	if last_track == index and last_seed == seed_value and voice.playing:
+		var actual := voice.get_playback_position()
+		if absf(actual - offset) < 0.40:
+			return
+		voice.seek(offset)
+		last_position = offset
+		return
+	last_track = index
+	last_seed = seed_value
+	var stream: AudioStream = track_streams[index]
+	if stream == null:
+		push_warning("Baile: faixa %d ausente; usando batida original de reserva." % index)
+		stream = _backup_beat()
 		voice.stream = stream
-		voice.play(rng.randf_range(0.0, maxf(0.0, stream.get_length() - 4.0)))
-		return
-	push_warning("Baile: seis faixas indisponiveis no cliente; tocando batida original de reserva.")
-	voice.stream = _backup_beat()
-	voice.play()
+		voice.play(fposmod(offset, 4.0))
+	else:
+		voice.stream = stream
+		voice.play(offset)
+	last_position = offset
 
 func _backup_beat() -> AudioStreamWAV:
 	# Batida instrumental original de reserva, sintetizada em memoria.

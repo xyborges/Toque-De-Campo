@@ -46,7 +46,7 @@ func _run() -> void:
 	verify(player != null, "Fonte sonora nao instanciada")
 	if player != null:
 		verify(player.position.x < -30.0, "Audio fora do palco")
-		verify(player.max_distance >= 150.0, "Alcance do som insuficiente")
+		verify(is_equal_approx(player.max_distance, 100.0), "Alcance precisa ser 100 metros")
 		verify(player.stream != null and player.playing, "Musica ou batida de reserva nao iniciou")
 	verify(field.find_children("LuzBaile_*", "OmniLight3D", true, false).size() == 6,
 		"Efeitos de luz ausentes")
