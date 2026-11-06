@@ -24,6 +24,9 @@ const HILLSIDE := preload("res://modes/war/scripts/favela_hillside.gd")
 const ATMOSPHERE := preload("res://modes/war/scripts/favela_atmosphere.gd")
 const STREET_SPACE := preload("res://modes/war/scripts/favela_street_space.gd")
 const STREET_ART := preload("res://modes/war/scripts/favela_street_art.gd")
+const BAILE := preload("res://modes/war/scripts/favela_baile.gd")
+const BAILE_SCENE := preload("res://modes/war/library/favela_campo_baile.tscn")
+const BAILE_CENTER := Vector2(430.0, -275.0)
 const PARKED_BIKE := preload("res://modes/war/library/favela_moto_estacionada.tscn")
 const PRIMARY := [
 	Vector2(-470,600),Vector2(-460,490),Vector2(-395,420),
@@ -109,6 +112,14 @@ static func _natural(x: float,z: float) -> float:
 		var distance:=Vector2(x,z).distance_to(target)
 		if distance<38.0:
 			h=lerpf(_landform(target.x,target.y),h,smoothstep(24.0,38.0,distance))
+	# A rectangular, gently battered plateau puts the football pitch in the
+	# northern neighborhood while keeping server and client terrain identical.
+	var local:=Vector2(absf(x-BAILE_CENTER.x)-41.0,absf(z-BAILE_CENTER.y)-26.0)
+	var outside:=Vector2(maxf(local.x,0.0),maxf(local.y,0.0)).length()
+	var signed_distance:=outside+minf(maxf(local.x,local.y),0.0)
+	if signed_distance<12.0:
+		var pad_height:=_landform(BAILE_CENTER.x,BAILE_CENTER.y)
+		h=lerpf(pad_height,h,smoothstep(0.0,12.0,maxf(0.0,signed_distance)))
 	return h
 
 static func _height_sample(x: int,z: int) -> float:
@@ -208,6 +219,11 @@ func build() -> void:
 	_bases(kit)
 	var neighborhood:=_neighborhoods(kit)
 	var edge_summary:=_edge_infrastructure(kit)
+	var baile:=BAILE_SCENE.instantiate() as Node3D
+	baile.name="CampoDeBaile"
+	baile.position=point(BAILE_CENTER.x,BAILE_CENTER.y)
+	add_child(baile)
+	BAILE.start(baile,render_visuals)
 	_landmarks(kit)
 	_street_wiring(kit)
 	_urban_clutter(kit)
@@ -233,6 +249,7 @@ func build() -> void:
 		"street_bins":street_bins,"loose_rubble":loose_rubble,
 		"fiber_boxes":fiber_boxes,"fiber_spans":fiber_spans,
 		"fixture_moves":fixture_moves,"fixture_skips":fixture_skips,
+		"baile_field":baile!=null,
 		"build_ms":Time.get_ticks_msec()-begun,"visuals":render_visuals}
 	build_metrics.merge(neighborhood)
 	build_metrics.merge(edge_summary)
@@ -473,14 +490,41 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 		(d-upper_depth)*.38*(-1 if block<2 else 1))
 	var facade_yaw:=atan2(frontage.x,frontage.z)
 	var tangent:=Vector3(frontage.z,0,-frontage.x)
+	var extension_side:=int(lot.get("extension_side",block%4))
+	var extension_stage:=int(lot.get("extension_stage",0))
+	var extension_sign:=1.0 if extension_side%2==0 else -1.0
+	if extension_side<2:
+		upper_width*=.83 if extension_stage in [1,4] else 1.0
+	else:
+		upper_depth*=.84 if extension_stage in [1,4] else 1.0
 	var front_depth:=w if frontage.x!=0 else d
 	var front_width:=d if frontage.x!=0 else w
+	upper_offset+=tangent*(extension_sign*float(extension_stage%3)*.24)
+	upper_offset+=frontage*(float((extension_stage+block)%3-1)*.22)
 	if open_house:
 		var wall_height:=FLOOR+foundation
 		var center_y:=(FLOOR-foundation)*.5
-		for side in [-1.0,1.0]:
-			k.box("CasaParedeLateral",ground+Vector3(side*w*.5,center_y,0),
-				Vector3(.28,wall_height,d),finish,true)
+		# Leave a full-height doorway where the outside stair reaches the slab.
+		# The landing overlaps this wall line; without the opening its collision
+		# seals every otherwise walkable roof.
+		var stair_end_z:=ground.z-d*.5+2.45
+		var stair_gate_z:=stair_end_z-ground.z-.35
+		var gate_half:=.88
+		var left_wall_before:=stair_gate_z-gate_half+d*.5
+		var left_wall_after:=d*.5-(stair_gate_z+gate_half)
+		if left_wall_before>.20:
+			var before_length:=left_wall_before
+			var before_center_z:=-d*.5+before_length*.5
+			k.box("CasaParedeLateral",ground+Vector3(-w*.5,center_y,before_center_z),
+				Vector3(.28,wall_height,before_length),finish,true)
+		if left_wall_after>.20:
+			var after_length:=left_wall_after
+			var after_center_z:=stair_gate_z+gate_half+after_length*.5
+			k.box("CasaParedeLateral",ground+Vector3(-w*.5,center_y,after_center_z),
+				Vector3(.28,wall_height,after_length),finish,true)
+		k.box("CasaParedeLateral",ground+Vector3(w*.5,center_y,0),
+			Vector3(.28,wall_height,d),finish,true)
+		for side: float in [-1.0, 1.0]:
 			k.box("CasaParedeFrente",ground+Vector3(side*(w+2.2)*.25,center_y,d*.5),
 				Vector3((w-2.2)*.5,wall_height,.28),finish,true)
 		var through:=(profile in [0,2,4]
@@ -502,7 +546,6 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 			Vector3(w+.3,.28,d+.3),roof_color,true)
 		var stair_x:=ground.x-w*.5-.64
 		var stair_start_z:=ground.z+d*.5-1.0
-		var stair_end_z:=ground.z-d*.5+2.45
 		var stair_start_y:=height_at(stair_x,stair_start_z)+.11
 		var landing_y:=ground.y+FLOOR+.14
 		var run:=stair_start_z-stair_end_z

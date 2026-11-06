@@ -1,34 +1,34 @@
 {
-  "version": "1.13.6",
+  "version": "1.13.7",
   "date": "05/11/2026",
-  "title": "Recuperação de estado nas partidas online",
-  "summary": "Melhora a recuperação de personagens, relógio da partida e veículos ocupados quando faltam atualizações do servidor. Corrige a espera por uma resposta que não chegou e protege contra atualizações atrasadas. Reduz pausas de sincronização, mas não representa a eliminação de toda instabilidade de rede ou queda de FPS.",
+  "title": "Favela ampliada e diagnóstico das pausas online",
+  "summary": "Integra o campo de baile e as novas ruas da Favela. Registra nos dois lados da conexão os pedidos de recuperação, o ritmo do servidor e o estado do ENet para localizar a origem de futuras pausas de sincronização.",
   "changes": [
     {
-      "title": "Recuperação do mundo online",
-      "text": "Personagens e relógio da partida detectam mais cedo a falta de atualizações e buscam o estado atual do servidor. Pedidos sem resposta deixam de bloquear as tentativas seguintes."
+      "title": "Campo de baile na Favela",
+      "text": "Novo campo com palco, iluminação e seis faixas fornecidas pelo usuário. O áudio é espacial e toca somente no cliente; o servidor conserva a colisão do palco."
     },
     {
-      "title": "Veículos também se recuperam",
-      "text": "A recuperação inclui o veículo ocupado ou drone controlado, preserva passageiros e descarta respostas antigas que poderiam fazer o estado voltar no tempo."
+      "title": "Ruas e terreno conciliados",
+      "text": "A área do campo e os trajetos próximos foram integrados ao mapa atual da Favela."
     },
     {
-      "title": "Tolerância à variação da conexão",
-      "text": "O servidor tolera pequenos agrupamentos de pedidos legítimos de recuperação, mantendo limites para evitar excesso de tráfego."
+      "title": "Rastreamento da sincronização",
+      "text": "Logs de cliente e servidor registram sequência de recuperação, duração dos ticks, tentativas de snapshot e qualidade da conexão por jogador: RTT, variação, perda confiável, limitação de pacotes e intervalo real de chegada do estado."
     },
     {
-      "title": "Diagnóstico de congelamentos",
-      "text": "Os registros distinguem atrasos de renderização de pausas na chegada de estado, inclusive quando a câmera continua se movendo."
+      "title": "Diagnóstico com baixo custo",
+      "text": "Os novos eventos são gerados quando a recuperação é necessária, sem gravar endereços, credenciais ou conteúdo das mensagens."
     }
   ],
   "fixes": [
     {
-      "title": "Estado atrasado",
-      "text": "Sequências impedem que uma resposta atrasada desfaça uma atualização mais recente."
+      "title": "Colisão do palco no servidor",
+      "text": "A geometria de colisão existe também na simulação dedicada, preservando a mesma posição para todos os jogadores."
     },
     {
-      "title": "Atualizações dos observadores",
-      "text": "Uma resposta individual ao ocupante não adia as atualizações periódicas enviadas aos outros jogadores."
+      "title": "Correlações de pausa",
+      "text": "Cada pedido e resposta de recuperação usa uma sequência identificável nos logs para comparar cliente e servidor."
     }
   ]
 }
