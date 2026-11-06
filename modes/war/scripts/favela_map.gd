@@ -202,13 +202,22 @@ static func housing_plan() -> Array[Dictionary]:
 		housing_lots=LAYOUT.generate(road_envelopes(),BASES_2D,OBJECTIVES_2D)
 	return housing_lots
 
+static func _ia2_mark_phase(phases: Dictionary,label: String,started_usec: int) -> int:
+	var now:=Time.get_ticks_usec()
+	phases[label]=roundf(float(now-started_usec)*.001*1000.)*.001
+	return now
+
 func build() -> void:
 	var begun:=Time.get_ticks_msec()
+	var ia2_stage_profile:=OS.get_environment("TDC_IA2_MAP_STAGES")=="1"
+	var ia2_stages: Dictionary={}
+	var ia2_stage_at:=Time.get_ticks_usec()
 	set_meta("sector_colliders",true)
 	set_meta("war_detail_lod",true)
 	set_meta("use_occluders",false)
 	streets = STREET_SPACE.new(road_envelopes())
 	_reserve_buildings_and_spawns()
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"layout_reservations",ia2_stage_at)
 	if render_visuals and ground_material == null:
 		var mask := streets.pavement_mask(HALF, _pavement_areas())
 		if mask != null:
@@ -216,39 +225,51 @@ func build() -> void:
 		else:
 			push_error("Favela pavement mask could not be built")
 			ground_material = EnvironmentKit.material("sand")
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"pavement_mask_material",ia2_stage_at)
 	for iz in 15:
 		for ix in 15:_terrain_tile(ix,iz)
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"terrain_225_tiles",ia2_stage_at)
 	var kit:=EnvironmentKit.new(self,render_visuals,85.0)
 	street_fixtures=Node3D.new()
 	street_fixtures.name="InfraestruturaUrbana"
 	add_child(street_fixtures)
 	_bases(kit)
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"bases_and_kit",ia2_stage_at)
 	var neighborhood:=_neighborhoods(kit)
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"neighborhoods",ia2_stage_at)
 	var edge_summary:=_edge_infrastructure(kit)
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"edge_infrastructure",ia2_stage_at)
 	var baile:=BAILE_SCENE.instantiate() as Node3D
 	baile.name="CampoDeBaile"
 	baile.position=point(BAILE_CENTER.x,BAILE_CENTER.y)
 	add_child(baile)
 	BAILE.start(baile,render_visuals)
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"baile_field",ia2_stage_at)
 	_landmarks(kit)
 	_street_wiring(kit)
 	_urban_clutter(kit)
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"landmarks_wiring_clutter",ia2_stage_at)
 	var stair_flights: Array[Dictionary] = PEDESTRIAN_STAIRS.plan(MINI_STREETS,
 		BASES_2D, OBJECTIVES_2D,
 		func(x: float,z: float) -> float: return height_at(x,z))
 	var stair_summary: Dictionary = PEDESTRIAN_STAIRS.populate(kit, stair_flights)
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"stairs",ia2_stage_at)
 	for site: Dictionary in litter_sites:
 		_place_litter(site.position, site.yaw)
 	litter_sites.clear()
 	_vegetation(kit)
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"litter_and_vegetation",ia2_stage_at)
 	var hillside_summary := HILLSIDE.populate(kit, housing_plan(), BASES_2D, OBJECTIVES_2D,
 		func(p: Vector2) -> float: return road_distance(p),
 		func(x: float, z: float) -> float: return height_at(x, z))
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"hillside",ia2_stage_at)
 	kit.flush()
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"geometry_flush",ia2_stage_at)
 	if render_visuals:
 		STREET_ART.paint_walls(self)
 		WarSceneryBatch.build(street_fixtures)
 		_atmosphere()
+	if ia2_stage_profile: ia2_stage_at=_ia2_mark_phase(ia2_stages,"render_finishing",ia2_stage_at)
 	build_metrics={"area_m":1500,"terrain_tiles":225,
 		"collision_shapes":kit.collision_count,"visual_instances":kit.detail_count,
 		"storefronts":store_count,"utility_poles":pole_count,"wire_spans":cable_count,
@@ -266,6 +287,7 @@ func build() -> void:
 	build_metrics.merge(hillside_summary)
 	build_metrics.merge({"pedestrian_stair_flights": int(stair_summary.flights),
 		"pedestrian_stair_treads": int(stair_summary.treads)})
+	if ia2_stage_profile: build_metrics["ia2_stage_times_ms"]=ia2_stages
 	set_meta("favela_build_metrics",build_metrics)
 
 func _reserve_buildings_and_spawns() -> void:
