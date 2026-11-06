@@ -33,8 +33,10 @@ var war_tick := 0
 var snapshot_clock := 0.0
 var received_snapshot_generation:=-2
 var received_snapshot_time:=-INF
-const STATE_STALE_USEC:=550000
+const STATE_STALE_USEC:=250000
+const OPERATION_STALE_USEC:=450000
 const STATE_RECOVERY_INTERVAL_USEC:=500000
+const VEHICLE_RECOVERY_INTERVAL_USEC:=250000
 const STATE_RECOVERY_REPLY_TIMEOUT_USEC:=1000000
 var state_recovery_sessions: Dictionary={}
 var state_recovery_serial:=0
@@ -979,7 +981,7 @@ func _step_state_recovery() -> void:
 	if not online or closing or multiplayer.is_server() or not join_ready or baseline_loading or state_recovery_started_at==0:return
 	var now:=Time.get_ticks_usec()
 	if now<state_recovery_check_at:return
-	state_recovery_check_at=now+200000
+	state_recovery_check_at=now+50000
 	if state_recovery_pending!=0:
 		if now<state_recovery_reply_deadline:return
 		# A rejected request has no reply. Allow one fresh request if the
@@ -993,9 +995,11 @@ func _step_state_recovery() -> void:
 		if not is_instance_valid(actor) or actor.is_local or not actor.deployed or actor.hp<=0:continue
 		if now-int(actor.last_snapshot_time*1000000.)>=STATE_STALE_USEC:stale.append(int(key))
 		if stale.size()>=WarRules.CAPACITY:break
-	if stale.is_empty() and now-operation_received_at<STATE_STALE_USEC:return
+	var vehicle_stale: bool=is_instance_valid(vehicle_system) and vehicle_system.local_state_stale(now)
+	if stale.is_empty() and not vehicle_stale and now-operation_received_at<OPERATION_STALE_USEC:return
 	state_recovery_serial+=1;state_recovery_pending=state_recovery_serial
-	state_recovery_request_at=now+STATE_RECOVERY_INTERVAL_USEC
+	var occupied:=is_instance_valid(local_player) and not local_player.vehicle_id.is_empty()
+	state_recovery_request_at=now+(VEHICLE_RECOVERY_INTERVAL_USEC if occupied else STATE_RECOVERY_INTERVAL_USEC)
 	state_recovery_reply_deadline=now+STATE_RECOVERY_REPLY_TIMEOUT_USEC
 	rpc_id(1,"server_war_state_recovery",baseline_transfer,state_recovery_pending,stale)
 
@@ -1005,7 +1009,11 @@ func _state_recovery_payload(id: int,token: String,sequence: int,ids: Array) -> 
 	if closing or loading_baselines.has(id) or not members.has(id) or bool(members[id].get("bot",false)) or ids.size()>WarRules.CAPACITY:return []
 	var session: Dictionary=state_recovery_sessions.get(id,{})
 	if session.is_empty() or token!=str(session.token) or sequence<=int(session.sequence) or sequence>2147483647:return []
-	if not network_guard.allow(id,"state_recovery",2,1):return []
+	# Two tokens tolerate adjacent requests arriving closer together because
+	# of jitter. Refill still caps sustained traffic at 2/s (4/s for occupants).
+	# A single token at the exact client cadence spuriously rejects recovery.
+	var occupied:=not str(members[id].get("vehicle","")).is_empty()
+	if not network_guard.allow(id,"state_recovery",4 if occupied else 2,2):return []
 	session.sequence=sequence
 	var poses: Array=[];var seen: Dictionary={}
 	for key in ids:
@@ -1022,7 +1030,11 @@ func server_war_state_recovery(token: String,sequence: int,ids: Array) -> void:
 	if not multiplayer.is_server():return
 	var id:=multiplayer.get_remote_sender_id()
 	var payload:=_state_recovery_payload(id,token,sequence,ids)
-	if not payload.is_empty():rpc_id(id,"war_state_recovery",token,sequence,payload[0],payload[1])
+	if not payload.is_empty():
+		rpc_id(id,"war_state_recovery",token,sequence,payload[0],payload[1])
+		# The same admitted, rate-limited request also repairs the caller's
+		# occupied vehicle. Never let the client choose arbitrary vehicle IDs.
+		if is_instance_valid(vehicle_system):vehicle_system.send_state_recovery(id)
 
 @rpc("authority","call_remote","reliable")
 func war_state_recovery(token: String,sequence: int,operation: Array,poses: Array) -> void:

@@ -13,6 +13,7 @@ var boarding_serial := 0
 var seats_revision := 0
 var control_epoch := 0
 var received_state_sequence:=0
+var received_state_usec:=0
 var hp := 650.0
 var ammo := 400
 var reserve := 0
@@ -329,6 +330,7 @@ func receive(state: Dictionary) -> void:
 	var state_sequence:=int(state.get("sequence",0))
 	if received_state_sequence>0 and state_sequence<=received_state_sequence: return
 	if state_sequence>0: received_state_sequence=state_sequence
+	received_state_usec=Time.get_ticks_usec()
 	var was_destroyed:=destroyed
 	var prior_spawn_generation:=spawn_generation
 	spawn_generation=int(state.get("spawn_generation",spawn_generation))

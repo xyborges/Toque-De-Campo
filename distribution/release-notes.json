@@ -1,46 +1,34 @@
 {
-  "version": "1.13.5",
+  "version": "1.13.6",
   "date": "05/11/2026",
-  "title": "Favela online, RPG/Stinger revisados e combate mais intenso",
-  "summary": "A Favela agora entra no multiplayer dedicado, recebe urbanização adicional e bots mais agressivos nos objetivos. RPG-7 e Stinger ganham apresentação revisada, miras próprias e projéteis 3D. O áudio de armas fica mais suave por distância e direção, e os APCs recebem o novo pacote de sons de 30 mm.",
+  "title": "Recuperação de estado nas partidas online",
+  "summary": "Melhora a recuperação de personagens, relógio da partida e veículos ocupados quando faltam atualizações do servidor. Corrige a espera por uma resposta que não chegou e protege contra atualizações atrasadas. Reduz pausas de sincronização, mas não representa a eliminação de toda instabilidade de rede ou queda de FPS.",
   "changes": [
     {
-      "title": "Favela multiplayer",
-      "text": "A operação Favela passa a aparecer no fluxo online e recebe serviço dedicado próprio na porta 3017, separado dos demais modos."
+      "title": "Recuperação do mundo online",
+      "text": "Personagens e relógio da partida detectam mais cedo a falta de atualizações e buscam o estado atual do servidor. Pedidos sem resposta deixam de bloquear as tentativas seguintes."
     },
     {
-      "title": "RPG-7 e Stinger revisados",
-      "text": "PGO-7 mais detalhada, apresentação FPP/TPP ajustada, retículas exclusivas, lock sonoro do Stinger e projéteis 3D próprios com corpo, aletas e pluma."
+      "title": "Veículos também se recuperam",
+      "text": "A recuperação inclui o veículo ocupado ou drone controlado, preserva passageiros e descarta respostas antigas que poderiam fazer o estado voltar no tempo."
     },
     {
-      "title": "Favela mais urbana",
-      "text": "Solo urbano em concreto onde faz sentido, mantendo terra nas encostas, além de mais carros, lixeiras, pedras/entulho, postes, fibra óptica e caixas de infraestrutura."
+      "title": "Tolerância à variação da conexão",
+      "text": "O servidor tolera pequenos agrupamentos de pedidos legítimos de recuperação, mantendo limites para evitar excesso de tráfego."
     },
     {
-      "title": "Bots pressionam objetivos",
-      "text": "A IA reage mais rápido aos pontos, mantém avanço quando não há inimigos à vista e muda para defesa quando a equipe controla todos os objetivos."
-    },
-    {
-      "title": "Áudio de combate contínuo",
-      "text": "Tiros passam a ter transições mais suaves de distância e direção, preservando alcance e impacto sem degraus artificiais de equalização."
-    },
-    {
-      "title": "APCs com novo áudio 30 mm",
-      "text": "Disparos e impactos metálicos/solo do canhão de 30 mm usam o novo pacote integrado após a 1.13.4."
+      "title": "Diagnóstico de congelamentos",
+      "text": "Os registros distinguem atrasos de renderização de pausas na chegada de estado, inclusive quando a câmera continua se movendo."
     }
   ],
   "fixes": [
     {
-      "title": "Captura dentro de veículos",
-      "text": "Ocupantes de motos e blindados podem contribuir corretamente para a captura dos objetivos quando a regra do ponto permite."
+      "title": "Estado atrasado",
+      "text": "Sequências impedem que uma resposta atrasada desfaça uma atualização mais recente."
     },
     {
-      "title": "Cadência de decisão dos bots",
-      "text": "A reavaliação estratégica passa a ocorrer em 1,5 s, reduzindo pausas longas e deslocamentos sem propósito."
-    },
-    {
-      "title": "HUD do Stinger",
-      "text": "O equipamento é identificado corretamente como STINGER no seletor do modo Guerra."
+      "title": "Atualizações dos observadores",
+      "text": "Uma resposta individual ao ocupante não adia as atualizações periódicas enviadas aos outros jogadores."
     }
   ]
 }

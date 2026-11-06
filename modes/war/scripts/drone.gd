@@ -1,6 +1,9 @@
 extends CharacterBody3D
 class_name WarDrone
 var drone_id := ""
+var sent_state_sequence:=0
+var received_state_sequence:=0
+var received_state_usec:=0
 var owner_id := 0
 var driver := 0
 var team := 0
@@ -68,9 +71,16 @@ func begin_fall() -> void:
 	velocity.y=minf(0,velocity.y)
 
 func snapshot() -> Dictionary:
-	return {"id":drone_id,"owner":owner_id,"driver":driver,"team":team,"position":global_position,"velocity":velocity,"yaw":heading,"hp":hp,"battery":battery,"destroyed":destroyed,"falling":falling}
+	sent_state_sequence+=1
+	return {"id":drone_id,"sequence":sent_state_sequence,"owner":owner_id,"driver":driver,"team":team,"position":global_position,"velocity":velocity,"yaw":heading,"hp":hp,"battery":battery,"destroyed":destroyed,"falling":falling}
 
 func receive(state: Dictionary) -> void:
+	# Reliable repair and ordinary motion can cross in flight. Legacy servers
+	# omit sequence; accept those only until a sequenced state has arrived.
+	var state_sequence:=int(state.get("sequence",0))
+	if received_state_sequence>0 and state_sequence<=received_state_sequence:return
+	if state_sequence>0:received_state_sequence=state_sequence
+	received_state_usec=Time.get_ticks_usec()
 	owner_id=int(state.owner);driver=int(state.driver);team=int(state.team);destination=state.position;heading=float(state.yaw);hp=float(state.hp);battery=float(state.battery);destroyed=bool(state.destroyed)
 	var reported: Variant=state.get("velocity",Vector3.ZERO)
 	if reported is Vector3 and reported.is_finite(): velocity=reported.limit_length(25.)
