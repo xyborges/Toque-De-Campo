@@ -11,7 +11,9 @@ import time
 
 ROOT=Path(__file__).resolve().parent.parent
 OUT=ROOT/"work"/"ia2-custo-corpo-20261106"
-QUERY="timestamp,name,temperature.gpu,utilization.gpu,clocks.sm,power.draw,clocks_throttle_reasons.active"
+QUERY=("timestamp,name,temperature.gpu,utilization.gpu,clocks.sm,power.draw,"
+       "clocks_throttle_reasons.active,clocks_throttle_reasons.sw_thermal_slowdown,"
+       "clocks_throttle_reasons.hw_thermal_slowdown")
 FALLBACK="timestamp,name,temperature.gpu,utilization.gpu,clocks.sm,power.draw"
 
 def gpu_row():
@@ -24,7 +26,9 @@ def gpu_row():
             if p.returncode==0 and p.stdout.strip():
                 row=next(csv.reader(p.stdout.strip().splitlines()))
                 return [int(time.time()*1000),*[s.strip() for s in row[:6]],
-                        row[6].strip() if fields==QUERY else "UNAVAILABLE"]
+                        row[6].strip() if fields==QUERY else "UNAVAILABLE",
+                        row[7].strip() if fields==QUERY else "UNAVAILABLE",
+                        row[8].strip() if fields==QUERY else "UNAVAILABLE"]
         except (OSError,subprocess.TimeoutExpired,csv.Error,IndexError):
             continue
     return None
@@ -33,7 +37,7 @@ def gpu_monitor(stop,path):
     with path.open("w",newline="",encoding="utf-8") as f:
         w=csv.writer(f)
         w.writerow(["unix_ms","gpu_timestamp","name","temp_c","gpu_util_pct",
-                    "sm_clock_mhz","power_w","throttle_active"])
+                    "sm_clock_mhz","power_w","throttle_active","sw_thermal","hw_thermal"])
         while not stop.is_set():
             row=gpu_row()
             if row:w.writerow(row);f.flush()
