@@ -42,11 +42,13 @@ func advance(actor: WarPlayer,index: int,tick: int) -> void:
 func run() -> void:
 	var samples:=600
 	var warmup:=120
+	var pace_usec:=0
 	var args:=OS.get_cmdline_user_args()
 	var pilot: bool="--pilot" in args
 	for arg: String in args:
 		if arg.begins_with("--samples="): samples=int(arg.get_slice("=",1))
 		if arg.begins_with("--warmup="): warmup=int(arg.get_slice("=",1))
+		if arg.begins_with("--pace-usec="): pace_usec=int(arg.get_slice("=",1))
 	game=Fixture.new()
 	root.add_child(game)
 	await process_frame
@@ -79,6 +81,11 @@ func run() -> void:
 			if (actor.next_pose_usec!=LOD_SKIP)!=due: schedule_errors+=1
 			if due: visual_updates+=1
 		if tick>=warmup: raw.append(float(Time.get_ticks_usec()-started)/1000.)
+		# Optional equal wall-clock pacing avoids running the cheaper arm at
+		# a much higher tick rate. Sleep is outside the measured pose interval.
+		if pace_usec>0:
+			var remaining:=pace_usec-(Time.get_ticks_usec()-started)
+			if remaining>0: OS.delay_usec(remaining)
 
 	var authority:=0
 	var solved:=0

@@ -1,0 +1,18 @@
+{
+  "reference_commit": "59477c570b286e9cb7d6d2f304899857edfd6dd2",
+  "result": {
+    "cases": 1200,
+    "comparisons": 158540,
+    "failures": [],
+    "max_error": 1.46718070936913e-06,
+    "pass": true,
+    "rejected": 35
+  },
+  "source_sha256": {
+    "modes/war/scripts/collision_pose_solver.gd": "7099b7dc178303901a72cd46c4fafc26e4d38fca6a8132d71a160046868a3287",
+    "modes/war/scripts/collision_rig_proxy.gd": "a665d4b30e4946efc80595eb7f73f19da55eb62bf0f39bdfd205d45d1ec0967c",
+    "modes/war/scripts/player.gd": "1fd099b007447c4b7948e32cf6e9a8535caa2b1148546d42d73ba8d71edbce16",
+    "tests/true_fpp_p1k_solver_equivalence.gd": "0d1ecf29a6e6ffbb3d6f7414ad8de65db64088cd61786c3ce0f4bf8c6e2f73f4",
+    "tests/run_true_fpp_p1k_solver_equivalence.py": "b108c7d4804c576218e574820db963d63a3a86f69a97cc1c72c36a8226abebbc"
+  }
+}

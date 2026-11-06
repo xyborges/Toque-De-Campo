@@ -5,6 +5,8 @@
 **Plano-pai:** `docs/REALISMO-TATICO-PLANO-SQUAD-20261104.md`  
 **Referência ambiental:** `docs/AFEGANISTAO-REFERENCIA-SINAI-TRILHAS-20261104.md`
 
+> **P1k — atualização de 06/11/2026:** [otimização e evidências](FPP-TPP-P1K-OTIMIZACAO-20261105.md) na branch `ia/fpp-p1k-retomada`. Captura tipada e buffers de colisão por ator preservam 1.200 poses e as nove suítes funcionais; ENet/DTLS local passou 19/19. **Desempenho continua reprovado:** cinco pares com 28 atores observaram +73,3% na mediana e +64,9% no p99; o A/A também excedeu o ruído permitido. P2a, mapa completo/clientes exportados e merge na main permanecem pendentes. Os estados abaixo registram o histórico anterior.
+
 > **ESTADO ATUAL (04/11/2026):** [integração e QA da P1 sobre 1.13.3](FPP-TPP-INTEGRACAO-1133-QA-20261104.md), branch `ia/fpp-integracao-1133`, commit-base `9e5d741`. P1f usa olho lógico para mira FPP/TPP; P1g tem CollisionRig independente opt-in (31/31 verificações); P1i validou dano por membro e ragdoll (24/24); P1j passou ENet/DTLS com servidor 15/15, atirador 2/2 e vítima 2/2. Zeragem (58/58) e ópticas headless (242/242) permaneceram verdes na integração. **Ainda bloqueado:** custo de 28 atores/bots, fallback de ações especiais com LOD visual, mapa completo/clientes exportados e a P2 de corpo/câmera únicos. Nenhuma publicação feita por esta branch.
 >
 > **As notas P0/P1a/P1b abaixo são histórico do diagnóstico inicial**, não o estado atual do projeto.

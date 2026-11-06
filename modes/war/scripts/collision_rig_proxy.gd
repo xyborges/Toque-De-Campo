@@ -6,6 +6,7 @@ class_name WarCollisionRigProxy
 const SNAPSHOT=preload("res://modes/war/scripts/collision_pose_state.gd")
 
 var regions: Dictionary={}
+var _ordered_regions: Array[Area3D]=[]
 var legacy_regions: Dictionary={}
 var muzzle: Marker3D
 var collision_source: GamePlayer
@@ -37,6 +38,7 @@ func build_from(actor: GamePlayer) -> int:
 				replica.add_child(shape)
 		add_child(replica)
 		regions[region_id]=replica
+		_ordered_regions.append(replica)
 		count+=1
 	muzzle=Marker3D.new()
 	muzzle.name="CollisionMuzzle"
@@ -103,6 +105,14 @@ func restore(actor: GamePlayer) -> bool:
 	_apply_states(legacy_regions,states)
 	actor.hit_regions=legacy_regions
 	using_authority=false
+	return true
+
+func sync_packed(frame: Dictionary) -> bool:
+	# build_from and the solver use the same stable anatomical order.
+	var poses: Array[Transform3D]=frame.poses
+	if poses.size()!=_ordered_regions.size(): return false
+	for index in poses.size(): _ordered_regions[index].transform=poses[index]
+	muzzle.transform=frame.muzzle
 	return true
 
 func sync(frame: Dictionary) -> bool:

@@ -1,0 +1,34 @@
+{
+  "transport": "ENet/DTLS localhost",
+  "scope": "synthetic fixture; server and two independent clients; not exported full-map gate",
+  "pass": true,
+  "roles": {
+    "server": {
+      "checks": 15,
+      "failures": [],
+      "pass": true,
+      "role": "server"
+    },
+    "shooter": {
+      "checks": 2,
+      "failures": [],
+      "pass": true,
+      "role": "shooter"
+    },
+    "victim": {
+      "checks": 2,
+      "failures": [],
+      "pass": true,
+      "role": "victim"
+    }
+  },
+  "source_sha256": {
+    "modes/war/scripts/player.gd": "1fd099b007447c4b7948e32cf6e9a8535caa2b1148546d42d73ba8d71edbce16",
+    "modes/war/scripts/collision_pose_solver.gd": "7099b7dc178303901a72cd46c4fafc26e4d38fca6a8132d71a160046868a3287",
+    "modes/war/scripts/collision_rig_proxy.gd": "a665d4b30e4946efc80595eb7f73f19da55eb62bf0f39bdfd205d45d1ec0967c",
+    "tests/true_fpp_p1j_network_collision.gd": "db410327218ca4f8434b3c19381fc2c2bb930fea84ce84f2407ff0ccd6d2025c",
+    "tests/true_fpp_p1j_network_fixture.gd": "e6aa2369a46766f65d1ca662d67adfc1c026cb0fb9052853c4778d1921bd005f",
+    "tests/run_true_fpp_p1j_network.py": "6e111984a6fa382a52e3242a5a128fbbb42b2965c6b26a9f4178fae22c4509bb"
+  },
+  "previous_attempt": "QA certificate expired; handshake failed. Repeated using a fresh temporary localhost certificate with TLS validation retained."
+}

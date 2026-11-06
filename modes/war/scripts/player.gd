@@ -37,6 +37,8 @@ var p1g_authority_collision_pilot:=false
 var p1g_collision_rig: WarCollisionRigProxy
 var p1g_collision_bindings: Dictionary={}
 var p1g_collision_binding_key:=""
+var _p1k_calibration: WarCollisionPoseSolver.Calibration
+var _p1k_input: WarCollisionPoseSolver.PoseInput
 var _p1g_bound_muzzle: Marker3D
 var _p1g_bound_scope: Node3D
 var _p1g_visual_pose_updated:=false
@@ -83,6 +85,7 @@ func p1g_set_collision_pilot(enabled: bool) -> void:
 
 func _p1g_prepare_collision_rig() -> bool:
 	if is_instance_valid(p1g_collision_rig): return true
+	_p1k_input=COLLISION_POSE_SOLVER.PoseInput.new()
 	p1g_collision_rig=COLLISION_RIG_PROXY.new()
 	p1g_collision_rig.name="CollisionRigP1G"
 	add_child(p1g_collision_rig)
@@ -123,13 +126,14 @@ func _p1g_collision_tick(visual_pose_current:=false) -> void:
 	var binding_matches:=_p1g_binding_matches()
 	var synced:=false
 	if visual_pose_current and not _p1g_world_frame.is_empty():
-		synced=p1g_collision_rig.sync(_p1g_world_frame)
+		synced=p1g_collision_rig.sync_packed(_p1g_world_frame)
 		_p1g_world_frame={}
 		if synced: p1g_shared_pose_frames+=1
 	elif not visual_pose_current and binding_matches:
-		var frame: Dictionary=COLLISION_POSE_SOLVER.solve(p1g_collision_bindings,COLLISION_POSE_SOLVER.state(self))
+		COLLISION_POSE_SOLVER.capture(self,_p1k_input)
+		var frame: Dictionary=COLLISION_POSE_SOLVER.solve_cached(_p1k_calibration,_p1k_input,false,true)
 		if bool(frame.get("supported",false)):
-			synced=p1g_collision_rig.sync(frame)
+			synced=p1g_collision_rig.sync_packed(frame)
 			if synced: p1g_solver_frames+=1
 
 	if not synced and not visual_pose_current:
@@ -147,6 +151,7 @@ func _p1g_collision_tick(visual_pose_current:=false) -> void:
 	if not synced:
 		if not binding_matches and _p1g_can_rebind():
 			p1g_collision_bindings=COLLISION_POSE_SOLVER.bind(self,p1g_collision_rig.legacy_regions)
+			_p1k_calibration=COLLISION_POSE_SOLVER.Calibration.from_dictionary(p1g_collision_bindings)
 			p1g_collision_binding_key=_p1g_binding_key()
 			_p1g_bound_muzzle=muzzle_marker
 			_p1g_bound_scope=weapon_optics.world_scope
@@ -346,7 +351,8 @@ func _p1g_pose_remote() -> bool:
 	# Local FPP, special actions and unbound weapons use the existing pose.
 	# A remote firearm can publish both consumers from one evaluated frame.
 	if is_local or is_instance_valid(view_root) or not _p1g_binding_matches(): return false
-	var frame:=COLLISION_POSE_SOLVER.solve(p1g_collision_bindings,COLLISION_POSE_SOLVER.state(self),true)
+	COLLISION_POSE_SOLVER.capture(self,_p1k_input)
+	var frame:=COLLISION_POSE_SOLVER.solve_cached(_p1k_calibration,_p1k_input,true,true)
 	if not bool(frame.get("supported",false)): return false
 	_p1g_apply_remote_pose(frame.presentation)
 	_p1g_world_frame=frame

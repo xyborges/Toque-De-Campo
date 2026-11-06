@@ -2,6 +2,7 @@
 import argparse
 from hashlib import sha256
 import json
+import math
 import os
 import platform
 from pathlib import Path
@@ -16,16 +17,19 @@ parser.add_argument("--control", type=Path)
 parser.add_argument("--pairs", type=int, default=5)
 parser.add_argument("--samples", type=int, default=600)
 parser.add_argument("--warmup", type=int, default=120)
+parser.add_argument("--pace-usec", type=int, default=0, help="Equal wall-clock tick pacing outside the measurement")
+parser.add_argument("--affinity", type=lambda value: int(value, 0), default=0, help="Optional CPU mask, e.g. 0x4")
 args = parser.parse_args()
-if args.pairs < 1 or args.samples < 60 or args.warmup < 0:
+if args.pairs < 1 or args.samples < 60 or args.warmup < 0 or args.pace_usec < 0 or args.affinity < 0:
     parser.error("Use at least one pair, 60 samples and nonnegative warmup")
 args.output = args.output.resolve()
 args.output.mkdir(parents=True, exist_ok=False)
 root = Path(__file__).resolve().parents[1]
 fixture = "tests/true_fpp_p1k_paired_cost.gd"
-files = [fixture, "tests/war_optics_fixture.gd", "modes/war/scripts/player.gd",
-         "modes/war/scripts/collision_pose_solver.gd", "modes/war/scripts/collision_rig_proxy.gd",
-         "modes/war/scripts/stance.gd", "scripts/player.gd", "scripts/weapon_optics.gd"]
+files = sorted({fixture, "tests/war_optics_fixture.gd", "project.godot",
+                "tests/run_true_fpp_p1k_paired_cost.py"} |
+               {str(path.relative_to(root)).replace("\\", "/")
+                for directory in ("scripts", "modes") for path in (root / directory).rglob("*.gd")})
 engine = args.engine.resolve()
 if os.name == "nt" and engine.name.endswith("_console.exe"):
     # Launch the engine itself so a timeout also stops its physics process.
@@ -37,7 +41,22 @@ def hashes():
 
 source_hashes = hashes()
 engine_hash = sha256(engine.read_bytes()).hexdigest()
-parameters = {"samples": args.samples, "warmup": args.warmup}
+parameters = {"samples": args.samples, "warmup": args.warmup,
+              "pace_usec": args.pace_usec, "affinity": args.affinity}
+
+def set_affinity(process):
+    if not args.affinity:
+        return
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.SetProcessAffinityMask.argtypes = [wintypes.HANDLE, ctypes.c_size_t]
+        kernel.SetProcessAffinityMask.restype = wintypes.BOOL
+        if not kernel.SetProcessAffinityMask(process._handle, args.affinity):
+            raise ctypes.WinError(ctypes.get_last_error())
+    else:
+        os.sched_setaffinity(process.pid, {i for i in range(args.affinity.bit_length()) if args.affinity & (1 << i)})
 
 def run_trial(pair, arm):
     folder = args.output / f"{pair}-{arm}"
@@ -46,13 +65,21 @@ def run_trial(pair, arm):
     pilot = args.mode == "ab" and arm == "B"
     command = [str(engine), "--headless", "--path", str(root), "--fixed-fps", "60",
                "--log-file", str(folder / "engine.log"), "--script", f"res://{fixture}",
-               "--", f"--samples={args.samples}", f"--warmup={args.warmup}", "--naval-test-accounts",
+               "--", f"--samples={args.samples}", f"--warmup={args.warmup}",
+               f"--pace-usec={args.pace_usec}", "--naval-test-accounts",
                f"--naval-data={folder / 'data'}"]
     if pilot:
         command.append("--pilot")
     with (folder / "stdout.log").open("wb") as log:
-        result = subprocess.run(command, cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT,
-                                timeout=120, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        result = subprocess.Popen(command, cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT,
+                                  creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        try:
+            set_affinity(result)
+            result.wait(timeout=120 + (args.samples + args.warmup)*args.pace_usec/1_000_000)
+        finally:
+            if result.poll() is None:
+                result.kill()
+            result.wait()
     log = (folder / "stdout.log").read_text(encoding="utf-8", errors="replace")
     reports = [json.loads(line.removeprefix("P1K_COST ")) for line in log.splitlines() if line.startswith("P1K_COST ")]
     if result.returncode or "ERROR:" in log or len(reports) != 1:
@@ -62,7 +89,7 @@ def run_trial(pair, arm):
     if not trial["pass"] or trial["pilot"] != pilot or hashes() != source_hashes:
         raise RuntimeError(f"Authority/workload/source validation failed on trial {pair}/{arm}")
     values = sorted(trial["raw_ms"])
-    if len(values) != args.samples or values[0] <= 0:
+    if len(values) != args.samples or any(not math.isfinite(value) or value <= 0 for value in values):
         raise RuntimeError("Incorrect sample count or nonpositive measurement")
     trial["metrics_ms"] = {key: values[int((len(values)-1)*quantile)]
                            for key, quantile in (("p50", .5), ("p95", .95), ("p99", .99))}
