@@ -1,7 +1,7 @@
 extends Node
 class_name WarFavelaBaile
-## Local ambient baile playlist. Songs are shuffled without replacement;
-## each event starts at a random track offset after a random delay.
+## Quadra comunitaria com palco e paredao. Visual e fisica compartilham a origem.
+## As seis faixas fornecidas pelo usuario sao usadas quando estao disponiveis.
 const TRACK_PATHS := [
 	"res://modes/war/audio/baile/ak_do_flamengo.mp3",
 	"res://modes/war/audio/baile/invejoso.mp3",
@@ -10,136 +10,435 @@ const TRACK_PATHS := [
 	"res://modes/war/audio/baile/g3_chegou_clareando.mp3",
 	"res://modes/war/audio/baile/eu_vi_o_mano.mp3",
 ]
+const PINK := Color("ef396d")
+const CYAN := Color("35c8ef")
+const GOLD := Color("f1b94f")
+const LIME := Color("7dc8a0")
+const STEEL := Color("343a3d")
+const CONCRETE := Color("747e77")
 var voice: AudioStreamPlayer3D
 var queue: Array[int] = []
 var previous := -1
 var rng := RandomNumberGenerator.new()
 var lights: Array[OmniLight3D] = []
+var beams: Array[MeshInstance3D] = []
 var light_clock := 0.0
+var visuals_enabled := true
+var materials: Dictionary = {}
 
 static func start(stage: Node3D, visuals: bool = true) -> void:
 	var controller := WarFavelaBaile.new()
+	controller.name = "ControleBaile"
 	stage.add_child(controller)
 	controller._build_stage(stage, visuals)
-	if visuals: controller.begin()
+	if visuals:
+		controller.begin()
 
 func _build_stage(stage: Node3D, visuals: bool) -> void:
-	var deck_body := StaticBody3D.new()
-	deck_body.name = "ColisaoPalco"
-	deck_body.collision_layer = 1
-	deck_body.collision_mask = 0
-	deck_body.position = Vector3(-48, 1.0, 0)
-	var deck_shape := CollisionShape3D.new()
-	var deck_box := BoxShape3D.new()
-	deck_box.size = Vector3(18, 2.0, 12)
-	deck_shape.shape = deck_box
-	deck_body.add_child(deck_shape)
-	stage.add_child(deck_body)
-	if not visuals:
-		set_process(false)
-		return
-	var deck := _box(stage, "Palco", Vector3(-48, 1.1, 0), Vector3(18, 2.0, 12), Color("332b25"))
-	var fascia := _box(stage, "FrentePalco", Vector3(-48, 2.25, 6.0), Vector3(18, .35, .25), Color("bf293c"), true)
-	_box(stage, "Pista", Vector3(-28, .18, 0), Vector3(22, .24, 17), Color("544a3d"))
-	_box(stage, "TorreLuzOeste", Vector3(-60, 6, -9), Vector3(.55, 12, .55), Color("26252a"))
-	_box(stage, "TorreLuzLeste", Vector3(-36, 6, -9), Vector3(.55, 12, .55), Color("26252a"))
-	_box(stage, "TraveLuz", Vector3(-48, 12, -9), Vector3(24, .5, .5), Color("26252a"))
-	for i in 8:
-		var lamp := OmniLight3D.new()
-		lamp.name = "LuzBaile_%02d" % i
-		lamp.position = Vector3(-59 + float(i % 4) * 7.3, 10.8, 6.5 if i < 4 else -9)
-		lamp.light_color = [Color("ff315b"), Color("27c7ff"), Color("ffd33f"), Color("a64dff")][i % 4]
-		lamp.light_energy = 2.3
-		lamp.omni_range = 23.0
-		lamp.shadow_enabled = false
-		stage.add_child(lamp)
-		lights.append(lamp)
+	visuals_enabled = visuals
+	# Plataforma com contato exatamente coincidente com a geometria visual.
+	_box(stage, "Palco", Vector3(-48, 1.14, 0), Vector3(18, 1.8, 12), Color("3c3a38"), true)
+	_box(stage, "PisoPalco", Vector3(-48, 2.065, 0), Vector3(18.35, .06, 12.35), Color("676864"), true)
+	_box(stage, "FrentePalco", Vector3(-38.83, 1.12, 0), Vector3(.18, 1.65, 12.3), Color("9f3949"))
+	for z: float in [-5.25, -3.15, -1.05, 1.05, 3.15, 5.25]:
+		_box(stage, "SaiaPalco", Vector3(-38.70, 1.15, z), Vector3(.07, 1.45, .12), STEEL)
+	# Tres degraus realmente apoiados e percorriveis pela frente do palco.
+	for i in 3:
+		var step := float(i)
+		_box(stage, "EscadaPalco", Vector3(-35.95 - step * .83, .54 + step * .5, 0),
+			Vector3(.83, .60 + step * .40, 2.25), Color("777a77"), true)
+	# Cobertura: quatro colunas, trelicas, lona, paineis e cabos aparentes.
+	for x: float in [-55.7, -40.3]:
+		for z: float in [-6.1, 6.1]:
+			_box(stage, "PilarTrelica", Vector3(x, 5.36, z),
+				Vector3(.27, 10.25, .27), STEEL, true)
+			_box(stage, "BaseTrelica", Vector3(x, .49, z),
+				Vector3(.62, .50, .62), Color("454b49"), true)
+			# Sapatas acompanham o desnivel natural sob a borda externa.
+			_box(stage, "FundacaoTrelica", Vector3(x, -2.25, z),
+				Vector3(.62, 5.0, .62), STEEL, true)
+	for z: float in [-6.1, 6.1]:
+		_box(stage, "TrelicaLongitudinal", Vector3(-48, 10.36, z),
+			Vector3(16.3, .24, .24), STEEL)
+		_box(stage, "FaixaLuminosa", Vector3(-48, 10.18, z),
+			Vector3(15.7, .09, .08), CYAN if z < 0 else PINK, false, true)
+	for x: float in [-55.7, -40.3]:
+		_box(stage, "TrelicaLateral", Vector3(x, 10.36, 0),
+			Vector3(.24, .24, 12.5), STEEL)
+		for z: float in [-4.0, 0.0, 4.0]:
+			_box(stage, "DiagonalTrelica", Vector3(x, 9.30, z),
+				Vector3(.18, 1.9, .16), Color("5f6968"))
+	_box(stage, "CoberturaLona", Vector3(-48, 10.7, 0),
+		Vector3(17.0, .24, 13.2), Color("252f34"))
+	_box(stage, "Testeira", Vector3(-39.9, 10.45, 0),
+		Vector3(.16, .64, 13.1), PINK, false, true)
+	_box(stage, "PainelLED", Vector3(-55.35, 5.50, 0),
+		Vector3(.16, 5.3, 10.4), Color("1c2834"))
+	if visuals_enabled:
+		for line in 4:
+			for col in 13:
+				var color: Color = [PINK, CYAN, GOLD, Color("7564cb")][(col + line * 2) % 4]
+				_box(stage, "LEDModulo", Vector3(-55.24, 3.58 + line * 1.21,
+					-4.68 + col * .78), Vector3(.07, .95, .57), color, false, true)
+		var title := Label3D.new()
+		title.name = "LetreiroBaile"
+		title.text = "BAILE DA QUADRA"
+		title.font_size = 110
+		title.pixel_size = .0065
+		title.modulate = Color("f8e5c7")
+		title.outline_size = 16
+		title.position = Vector3(-39.53, 9.60, 0)
+		title.rotation.y = PI * .5
+		stage.add_child(title)
+		# Estruturas luminosas e luminarias perceptiveis mesmo a distancia.
+		for side: float in [-1.0, 1.0]:
+			for j in 3:
+				_box(stage, "Projetor", Vector3(-40.1, 9.56, side * (1.8 + j * 1.6)),
+					Vector3(.52, .36, .48), Color("293338"))
+		for i in 6:
+			var lamp := OmniLight3D.new()
+			lamp.name = "LuzBaile_%02d" % i
+			lamp.position = Vector3(-40.6 + float(i / 3) * 9.0, 8.7,
+				-4.5 + float(i % 3) * 4.5)
+			lamp.light_color = [PINK, CYAN, GOLD][i % 3]
+			lamp.light_energy = 1.8
+			lamp.omni_range = 26.0
+			lamp.shadow_enabled = false
+			stage.add_child(lamp)
+			lights.append(lamp)
+		for i in 4:
+			var origin := Vector3(-40.45, 9.2, -4.2 + float(i) * 2.8)
+			var target := Vector3(-22.0, .35, -8.0 + float(i) * 5.3)
+			var beam_color: Color = [PINK, CYAN, GOLD, LIME][i]
+			beams.append(_light_beam(stage, origin, target, beam_color))
+	# Mesa de DJ, cases e monitores fazem o palco parecer montado e utilizavel.
+	_box(stage, "BalcaoDJ", Vector3(-49.25, 2.85, 0),
+		Vector3(1.55, 1.51, 4.55), Color("22292d"), true)
+	_box(stage, "TampoDJ", Vector3(-48.72, 3.66, 0),
+		Vector3(1.12, .14, 4.80), Color("777c7b"), true)
+	_box(stage, "ControladoraDJ", Vector3(-48.48, 3.77, 0),
+		Vector3(.66, .08, 1.45), Color("151e22"))
+	for z: float in [-1.62, 1.62]:
+		_disc(stage, Vector3(-48.4, 3.76, z), .43)
+		_box(stage, "CaseEquipamento", Vector3(-53.45, 2.55, z * 2.35),
+			Vector3(1.15, .91, 1.22), Color("4b5759"), true)
+		_box(stage, "RetornoMonitor", Vector3(-40.55, 2.32, z * 2.10),
+			Vector3(1.28, .45, 1.35), Color("283034"), true)
+	for i in 11:
+		var z := -1.9 + float(i) * .38
+		_box(stage, "LEDControladora", Vector3(-48.36, 3.82, z),
+			Vector3(.10, .025, .06), PINK if i % 3 == 0 else CYAN, false, true)
+	# O paredao fica sobre o solo, nao suspenso no ar.
 	for side: float in [-1.0, 1.0]:
-		for i in 8:
-			var post := _box(stage, "TraveCampo", Vector3(0, .65, side * 24), Vector3(.18, 1.3, .18), Color("eee5d0"))
-			post.position.x = -37 + i * 10.5
-	for x in [-41.0, -15.0]:
-		var horn := _box(stage, "CaixaSom", Vector3(x, 5.0, 4.8), Vector3(2.2, 4.0, 1.5), Color("171719"))
-		_box(stage, "AltoFalante", horn.position + Vector3(0, .15, .78), Vector3(1.3, 2.9, .08), Color("34343a"))
+		var z := side * 8.1
+		_box(stage, "CaixaSom", Vector3(-39.1, 2.19, z),
+			Vector3(2.0, 3.9, 2.4), Color("171c1f"), true)
+		_box(stage, "BaseCaixaSom", Vector3(-39.1, .36, z),
+			Vector3(2.25, .24, 2.65), STEEL, true)
+		if visuals_enabled:
+			for y: float in [1.25, 2.60]:
+				_speaker_cone(stage, Vector3(-38.06, y, z), .69)
+			_box(stage, "GradeCaixaSom", Vector3(-38.03, 2.15, z),
+				Vector3(.045, 3.45, 2.18), Color("283236"))
+	# Guarda-corpo frente ao palco, com acesso livre pela escada.
+	for z: float in [-9.1, -6.9, 6.9, 9.1]:
+		_box(stage, "ProtecaoPalco", Vector3(-33.5, .72, z),
+			Vector3(.26, .96, 2.0), Color("636c70"), true)
+	# Pisos gastos, demarcacoes de futebol e ponto central, sem objetos suspensos.
+	_box(stage, "PinturaCentral", Vector3(0, .246, 0),
+		Vector3(74.5, .012, 43.5), Color("5b7971"))
+	for z: float in [-21.9, 21.9]:
+		_box(stage, "LinhaLateral", Vector3(0, .259, z),
+			Vector3(74.0, .014, .13), Color("e1d8bb"))
+	for x: float in [-37.0, 0.0, 37.0]:
+		_box(stage, "LinhaFundoMeio", Vector3(x, .259, 0),
+			Vector3(.13, .014, 43.8), Color("e1d8bb"))
+	for i in 40:
+		var angle := float(i) * TAU / 40.0
+		var mark := _box(stage, "CirculoCentral", Vector3(cos(angle) * 6, .259, sin(angle) * 6),
+			Vector3(.85, .014, .12), Color("e1d8bb"))
+		if mark != null:
+			mark.rotation.y = -angle
 	for side: float in [-1.0, 1.0]:
-		var gx: float = 35.0 * side
-		_box(stage, "GolTrave", Vector3(gx, 1.2, 0), Vector3(.18, 2.4, 7.2), Color("e4dfcf"))
-		_box(stage, "GolPoste", Vector3(gx, 2.4, -3.5), Vector3(.18, .18, .18), Color("e4dfcf"))
-		_box(stage, "GolPoste", Vector3(gx, 2.4, 3.5), Vector3(.18, .18, .18), Color("e4dfcf"))
-	# Painted touchlines and halfway markings give the pitch a readable scale.
-	for z in [-24.0, 24.0]:
-		_box(stage, "LinhaCampo", Vector3(0, .27, z), Vector3(76, .025, .12), Color("ddd9bf"))
-	for x in [-38.0, 0.0, 38.0]:
-		_box(stage, "LinhaCampo", Vector3(x, .27, 0), Vector3(.12, .025, 48), Color("ddd9bf"))
-	# Small clusters of cups and paper around the dance floor.
-	var litter_rng := RandomNumberGenerator.new()
-	litter_rng.seed = 241106
-	for i in 34:
-		var at := Vector3(litter_rng.randf_range(-38, 38), .34, litter_rng.randf_range(-23, 23))
-		var scrap := _box(stage, "LixoBaile", at, Vector3(.18, .035, .14), Color("bda878") if i % 2 == 0 else Color("d8d0ba"))
-		scrap.rotation.y = litter_rng.randf_range(0, TAU)
-	stage.set_meta("baile_stage_meshes", [deck, fascia])
-	# Narrow paths around the pitch connect it to the settlement.
-	for p in [Vector3(-12, .14, 30), Vector3(12, .14, 20), Vector3(33, .14, 8)]:
-		_box(stage, "TrilhaTerrosa", p, Vector3(5.0, .24, 18.0), Color("71604a"))
+		var x := side * 37.0
+		for z: float in [-9.0, 9.0]:
+			_box(stage, "AreaGol", Vector3(x - side * 6.0, .259, z),
+				Vector3(12, .014, .12), Color("e1d8bb"))
+		_box(stage, "AreaGol", Vector3(x - side * 12.0, .259, 0),
+			Vector3(.12, .014, 18.0), Color("e1d8bb"))
+		# Dois postes e travessao horizontal reais, alem da armação do fundo.
+		for z: float in [-3.35, 3.35]:
+			_box(stage, "PosteGol", Vector3(x, 1.48, z),
+				Vector3(.17, 2.48, .17), Color("e5e9e4"), true)
+			_box(stage, "RedeSuporte", Vector3(x + side * 1.3, 1.36, z),
+				Vector3(.12, 2.23, .12), Color("bac6bd"), true)
+		_box(stage, "TraveGol", Vector3(x, 2.72, 0),
+			Vector3(.18, .16, 6.88), Color("e5e9e4"), true)
+		_box(stage, "TraveRedeFundo", Vector3(x + side * 1.3, 2.48, 0),
+			Vector3(.13, .13, 6.88), Color("bac6bd"))
+		if visuals_enabled:
+			for z in range(-3, 4):
+				_box(stage, "FioRedeGol", Vector3(x + side * 1.1, 1.46, float(z)),
+					Vector3(.025, 2.25, .025), Color("b2c0b8"))
+			for j in 5:
+				_box(stage, "FioRedeHorizontal", Vector3(x + side * 1.1, .42 + j * .49, 0),
+					Vector3(.025, .025, 6.7), Color("b2c0b8"))
+	# Alambrado robusto; contato e feito por paineis, nao por centenas de fios.
+	for z: float in [-24.6, 24.6]:
+		_collider(stage, "ContatoAlambrado", Vector3(0, 1.78, z),
+			Vector3(81.0, 3.1, .17))
+		for x in range(-40, 41, 8):
+			_box(stage, "PosteAlambrado", Vector3(float(x), 2.16, z),
+				Vector3(.18, 3.85, .18), Color("606b67"), true)
+		for y: float in [.55, 1.35, 2.40, 3.83]:
+			_box(stage, "MalhaAlambrado", Vector3(0, y, z),
+				Vector3(81, .045, .045), Color("6c8781"))
+		if visuals_enabled:
+			for x in range(-38, 41, 3):
+				_box(stage, "MalhaAlambrado", Vector3(float(x), 2.15, z),
+					Vector3(.025, 3.25, .025), Color("6c8781"))
+	for x: float in [-40.5, 40.5]:
+		for z: float in [-17.0, 17.0]:
+			_collider(stage, "ContatoAlambrado", Vector3(x, 1.78, z),
+				Vector3(.17, 3.1, 15.0))
+			for dz: float in [-7.4, 0.0, 7.4]:
+				_box(stage, "PosteAlambrado", Vector3(x, 2.16, z + dz),
+					Vector3(.18, 3.85, .18), Color("606b67"), true)
+			for y: float in [.55, 1.35, 2.40, 3.83]:
+				_box(stage, "MalhaAlambrado", Vector3(x, y, z),
+					Vector3(.045, .045, 15.0), Color("6c8781"))
+	# Iluminacao esportiva ancorada no piso da quadra.
+	for x: float in [-32.5, 32.5]:
+		for z: float in [-22.8, 22.8]:
+			_box(stage, "TorreRefletor", Vector3(x, 3.82, z),
+				Vector3(.3, 7.15, .3), Color("59666a"), true)
+			_box(stage, "BaseRefletor", Vector3(x, .49, z),
+				Vector3(.78, .5, .78), Color("92928a"), true)
+			_box(stage, "LuminariaRefletor", Vector3(x, 7.31, z),
+				Vector3(1.35, .48, .54), Color("e2edda"), false, true)
+	# Bancos e lixeiras: pés tocam o piso, assentos com colisao.
+	for z: float in [-18.5, 18.5]:
+		for x: float in [-16.0, 12.0]:
+			_box(stage, "BancoConcreto", Vector3(x, .77, z),
+				Vector3(3.6, .24, .83), Color("b1b1a5"), true)
+			for dx: float in [-1.36, 1.36]:
+				_box(stage, "ApoioBanco", Vector3(x + dx, .45, z),
+					Vector3(.30, .43, .68), CONCRETE, true)
+		_box(stage, "LixeiraQuadra", Vector3(-23.5, .72, z),
+			Vector3(.64, .95, .62), Color("34625b"), true)
+	# Pequenos residuos de papel encostados no piso, visuais e de baixo custo.
+	if visuals_enabled:
+		var litter_rng := RandomNumberGenerator.new()
+		litter_rng.seed = 241106
+		for i in 27:
+			var p := Vector3(litter_rng.randf_range(-31.0, 29.0), .251,
+				litter_rng.randf_range(-20.5, 20.5))
+			var scrap := _box(stage, "PapelNoChao", p,
+				Vector3(.18, .012, .14), Color("b7afa0") if i % 2 == 0 else Color("d9cfbc"))
+			scrap.rotation.y = litter_rng.randf_range(0, TAU)
+	stage.set_meta("baile_stage_ready", true)
+	stage.set_meta("baile_collisions_shared", true)
 
-func _process(delta: float) -> void:
-	light_clock += delta
-	if light_clock < .32: return
-	light_clock = 0.0
-	var colors := [Color("ff315b"), Color("27c7ff"), Color("ffd33f"), Color("a64dff"), Color("47e281")]
-	for i in lights.size():
-		lights[i].light_color = colors[posmod(i + floori(Time.get_ticks_msec() / 640.0), colors.size())]
+func _collider(parent: Node3D, label: String, at: Vector3, size: Vector3) -> void:
+	var body := StaticBody3D.new()
+	body.name = label if not parent.has_node(label) else "%s_%03d" % [label, parent.get_child_count()]
+	body.collision_layer = 1
+	body.collision_mask = 0
+	body.position = at
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = size
+	shape.shape = box
+	body.add_child(shape)
+	parent.add_child(body)
 
-func _box(parent: Node3D, label: String, at: Vector3, size: Vector3, color: Color, emissive := false) -> MeshInstance3D:
-	var mesh := BoxMesh.new()
-	mesh.size = size
-	var material := StandardMaterial3D.new()
-	material.albedo_color = color
-	material.roughness = .88
-	if emissive:
-		material.emission_enabled = true
-		material.emission = color
-		material.emission_energy_multiplier = 1.8
+func _material(color: Color, glowing: bool) -> StandardMaterial3D:
+	var key := color.to_html() + ("_glow" if glowing else "")
+	if materials.has(key):
+		return materials[key] as StandardMaterial3D
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = color
+	mat.roughness = .78 if glowing else .91
+	if glowing:
+		mat.emission_enabled = true
+		mat.emission = color
+		mat.emission_energy_multiplier = 2.7
+	materials[key] = mat
+	return mat
+
+func _box(parent: Node3D, label: String, at: Vector3, size: Vector3,
+		color: Color, solid := false, glowing := false) -> Node3D:
+	if not visuals_enabled and not solid:
+		return null
+	var holder: Node3D = StaticBody3D.new() if solid else MeshInstance3D.new()
+	holder.name = label if not parent.has_node(label) else "%s_%03d" % [label, parent.get_child_count()]
+	holder.position = at
+	if solid:
+		var body := holder as StaticBody3D
+		body.collision_layer = 1
+		body.collision_mask = 0
+		var shape := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		box.size = size
+		shape.shape = box
+		body.add_child(shape)
+	if visuals_enabled:
+		var visual: MeshInstance3D
+		if solid:
+			visual = MeshInstance3D.new()
+			visual.name = "Modelo"
+			holder.add_child(visual)
+		else:
+			visual = holder as MeshInstance3D
+		var mesh := BoxMesh.new()
+		mesh.size = size
+		visual.mesh = mesh
+		visual.material_override = _material(color, glowing)
+		visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		if not solid:
+			visual.visibility_range_end = 195.0
+	parent.add_child(holder)
+	return holder
+
+func _speaker_cone(parent: Node3D, at: Vector3, radius: float) -> void:
 	var instance := MeshInstance3D.new()
-	instance.name = label
-	instance.mesh = mesh
-	instance.material_override = material
+	instance.name = "Woofer"
 	instance.position = at
+	instance.rotation.z = PI * .5
+	var cone := CylinderMesh.new()
+	cone.top_radius = radius
+	cone.bottom_radius = radius
+	cone.height = .07
+	cone.radial_segments = 20
+	instance.mesh = cone
+	instance.material_override = _material(Color("434b50"), false)
+	parent.add_child(instance)
+
+func _disc(parent: Node3D, at: Vector3, radius: float) -> void:
+	if not visuals_enabled:
+		return
+	var turntable := MeshInstance3D.new()
+	turntable.name = "PratoDJ"
+	turntable.position = at
+	var disk := CylinderMesh.new()
+	disk.top_radius = radius
+	disk.bottom_radius = radius
+	disk.height = .045
+	disk.radial_segments = 24
+	turntable.mesh = disk
+	turntable.material_override = _material(Color("151a1d"), false)
+	turntable.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(turntable)
+
+func _light_beam(parent: Node3D, origin: Vector3, target: Vector3, color: Color) -> MeshInstance3D:
+	var instance := MeshInstance3D.new()
+	instance.name = "FachoBaile_%d" % beams.size()
+	var ray := target - origin
+	instance.position = (origin + target) * .5
+	instance.quaternion = Quaternion(Vector3.UP, ray.normalized())
+	var cone := CylinderMesh.new()
+	cone.top_radius = 2.1
+	cone.bottom_radius = .12
+	cone.height = ray.length()
+	cone.radial_segments = 10
+	instance.mesh = cone
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.albedo_color = Color(color.r, color.g, color.b, .12)
+	instance.material_override = mat
 	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	instance.visibility_range_end = 165.0
 	parent.add_child(instance)
 	return instance
+
+func _process(delta: float) -> void:
+	if lights.is_empty():
+		return
+	light_clock += delta
+	if light_clock < .18:
+		return
+	light_clock = 0.0
+	var beat := Time.get_ticks_msec() / 1000.0
+	var colors := [PINK, CYAN, GOLD, Color("9e6ef8"), LIME]
+	for i in lights.size():
+		lights[i].light_color = colors[posmod(i + floori(beat * 1.5), colors.size())]
+		lights[i].light_energy = 1.0 + .85 * (.5 + .5 * sin(beat * 4.5 + float(i)))
+	for i in beams.size():
+		var tone: Color = colors[posmod(i + floori(beat * 1.5), colors.size())]
+		var mat := beams[i].material_override as StandardMaterial3D
+		mat.albedo_color = Color(tone.r, tone.g, tone.b,
+			.11 + .04 * sin(beat * 4.5 + float(i)))
 
 func begin() -> void:
 	rng.randomize()
 	voice = AudioStreamPlayer3D.new()
 	voice.name = "SomDoBaile"
-	voice.bus = "Ambiente"
-	voice.position = Vector3(0, 4.0, 2.0)
-	voice.max_distance = 100.0
-	voice.unit_size = 12.0
+	voice.bus = "Ambiente" if AudioServer.get_bus_index("Ambiente") >= 0 else "Master"
+	# Audio parte do paredao, nao do centro geometrico do campo.
+	voice.position = Vector3(-39.0, 3.0, 0.0)
+	voice.max_distance = 225.0
+	voice.unit_size = 38.0
 	voice.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
-	voice.volume_db = -5.0
+	voice.volume_db = -3.0
 	voice.finished.connect(_next_song)
 	add_child(voice)
-	await get_tree().create_timer(rng.randf_range(8.0, 38.0)).timeout
+	# A primeira musica deve ser audivel imediatamente, nao apos 8-38 segundos.
 	_next_song()
 
 func _next_song() -> void:
-	if not is_instance_valid(voice): return
-	if queue.is_empty():
-		queue.assign(range(TRACK_PATHS.size()))
-		queue.shuffle()
-		if queue.size() > 1 and queue.back() == previous:
-			var swap: int = rng.randi_range(0, queue.size() - 2)
-			var last: int = int(queue.back())
-			queue[queue.size() - 1] = queue[swap]
-			queue[swap] = last
-	var index: int = queue.pop_back()
-	previous = index
-	var stream := load(TRACK_PATHS[index]) as AudioStream
-	if stream == null:
-		push_error("Faixa do baile não foi importada: " + TRACK_PATHS[index])
+	if not is_instance_valid(voice):
 		return
-	voice.stream = stream
-	voice.play(rng.randf_range(0.0, maxf(0.0, stream.get_length() - 2.0)))
+	for attempt in TRACK_PATHS.size():
+		if queue.is_empty():
+			queue.assign(range(TRACK_PATHS.size()))
+			queue.shuffle()
+			if queue.size() > 1 and queue.back() == previous:
+				var swap := rng.randi_range(0, queue.size() - 2)
+				var last: int = queue.back()
+				queue[queue.size() - 1] = queue[swap]
+				queue[swap] = last
+		var index: int = queue.pop_back()
+		previous = index
+		if not ResourceLoader.exists(TRACK_PATHS[index]):
+			continue
+		var stream := load(TRACK_PATHS[index]) as AudioStream
+		if stream == null:
+			continue
+		voice.stream = stream
+		voice.play(rng.randf_range(0.0, maxf(0.0, stream.get_length() - 4.0)))
+		return
+	push_warning("Baile: seis faixas indisponiveis no cliente; tocando batida original de reserva.")
+	voice.stream = _backup_beat()
+	voice.play()
+
+func _backup_beat() -> AudioStreamWAV:
+	# Batida instrumental original de reserva, sintetizada em memoria.
+	# Nao incorpora amostras ou melodias de gravacoes comerciais.
+	const RATE := 22050
+	const SECONDS := 4
+	var wav := AudioStreamWAV.new()
+	wav.format = AudioStreamWAV.FORMAT_16_BITS
+	wav.mix_rate = RATE
+	wav.stereo = false
+	wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	wav.loop_end = RATE * SECONDS
+	var pcm := PackedByteArray()
+	pcm.resize(wav.loop_end * 2)
+	for i in wav.loop_end:
+		var t := float(i) / float(RATE)
+		var beat := fposmod(t, .5)
+		var hat := fposmod(t, .25)
+		var clap := fposmod(t - .5, 1.0)
+		var noise := float((i * 173 + 311) % 1021) / 510.5 - 1.0
+		var kick := sin(TAU * (74.0 * beat - 25.0 * beat * beat)) * exp(-beat * 16.0) * .43
+		var hat_hit := noise * exp(-hat * 65.0) * .075
+		var clap_hit := noise * exp(-clap * 38.0) * .16 if clap < .16 else 0.0
+		var bass := sin(TAU * 55.0 * t) * exp(-beat * 8.0) * .17
+		var sample := clampi(roundi((kick + hat_hit + clap_hit + bass) * 28000.0), -32768, 32767)
+		pcm[i * 2] = sample & 255
+		pcm[i * 2 + 1] = (sample >> 8) & 255
+	wav.data = pcm
+	return wav
