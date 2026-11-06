@@ -2,6 +2,8 @@
 **/.godot/
 **/.godot-test-profile/
 **/.import/
+# Metadados locais do importador para CSVs brutos de benchmark (dados seguem versionados).
+*.csv.import
 .godot-test-profile/
 *.translation
 

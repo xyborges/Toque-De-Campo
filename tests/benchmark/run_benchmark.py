@@ -215,9 +215,11 @@ def collection_integrity(report: dict, args, gpu: dict) -> dict:
                               report.get("actual_fps_cap") == 0,
         "real_simulation": report.get("qa_presentation_only") is False and
                            report.get("qa_frozen_scene") is False,
+        # A full trace can legitimately have fewer than 10 FPS. Requiring
+        # duration*10 samples would mislabel a very slow game as an invalid
+        # collection. Check completeness by frame counts and elapsed time.
         "raw_frames_complete": trace_good and
                                len(numeric_trace) == int(frames.get("samples", 0)) and
-                               len(numeric_trace) >= duration * 10 and
                                abs(raw_avg_ms - reported_avg_ms) < .001 and
                                len(numeric_trace) == total and
                                abs(sum(numeric_trace) - (end - start)) <= max(1000, .05 * (end - start)),

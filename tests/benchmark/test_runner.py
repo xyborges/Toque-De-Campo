@@ -44,6 +44,25 @@ class CollectionTests(unittest.TestCase):
         report, gpu, args = self.example()
         self.assertTrue(bench.collection_integrity(report, args, gpu)["valid"])
 
+    def test_complete_low_fps_trace_is_valid(self):
+        # 50 real frames over 10 seconds (5 FPS): poor performance, not a
+        # missing trace. Focus, population, window and GPU remain valid.
+        report, gpu, args = self.example()
+        report["frame_time_trace_ms"] = [200.0] * 50
+        report["frames"] = {"samples": 50, "mean_ms": 200.0}
+        report["focus"]["total_frames"] = 50
+        report["focus"]["focused_frames"] = 50
+        self.assertTrue(bench.collection_integrity(report, args, gpu)["valid"])
+
+    def test_low_fps_trace_missing_frame_rejects(self):
+        report, gpu, args = self.example()
+        report["frame_time_trace_ms"] = [200.0] * 49
+        report["frames"] = {"samples": 50, "mean_ms": 200.0}
+        report["focus"]["total_frames"] = 50
+        report["focus"]["focused_frames"] = 50
+        self.assertIn("raw_frames_complete",
+                      bench.collection_integrity(report, args, gpu)["failed_checks"])
+
     def test_lost_focus_rejects_even_with_good_fps(self):
         report, gpu, args = self.example()
         report["focus"]["focused_frames"] = 624
