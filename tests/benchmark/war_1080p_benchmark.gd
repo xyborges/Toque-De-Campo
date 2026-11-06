@@ -116,6 +116,16 @@ func run() -> void:
 	GameStepMotion.qa_reset()
 	pipeline_previous={"mesh":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_MESH),"surface":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_SURFACE),"draw":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_DRAW),"specialization":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_SPECIALIZATION)}
 	var started:=Time.get_ticks_usec()
+	var measurement_start_unix_ms:=int(Time.get_unix_time_from_system()*1000.)
+	var focused_on_start:=DisplayServer.window_is_focused()
+	var last_focus:=focused_on_start
+	var focus_frames:=0
+	var unfocused_frames:=0
+	var focus_transitions:=0
+	var focus_changes: Array[Dictionary]=[]
+	var minimum_bots: int=game.bot_director.bots.size()
+	var bot_population_checks:=0
+	var next_population_sample:=started
 	var last:=started
 	var previous_physics:=Engine.get_physics_frames()
 	while Time.get_ticks_usec()-started<duration*1000000.:
@@ -123,6 +133,21 @@ func run() -> void:
 		var now:=Time.get_ticks_usec()
 		var elapsed:float=(now-started)*.000001
 		var ms:float=(now-last)*.001;last=now
+		var focused:=DisplayServer.window_is_focused()
+		focus_frames+=1
+		if not focused:unfocused_frames+=1
+		if focused!=last_focus:
+			focus_transitions+=1
+			if focus_changes.size()<128:
+				focus_changes.append({"elapsed_s":elapsed,"focused":focused})
+			last_focus=focused
+		if now>=next_population_sample:
+			if is_instance_valid(game.bot_director):
+				minimum_bots=mini(minimum_bots,game.bot_director.bots.size())
+			else:
+				minimum_bots=0
+			bot_population_checks+=1
+			next_population_sample=now+1000000
 		var pipeline_now: Dictionary={"mesh":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_MESH),"surface":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_SURFACE),"draw":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_DRAW),"specialization":Performance.get_monitor(Performance.PIPELINE_COMPILATIONS_SPECIALIZATION)}
 		var new_pipelines: Dictionary={}
 		for key: String in pipeline_total:
@@ -144,6 +169,8 @@ func run() -> void:
 		max_collision_pairs=maxf(max_collision_pairs,Performance.get_monitor(Performance.PHYSICS_3D_COLLISION_PAIRS))
 		if ms>33. and spikes.size()<3000:
 			spikes.append({"t":elapsed,"frame_ms":ms,"gpu_ms":gpu_samples[-1],"physics_ms":physics_samples[-1],"script_ms":cpu_samples[-1],"physics_ticks":tick_delta,"new_pipelines":new_pipelines})
+	var measurement_end_unix_ms:=int(Time.get_unix_time_from_system()*1000.)
+	var bots_at_end: int=game.bot_director.bots.size() if is_instance_valid(game.bot_director) else 0
 	GamePerformanceProbe.stop()
 	var times:=_stats(samples)
 	var over33:=0
@@ -153,7 +180,7 @@ func run() -> void:
 		if dt>33.:over33+=1
 		if dt>50.:over50+=1
 		if dt>100.:over100+=1
-	var result: Dictionary={"operation":operation,"label":label,"renderer":RenderingServer.get_current_rendering_method(),"gpu_name":RenderingServer.get_video_adapter_name(),"requested_resolution":[1920,1080],"render_texture":[rendered.x,rendered.y],"internal_scale":actual_scale,"preset":"Médio com escala 100%; fps e VSync desligados","actual_bots":deployed,"actual_bots_end":game.bot_director.bots.size() if is_instance_valid(game.bot_director) else 0,"players":game.players.size(),"qa_presentation_only":qa_presentation_only,"qa_frozen_scene":qa_frozen_scene,"fps_cap":fps_cap,"frames":times,"gpu_ms":_stats(gpu_samples),"process_ms":_stats(cpu_samples),"physics_ms":_stats(physics_samples),"median_fps":1000./float(times.p50_ms),"over33_per_min":over33*60./duration,"over50_per_min":over50*60./duration,"over100_count":over100,"draw_calls_max":max_draws,"reported_gpu_mib_max":max_vram/1048576.,"nodes_max":max_nodes,"collision_pairs_max":max_collision_pairs,"pipeline_compilations_during_measurement":pipeline_total,"frames_over_33ms_with_new_pipelines":pipeline_spike_count,"spikes":spikes,"physics_ticks_per_frame":tick_deltas,"scoped_probe":GamePerformanceProbe.report(),"step_stats":GameStepMotion.qa_report(),"duration":duration,"warmup_seconds":warmup,"scope":"Offline WarGame, 28 deployed bots, fixed stationary camera near objective C (Favela), Afghan village or Ukraine B; no remote client, uncapped; after warmup.","valid":true}
+	var result: Dictionary={"operation":operation,"label":label,"renderer":RenderingServer.get_current_rendering_method(),"gpu_name":RenderingServer.get_video_adapter_name(),"requested_resolution":[1920,1080],"render_texture":[rendered.x,rendered.y],"internal_scale":actual_scale,"preset":"Médio com escala 100%; fps e VSync desligados","actual_bots":deployed,"actual_bots_end":bots_at_end,"players":game.players.size(),"qa_presentation_only":qa_presentation_only,"qa_frozen_scene":qa_frozen_scene,"fps_cap":fps_cap,"collection_protocol":"war-1080p-28-bots-focus-gpu-v2","frames":times,"frame_time_trace_ms":samples,"measurement_window_unix_ms":{"start":measurement_start_unix_ms,"end":measurement_end_unix_ms},"focus":{"start_focused":focused_on_start,"focused_frames":focus_frames-unfocused_frames,"unfocused_frames":unfocused_frames,"total_frames":focus_frames,"transitions":focus_transitions,"change_events":focus_changes},"bot_population":{"minimum":minimum_bots,"at_end":bots_at_end,"samples":bot_population_checks},"actual_vsync":DisplayServer.window_get_vsync_mode(),"actual_fps_cap":Engine.max_fps,"gpu_ms":_stats(gpu_samples),"process_ms":_stats(cpu_samples),"physics_ms":_stats(physics_samples),"median_fps":1000./float(times.p50_ms),"over33_per_min":over33*60./duration,"over50_per_min":over50*60./duration,"over100_count":over100,"draw_calls_max":max_draws,"reported_gpu_mib_max":max_vram/1048576.,"nodes_max":max_nodes,"collision_pairs_max":max_collision_pairs,"pipeline_compilations_during_measurement":pipeline_total,"frames_over_33ms_with_new_pipelines":pipeline_spike_count,"spikes":spikes,"physics_ticks_per_frame":tick_deltas,"scoped_probe":GamePerformanceProbe.report(),"step_stats":GameStepMotion.qa_report(),"duration":duration,"warmup_seconds":warmup,"scope":"Offline WarGame, 28 deployed bots, fixed stationary camera near objective C (Favela), Afghan village or Ukraine B; no remote client, uncapped; after warmup.","valid":true}
 	var output:="res://work/benchmark-results/"+label+".json"
 	NavalStorage.write_json(output,result)
 	print("PERF_1080P_RESULT ",JSON.stringify({"label":label,"operation":operation,"median_fps":result.median_fps,"p95_ms":times.p95_ms,"p99_ms":times.p99_ms,"over33_per_min":result.over33_per_min,"gpu_ms_mean":result.gpu_ms.mean_ms,"bots":deployed,"texture":rendered,"scale":actual_scale}))
