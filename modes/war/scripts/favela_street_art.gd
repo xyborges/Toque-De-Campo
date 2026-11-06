@@ -84,6 +84,7 @@ uniform sampler2D ground_tex : source_color, filter_linear_mipmap, repeat_enable
 uniform sampler2D concrete_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D asphalt_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D wear_tex : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D grit_tex : filter_linear_mipmap, repeat_enable;
 uniform float half_map = 750.0;
 varying float hillside_gradient;
 
@@ -100,19 +101,41 @@ void fragment() {
 	// Concrete is the default flooring of the built-up Favela, not an
 	// uninterrupted brown soil plane. Exposed soil survives at hillside,
 	// construction pockets, broken pavement and the wooded map boundary.
-	float city_x = 1.0 - smoothstep(590.0, 745.0, abs(world_xz.x));
-	float city_z = smoothstep(-710.0, -570.0, world_xz.y)
-		* (1.0 - smoothstep(720.0, 785.0, world_xz.y));
+	float city_x = 1.0 - smoothstep(645.0, 705.0, abs(world_xz.x));
+	float city_z = smoothstep(-645.0, -565.0, world_xz.y)
+		* (1.0 - smoothstep(645.0, 710.0, world_xz.y));
 	float city = city_x * city_z;
-	float cut_slope = smoothstep(0.15, 0.43, hillside_gradient);
+	float cut_slope = smoothstep(0.30, 0.57, hillside_gradient);
 	float patch_noise = sin(world_xz.x * .095 + cos(world_xz.y * .065))
 		* cos(world_xz.y * .087 - world_xz.x * .041);
 	float exposed = smoothstep(.31, .74, patch_noise);
-	float cement_amount = city * (0.93 - 0.46 * cut_slope)
-		* (1.0 - exposed * 0.32);
+	float cement_amount = city * (0.997 - 0.98 * cut_slope)
+		* (1.0 - exposed * 0.012);
 	vec3 soil_ground = texture(ground_tex, UV * .72).rgb;
-	vec3 concrete_ground = texture(concrete_tex, UV * .67).rgb
-		* mix(vec3(.91), vec3(1.10), smoothstep(-.5, .7, patch_noise));
+	// Real exposed concrete: retain detail from the source texture, but
+	// neutralize its orange tint. Three world-space scales produce gritty
+	// aggregate, patchy repairs and darker drainage stains instead of a
+	// flat, painted slab. Small, mipmapped shared noise keeps this cheap.
+	vec3 concrete_sample = texture(concrete_tex, world_xz * .83).rgb;
+	float concrete_luma = dot(concrete_sample, vec3(.2126, .7152, .0722));
+	float grit_fine = texture(grit_tex, world_xz * 1.31).r;
+	float grit_broad = texture(grit_tex, world_xz * .047 + vec2(.31, .72)).r;
+	float grit_stain = texture(grit_tex, world_xz * .23 + vec2(.61, .11)).r;
+	float base_grey = clamp(.235 + concrete_luma * .38, .30, .55);
+	float flecks = (grit_fine - .5) * .135;
+	float aggregate = (grit_broad - .5) * .19;
+	float old_stains = smoothstep(.56, .83, grit_stain) * .105;
+	float repair_edges = smoothstep(.59, .78, grit_broad) * .095;
+	float grey = clamp(base_grey + flecks + aggregate
+		- old_stains - repair_edges, .245, .56);
+	vec3 concrete_ground = vec3(grey) * vec3(.97, .98, .98);
+	// Existing crack-and-repair tile, visible mainly at walking distance.
+	float concrete_near = 1.0 - smoothstep(32.0, 95.0, length(VERTEX));
+	if (concrete_near > 0.0) {
+		vec4 old_repairs = texture(wear_tex, world_xz * .105 + vec2(.19, .33));
+		concrete_ground = mix(concrete_ground, old_repairs.rgb * vec3(.67),
+			old_repairs.a * .19 * concrete_near);
+	}
 	vec3 ground = mix(soil_ground, concrete_ground,
 		clamp(cement_amount, 0.0, 1.0)) * COLOR.rgb;
 	// Thin downhill runoff streaks and fragmented bare sediment break up
@@ -143,7 +166,9 @@ void fragment() {
 		ground = mix(ground, pavement, coverage);
 	}
 	ALBEDO = ground;
-	ROUGHNESS = 1.0;
+	// Already specular-disabled; slight roughness variation avoids an
+	// unnaturally uniform PBR response on high quality renderers.
+	ROUGHNESS = clamp(.93 + grit_fine * .07, .93, 1.0);
 }
 """
 
@@ -237,6 +262,15 @@ static func terrain_material(mask: Image, half_map: float) -> ShaderMaterial:
 	result.set_shader_parameter("half_map", half_map)
 	result.set_shader_parameter("street_mask", ImageTexture.create_from_image(mask))
 	result.set_shader_parameter("wear_tex", ImageTexture.create_from_image(wear))
+	var concrete_grit := FastNoiseLite.new()
+	concrete_grit.seed = 610061
+	concrete_grit.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	concrete_grit.frequency = 0.042
+	concrete_grit.fractal_type = FastNoiseLite.FRACTAL_FBM
+	concrete_grit.fractal_octaves = 4
+	var grit_image := concrete_grit.get_seamless_image(256, 256)
+	grit_image.generate_mipmaps()
+	result.set_shader_parameter("grit_tex", ImageTexture.create_from_image(grit_image))
 	result.set_shader_parameter("ground_tex", EnvironmentKit.material("sand").albedo_texture)
 	result.set_shader_parameter("concrete_tex", EnvironmentKit.material("concrete").albedo_texture)
 	result.set_shader_parameter("asphalt_tex", EnvironmentKit.material("asphalt").albedo_texture)
