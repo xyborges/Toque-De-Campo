@@ -19,3 +19,11 @@ Integração, pacote assinado e publicação serão registrados abaixo conforme 
 Integrado na main pelo merge `9708dcd`. Build 93 / 1.13.6 preparada e assinada localmente, sem upload ou ativacao. Instalacao assinada passou 13/13 verificacoes e boot protegido passou, com DLL carregada e pacote inalterado. Preflight remoto somente leitura passou `PREFLIGHT build=93 publicado=92` e `PREFLIGHT_OK build=93`.
 
 Arquivo `releases/game-93-832294fdcf04.zip`, 255609067 bytes. Logs `work/release1136-prepare.log`, `work/release1136-signed-install.log`, `work/release1136-preflight.log`. Servidor oficial permanece build92 ate ativacao. Validacao pos-publicacao ainda pendente.
+
+## Publicação oficial
+
+Build 93 / 1.13.6 publicada em 05/11/2026 por autorização do usuário. `VERIFIED_READY build=93` e `DEPLOYED build=93 version=1.13.6` em `work/release1136-deploy.log`. Manifesto HTTPS byte a byte idêntico ao assinado, `/opt/toque-de-campo/current` em `build-93`, seis serviços ativos incluindo `toque-war-favela`; executável e PCK Linux com SHA-256 iguais ao manifesto assinado.
+
+Partida real na Favela oficial com cliente gráfico de protocolo 37: login e admissão passaram, 28 bots ativos, 3.376 quadros amostrados, 3.552 lotes de bots e 293 estados da operação recebidos, 24 respostas de recuperação aplicadas. Moto percorrida por 184,8 m e drone acionado, sem queda de conexão ou erro do QA. Evidência temporária `C:/Users/Joao Borges/AppData/Local/Temp/campo-1136-official-match-w50trpy4/client.json`. Esta partida confirma operação da build publicada, não prova ausência de todo congelamento espontâneo.
+
+O commit `eb61911` de campo de baile, ruas e áudio da Favela foi inspecionado a pedido do usuário e não entrou na build 93. Ele conflita com o mapa e shader atuais e exige conciliação e novos testes. A tentativa de merge foi abortada e a main permaneceu limpa antes do deploy.
