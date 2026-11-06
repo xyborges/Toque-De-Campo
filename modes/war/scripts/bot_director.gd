@@ -31,6 +31,14 @@ var bot_ids: Array=[]
 var spatial: Dictionary={}
 var spatial_at:=0.0
 var world_los: PhysicsRayQueryParameters3D=PhysicsRayQueryParameters3D.new()
+# IA2: disabled by default; set TDC_IA2_REUSE_LOS=1 only for the isolated experiment.
+var ia2_reuse_los:=OS.get_environment("TDC_IA2_REUSE_LOS")=="1"
+var ia2_visible_owner:=0
+var ia2_visible_target:=0
+var ia2_visible_from:=Vector3.ZERO
+var ia2_visible_to:=Vector3.ZERO
+var ia2_los_reused:=0
+var ia2_los_fallback:=0
 var diagnostics: Dictionary={"moves":0,"shots":0,"reloads":0,"deployments":0,"routes":0,"deploy_failures":0,"target_acquisitions":0,"clear_shot_ticks":0,"shot_attempts":0,"shot_rejections":0,"grenades":0,"armor_engagements":0,"vehicle_evacuations":0,"vehicle_detours":0}
 
 class BotRoutes extends OfflineDirector:
@@ -396,7 +404,7 @@ func _think(id: int) -> void:
 	if not is_instance_valid(target) and actor.grenade_held_id.is_empty() and _board(actor,record): return
 	if is_instance_valid(target) and int(record.target)!=target.peer_id: record.reaction_until=game.war_clock+.5+(id%5)*.09
 	record.target=target.peer_id if target else 0
-	record.line_clear=is_instance_valid(target) and _has_clear_shot(actor,target)
+	record.line_clear=is_instance_valid(target) and _ia2_think_line_clear(actor,target)
 	if is_instance_valid(target): diagnostics.target_acquisitions=int(diagnostics.target_acquisitions)+1
 	if bool(record.line_clear): diagnostics.clear_shot_ticks=int(diagnostics.clear_shot_ticks)+1
 	var data: Dictionary=WarRules.OBJECTIVES[str(record.objective)]
@@ -593,6 +601,7 @@ func _vehicle_visible_armor(vehicle: WarVehicle) -> WarVehicle:
 	return best
 
 func _visible_enemy(actor: WarPlayer) -> WarPlayer:
+	if ia2_reuse_los: ia2_visible_owner=0
 	var visible: WarPlayer;var visible_distance:=INF
 	var obstructed: WarPlayer;var obstructed_distance:=INF
 	var limit:=pow(280. if actor.war_class=="marksman" else 190.,2)
@@ -604,12 +613,29 @@ func _visible_enemy(actor: WarPlayer) -> WarPlayer:
 			var direction: Vector3=(other.position-actor.position).normalized()
 			if direction.dot(-actor.global_basis.z)<-.20: continue
 		if _has_clear_shot(actor,other):
-			if distance<visible_distance: visible=other;visible_distance=distance
+			if distance<visible_distance:
+				visible=other;visible_distance=distance
+				if ia2_reuse_los:
+					ia2_visible_owner=actor.peer_id;ia2_visible_target=other.peer_id
+					ia2_visible_from=actor.camera_pivot.global_position
+					ia2_visible_to=other.hit_regions.chest.global_position
 		# No tracking enemies hidden behind a wall: only pursue a recently
 		# seen target, using its last observed point instead of omniscience.
 	# Prefer any enemy with a firing lane. If all are covered, keep the nearest
 	# one as a movement goal so the bot can path around the obstruction.
 	return visible
+
+# Only reuse a ray result from this _visible_enemy() call when the two ray
+# endpoints are still identical. Grenade/weapon logic runs between scan and
+# firing decision; any endpoint change deliberately falls back to the original.
+func _ia2_think_line_clear(actor: WarPlayer,target: WarPlayer) -> bool:
+	if ia2_reuse_los:
+		if ia2_visible_owner==actor.peer_id and ia2_visible_target==target.peer_id:
+			if ia2_visible_from==actor.camera_pivot.global_position and ia2_visible_to==target.hit_regions.chest.global_position:
+				ia2_los_reused+=1
+				return true
+		ia2_los_fallback+=1
+	return _has_clear_shot(actor,target)
 
 func _has_clear_shot(actor: WarPlayer,target: WarPlayer) -> bool:
 	var query:=PhysicsRayQueryParameters3D.create(actor.camera_pivot.global_position,target.hit_regions.chest.global_position,1,[actor.get_rid(),target.get_rid()])
