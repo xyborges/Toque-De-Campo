@@ -1,0 +1,78 @@
+{
+  "status": "complete",
+  "base_commit": "b4192f1",
+  "feature": "traffic",
+  "operation": "afghan",
+  "measurement_seconds_per_run": 10.0,
+  "warmup": 5.0,
+  "order": "AB BA AB BA AB ...",
+  "records": [
+    {
+      "file": "ia2p2-20261106-174057-afghan-on-traffic-0-pair01-A.json",
+      "operation": "afghan",
+      "feature": "traffic",
+      "feature_on": false,
+      "fps": 10.5805812120916,
+      "p95": 160.601,
+      "p99": 178.853,
+      "physics_mean_ms": 25.8472897196262,
+      "gpu_mean_ms": 22.1401775217502,
+      "over33_per_min": 642.0,
+      "multi_ticks_ge2": 107,
+      "multi_ticks_ge4": 100,
+      "los_reused": 0,
+      "los_fallback": 0,
+      "traffic_queries_reused": 0,
+      "gpu_thermal_samples": 9,
+      "gpu_temp_min": 36.0,
+      "gpu_temp_max": 36.0,
+      "thermal_flags_available": true,
+      "thermal_active": 0,
+      "pair": 1,
+      "position": 0
+    },
+    {
+      "file": "ia2p2-20261106-174150-afghan-on-traffic-1-pair01-B.json",
+      "operation": "afghan",
+      "feature": "traffic",
+      "feature_on": true,
+      "fps": 4.53618629209864,
+      "p95": 289.189,
+      "p99": 307.458,
+      "physics_mean_ms": 41.8064782608696,
+      "gpu_mean_ms": 38.4290000252102,
+      "over33_per_min": 276.0,
+      "multi_ticks_ge2": 46,
+      "multi_ticks_ge4": 46,
+      "los_reused": 0,
+      "los_fallback": 0,
+      "traffic_queries_reused": 14,
+      "gpu_thermal_samples": 8,
+      "gpu_temp_min": 36.0,
+      "gpu_temp_max": 36.0,
+      "thermal_flags_available": true,
+      "thermal_active": 0,
+      "pair": 1,
+      "position": 1
+    }
+  ],
+  "pair_deltas": [
+    {
+      "pair": 1,
+      "fps_change_percent": -57.12724848314912,
+      "p99_change_ms": 128.60500000000002,
+      "ticks_ge4_change": -54,
+      "over33_change": -366.0
+    }
+  ],
+  "evaluation": {
+    "baseline_range_noise_percent": null,
+    "median_gain_fps_percent": -57.12724848314912,
+    "median_p99_change_ms": 128.60500000000002,
+    "median_ge4_tick_change": -54,
+    "minimum_pairs_for_acceptance": 5,
+    "performance_gate_candidate": false,
+    "gameplay_multiplayer_gate": "NOT VERIFIED; cannot accept for production",
+    "decision": "diagnostic only; no main integration"
+  }
+}
