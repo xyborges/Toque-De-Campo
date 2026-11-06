@@ -6,6 +6,10 @@ var routes: Array=[]
 var bases: Array=[]
 var objectives: Array=[]
 var occupied: Dictionary={}
+# IA2: only pass a frontage already computed for an identical (p, half).
+# Default OFF; geometry and sorting are identical to the original.
+var ia2_reuse_frontage := OS.get_environment("TDC_IA2_LAYOUT_REUSE_FRONTAGE")=="1"
+var ia2_frontage_reuses := 0
 
 const SIZES := [Vector2(11.55,11.45),Vector2(11.35,11.70),Vector2(11.65,11.35),
 	Vector2(11.45,11.60),Vector2(11.60,11.45)]
@@ -41,11 +45,12 @@ func frontage(p: Vector2,half: Vector2) -> Dictionary:
 				best={"gap":gap,"normal":normal,"road":int(road.id),"width":float(road.width)}
 	return best
 
-func clear(p: Vector2,half: Vector2) -> bool:
+func clear(p: Vector2,half: Vector2,known_gap: float=INF) -> bool:
 	if p.x< -650 or p.x>650 or p.y< -550 or p.y>505:return false
 	if p.x>510 and p.y>420:return false
 	if BAILE_CLEARANCE.intersects(Rect2(p-half,half*2.0).grow(1.0)):return false
-	if float(frontage(p,half).gap)<.38:return false
+	if known_gap!=INF: ia2_frontage_reuses+=1
+	if (float(frontage(p,half).gap) if known_gap==INF else known_gap)<.38:return false
 	var radius:=half.length()
 	for base: Vector2 in bases:
 		if p.distance_to(base)<61.0+radius:return false
@@ -114,7 +119,7 @@ func _append_frontage_infill(lots: Array[Dictionary]) -> int:
 					# corner open rather than pushing a house into two envelopes.
 					if int(edge.road)!=road_id or float(edge.gap)<.40 or float(edge.gap)>1.55:continue
 					var footprint:=Rect2(p-half,size).grow(HOUSE_GAP*.5)
-					if not clear(p,half) or overlaps(footprint):continue
+					if not clear(p,half,float(edge.gap) if ia2_reuse_frontage else INF) or overlaps(footprint):continue
 					occupy(footprint)
 					var block:=posmod(road_id+segment+side_index,PALETTES.size())
 					var profile:=posmod(seed,5)
@@ -188,10 +193,10 @@ func _plan() -> Array[Dictionary]:
 				p=candidate
 				lot.moved=true
 		var rect:=Rect2(p-half,half*2).grow(HOUSE_GAP*.5)
-		if not clear(p,half) or overlaps(rect):continue
+		if not clear(p,half,float(edge.gap) if ia2_reuse_frontage and not bool(lot.moved) else INF) or overlaps(rect):continue
 		occupy(rect)
 		lot.position=p
-		lot.edge=frontage(p,half)
+		lot.edge=frontage(p,half) if not ia2_reuse_frontage or bool(lot.moved) else edge
 		lot.pocket=pocket
 		lot.infill=false
 		lots.append(lot)
