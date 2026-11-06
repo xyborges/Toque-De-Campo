@@ -138,3 +138,48 @@ python tests/run_true_fpp_p1k_paired_cost.py --engine $godot --mode ab --warmup 
 
 Um A/B com controle A/A inválido não passa, mesmo que tenha números
 favoráveis. As amostras brutas e os hashes ficam nos diretórios de saída.
+
+## Benchmark no executável de release
+
+O template Windows de release não executa a fixture passada por `--script`.
+O exportador usa a mesma carga como cena inicial do preset Windows QA e
+restaura o `project.godot` após gerar o pacote. O manifesto vincula o
+executável, o PCK, os scripts de gameplay e a fixture ao export.
+
+Com cinco pares por modo e a mesma cadência da rodada do editor, a
+variação absoluta máxima do A/A foi 10,7% no p50 e 23,8% no p99. O A/B
+observou +68,1% no p50, +52,8% no p95 e +60,3% no p99. Em todos os braços
+B, os 28 atores mantiveram autoridade física nas 16 regiões, com 14.490
+solves físicos, 5.670 poses compartilhadas e zero fallback. O controle
+excedeu 5% e o A/B continua fora do orçamento. O smoke do exportador
+validou a entrada da cena e a coleta de amostras em um novo pacote, com
+um só par e variação alta.
+
+- [A/A no release](evidence/fpp-p1k-20261106/release-aa.json)
+- [A/B no release](evidence/fpp-p1k-20261106/release-ab.json)
+
+No modo normal, `WarPlayer._physics_process()` consulta a água antes da
+pose. A fixture chama a pose diretamente. Por isso, nos ticks em que o
+LOD visual pula a pose, a primeira consulta pode cair no solver do
+piloto. No profiler diagnóstico do editor, antecipar a consulta para
+fora de `capture()` reduziu a média de captura de 0,614 para 0,396 ms
+por 28 atores. A própria consulta custou 0,333 ms. São duas execuções
+exploratórias. O solver ainda ficou entre 1,73 e 1,82 ms e o A/B
+versionado mantém a carga original.
+
+Use a worktree isolada, com os templates Windows instalados, e reserve os
+caminhos temporários listados em `tests/export_true_fpp_p1k_qa.py`.
+
+```powershell
+$p1kRun = Join-Path $env:TEMP ("p1k-release-" + [guid]::NewGuid())
+$p1kBuild = Join-Path $p1kRun "build"
+python tests/export_true_fpp_p1k_qa.py --engine $godot --output $p1kBuild
+$p1kExe = Join-Path $p1kBuild "P1kBenchmark.exe"
+python tests/run_true_fpp_p1k_paired_cost.py --engine $p1kExe --exported --mode aa --pace-usec 16667 --output (Join-Path $p1kRun "aa")
+python tests/run_true_fpp_p1k_paired_cost.py --engine $p1kExe --exported --mode ab --pace-usec 16667 --control (Join-Path $p1kRun "aa/results.json") --output (Join-Path $p1kRun "ab")
+```
+
+A fixture roda headless. Ela mede o custo de pose e colisão dos 28 atores
+no runtime de release. Para fechar o plano ainda são necessários o mapa
+completo renderizado com 28 bots e a rede em mapa completo com clientes
+exportados.

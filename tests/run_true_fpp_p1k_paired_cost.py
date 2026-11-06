@@ -8,6 +8,7 @@ import platform
 from pathlib import Path
 from statistics import median, mean
 import subprocess
+from export_true_fpp_p1k_qa import benchmark_sources, file_hash
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--engine", type=Path, required=True)
@@ -19,6 +20,7 @@ parser.add_argument("--samples", type=int, default=600)
 parser.add_argument("--warmup", type=int, default=120)
 parser.add_argument("--pace-usec", type=int, default=0, help="Equal wall-clock tick pacing outside the measurement")
 parser.add_argument("--affinity", type=lambda value: int(value, 0), default=0, help="Optional CPU mask, e.g. 0x4")
+parser.add_argument("--exported", action="store_true", help="Run a Windows QA package whose main scene is the P1k benchmark")
 args = parser.parse_args()
 if args.pairs < 1 or args.samples < 60 or args.warmup < 0 or args.pace_usec < 0 or args.affinity < 0:
     parser.error("Use at least one pair, 60 samples and nonnegative warmup")
@@ -30,6 +32,8 @@ files = sorted({fixture, "tests/war_optics_fixture.gd", "project.godot",
                 "tests/run_true_fpp_p1k_paired_cost.py"} |
                {str(path.relative_to(root)).replace("\\", "/")
                 for directory in ("scripts", "modes") for path in (root / directory).rglob("*.gd")})
+if args.exported:
+    files.extend(["tests/export_true_fpp_p1k_qa.py", "export_presets.cfg"])
 engine = args.engine.resolve()
 if os.name == "nt" and engine.name.endswith("_console.exe"):
     # Launch the engine itself so a timeout also stops its physics process.
@@ -37,12 +41,26 @@ if os.name == "nt" and engine.name.endswith("_console.exe"):
 host = {"platform": platform.platform(), "processor": platform.processor()}
 
 def hashes():
-    return {name: sha256((root / name).read_bytes()).hexdigest() for name in files}
+    result = {name: file_hash(root / name) for name in files}
+    if args.exported:
+        result.update({name: sha256(data).hexdigest() for name, data in benchmark_sources().items()})
+    return result
 
 source_hashes = hashes()
-engine_hash = sha256(engine.read_bytes()).hexdigest()
+engine_hash = file_hash(engine)
+pack = engine.with_suffix(".pck") if args.exported else None
+pack_hash = file_hash(pack) if pack else None
+if args.exported:
+    manifest = json.loads((engine.parent / "p1k_export.json").read_text(encoding="utf-8"))
+    required_hashes = dict(manifest["fixtures_sha256"], **manifest["gameplay_sha256"])
+    required_hashes.update({"project.godot": manifest["project_sha256"],
+                            "export_presets.cfg": manifest["export_presets_sha256"]})
+    if (manifest["exe_sha256"] != engine_hash or manifest["pack_sha256"] != pack_hash or
+            any(source_hashes.get(name) != digest for name, digest in required_hashes.items())):
+        raise RuntimeError("Export contents or source hashes changed; build the P1k QA package again")
 parameters = {"samples": args.samples, "warmup": args.warmup,
-              "pace_usec": args.pace_usec, "affinity": args.affinity}
+              "pace_usec": args.pace_usec, "affinity": args.affinity,
+              "exported": args.exported, "pack_sha256": pack_hash}
 
 def set_affinity(process):
     if not args.affinity:
@@ -63,15 +81,19 @@ def run_trial(pair, arm):
     folder.mkdir(exist_ok=True)
     env = dict(os.environ, APPDATA=str(folder), XDG_DATA_HOME=str(folder))
     pilot = args.mode == "ab" and arm == "B"
-    command = [str(engine), "--headless", "--path", str(root), "--fixed-fps", "60",
-               "--log-file", str(folder / "engine.log"), "--script", f"res://{fixture}",
-               "--", f"--samples={args.samples}", f"--warmup={args.warmup}",
+    if pack and file_hash(pack) != pack_hash:
+        raise RuntimeError("Exported PCK changed between trials")
+    command = [str(engine), "--headless", "--fixed-fps", "60", "--log-file", str(folder / "engine.log")]
+    if not args.exported:
+        command += ["--path", str(root), "--script", f"res://{fixture}"]
+    command += ["--", f"--samples={args.samples}", f"--warmup={args.warmup}",
                f"--pace-usec={args.pace_usec}", "--naval-test-accounts",
                f"--naval-data={folder / 'data'}"]
     if pilot:
         command.append("--pilot")
     with (folder / "stdout.log").open("wb") as log:
-        result = subprocess.Popen(command, cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT,
+        result = subprocess.Popen(command, cwd=engine.parent if args.exported else root,
+                                  env=env, stdout=log, stderr=subprocess.STDOUT,
                                   creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         try:
             set_affinity(result)
@@ -81,6 +103,8 @@ def run_trial(pair, arm):
                 result.kill()
             result.wait()
     log = (folder / "stdout.log").read_text(encoding="utf-8", errors="replace")
+    if args.exported and "P1K_EXPORT_ENTRY release=true qa=true" not in log.splitlines():
+        raise RuntimeError(f"Export did not enter the release QA scene; see {folder/'stdout.log'}")
     reports = [json.loads(line.removeprefix("P1K_COST ")) for line in log.splitlines() if line.startswith("P1K_COST ")]
     if result.returncode or "ERROR:" in log or len(reports) != 1:
         details = {key: value for key, value in reports[0].items() if key != "raw_ms"} if reports else {}
