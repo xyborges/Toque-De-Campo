@@ -43,3 +43,18 @@ Na maquina original (NVIDIA GTX 1650, Godot 4.7.2, Forward+, Favela, 1920x1080, 
 - Artefatos locais: `work/benchmark-results/*favela-forward_plus-smoke.*` (ignorados no Git).
 
 Importante: resultado de verificacao anterior ao commit do runner. Para comparacoes entre computadores, rodar novamente o **mesmo commit** do benchmark e documentar as configuracoes de energia/temperatura.
+
+## Controle de qualidade da coleta (protocolo v2)
+
+Existem **duas validacoes independentes**:
+
+1. **Integridade da coleta:** foco em todos os quadros, 28 bots presentes durante a medicao, intervalo completo e consistente, rastros completos, medicao GPU sincronizada e simulacao normal. Se falhar: COLETA_INVALIDA, **nao atribuir causa ou nota de FPS**.
+2. **Desempenho:** somente se a integridade passar aplicar os limites FPS/P95/P99/stutters. Se falhar: REPROVADO.
+
+Comparar computadores somente com mesmo commit, versao Godot, mapa e protocolo v2. Os benchmarks v1 nao tinham a mesma auditoria e nao podem ser declarados diretamente comparaveis com v2.
+
+O CSV integral da NVIDIA pode conter periodo de carregamento, e deve servir como arquivo bruto, **nao** como amostra oficial. Para estatisticas da GPU usar somente *.gpu-measurement.csv (recorte entre os timestamp Unix ms fornecidos pelo proprio Godot). O arquivo principal *.json guarda todos os frametimes por quadro e historico de foco. Os dados locais sao preservados em work/benchmark-results/ (ignorado no GitHub).
+
+Rodadas com menos de 60 segundos ou configuracoes alternativas possuem status DIAGNOSTICO_*. O teste unitario da auditoria fica em tests/benchmark/test_runner.py, e nao valida desempenho da GPU por conta propria.
+
+**Concorrencia local:** um processo Godot extra no mesmo computador invalida a comparacao. O runner bloqueia novas coletas quando encontra processos Godot ativos no preflight (codigo de saida 5) e revalida no encerramento. Isso nao afeta processos Godot na outra maquina. O sistema nao fecha nenhum programa automaticamente.
