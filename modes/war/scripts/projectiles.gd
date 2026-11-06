@@ -18,6 +18,11 @@ var by_id: Dictionary={}
 var counter := 0
 var thermal := false
 var tv_colliders: Dictionary={}
+# Optional client presentation experiment; authority always sweeps every step.
+var ia2_visual_sweep_30hz := OS.get_environment("TDC_IA2_CLIENT_PROJECTILE_30HZ")=="1"
+var ia2_visual_ray_queries := 0
+var ia2_visual_ray_skipped := 0
+var ia2_authority_ray_queries := 0
 
 func _ready() -> void:
 	name = "WarProjectiles"
@@ -77,6 +82,9 @@ func spawn(owner_id: int,origin: Vector3,direction: Vector3,weapon: String,autho
 	active_slots.append(slot)
 	rounds[slot] = {"owner":owner_id,"position":origin,"velocity":direction.normalized()*speed+extra.get("inherited",Vector3.ZERO),"gravity":float(extra.get("gravity",item.get("gravity",9.81))),"range":distance,"distance":0.0,"life":float(extra.get("life",distance/maxf(speed,1)*1.4+.1)),"weapon":weapon,"damage":float(extra.get("damage",item.get("damage",20))),"radius":float(extra.get("radius",0)),"server":authoritative,"shot_id":shot_id,"target":str(extra.get("target","")),"history":[origin],"active":true,"fade":.075,"query":query,"drag":float(extra.get("drag",item.get("drag",0)))}
 	var shot: Dictionary=rounds[slot]
+	if ia2_visual_sweep_30hz and not authoritative:
+		shot.ia2_probe_from=origin
+		shot.ia2_probe_elapsed=0.0
 	shot.infantry_damage=float(extra.get("infantry_damage",shot.damage))
 	if float(shot.drag)<=0: shot.drag=float({"rpg":.016,"stinger":.008,"tv":.006,"hmg":.02}.get(weapon,0))
 	shot.waterborne=bool(extra.get("waterborne",false))
@@ -192,9 +200,28 @@ func _step(shot: Dictionary,delta: float) -> void:
 	var remaining_distance:=maxf(0,float(shot.range)-float(shot.distance))
 	if old.distance_to(next)>remaining_distance: next=old+(next-old).normalized()*remaining_distance
 	shot.velocity=Vector3(shot.velocity)*coefficients.x+acceleration*coefficients.y
-	var query: PhysicsRayQueryParameters3D=shot.query
-	query.from=old;query.to=next
-	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	# The 30 Hz option is VISUAL ONLY: the server's hit/damage paths still
+	# cast at every physics step. Remote, unguided, non-explosive tracers
+	# sweep the *whole* segment since their previous query; no obstacles
+	# are skipped, but cosmetic impacts may appear one frame later.
+	var visual_batch := ia2_visual_sweep_30hz and not bool(shot.server) and not bool(shot.guided) and str(shot.target).is_empty() and float(shot.radius)<=0.0 and not bool(shot.get("waterborne",false))
+	var should_cast := true
+	if visual_batch:
+		shot.ia2_probe_elapsed=float(shot.ia2_probe_elapsed)+delta
+		should_cast=float(shot.ia2_probe_elapsed)>=1.0/30.0 or float(shot.life)<=delta or old.distance_to(next)>=maxf(0.0,float(shot.range)-float(shot.distance))
+	var hit: Dictionary={}
+	if should_cast:
+		var query: PhysicsRayQueryParameters3D=shot.query
+		query.from=shot.ia2_probe_from if visual_batch else old
+		query.to=next
+		hit=get_world_3d().direct_space_state.intersect_ray(query)
+		if visual_batch:
+			shot.ia2_probe_from=next
+			shot.ia2_probe_elapsed=0.0
+			ia2_visual_ray_queries+=1
+		elif ia2_visual_sweep_30hz and bool(shot.server): ia2_authority_ray_queries+=1
+	else:
+		ia2_visual_ray_skipped+=1
 	if hit.is_empty() and not bool(shot.get("waterborne",false)) and next.y<=WarCoast.wave(next,game.war_clock) and WarCoast.wet(next.x,next.z):
 		var amount:=clampf((old.y-WarCoast.wave(old,game.war_clock))/maxf(.001,old.y-next.y),0,1)
 		hit={"position":old.lerp(next,amount),"normal":Vector3.UP,"collider":null,"water":true}
