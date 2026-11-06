@@ -200,6 +200,11 @@ static func _reload_geometry(bindings: Dictionary,input: Dictionary) -> Dictiona
 	var weapon_id: String=str(bindings.weapon_id)
 	var left: float=float(input.get("reload_left",0.))
 	var total: float=float(input.get("reload_total",0.))
+	# No timeline sample is consumed in the neutral path. Sampling it used to
+	# allocate a complete reload pose (including keyframe/trig work) every tick.
+	if left<=.00001:
+		return {"grip_left":bindings.grip_left,"grip_right":bindings.grip_right,
+			"hand_basis_local":bindings.hand_basis_local,"grabbing":false,"muzzle_local":bindings.muzzle_local}
 	var reload_weapon: String=GameWeapons.canonical(str(input.get("reload_weapon","")))
 	var active: bool=left>.00001 and total>.00001 and reload_weapon==weapon_id
 	var pose: Dictionary=GameReloadPose.state(weapon_id,left if active else 0.,total)
@@ -334,8 +339,9 @@ static func solve(bindings: Dictionary,input: Dictionary) -> Dictionary:
 		point.x=signf(point.x)*(.325*torso_scale+.025)
 		var arm_position: Vector3=(upper*point).lerp(Vector3(-(.325*torso_scale+.025) if side=="L" else (.325*torso_scale+.025),.13,-.64),prone)
 		var target: Vector3=weapon*Vector3(reload_geometry.grip_left if side=="L" else reload_geometry.grip_right)
-		var relative_grip:=body.affine_inverse()*target
-		var relative_hand_basis:=body.basis.inverse()*weapon.basis*Basis(reload_geometry.hand_basis_local)
+		# body is a translation-only transform, constructed above with IDENTITY.
+		var relative_grip:=target-body.origin
+		var relative_hand_basis:=weapon.basis*Basis(reload_geometry.hand_basis_local)
 		var result: Dictionary=_arm(arm_position,relative_grip,relative_hand_basis,upper,side,clampf(float(bindings.arm_proportion),.65,1.5),str(bindings.weapon_id)=="glock",side=="L" and bool(reload_geometry.grabbing))
 		if result.is_empty():return {"supported":false,"reason":"Invalid arm target"}
 		mounts["upper"+side]=body*result.arm*result.upper

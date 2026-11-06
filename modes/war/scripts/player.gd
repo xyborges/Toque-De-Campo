@@ -39,6 +39,23 @@ var p1g_collision_bindings: Dictionary={}
 var p1g_collision_binding_key:=""
 var p1g_solver_frames:=0
 var p1g_legacy_fallback_frames:=0
+var p1g_profile_collision:=false
+var p1g_profile_usec: Dictionary={}
+var p1g_fallback_reasons: Dictionary={}
+
+func _p1g_profile(label: String,started: int) -> void:
+	if p1g_profile_collision:p1g_profile_usec[label]=int(p1g_profile_usec.get(label,0))+Time.get_ticks_usec()-started
+
+func _p1g_fallback_reason(state: Dictionary) -> String:
+	if state.is_empty():return "binding_unavailable"
+	if bool(state.special):return "special"
+	if float(state.fire_cooldown)>0. or float(state.attack)>0. or float(state.recoil)>0. or float(state.reaction)!=0.:return "combat_reaction"
+	if float(state.prone_weight)>.00001 and float(state.prone_weight)<.99999:return "prone_transition"
+	if float(state.prone_weight)>.99999 and float(state.crouch_weight)>.00001:return "prone_crouch_transition"
+	if not bool(state.legs_intact):return "injured_legs"
+	if float(state.moving)>0. and not bool(state.grounded):return "airborne_motion"
+	if float(state.moving)<.00001 and float(state.velocity_ground_speed)>=.001:return "stale_velocity"
+	return "other_unsupported"
 
 func _exit_tree() -> void:
 	if is_instance_valid(binocular_overlay): binocular_overlay.queue_free()
@@ -113,15 +130,30 @@ func _p1g_collision_tick() -> void:
 		if p1g_collision_rig.using_authority: p1g_collision_rig.restore(self)
 		return
 	var solved:=false
+	var started:=Time.get_ticks_usec() if p1g_profile_collision else 0
+	var input: Dictionary={}
 	if _p1g_rebind_if_possible():
-		var frame: Dictionary=COLLISION_POSE_SOLVER.solve(p1g_collision_bindings,COLLISION_POSE_SOLVER.state(self))
+		if p1g_profile_collision:_p1g_profile("binding",started)
+		started=Time.get_ticks_usec() if p1g_profile_collision else 0
+		input=COLLISION_POSE_SOLVER.state(self)
+		if p1g_profile_collision:_p1g_profile("state",started)
+		started=Time.get_ticks_usec() if p1g_profile_collision else 0
+		var frame: Dictionary=COLLISION_POSE_SOLVER.solve(p1g_collision_bindings,input)
+		if p1g_profile_collision:_p1g_profile("solve",started)
 		if bool(frame.get("supported",false)):
+			started=Time.get_ticks_usec() if p1g_profile_collision else 0
 			solved=p1g_collision_rig.sync(frame)
+			if p1g_profile_collision:_p1g_profile("sync",started)
 			if solved: p1g_solver_frames+=1
 	if not solved:
 		# Unsupported actions (gadgets, water, recoil, etc.) remain safe by
 		# mirroring the old articulated regions into the independent hierarchy.
+		started=Time.get_ticks_usec() if p1g_profile_collision else 0
 		p1g_collision_rig.sync_legacy(self)
+		if p1g_profile_collision:_p1g_profile("fallback_sync",started)
+		if p1g_profile_collision:
+			var reason:=_p1g_fallback_reason(input)
+			p1g_fallback_reasons[reason]=int(p1g_fallback_reasons.get(reason,0))+1
 		p1g_legacy_fallback_frames+=1
 	if not p1g_collision_rig.using_authority:
 		p1g_collision_rig.activate(self)
