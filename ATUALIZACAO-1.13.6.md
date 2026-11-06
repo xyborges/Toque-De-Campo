@@ -13,3 +13,9 @@ Preparação dos mapas concluída. Favela v12 e Ucrânia v21 correspondem às fo
 Importação Godot e 22 verificações do menu Favela passaram. Repetição gráfica final com protocolo 37 e versão 1.13.6 passou novamente 52 verificações, incluindo todos os dez cenários e 28 bots. Evidência em `C:/Users/Joao Borges/AppData/Local/Temp/campo-recovery-network-on3o5vi9/`. A política de implantação passou 24 testes.
 
 Integração, pacote assinado e publicação serão registrados abaixo conforme efetivamente concluídos.
+
+## Pacote pronto para ativacao
+
+Integrado na main pelo merge `9708dcd`. Build 93 / 1.13.6 preparada e assinada localmente, sem upload ou ativacao. Instalacao assinada passou 13/13 verificacoes e boot protegido passou, com DLL carregada e pacote inalterado. Preflight remoto somente leitura passou `PREFLIGHT build=93 publicado=92` e `PREFLIGHT_OK build=93`.
+
+Arquivo `releases/game-93-832294fdcf04.zip`, 255609067 bytes. Logs `work/release1136-prepare.log`, `work/release1136-signed-install.log`, `work/release1136-preflight.log`. Servidor oficial permanece build92 ate ativacao. Validacao pos-publicacao ainda pendente.
