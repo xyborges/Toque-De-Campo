@@ -1,0 +1,418 @@
+{
+  "commit_base": "378148b0e577a5d44e1b03e76f3b95ee0b1159ad",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "hardware": {
+    "gpu": "NVIDIA GeForce GTX 1650",
+    "cpu": "Intel Core i5-3470 3.20 GHz",
+    "memoria_gib_aprox": 15.7,
+    "windows": "Windows 10 19045",
+    "tela": "1920x1080 ~59 Hz",
+    "energia": "Alto desempenho"
+  },
+  "cenario": {
+    "mapa": "favela",
+    "renderizador": "forward_plus",
+    "resolucao": [
+      1920,
+      1080
+    ],
+    "escala": 1.0,
+    "preset": "Medio",
+    "bots": 28,
+    "aquecimento_s": 10,
+    "medicao_s": 60,
+    "vsync": false,
+    "limite_fps": 0
+  },
+  "rodadas": [
+    {
+      "rodada": 1,
+      "metricas": {
+        "average_fps": 18.4512955074226,
+        "median_fps": 19.0719584994183,
+        "one_percent_low_fps": 6.04298678650581,
+        "frame_p95_ms": 75.818,
+        "frame_p99_ms": 130.27,
+        "over_50_ms_per_min": 658.0,
+        "over_100_ms_count": 26,
+        "bots": 28,
+        "gpu_ms_mean": 11.9795036113649,
+        "physics_ms_mean": 18.7924900722022
+      },
+      "checks": {
+        "valid_fixture": true,
+        "correct_operation": true,
+        "correct_renderer": true,
+        "28_deployed_bots": true,
+        "full_1080p": true,
+        "scale_100_percent": true,
+        "average_fps": false,
+        "median_fps": false,
+        "one_percent_low_fps": false,
+        "p95_ms": false,
+        "p99_ms": false,
+        "over_50_ms_per_min": false,
+        "over_100_ms_count": false,
+        "enough_samples": true
+      },
+      "foco_janelas": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "duracao_coleta_s": 60.0,
+      "aquecimento_s": 10.0,
+      "gpu_telemetria_toda_execucao": {
+        "amostras": 95,
+        "temperatura_min_c": 34.0,
+        "temperatura_max_c": 37.0,
+        "utilizacao_mediana_pct": 29.0,
+        "clock_mediano_mhz": 690.0
+      },
+      "physics_ticks_por_frame": {
+        "1": 7,
+        "2": 256,
+        "3": 446,
+        "4": 339,
+        "5": 24,
+        "6": 13,
+        "7": 6,
+        "8": 17
+      }
+    },
+    {
+      "rodada": 2,
+      "metricas": {
+        "average_fps": 4.54566169623814,
+        "median_fps": 4.93490855614445,
+        "one_percent_low_fps": 2.55194700796973,
+        "frame_p95_ms": 362.538,
+        "frame_p99_ms": 389.645,
+        "over_50_ms_per_min": 273.0,
+        "over_100_ms_count": 273,
+        "bots": 28,
+        "gpu_ms_mean": 21.2053113699833,
+        "physics_ms_mean": 37.3772783882784
+      },
+      "checks": {
+        "valid_fixture": true,
+        "correct_operation": true,
+        "correct_renderer": true,
+        "28_deployed_bots": true,
+        "full_1080p": true,
+        "scale_100_percent": true,
+        "average_fps": false,
+        "median_fps": false,
+        "one_percent_low_fps": false,
+        "p95_ms": false,
+        "p99_ms": false,
+        "over_50_ms_per_min": false,
+        "over_100_ms_count": false,
+        "enough_samples": true
+      },
+      "foco_janelas": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "duracao_coleta_s": 60.0,
+      "aquecimento_s": 10.0,
+      "gpu_telemetria_toda_execucao": {
+        "amostras": 91,
+        "temperatura_min_c": 34.0,
+        "temperatura_max_c": 37.0,
+        "utilizacao_mediana_pct": 12.0,
+        "clock_mediano_mhz": 630.0
+      },
+      "physics_ticks_por_frame": {
+        "7": 5,
+        "8": 268
+      }
+    },
+    {
+      "rodada": 3,
+      "metricas": {
+        "average_fps": 2.46671339957292,
+        "median_fps": 2.47780506116462,
+        "one_percent_low_fps": 1.78945776745459,
+        "frame_p95_ms": 464.404,
+        "frame_p99_ms": 508.923,
+        "over_50_ms_per_min": 149.0,
+        "over_100_ms_count": 149,
+        "bots": 28,
+        "gpu_ms_mean": 41.521557020661,
+        "physics_ms_mean": 61.3182348993289
+      },
+      "checks": {
+        "valid_fixture": true,
+        "correct_operation": true,
+        "correct_renderer": true,
+        "28_deployed_bots": true,
+        "full_1080p": true,
+        "scale_100_percent": true,
+        "average_fps": false,
+        "median_fps": false,
+        "one_percent_low_fps": false,
+        "p95_ms": false,
+        "p99_ms": false,
+        "over_50_ms_per_min": false,
+        "over_100_ms_count": false,
+        "enough_samples": true
+      },
+      "foco_janelas": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "duracao_coleta_s": 60.0,
+      "aquecimento_s": 10.0,
+      "gpu_telemetria_toda_execucao": {
+        "amostras": 117,
+        "temperatura_min_c": 34.0,
+        "temperatura_max_c": 36.0,
+        "utilizacao_mediana_pct": 12.0,
+        "clock_mediano_mhz": 405.0
+      },
+      "physics_ticks_por_frame": {
+        "8": 149
+      }
+    },
+    {
+      "rodada": 4,
+      "metricas": {
+        "average_fps": 12.0659661849051,
+        "median_fps": 13.496005182466,
+        "one_percent_low_fps": 4.96248978037261,
+        "frame_p95_ms": 148.609,
+        "frame_p99_ms": 183.115,
+        "over_50_ms_per_min": 722.0,
+        "over_100_ms_count": 107,
+        "bots": 28,
+        "gpu_ms_mean": 15.9662413682609,
+        "physics_ms_mean": 20.3655365517241
+      },
+      "checks": {
+        "valid_fixture": true,
+        "correct_operation": true,
+        "correct_renderer": true,
+        "28_deployed_bots": true,
+        "full_1080p": true,
+        "scale_100_percent": true,
+        "average_fps": false,
+        "median_fps": false,
+        "one_percent_low_fps": false,
+        "p95_ms": false,
+        "p99_ms": false,
+        "over_50_ms_per_min": false,
+        "over_100_ms_count": false,
+        "enough_samples": true
+      },
+      "foco_janelas": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "duracao_coleta_s": 60.0,
+      "aquecimento_s": 10.0,
+      "gpu_telemetria_toda_execucao": {
+        "amostras": 100,
+        "temperatura_min_c": 34.0,
+        "temperatura_max_c": 35.0,
+        "utilizacao_mediana_pct": 25.0,
+        "clock_mediano_mhz": 652.5
+      },
+      "physics_ticks_por_frame": {
+        "3": 21,
+        "4": 363,
+        "5": 218,
+        "6": 27,
+        "7": 19,
+        "8": 77
+      }
+    },
+    {
+      "rodada": 5,
+      "metricas": {
+        "average_fps": 9.0604587423517,
+        "median_fps": 9.77211429464879,
+        "one_percent_low_fps": 4.58203095467379,
+        "frame_p95_ms": 179.468,
+        "frame_p99_ms": 208.715,
+        "over_50_ms_per_min": 544.0,
+        "over_100_ms_count": 287,
+        "bots": 28,
+        "gpu_ms_mean": 17.4231672593776,
+        "physics_ms_mean": 22.9935386029412
+      },
+      "checks": {
+        "valid_fixture": true,
+        "correct_operation": true,
+        "correct_renderer": true,
+        "28_deployed_bots": true,
+        "full_1080p": true,
+        "scale_100_percent": true,
+        "average_fps": false,
+        "median_fps": false,
+        "one_percent_low_fps": false,
+        "p95_ms": false,
+        "p99_ms": false,
+        "over_50_ms_per_min": false,
+        "over_100_ms_count": false,
+        "enough_samples": true
+      },
+      "foco_janelas": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true
+      ],
+      "duracao_coleta_s": 60.0,
+      "aquecimento_s": 10.0,
+      "gpu_telemetria_toda_execucao": {
+        "amostras": 111,
+        "temperatura_min_c": 34.0,
+        "temperatura_max_c": 36.0,
+        "utilizacao_mediana_pct": 23.0,
+        "clock_mediano_mhz": 645.0
+      },
+      "physics_ticks_por_frame": {
+        "3": 3,
+        "4": 104,
+        "5": 112,
+        "6": 71,
+        "7": 62,
+        "8": 192
+      }
+    },
+    {
+      "rodada": 6,
+      "metricas": {
+        "average_fps": 13.2514932651616,
+        "median_fps": 14.9702839862872,
+        "one_percent_low_fps": 5.43414394911468,
+        "frame_p95_ms": 143.803,
+        "frame_p99_ms": 171.325,
+        "over_50_ms_per_min": 750.0,
+        "over_100_ms_count": 98,
+        "bots": 28,
+        "gpu_ms_mean": 14.5379346746895,
+        "physics_ms_mean": 19.7139108040202
+      },
+      "checks": {
+        "valid_fixture": true,
+        "correct_operation": true,
+        "correct_renderer": true,
+        "28_deployed_bots": true,
+        "full_1080p": true,
+        "scale_100_percent": true,
+        "average_fps": false,
+        "median_fps": false,
+        "one_percent_low_fps": false,
+        "p95_ms": false,
+        "p99_ms": false,
+        "over_50_ms_per_min": false,
+        "over_100_ms_count": false,
+        "enough_samples": true
+      },
+      "foco_janelas": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        false
+      ],
+      "duracao_coleta_s": 60.0,
+      "aquecimento_s": 10.0,
+      "gpu_telemetria_toda_execucao": {
+        "amostras": 97,
+        "temperatura_min_c": 34.0,
+        "temperatura_max_c": 36.0,
+        "utilizacao_mediana_pct": 27.0,
+        "clock_mediano_mhz": 690.0
+      },
+      "physics_ticks_por_frame": {
+        "3": 136,
+        "4": 453,
+        "5": 91,
+        "6": 29,
+        "7": 7,
+        "8": 80
+      }
+    },
+    {
+      "rodada": 7,
+      "metricas": {
+        "average_fps": 12.8817971618239,
+        "median_fps": 14.9814978501551,
+        "one_percent_low_fps": 5.74333880386354,
+        "frame_p95_ms": 138.485,
+        "frame_p99_ms": 152.88,
+        "over_50_ms_per_min": 551.0,
+        "over_100_ms_count": 214,
+        "bots": 28,
+        "gpu_ms_mean": 14.5523914797978,
+        "physics_ms_mean": 20.8503359173126
+      },
+      "checks": {
+        "valid_fixture": true,
+        "correct_operation": true,
+        "correct_renderer": true,
+        "28_deployed_bots": true,
+        "full_1080p": true,
+        "scale_100_percent": true,
+        "average_fps": false,
+        "median_fps": false,
+        "one_percent_low_fps": false,
+        "p95_ms": false,
+        "p99_ms": false,
+        "over_50_ms_per_min": false,
+        "over_100_ms_count": false,
+        "enough_samples": true
+      },
+      "foco_janelas": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "duracao_coleta_s": 60.0,
+      "aquecimento_s": 10.0,
+      "gpu_telemetria_toda_execucao": {
+        "amostras": 95,
+        "temperatura_min_c": 35.0,
+        "temperatura_max_c": 37.0,
+        "utilizacao_mediana_pct": 25.0,
+        "clock_mediano_mhz": 615.0
+      },
+      "physics_ticks_por_frame": {
+        "2": 78,
+        "3": 240,
+        "4": 131,
+        "5": 89,
+        "6": 50,
+        "7": 67,
+        "8": 119
+      }
+    }
+  ]
+}
