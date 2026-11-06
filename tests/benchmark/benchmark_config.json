@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "scenario": {
+    "mode": "offline_wargame_28_bots_stationary_camera",
+    "default_operation": "favela",
+    "default_renderer": "forward_plus",
+    "resolution": [1920, 1080],
+    "preset": "Medio",
+    "render_scale": 1.0,
+    "bots": 28,
+    "vsync": false,
+    "fps_cap": 0,
+    "warmup_seconds": 10,
+    "duration_seconds": 60,
+    "seed": 712907
+  },
+  "reference_hardware": "NVIDIA GeForce GTX 1650",
+  "acceptance_targets": {
+    "average_fps_min": 60.0,
+    "median_fps_min": 60.0,
+    "one_percent_low_fps_min": 35.0,
+    "frame_p95_ms_max": 25.0,
+    "frame_p99_ms_max": 33.3,
+    "over_50_ms_per_min_max": 1.0,
+    "over_100_ms_count_max": 0
+  }
+}
