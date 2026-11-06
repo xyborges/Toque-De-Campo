@@ -24,6 +24,7 @@ const HILLSIDE := preload("res://modes/war/scripts/favela_hillside.gd")
 const ATMOSPHERE := preload("res://modes/war/scripts/favela_atmosphere.gd")
 const STREET_SPACE := preload("res://modes/war/scripts/favela_street_space.gd")
 const STREET_ART := preload("res://modes/war/scripts/favela_street_art.gd")
+const RIM := preload("res://modes/war/scripts/favela_rim.gd")
 const BAILE := preload("res://modes/war/scripts/favela_baile.gd")
 const BAILE_SCENE := preload("res://modes/war/library/favela_campo_baile.tscn")
 const BAILE_CENTER := Vector2(430.0, -275.0)
@@ -46,8 +47,8 @@ const MINI_STREETS := [
 ]
 const BASES_2D := [Vector2(-470,590),Vector2(280,-500)]
 const OBJECTIVES_2D := [
-	Vector2(-265,345),Vector2(-440,35),Vector2(-85,-20),
-	Vector2(270,-205),Vector2(-290,-405)
+	Vector2(-265,345),Vector2(-170,155),Vector2(-85,-20),
+	Vector2(270,-205),BAILE_CENTER
 ]
 var render_visuals := true
 var build_metrics: Dictionary = {}
@@ -117,10 +118,14 @@ static func _natural(x: float,z: float) -> float:
 	var local:=Vector2(absf(x-BAILE_CENTER.x)-41.0,absf(z-BAILE_CENTER.y)-26.0)
 	var outside:=Vector2(maxf(local.x,0.0),maxf(local.y,0.0)).length()
 	var signed_distance:=outside+minf(maxf(local.x,local.y),0.0)
-	if signed_distance<12.0:
+	if signed_distance<110.0:
 		var pad_height:=_landform(BAILE_CENTER.x,BAILE_CENTER.y)
-		h=lerpf(pad_height,h,smoothstep(0.0,12.0,maxf(0.0,signed_distance)))
-	return h
+		# A broad graded approach prevents a near-vertical lip where the
+		# football pitch meets its access alley and the surrounding homes.
+		h=lerpf(pad_height,h,smoothstep(0.0,110.0,maxf(0.0,signed_distance)))
+	# The outer physical mountains enclose the battle and silhouette the
+	# horizon, but their rise starts beyond the last streetfronts and bases.
+	return h + RIM.height_offset(x,z)
 
 static func _height_sample(x: int,z: int) -> float:
 	if absi(x)>HALF_STEPS or absi(z)>HALF_STEPS:return _natural(x*STEP,z*STEP)

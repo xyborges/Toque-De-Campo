@@ -54,11 +54,11 @@ const DATA := {
 		"bases":[Vector3(-470,0,590),Vector3(280,0,-500)],
 		"armor_bays":[[Vector3(-469,0,580),Vector3(-455,0,580)],[]],
 		"objectives":{
-			"A":{"position":Vector3(-265,0,345),"name":"Entrada da favela","active":true},
-			"B":{"position":Vector3(-440,0,35),"name":"Escadaria","active":true},
+			"A":{"position":Vector3(-265,0,345),"name":"Portal norte","active":true},
+			"B":{"position":Vector3(-170,0,155),"name":"Escadaria","active":true},
 			"C":{"position":Vector3(-85,0,-20),"name":"Praça central","active":true},
 			"D":{"position":Vector3(270,0,-205),"name":"Lajes do alto","active":true},
-			"E":{"position":Vector3(-290,0,-405),"name":"Reservatório","active":true}},
+			"E":{"position":Vector3(430,0,-275),"name":"Campo de futebol","active":true}},
 		"transport":{
 			"bike_0":[Vector3(-445,0,594),Vector3(-447,0,608),Vector3(-463,0,607)],
 			"bike_1":[Vector3(284,0,-516),Vector3(295,0,-514),Vector3(302,0,-496)]}}

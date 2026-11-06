@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 17,
+  "version": 19,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,8 +8,8 @@
     1500,
     1500
   ],
-  "content_hash": "bfc56c74b099813cc2d4294ccc2fd5e2a19dc05ef0c3d22d6d5d9fc4c87f2069",
-  "source_hash": "e4910ea6c20e6fc3c52be2dbd11f47f354ea0ed1d1b75802bd41e9c3a43de3fa",
+  "content_hash": "867f80b83232e467178a6c70f9d9ada5814d53e34c3ffb2b1537e6e46a59a4be",
+  "source_hash": "aac576879491a8f5f9a3350bea7e72d56358834dac29c4f558b9a7281ce9659b",
   "sources": [
     "res://modes/war/audio/baile/ak_do_flamengo.mp3",
     "res://modes/war/audio/baile/eu_vi_o_mano.mp3",
@@ -62,15 +62,20 @@
     "res://modes/war/scripts/favela_atmosphere.gd",
     "res://modes/war/scripts/favela_baile.gd",
     "res://modes/war/scripts/favela_edge_composition.gd",
+    "res://modes/war/scripts/favela_frontline.gd",
     "res://modes/war/scripts/favela_hillside.gd",
     "res://modes/war/scripts/favela_layout.gd",
     "res://modes/war/scripts/favela_map.gd",
+    "res://modes/war/scripts/favela_rim.gd",
     "res://modes/war/scripts/favela_street_art.gd",
     "res://modes/war/scripts/favela_street_space.gd",
     "res://modes/war/scripts/favela_uniform.gd",
+    "res://modes/war/scripts/game.gd",
+    "res://modes/war/scripts/objective_bar.gd",
     "res://modes/war/scripts/operation.gd",
     "res://modes/war/scripts/prefab_factory.gd",
     "res://modes/war/scripts/rules.gd",
+    "res://modes/war/scripts/ui.gd",
     "res://modes/war/scripts/vehicles.gd"
   ],
   "grass_enabled": false,

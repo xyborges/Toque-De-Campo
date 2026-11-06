@@ -144,7 +144,7 @@ func populate(human_team: int) -> void:
 			# Large legacy operations concentrate offline combat on the central
 			# front. Favela is compact: all five domination zones are ordinary
 			# combat objectives and must receive squads from the opening push.
-			var available: Array=["A","B","C","D","E"] if WarRules.CURRENT_OPERATION==WarOperation.FAVELA else ["A","B","C"]
+			var available: Array=["C"] if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) else ["A","B","C"]
 			if team==1: available.reverse()
 			var objective:=str(available[slot%available.size()])
 			var group:=str(team)+":"+str(slot/3)
@@ -225,7 +225,7 @@ func _add_online_bot(team: int,slot: int) -> void:
 	actor.name="BOT "+CALLSIGNS[(slot+team*6)%CALLSIGNS.size()];actor.set_meta("war_bot",true)
 	var role:=BOT_ROLES[slot%BOT_ROLES.size()]
 	game.members[id]={"team":team,"role":role,"deployed":false,"vehicle":"","charges":3,"ready_at":0.,"shield":0.,"gadget":WarRules.launcher_for_team(team),"pending":{},"last_gadget":-100.,"bot":true,"bot_lane":slot}
-	var available: Array=["A","B","C","D","E"]
+	var available: Array=["C"] if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) else ["A","B","C","D","E"]
 	if team==1: available.reverse()
 	var objective:=str(available[slot%available.size()]);var group:=str(team)+":"+str(slot/3)
 	if not squads.has(group): squads[group]={"team":team,"members":[],"objective":objective}
@@ -278,6 +278,7 @@ func preferred_spawn(id: int) -> String:
 	for key: String in WarRules.OBJECTIVES:
 		var objective: Dictionary=WarRules.OBJECTIVES[key]
 		if not bool(objective.get("active",false)): continue
+		if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) and not WarFavelaFrontline.spawn_allowed(game.objective_states,team,key):continue
 		var state: Dictionary=game.objective_states.get(key,{})
 		if int(state.get("owner",-1))!=team or bool(state.get("contested",false)): continue
 		var counts: Array=state.get("count",[0,0])
@@ -744,6 +745,20 @@ func _team_controls_all(team: int) -> bool:
 	return active>0
 
 func _assign_objectives() -> void:
+	# The Favela is a territorial tug of war: a single point is capturable
+	# at a time. Squads may approach via different streets, but never split
+	# their attack between distant locked flags.
+	if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION):
+		var focus: String=WarFavelaFrontline.active_id(game.objective_states)
+		if focus.is_empty():return
+		for squad: Dictionary in squads.values():
+			squad.objective=focus
+			squad.defend_all=false
+			for id in squad.members:
+				if bots.has(id):
+					bots[id].objective=focus
+					bots[id].defend_all=false
+		return
 	var assignments: Dictionary={}
 	var full_control:=[_team_controls_all(0),_team_controls_all(1)]
 	for squad: Dictionary in squads.values():

@@ -644,7 +644,11 @@ func _deployment_team_allowed(id: int,team: int) -> bool:
 	return WarRules.choose_team(team,teams,id)>=0
 
 func _valid_deployment_spawn(team: int,spawn_id: String) -> bool:
-	return spawn_id=="base" or (objective_states.has(spawn_id) and bool(WarRules.OBJECTIVES[spawn_id].active) and int(objective_states[spawn_id].owner)==team)
+	if spawn_id=="base":return true
+	if not objective_states.has(spawn_id) or not bool(WarRules.OBJECTIVES[spawn_id].active):return false
+	if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION):
+		return WarFavelaFrontline.spawn_allowed(objective_states,team,spawn_id)
+	return int(objective_states[spawn_id].owner)==team
 
 func sync_class_resources(id: int) -> void:
 	if not multiplayer.is_server() or not members.has(id) or not players.has(id): return
@@ -1066,7 +1070,7 @@ func scoreboard_context() -> Dictionary:
 		var owner:=int(objective_states[id].owner)
 		objectives.append(id+" · "+("NEUTRO" if owner<0 else WarRules.team_name(owner).to_upper()))
 	if match_ended: objectives.append("EMPATE" if winner<0 else "VITÓRIA · "+WarRules.team_name(winner).to_upper())
-	return {"mode":"GUERRA · CONQUISTA"+(" · OFFLINE" if offline_operation else ""),"map":WarRules.map_name().to_upper(),"seconds":match_left,"time_label":"RESTANTE","network":online and not offline_operation,"teams":true,"tickets":"%s · %d TICKETS     |     %s · %d TICKETS"%[WarRules.team_name(0).to_upper(),int(tickets[0]),WarRules.team_name(1).to_upper(),int(tickets[1])],"objectives":"     ".join(objectives)}
+	return {"mode":("FAVELA · LINHA DE FRENTE" if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) else "GUERRA · CONQUISTA")+(" · OFFLINE" if offline_operation else ""),"map":WarRules.map_name().to_upper(),"seconds":match_left,"time_label":"RESTANTE","network":online and not offline_operation,"teams":true,"tickets":"%s · %d TICKETS     |     %s · %d TICKETS"%[WarRules.team_name(0).to_upper(),int(tickets[0]),WarRules.team_name(1).to_upper(),int(tickets[1])],"objectives":"     ".join(objectives)}
 
 func _defending_objective(attacker: GamePlayer,victim: GamePlayer) -> bool:
 	var team:=int(attacker.get("war_team"))
@@ -1202,8 +1206,10 @@ func _physics_process(delta: float) -> void:
 		for peer in members:
 			var participant:=_capture_participant(peer)
 			if not participant.is_empty(): capture_participants[peer]=participant
+		var frontline_focus := WarFavelaFrontline.active_id(objective_states) if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) else ""
 		for id in WarRules.OBJECTIVES:
 			if not WarRules.OBJECTIVES[id].active: continue
+			if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) and id!=frontline_focus:continue
 			var counts := [0,0]
 			var point: Vector3 = WarRules.OBJECTIVES[id].position
 			for peer in capture_participants:
@@ -1221,6 +1227,14 @@ func _physics_process(delta: float) -> void:
 					if Vector2(at.x-point.x,at.z-point.z).length()>=WarRules.CAPTURE_RADIUS: continue
 					_register_match_stat(players[peer])
 					match_stats.award(peer,75 if int(objective_states[id].owner)<0 else 150,"objective:"+str(id)+":"+str(war_tick),"objective")
+			if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) and id==frontline_focus and previous_owner==-1 and int(objective_states[id].owner) in [0,1]:
+				var changed: Dictionary=WarFavelaFrontline.advance(objective_states,id,int(objective_states[id].owner))
+				if int(changed.winner) in [0,1]:
+					match_ended=true
+					winner=int(changed.winner)
+					round_restart_left=WarRules.ROUND_BREAK_SECONDS
+					_broadcast("war_round_ended",[winner,round_restart_left,match_generation])
+					if offline_operation:war_round_ended(winner,round_restart_left,match_generation)
 		ticket_clock += delta
 		if ticket_clock>=2:
 			ticket_clock = 0
@@ -1231,9 +1245,9 @@ func _physics_process(delta: float) -> void:
 			if held[0]!=held[1]:
 				var losing := 1 if held[0]>held[1] else 0
 				tickets[losing] = maxi(0,int(tickets[losing])-absi(held[0]-held[1]))
-		if tickets[0]<=0 or tickets[1]<=0 or match_left<=0:
+		if not match_ended and (tickets[0]<=0 or tickets[1]<=0 or match_left<=0):
 			match_ended = true
-			winner = -1 if tickets[0]==tickets[1] else (0 if tickets[0]>tickets[1] else 1)
+			winner = WarFavelaFrontline.winner_at_limit(objective_states,tickets) if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) else (-1 if tickets[0]==tickets[1] else (0 if tickets[0]>tickets[1] else 1))
 			round_restart_left=WarRules.ROUND_BREAK_SECONDS
 			_broadcast("war_round_ended",[winner,round_restart_left,match_generation])
 			if offline_operation: war_round_ended(winner,round_restart_left,match_generation)
@@ -1492,7 +1506,7 @@ func update_hud() -> void:
 	super.update_hud()
 	if is_instance_valid(infantry_hud):
 		infantry_hud.shop.text = "IMPLANTAÇÃO · M"
-		infantry_hud.match_info.text = "GUERRA · CONQUISTA"
+		infantry_hud.match_info.text = "FAVELA - LINHA DE FRENTE" if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) else "GUERRA - CONQUISTA"
 	if is_instance_valid(lobby_panel): lobby_panel.hide()
 
 func gameplay_input_allowed() -> bool:
