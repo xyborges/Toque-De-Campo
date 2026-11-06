@@ -1,0 +1,73 @@
+{
+  "benchmark_version": "1.0",
+  "run_id": "20261106-145116-GTX1650-COLETA-favela-forward_plus-oficial-r1",
+  "git_sha": "378148b0e577a5d44e1b03e76f3b95ee0b1159ad",
+  "git_worktree_dirty": false,
+  "godot_version": "4.7.2.stable.official.ed1daf0bf",
+  "godot_executable": "Godot_v4.7.2-stable_win64_console.exe",
+  "system": {
+    "machine": "GTX1650-COLETA",
+    "os": "Windows-10-10.0.19045-SP0",
+    "cpu": "Intel64 Family 6 Model 58 Stepping 9, GenuineIntel"
+  },
+  "scenario": {
+    "operation": "favela",
+    "renderer": "forward_plus",
+    "duration_seconds": 60,
+    "warmup_seconds": 10,
+    "resolution": [
+      1920,
+      1080
+    ],
+    "bots": 28,
+    "preset": "Medio"
+  },
+  "elapsed_seconds": 101.5,
+  "engine_gpu": "NVIDIA GeForce GTX 1650",
+  "reference_hardware": "NVIDIA GeForce GTX 1650",
+  "metrics": {
+    "average_fps": 18.4512955074226,
+    "median_fps": 19.0719584994183,
+    "one_percent_low_fps": 6.04298678650581,
+    "frame_p95_ms": 75.818,
+    "frame_p99_ms": 130.27,
+    "over_50_ms_per_min": 658.0,
+    "over_100_ms_count": 26,
+    "bots": 28,
+    "gpu_ms_mean": 11.9795036113649,
+    "physics_ms_mean": 18.7924900722022
+  },
+  "evaluation": {
+    "passed": false,
+    "checks": {
+      "valid_fixture": true,
+      "correct_operation": true,
+      "correct_renderer": true,
+      "28_deployed_bots": true,
+      "full_1080p": true,
+      "scale_100_percent": true,
+      "average_fps": false,
+      "median_fps": false,
+      "one_percent_low_fps": false,
+      "p95_ms": false,
+      "p99_ms": false,
+      "over_50_ms_per_min": false,
+      "over_100_ms_count": false,
+      "enough_samples": true
+    },
+    "failed_checks": [
+      "average_fps",
+      "median_fps",
+      "one_percent_low_fps",
+      "p95_ms",
+      "p99_ms",
+      "over_50_ms_per_min",
+      "over_100_ms_count"
+    ]
+  },
+  "files": {
+    "raw": "dados.json",
+    "log": "godot.txt",
+    "nvidia": "gpu.csv"
+  }
+}

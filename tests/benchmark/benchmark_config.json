@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "collection_protocol": "war-1080p-28-bots-focus-gpu-v2",
+  "scenario": {
+    "mode": "offline_wargame_28_bots_stationary_camera",
+    "default_operation": "favela",
+    "default_renderer": "forward_plus",
+    "resolution": [1920, 1080],
+    "preset": "Medio",
+    "render_scale": 1.0,
+    "bots": 28,
+    "vsync": false,
+    "fps_cap": 0,
+    "warmup_seconds": 10,
+    "duration_seconds": 60,
+    "seed": 712907
+  },
+  "collection_integrity": {
+    "focus_required_for_every_frame": true,
+    "bot_population_minimum": 28,
+    "population_sampling_interval_seconds": 1,
+    "gpu_monitoring_period_seconds": 1,
+    "nvidia_minimum_samples_in_measurement": "at least duration_seconds/2",
+    "timestamps": "Unix epoch milliseconds on the same host",
+    "raw_frame_times_required": true,
+    "window_profile": "only warmed-up measurement, not game loading"
+  },
+  "reference_hardware": "NVIDIA GeForce GTX 1650",
+  "acceptance_targets": {
+    "average_fps_min": 60.0,
+    "median_fps_min": 60.0,
+    "one_percent_low_fps_min": 35.0,
+    "frame_p95_ms_max": 25.0,
+    "frame_p99_ms_max": 33.3,
+    "over_50_ms_per_min_max": 1.0,
+    "over_100_ms_count_max": 0
+  }
+}

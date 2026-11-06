@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce GTX 1650
+
+PERF_1080P_READY op=favela bots=28 texture=(1920, 1080) scale=1.0 medium=1 renderer=forward_plus
+PERF_1080P_RESULT {"bots":28,"gpu_ms_mean":17.4231672593776,"label":"20261106-150058-GTX1650-COLETA-favela-forward_plus-oficial-r5","median_fps":9.77211429464879,"operation":"favela","over33_per_min":544.0,"p95_ms":179.468,"p99_ms":208.715,"scale":1.0,"texture":"(1920, 1080)"}
