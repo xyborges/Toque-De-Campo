@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 12,
+  "version": 15,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,9 +8,15 @@
     1500,
     1500
   ],
-  "content_hash": "c1cb66514dc46f3cd8ce999f904db0fc523184f26e1307116905fc18326f54ac",
-  "source_hash": "b78d5af7612e92aa0c2bd70f3df13fe8b12116ff06e000ad45b1d2ba78d993ff",
+  "content_hash": "0b20ac63f2b35917e6ce43098afe785cf940f7949ee687eda75d4362f517b712",
+  "source_hash": "36cae4718c67a080b04a174fb158074a875ac01db5ef15550104180af49f1aa7",
   "sources": [
+    "res://modes/war/audio/baile/ak_do_flamengo.mp3",
+    "res://modes/war/audio/baile/eu_vi_o_mano.mp3",
+    "res://modes/war/audio/baile/g3_chegou_clareando.mp3",
+    "res://modes/war/audio/baile/invejoso.mp3",
+    "res://modes/war/audio/baile/pitbull_do_marcinho.mp3",
+    "res://modes/war/audio/baile/predestinado.mp3",
     "res://modes/war/equipment/motorbike.tscn",
     "res://modes/war/library/favela_antena_parabolica.tscn",
     "res://modes/war/library/favela_ar_condicionado.tscn",
@@ -20,6 +26,7 @@
     "res://modes/war/library/favela_caixa_dagua.tscn",
     "res://modes/war/library/favela_caixa_eletrica.tscn",
     "res://modes/war/library/favela_caixa_fibra_optica.tscn",
+    "res://modes/war/library/favela_campo_baile.tscn",
     "res://modes/war/library/favela_canaleta_drenagem.tscn",
     "res://modes/war/library/favela_carro_compacto.tscn",
     "res://modes/war/library/favela_casa_laje.tscn",
@@ -53,6 +60,7 @@
     "res://modes/war/scripts/bot_transit.gd",
     "res://modes/war/scripts/favela_architecture.gd",
     "res://modes/war/scripts/favela_atmosphere.gd",
+    "res://modes/war/scripts/favela_baile.gd",
     "res://modes/war/scripts/favela_edge_composition.gd",
     "res://modes/war/scripts/favela_hillside.gd",
     "res://modes/war/scripts/favela_layout.gd",

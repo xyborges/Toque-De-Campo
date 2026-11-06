@@ -23,6 +23,7 @@ var authority_last_tick_usec:=0
 var authority_tick_gap_usec:=0
 var authority_tick_gap_end_usec:=0
 var authority_last_snapshot_usec:=0
+var authority_snapshot_attempts:=0
 var authority_snapshot_gap_usec:=0
 var authority_snapshot_gap_end_usec:=0
 var war_clock := 0.0
@@ -46,8 +47,13 @@ var state_recovery_check_at:=0
 var state_recovery_request_at:=0
 var state_recovery_started_at:=0
 var operation_received_at:=0
+var connection_report_at:=0
+var operation_arrivals:=0
+var operation_interval_total_ms:=0.
+var operation_interval_max_ms:=0.
 var state_recovery_sent:=0
 var state_recovery_received:=0
+var state_recovery_requested_at:=0
 var ticket_clock := 0.0
 var last_notice := "Conectando ao setor..."
 var network_api: SceneMultiplayer
@@ -986,6 +992,7 @@ func _step_state_recovery() -> void:
 		if now<state_recovery_reply_deadline:return
 		# A rejected request has no reply. Allow one fresh request if the
 		# state is still stale, and keep rejecting any reply to the old serial.
+		GameDiagnostics.record("war_recovery_timeout",{"sequence":state_recovery_pending,"wait_ms":(now-state_recovery_requested_at)*.001,"operation_silence_ms":(now-operation_received_at)*.001,"transport":_recovery_transport(1)})
 		state_recovery_pending=0
 		state_recovery_reply_deadline=0
 	if now-state_recovery_started_at<STATE_STALE_USEC or now<state_recovery_request_at:return
@@ -1001,6 +1008,8 @@ func _step_state_recovery() -> void:
 	var occupied:=is_instance_valid(local_player) and not local_player.vehicle_id.is_empty()
 	state_recovery_request_at=now+(VEHICLE_RECOVERY_INTERVAL_USEC if occupied else STATE_RECOVERY_INTERVAL_USEC)
 	state_recovery_reply_deadline=now+STATE_RECOVERY_REPLY_TIMEOUT_USEC
+	state_recovery_requested_at=now
+	GameDiagnostics.record("war_recovery_request",{"sequence":state_recovery_pending,"stale_actors":stale.size(),"vehicle_stale":vehicle_stale,"occupied":occupied,"operation_silence_ms":(now-operation_received_at)*.001,"transport":_recovery_transport(1)})
 	rpc_id(1,"server_war_state_recovery",baseline_transfer,state_recovery_pending,stale)
 
 func _state_recovery_payload(id: int,token: String,sequence: int,ids: Array) -> Array:
@@ -1030,6 +1039,7 @@ func server_war_state_recovery(token: String,sequence: int,ids: Array) -> void:
 	if not multiplayer.is_server():return
 	var id:=multiplayer.get_remote_sender_id()
 	var payload:=_state_recovery_payload(id,token,sequence,ids)
+	GameDiagnostics.record("war_recovery_server",{"peer":id,"sequence":sequence,"accepted":not payload.is_empty(),"requested_actors":ids.size(),"tick_age_ms":(Time.get_ticks_usec()-authority_last_tick_usec)*.001,"snapshot_age_ms":(Time.get_ticks_usec()-authority_last_snapshot_usec)*.001,"transport":_recovery_transport(id)})
 	if not payload.is_empty():
 		rpc_id(id,"war_state_recovery",token,sequence,payload[0],payload[1])
 		# The same admitted, rate-limited request also repairs the caller's
@@ -1044,6 +1054,7 @@ func war_state_recovery(token: String,sequence: int,operation: Array,poses: Arra
 	# The usual generation/life/sequence checks also apply to reliable recovery.
 	# An old response must not rewind a newer unreliable update or revive a corpse.
 	if int(operation[8])<authority_round_generation:return
+	GameDiagnostics.record("war_recovery_reply",{"sequence":sequence,"wait_ms":(Time.get_ticks_usec()-state_recovery_requested_at)*.001,"poses":poses.size(),"operation_silence_ms":(Time.get_ticks_usec()-operation_received_at)*.001,"transport":_recovery_transport(1)})
 	callv("war_snapshot",operation)
 	for pose in poses:
 		if pose is Array and pose.size()==13 and pose[12] is int and int(pose[12])>0:callv("remote_player_state",pose)
@@ -1146,6 +1157,7 @@ func _input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	super._process(delta)
 	_step_state_recovery()
+	_report_connection()
 	frame_pacing.tick(self)
 	if baseline_loading and is_instance_valid(loading_screen):loading_screen.detail.text="Preparando jogadores · %d"%players.size()
 
@@ -1253,7 +1265,13 @@ func _physics_process(delta: float) -> void:
 				"max_snapshot_send_gap_ms":authority_snapshot_gap_usec*.001,
 				"max_snapshot_send_gap_end_unix_ms":unix_offset_ms+authority_snapshot_gap_end_usec*.001 if authority_snapshot_gap_usec>0 else 0.
 			}
+			details.authority_pacing.snapshot_attempts=authority_snapshot_attempts
+			var peer_rows: Array=[]
+			for peer_id in multiplayer.get_peers():
+				peer_rows.append({"peer":peer_id,"transport":_recovery_transport(peer_id)})
+			details.network_peers=peer_rows
 			authority_window_start_usec=tick_started
+			authority_snapshot_attempts=0
 			authority_tick_gap_usec=0;authority_snapshot_gap_usec=0
 		GameDiagnostics.record("war_simulation",details)
 		simulation_peak_ms=0.;simulation_total_ms=0.;simulation_samples=0
@@ -1266,6 +1284,21 @@ func _transport_rtt() -> Dictionary:
 			var peer:=GameNetworkPeers.connected(transport,id)
 			if peer:values.append(peer.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME))
 	return network_diagnostics.stats(values)
+
+func _recovery_transport(id: int) -> Dictionary:
+	var transport:=multiplayer.multiplayer_peer as ENetMultiplayerPeer
+	var peer:=GameNetworkPeers.connected(transport,id)
+	if peer==null:return {"connected":false}
+	return {"connected":true,"rtt_ms":peer.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME),"rtt_variation_ms":peer.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME_VARIANCE),"reliable_loss":peer.get_statistic(ENetPacketPeer.PEER_PACKET_LOSS)/float(ENetPacketPeer.PACKET_LOSS_SCALE),"unreliable_throttle":peer.get_statistic(ENetPacketPeer.PEER_PACKET_THROTTLE)/float(ENetPacketPeer.PACKET_THROTTLE_SCALE)}
+
+func _report_connection() -> void:
+	if not online or multiplayer.is_server() or not join_ready or closing:return
+	var now:=Time.get_ticks_usec()
+	if connection_report_at==0:connection_report_at=now+10000000;return
+	if now<connection_report_at:return
+	connection_report_at=now+10000000
+	GameDiagnostics.record("war_connection",{"peer":multiplayer.get_unique_id(),"transport":_recovery_transport(1),"snapshot_arrivals":operation_arrivals,"snapshot_mean_interval_ms":operation_interval_total_ms/maxi(1,operation_arrivals),"snapshot_max_interval_ms":operation_interval_max_ms,"snapshot_silence_ms":(now-operation_received_at)*.001,"recovery_requests":state_recovery_serial,"recovery_replies":state_recovery_received})
+	operation_arrivals=0;operation_interval_total_ms=0.;operation_interval_max_ms=0.
 
 func _process_queued_deployments() -> void:
 	if not multiplayer.is_server() or match_ended: return
@@ -1336,6 +1369,7 @@ func _war_snapshot_payload() -> Array:
 	return [war_clock,match_left,tickets,objective_states,match_ended,winner,weather_seed,round_restart_left,match_generation]
 
 func _send_war_snapshot() -> void:
+	if online and multiplayer.is_server():authority_snapshot_attempts+=1
 	for id in members:
 		var actor:=players.get(id) as WarPlayer
 		if is_instance_valid(actor): members[id].posture=2 if actor.prone else (1 if actor.crouched else 0)
@@ -1434,7 +1468,13 @@ func war_snapshot(time: float,left: float,remaining: Array,objectives_state: Dic
 	if not is_finite(time) or (generation==received_snapshot_generation and time<=received_snapshot_time):return
 	if not _accept_round_generation(generation): return
 	received_snapshot_generation=generation;received_snapshot_time=time
-	operation_received_at=Time.get_ticks_usec()
+	var arrived_at:=Time.get_ticks_usec()
+	if operation_received_at>0:
+		var interval_ms:=(arrived_at-operation_received_at)*.001
+		operation_interval_total_ms+=interval_ms
+		operation_interval_max_ms=maxf(operation_interval_max_ms,interval_ms)
+	operation_arrivals+=1
+	operation_received_at=arrived_at
 	weather_seed=climate;WarWeather.seed=climate
 	war_clock = time
 	match_left = left
