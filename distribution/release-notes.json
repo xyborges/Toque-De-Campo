@@ -1,34 +1,38 @@
 {
-  "version": "1.13.7",
-  "date": "05/11/2026",
-  "title": "Favela ampliada e diagnóstico das pausas online",
-  "summary": "Integra o campo de baile e as novas ruas da Favela. Registra nos dois lados da conexão os pedidos de recuperação, o ritmo do servidor e o estado do ENet para localizar a origem de futuras pausas de sincronização.",
+  "version": "1.13.8",
+  "date": "06/11/2026",
+  "title": "Favela: baile sincronizado e melhorias gráficas",
+  "summary": "O baile da Favela recebeu campo e palco detalhados, colisões compartilhadas entre servidor e jogadores, luzes de baixo custo e sincronização das seis músicas já existentes. O áudio espacial agora usa a posição real do paredão e o relógio da partida. O Windows adota Forward+ como renderizador padrão, preservando Compatibility na Web.",
   "changes": [
     {
-      "title": "Campo de baile na Favela",
-      "text": "Novo campo com palco, iluminação e seis faixas fornecidas pelo usuário. O áudio é espacial e toca somente no cliente; o servidor conserva a colisão do palco."
+      "title": "Campo comunitário e palco aprimorados",
+      "text": "Campo com linhas, traves, redes, alambrados e arquibancada simples; palco com escada, treliças, iluminação, mesa de DJ e caixas com colisão coerente nos dois lados da rede."
     },
     {
-      "title": "Ruas e terreno conciliados",
-      "text": "A área do campo e os trajetos próximos foram integrados ao mapa atual da Favela."
+      "title": "Baile sincronizado para todos",
+      "text": "As seis faixas já presentes seguem a mesma ordem e posição de reprodução em todos os clientes, inclusive entrada tardia, usando semente e relógio autoritativos sem RPC extra."
     },
     {
-      "title": "Rastreamento da sincronização",
-      "text": "Logs de cliente e servidor registram sequência de recuperação, duração dos ticks, tentativas de snapshot e qualidade da conexão por jogador: RTT, variação, perda confiável, limitação de pacotes e intervalo real de chegada do estado."
+      "title": "Som localizado no paredão",
+      "text": "Emissor 3D acompanha a posição real do palco; música toca dentro do raio de 100 metros e retorna no trecho sincronizado ao reaproximar."
     },
     {
-      "title": "Diagnóstico com baixo custo",
-      "text": "Os novos eventos são gerados quando a recuperação é necessária, sem gravar endereços, credenciais ou conteúdo das mensagens."
+      "title": "Forward+ por padrão no desktop",
+      "text": "A versão para Windows passa a usar Forward+, mantendo o renderizador Compatibility na Web e o fallback gráfico existente."
     }
   ],
   "fixes": [
     {
-      "title": "Colisão do palco no servidor",
-      "text": "A geometria de colisão existe também na simulação dedicada, preservando a mesma posição para todos os jogadores."
+      "title": "Início do baile",
+      "text": "Removida a espera aleatória do controlador; a playlist é iniciada desde o relógio da operação, sem repetição imediata de faixa entre ciclos."
     },
     {
-      "title": "Correlações de pausa",
-      "text": "Cada pedido e resposta de recuperação usa uma sequência identificável nos logs para comparar cliente e servidor."
+      "title": "Colisão cliente/servidor",
+      "text": "Traves, caixas, pilares e estruturas acessíveis do palco compartilham geometria física nas partidas offline e online."
+    },
+    {
+      "title": "Identidade do mapa",
+      "text": "Manifesto da Favela v17 atualizado com hashes das fontes integradas; piso físico e visual da quadra ajustados para manter a mini-rua 5 desobstruída e preservar a compatibilidade entre cliente e servidor."
     }
   ]
 }
