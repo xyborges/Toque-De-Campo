@@ -369,6 +369,14 @@ func _physics_process(delta: float) -> void:
 			if not batch.is_empty(): game._broadcast("war_bot_states",[batch])
 
 func _think(id: int) -> void:
+	if not BotCostProbe.enabled:
+		_ia1_think_unprofiled(id)
+		return
+	var __begun:=Time.get_ticks_usec()
+	_ia1_think_unprofiled(id)
+	BotCostProbe.record("think_total",Time.get_ticks_usec()-__begun)
+
+func _ia1_think_unprofiled(id: int) -> void:
 	var actor:=game.players.get(id) as WarPlayer
 	if not is_instance_valid(actor) or not game.members.has(id): return
 	if actor.hp<=0 or not actor.deployed:
@@ -386,7 +394,9 @@ func _think(id: int) -> void:
 		return
 	var favela:=WarRules.CURRENT_OPERATION==WarOperation.FAVELA
 	if favela:record.roof_follow=false
+	var __perception_started:=Time.get_ticks_usec() if BotCostProbe.enabled else 0
 	var target:=_visible_enemy(actor)
+	if BotCostProbe.enabled: BotCostProbe.record("perception",Time.get_ticks_usec()-__perception_started)
 	if actor.war_class=="soldier": _grenade_tactics(actor,record,target)
 	var armored:=_visible_vehicle(actor) if actor.war_class=="antitank" and int(game.members[id].get("charges",0))>0 else null
 	if is_instance_valid(armored) and (not is_instance_valid(target) or actor.position.distance_to(target.position)>45.):
@@ -397,7 +407,7 @@ func _think(id: int) -> void:
 	if not is_instance_valid(target) and actor.grenade_held_id.is_empty() and _board(actor,record): return
 	if is_instance_valid(target) and int(record.target)!=target.peer_id: record.reaction_until=game.war_clock+.5+(id%5)*.09
 	record.target=target.peer_id if target else 0
-	record.line_clear=is_instance_valid(target) and _has_clear_shot(actor,target)
+	record.line_clear=is_instance_valid(target) and _ia1_clear_shot_profiled(actor,target)
 	if is_instance_valid(target): diagnostics.target_acquisitions=int(diagnostics.target_acquisitions)+1
 	if bool(record.line_clear): diagnostics.clear_shot_ticks=int(diagnostics.clear_shot_ticks)+1
 	var data: Dictionary=WarRules.OBJECTIVES[str(record.objective)]
@@ -495,7 +505,7 @@ func _grenade_tactics(actor: WarPlayer,record: Dictionary,target: WarPlayer) -> 
 	if held or not is_instance_valid(target) or actor.grenades<=0 or game.war_clock<float(record.get("next_grenade",0.)): return
 	var distance:=actor.global_position.distance_to(target.global_position)
 	if distance<17. or distance>31.: return
-	if not _has_clear_shot(actor,target): return
+	if not _ia1_clear_shot_profiled(actor,target): return
 	# Avoid grenades near the allied capture group.
 	for ally: WarPlayer in game.players.values():
 		if ally==actor or ally.hp<=0 or not ally.deployed or ally.war_team!=actor.war_team: continue
@@ -605,13 +615,20 @@ func _visible_enemy(actor: WarPlayer) -> WarPlayer:
 		if distance>25.*25. and int(bots[actor.peer_id].target)!=other.peer_id:
 			var direction: Vector3=(other.position-actor.position).normalized()
 			if direction.dot(-actor.global_basis.z)<-.20: continue
-		if _has_clear_shot(actor,other):
+		if _ia1_clear_shot_profiled(actor,other):
 			if distance<visible_distance: visible=other;visible_distance=distance
 		# No tracking enemies hidden behind a wall: only pursue a recently
 		# seen target, using its last observed point instead of omniscience.
 	# Prefer any enemy with a firing lane. If all are covered, keep the nearest
 	# one as a movement goal so the bot can path around the obstruction.
 	return visible
+
+func _ia1_clear_shot_profiled(actor: WarPlayer,target: WarPlayer) -> bool:
+	if not BotCostProbe.enabled: return _has_clear_shot(actor,target)
+	var __begun:=Time.get_ticks_usec()
+	var clear:=_has_clear_shot(actor,target)
+	BotCostProbe.record("line_of_sight",Time.get_ticks_usec()-__begun)
+	return clear
 
 func _has_clear_shot(actor: WarPlayer,target: WarPlayer) -> bool:
 	var query:=PhysicsRayQueryParameters3D.create(actor.camera_pivot.global_position,target.hit_regions.chest.global_position,1,[actor.get_rid(),target.get_rid()])
@@ -822,6 +839,13 @@ func _formation(actor: WarPlayer,record: Dictionary) -> Vector3:
 	return Vector3.ZERO
 
 func _route_direction(actor: WarPlayer,goal: Vector3,record: Dictionary) -> Vector3:
+	if not BotCostProbe.enabled: return _ia1_route_unprofiled(actor,goal,record)
+	var __begun:=Time.get_ticks_usec()
+	var direction:=_ia1_route_unprofiled(actor,goal,record)
+	BotCostProbe.record("navigation",Time.get_ticks_usec()-__begun)
+	return direction
+
+func _ia1_route_unprofiled(actor: WarPlayer,goal: Vector3,record: Dictionary) -> Vector3:
 	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA:
 		var vertical:=_roof_direction(actor,goal,record)
 		record.roof_follow=vertical.is_finite()

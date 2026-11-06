@@ -16,13 +16,27 @@ static func qa_reset() -> void:
 	qa_moves=0;qa_attempts=0;qa_successes=0;qa_reused_failures=0
 static func qa_report() -> Dictionary:
 	return {"moves":qa_moves,"blocked_step_attempts":qa_attempts,"successful_steps":qa_successes,"avoided_repeated_failed_probes":qa_reused_failures}
+# Instrumented pass-through; the original Jolt query and collision output are unchanged.
+static func _ia1_step_test(actor: CharacterBody3D,origin_t: Transform3D,motion: Vector3,collision: KinematicCollision3D=null) -> bool:
+	if not BotCostProbe.enabled or not bool(actor.get_meta("war_bot",false)):
+		return actor.test_move(origin_t,motion,collision)
+	var __begun:=Time.get_ticks_usec()
+	var hit:=actor.test_move(origin_t,motion,collision)
+	BotCostProbe.record("step_test",Time.get_ticks_usec()-__begun)
+	return hit
+
 static func move(actor: CharacterBody3D,delta: float) -> void:
 	if qa_enabled:qa_moves+=1
 	var horizontal:=Vector3(actor.velocity.x,0,actor.velocity.z)*delta
 	var wanted:=actor.velocity
 	var start:=actor.global_position
 	var supported:=actor.is_on_floor() or Engine.get_physics_frames()-int(actor.get_meta("step_contact_frame",-100))<=2
-	actor.move_and_slide()
+	if BotCostProbe.enabled and bool(actor.get_meta("war_bot",false)):
+		var __begun:=Time.get_ticks_usec()
+		actor.move_and_slide()
+		BotCostProbe.record("move_slide",Time.get_ticks_usec()-__begun)
+	else:
+		actor.move_and_slide()
 	# Slope projection is displacement, not a jump impulse to keep on the
 	# next tick. Retaining its positive Y alternated falling/snap on uphills.
 	if wanted.y<=.1 and actor.is_on_floor(): actor.velocity.y=minf(actor.velocity.y,0.)
@@ -46,12 +60,12 @@ static func move(actor: CharacterBody3D,delta: float) -> void:
 					return
 		if qa_enabled:qa_attempts+=1
 		var raised:=actor.global_transform
-		if not actor.test_move(raised,Vector3.UP*MAX_STEP):
+		if not _ia1_step_test(actor,raised,Vector3.UP*MAX_STEP):
 			raised.origin.y+=MAX_STEP
-			if not actor.test_move(raised,horizontal):
+			if not _ia1_step_test(actor,raised,horizontal):
 				var ahead:=raised;ahead.origin+=horizontal
 				var contact:=KinematicCollision3D.new()
-				if actor.test_move(ahead,Vector3.DOWN*(MAX_STEP+.08),contact) and contact.get_normal().y>.05:
+				if _ia1_step_test(actor,ahead,Vector3.DOWN*(MAX_STEP+.08),contact) and contact.get_normal().y>.05:
 					var rise:=MAX_STEP+contact.get_travel().y
 					if rise>.015 and rise<=MAX_STEP+.005:
 						# The rounded capsule first contacts the tread edge at a
@@ -61,7 +75,12 @@ static func move(actor: CharacterBody3D,delta: float) -> void:
 						actor.set_meta("step_contact_frame",Engine.get_physics_frames())
 						var snap:=actor.floor_snap_length
 						actor.velocity=Vector3(0,-.1,0);actor.floor_snap_length=0
-						actor.move_and_slide()
+						if BotCostProbe.enabled and bool(actor.get_meta("war_bot",false)):
+							var __begun:=Time.get_ticks_usec()
+							actor.move_and_slide()
+							BotCostProbe.record("move_slide",Time.get_ticks_usec()-__begun)
+						else:
+							actor.move_and_slide()
 						actor.velocity=Vector3(wanted.x,minf(0,actor.velocity.y),wanted.z);actor.floor_snap_length=snap
 						if is_bot: actor.remove_meta("war_failed_step")
 						if qa_enabled:qa_successes+=1

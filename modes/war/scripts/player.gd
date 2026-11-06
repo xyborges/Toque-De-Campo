@@ -203,6 +203,14 @@ func _drone_controller_pose() -> void:
 	WarHumanRig.pose(self,avatar_parts.arm_r,centre+global_basis*Vector3(.13,0,0),"armR")
 
 func _animate_walk() -> void:
+	if not BotCostProbe.enabled or not bool(get_meta("war_bot",false)):
+		_ia1_pose_unprofiled()
+		return
+	var __begun:=Time.get_ticks_usec()
+	_ia1_pose_unprofiled()
+	BotCostProbe.record("pose",Time.get_ticks_usec()-__begun)
+
+func _ia1_pose_unprofiled() -> void:
 	# P1a opt-in host audit. Physical hit regions are still children of
 	# visual pivots. The existing distance LOD can leave hitboxes stale on
 	# listen servers. Full articulation at 60 Hz corrects that, but the 28
