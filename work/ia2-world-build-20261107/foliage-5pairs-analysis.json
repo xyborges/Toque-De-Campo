@@ -1,0 +1,231 @@
+{
+  "runs": 10,
+  "checks": {
+    "raw_scene_order_hashes": [
+      "993c3fb7588534ed9893ea8f59b208529dbdb892afbf63e3914781219f8042b1",
+      "a14b96e1f16c221062c1b8980cddc536b6b1962e1350e2aae81bfb0fc6e2b681"
+    ],
+    "sorted_geometry_hashes": [
+      "fbaa82e5ed5e3c8b5f8bfb2d2c484298545ea95234b2f5bdf039e59feb41385d"
+    ],
+    "unlabelled_geometry_hashes": [
+      "f71a6727f1325e784548f9e3ce25d210612abee7668587d98be57dd12c003b48"
+    ],
+    "sector_geometry_hashes": [
+      "ad7d70f3c9366f2191f7b364eb8361380a4649d7b3f14f0c4974328ce7a2177c"
+    ],
+    "probe_hashes": [
+      "e47e1a86d8420bb4ca255d52190f7ca5f9db725c018bff8bf01da56d2824c0cf"
+    ],
+    "collision_shapes": [
+      11624
+    ],
+    "sector_count": [
+      254
+    ],
+    "tree_count": [
+      1850
+    ],
+    "trunk_count": [
+      78
+    ],
+    "visual_counts_A": [
+      [
+        4700,
+        13334,
+        480
+      ]
+    ],
+    "visual_counts_B": [
+      [
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "metrics": {
+    "map_build_ms": {
+      "original_mean_ms": 5670.4,
+      "optimized_mean_ms": 4571.2,
+      "savings_ms": 1099.1999999999998,
+      "gain_pct": 19.384875846501128,
+      "baseline_noise_pct": 23.948927765237023,
+      "original": [
+        5402.0,
+        5175.0,
+        5503.0,
+        5739.0,
+        6533.0
+      ],
+      "optimized": [
+        4299.0,
+        4615.0,
+        4511.0,
+        4560.0,
+        4871.0
+      ]
+    },
+    "ready_ms": {
+      "original_mean_ms": 10738.1586,
+      "optimized_mean_ms": 9338.4136,
+      "savings_ms": 1399.7450000000008,
+      "gain_pct": 13.03524237386474,
+      "baseline_noise_pct": 25.424331132527687,
+      "original": [
+        10030.711,
+        9799.236,
+        10186.314,
+        11145.191,
+        12529.341
+      ],
+      "optimized": [
+        8935.383,
+        9246.56,
+        9259.013,
+        9315.87,
+        9935.242
+      ]
+    },
+    "world_build_ms": {
+      "original_mean_ms": 5811.685,
+      "optimized_mean_ms": 4708.4908,
+      "savings_ms": 1103.1942000000008,
+      "gain_pct": 18.982346772063536,
+      "baseline_noise_pct": 23.557608507687526,
+      "original": [
+        5534.658,
+        5311.017,
+        5650.387,
+        5882.252,
+        6680.111
+      ],
+      "optimized": [
+        4436.207,
+        4752.052,
+        4645.355,
+        4697.438,
+        5011.402
+      ]
+    },
+    "hillside_ms": {
+      "original_mean_ms": 1037.0614,
+      "optimized_mean_ms": 110.2328,
+      "savings_ms": 926.8286,
+      "gain_pct": 89.370658285035,
+      "baseline_noise_pct": 8.632565053525276,
+      "original": [
+        1035.551,
+        987.834,
+        1037.113,
+        1077.359,
+        1047.45
+      ],
+      "optimized": [
+        108.264,
+        108.051,
+        106.433,
+        107.963,
+        120.453
+      ]
+    },
+    "neighborhoods_ms": {
+      "original_mean_ms": 1372.4388000000001,
+      "optimized_mean_ms": 1353.8817999999999,
+      "savings_ms": 18.557000000000244,
+      "gain_pct": 1.352118578985106,
+      "baseline_noise_pct": 13.942479620949223,
+      "original": [
+        1294.332,
+        1290.09,
+        1481.442,
+        1412.054,
+        1384.276
+      ],
+      "optimized": [
+        1295.515,
+        1344.924,
+        1295.388,
+        1396.328,
+        1437.254
+      ]
+    },
+    "layout_reservations_ms": {
+      "original_mean_ms": 1469.126,
+      "optimized_mean_ms": 1369.3052,
+      "savings_ms": 99.82079999999996,
+      "gain_pct": 6.794570377217473,
+      "baseline_noise_pct": 42.89951985057783,
+      "original": [
+        1312.481,
+        1312.537,
+        1320.793,
+        1457.09,
+        1942.729
+      ],
+      "optimized": [
+        1311.445,
+        1513.732,
+        1316.216,
+        1314.375,
+        1390.758
+      ]
+    },
+    "terrain_ms": {
+      "original_mean_ms": 741.0582,
+      "optimized_mean_ms": 612.2868,
+      "savings_ms": 128.77140000000009,
+      "gain_pct": 17.376691871164784,
+      "baseline_noise_pct": 63.81347645839422,
+      "original": [
+        765.882,
+        603.402,
+        607.043,
+        652.667,
+        1076.297
+      ],
+      "optimized": [
+        604.815,
+        608.051,
+        602.874,
+        608.188,
+        637.506
+      ]
+    }
+  },
+  "pairs": [
+    {
+      "pair": 1,
+      "map_savings_ms": 1103.0,
+      "ready_savings_ms": 1095.3279999999995,
+      "hillside_savings_ms": 927.2869999999999
+    },
+    {
+      "pair": 2,
+      "map_savings_ms": 560.0,
+      "ready_savings_ms": 552.6760000000013,
+      "hillside_savings_ms": 879.7829999999999
+    },
+    {
+      "pair": 3,
+      "map_savings_ms": 992.0,
+      "ready_savings_ms": 927.3009999999995,
+      "hillside_savings_ms": 930.6800000000001
+    },
+    {
+      "pair": 4,
+      "map_savings_ms": 1179.0,
+      "ready_savings_ms": 1829.321,
+      "hillside_savings_ms": 969.396
+    },
+    {
+      "pair": 5,
+      "map_savings_ms": 1662.0,
+      "ready_savings_ms": 2594.099,
+      "hillside_savings_ms": 926.9970000000001
+    }
+  ],
+  "map_wins": 5,
+  "ready_wins": 5,
+  "all_collisions_preserved": true
+}

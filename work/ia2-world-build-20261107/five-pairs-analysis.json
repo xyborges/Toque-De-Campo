@@ -1,0 +1,252 @@
+{
+  "runs": 10,
+  "all_shapes": [
+    11624
+  ],
+  "all_sectors": [
+    254
+  ],
+  "all_probes": [
+    20
+  ],
+  "geometry_hashes": [
+    "a14b96e1f16c221062c1b8980cddc536b6b1962e1350e2aae81bfb0fc6e2b681"
+  ],
+  "sorted_geometry_hashes": [
+    "fbaa82e5ed5e3c8b5f8bfb2d2c484298545ea95234b2f5bdf039e59feb41385d"
+  ],
+  "unlabelled_geometry_hashes": [
+    "f71a6727f1325e784548f9e3ce25d210612abee7668587d98be57dd12c003b48"
+  ],
+  "probe_hashes": [
+    "e47e1a86d8420bb4ca255d52190f7ca5f9db725c018bff8bf01da56d2824c0cf"
+  ],
+  "metrics": {
+    "ready_ms": {
+      "original_mean": 10636.5062,
+      "experimental_mean": 10406.7878,
+      "change_ms": -229.71839999999975,
+      "gain_pct": 2.1597166934382996,
+      "control_noise_amplitude_over_mean_pct": 22.39044433594181,
+      "control_stdev_pct": 10.03745465617485,
+      "all_a": [
+        9850.925,
+        9844.484,
+        10002.752,
+        12226.045,
+        11258.325
+      ],
+      "all_b": [
+        9557.099,
+        9667.077,
+        9627.44,
+        10185.229,
+        12997.094
+      ]
+    },
+    "map_build_ms": {
+      "original_mean": 5602.2,
+      "experimental_mean": 5432.8,
+      "change_ms": -169.39999999999964,
+      "gain_pct": 3.0238120738281324,
+      "control_noise_amplitude_over_mean_pct": 18.314233693905965,
+      "control_stdev_pct": 9.864320204065546,
+      "all_a": [
+        5203.0,
+        5203.0,
+        5190.0,
+        6216.0,
+        6199.0
+      ],
+      "all_b": [
+        4928.0,
+        4854.0,
+        4864.0,
+        5177.0,
+        7341.0
+      ]
+    },
+    "world_build_ms": {
+      "original_mean": 5740.964199999999,
+      "experimental_mean": 5573.5088,
+      "change_ms": -167.45539999999983,
+      "gain_pct": 2.9168514933432235,
+      "control_noise_amplitude_over_mean_pct": 18.006104270777378,
+      "control_stdev_pct": 9.678332003793923,
+      "all_a": [
+        5338.959,
+        5340.672,
+        5326.105,
+        6359.829,
+        6339.256
+      ],
+      "all_b": [
+        5062.04,
+        4991.027,
+        4997.673,
+        5321.583,
+        7495.221
+      ]
+    },
+    "neighborhoods_ms": {
+      "original_mean": 1425.7648,
+      "experimental_mean": 1058.1442,
+      "change_ms": -367.62059999999997,
+      "gain_pct": 25.7840984712205,
+      "control_noise_amplitude_over_mean_pct": 31.474896841330356,
+      "control_stdev_pct": 13.81272358727648,
+      "all_a": [
+        1297.734,
+        1299.424,
+        1295.509,
+        1491.89,
+        1744.267
+      ],
+      "all_b": [
+        906.026,
+        923.62,
+        909.493,
+        906.545,
+        1645.037
+      ]
+    },
+    "hillside_ms": {
+      "original_mean": 1100.989,
+      "experimental_mean": 1114.2758000000001,
+      "change_ms": 13.286800000000085,
+      "gain_pct": -1.2068058808943671,
+      "control_noise_amplitude_over_mean_pct": 38.20837447058963,
+      "control_stdev_pct": 16.405599944487605,
+      "all_a": [
+        991.752,
+        991.78,
+        982.846,
+        1403.516,
+        1135.051
+      ],
+      "all_b": [
+        1071.728,
+        993.388,
+        1002.062,
+        1262.251,
+        1241.95
+      ]
+    },
+    "terrain_ms": {
+      "original_mean": 629.9639999999999,
+      "experimental_mean": 674.852,
+      "change_ms": 44.888000000000034,
+      "gain_pct": -7.125486535738555,
+      "control_noise_amplitude_over_mean_pct": 10.438374256306716,
+      "control_stdev_pct": 5.369699123494026,
+      "all_a": [
+        605.675,
+        605.611,
+        604.703,
+        663.37,
+        670.461
+      ],
+      "all_b": [
+        608.451,
+        604.675,
+        618.575,
+        624.197,
+        918.362
+      ]
+    },
+    "layout_reservations_ms": {
+      "original_mean": 1366.7484,
+      "experimental_mean": 1399.5682,
+      "change_ms": 32.81979999999999,
+      "gain_pct": -2.401305170724911,
+      "control_noise_amplitude_over_mean_pct": 9.751611927989085,
+      "control_stdev_pct": 4.706534781605351,
+      "all_a": [
+        1317.372,
+        1322.383,
+        1321.383,
+        1450.652,
+        1421.952
+      ],
+      "all_b": [
+        1313.495,
+        1344.311,
+        1337.695,
+        1370.658,
+        1631.682
+      ]
+    },
+    "flush_ms": {
+      "original_mean": 0.015600000000000001,
+      "experimental_mean": 29.2764,
+      "change_ms": 29.2608,
+      "gain_pct": -187569.23076923075,
+      "control_noise_amplitude_over_mean_pct": 19.230769230769237,
+      "control_stdev_pct": 8.600261451922272,
+      "all_a": [
+        0.015,
+        0.014,
+        0.017,
+        0.015,
+        0.017
+      ],
+      "all_b": [
+        27.682,
+        28.399,
+        28.298,
+        30.573,
+        31.43
+      ]
+    }
+  },
+  "pairs": [
+    {
+      "pair": 1,
+      "original_ready_ms": 9850.925,
+      "experimental_ready_ms": 9557.099,
+      "original_map_ms": 5203.0,
+      "experimental_map_ms": 4928.0,
+      "map_savings_ms": 275.0,
+      "ready_savings_ms": 293.8259999999991
+    },
+    {
+      "pair": 2,
+      "original_ready_ms": 9844.484,
+      "experimental_ready_ms": 9667.077,
+      "original_map_ms": 5203.0,
+      "experimental_map_ms": 4854.0,
+      "map_savings_ms": 349.0,
+      "ready_savings_ms": 177.40700000000106
+    },
+    {
+      "pair": 3,
+      "original_ready_ms": 10002.752,
+      "experimental_ready_ms": 9627.44,
+      "original_map_ms": 5190.0,
+      "experimental_map_ms": 4864.0,
+      "map_savings_ms": 326.0,
+      "ready_savings_ms": 375.3119999999999
+    },
+    {
+      "pair": 4,
+      "original_ready_ms": 12226.045,
+      "experimental_ready_ms": 10185.229,
+      "original_map_ms": 6216.0,
+      "experimental_map_ms": 5177.0,
+      "map_savings_ms": 1039.0,
+      "ready_savings_ms": 2040.8160000000007
+    },
+    {
+      "pair": 5,
+      "original_ready_ms": 11258.325,
+      "experimental_ready_ms": 12997.094,
+      "original_map_ms": 6199.0,
+      "experimental_map_ms": 7341.0,
+      "map_savings_ms": -1142.0,
+      "ready_savings_ms": -1738.7689999999984
+    }
+  ],
+  "map_wins": 4,
+  "ready_wins": 4,
+  "strict_geometry_equivalence": true
+}
