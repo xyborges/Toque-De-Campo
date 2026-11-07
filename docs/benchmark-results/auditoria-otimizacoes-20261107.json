@@ -1,0 +1,224 @@
+{
+  "audit": "Toque de Campo - validacao IA1 e IA2",
+  "date_local": "2026-11-07",
+  "host": "DESKTOP-JJ7U3G3",
+  "project_branch": "ia/auditoria-otimizacoes-20261107",
+  "base_origin_main": "ee969afc8a889861c64639689087c1568d9bfb4b",
+  "engine": "Godot 4.7.2 stable",
+  "test_type": "headless offline - startup, NOT graphical FPS",
+  "physics": "Jolt",
+  "flags": {
+    "housing": "TDC_IA2_HOUSING_CACHE",
+    "hillside": "TDC_IA2_HEADLESS_SKIP_VISUAL_HILLSIDE"
+  },
+  "protocol": {
+    "pairs": 5,
+    "runs": 10,
+    "order": "A-B-B-A-A-B-B-A-A-B",
+    "A": "housing cache OFF",
+    "B": "housing cache ON",
+    "hillside_flag_during_pairs": "OFF",
+    "note": "cada run um processo Godot independente; sem outro processo Godot detectado antes da coleta",
+    "cache_fallback": "preservado, mas nao revalidado nesta maquina"
+  },
+  "checks": {
+    "houses": 4188,
+    "terrain_tiles": 225,
+    "collision_shapes": 11146,
+    "plan_sha256": "9264a7d132a78bf2b9fc4966dab849dd92e66bb622321f547133febc60d3a479",
+    "geometry_sha256": "ed382d5d98cbb2bb1471ac926b1cf890ee755213163ac8f2ddee32c33a48ca80",
+    "ray_sha256": "574841c454eb1f4ffe3703bfa0d5796c51cdb6676e428177b2468651a159f7b5",
+    "runs_with_errors": 0,
+    "all_exits_zero": true
+  },
+  "metrics": {
+    "layout_ms": {
+      "baseline_mean": 992.564,
+      "cache_mean": 302.686,
+      "mean_delta_percent": -69.505,
+      "baseline_range_over_mean_percent": 14.451
+    },
+    "world_ms": {
+      "baseline_mean": 4562.038,
+      "cache_mean": 3934.716,
+      "mean_delta_percent": -13.751,
+      "baseline_range_over_mean_percent": 12.863
+    },
+    "ready_ms": {
+      "baseline_mean": 8137.724,
+      "cache_mean": 7621.944,
+      "mean_delta_percent": -6.338,
+      "baseline_range_over_mean_percent": 11.241
+    }
+  },
+  "results": [
+    {
+      "run": 1,
+      "cache_enabled": false,
+      "ready_ms": 8812.84,
+      "world_ms": 4956.86,
+      "layout_ms": 1086.82,
+      "layout_status": "generated",
+      "exit_code": 0,
+      "errors": [],
+      "houses": 4188,
+      "terrain_tiles": 225,
+      "collision_shapes": 11146
+    },
+    {
+      "run": 2,
+      "cache_enabled": true,
+      "ready_ms": 8273.78,
+      "world_ms": 4302.9,
+      "layout_ms": 306.81,
+      "layout_status": "loaded",
+      "exit_code": 0,
+      "errors": [],
+      "houses": 4188,
+      "terrain_tiles": 225,
+      "collision_shapes": 11146
+    },
+    {
+      "run": 3,
+      "cache_enabled": true,
+      "ready_ms": 8179.61,
+      "world_ms": 4266.9,
+      "layout_ms": 316.19,
+      "layout_status": "loaded",
+      "exit_code": 0,
+      "errors": [],
+      "houses": 4188,
+      "terrain_tiles": 225,
+      "collision_shapes": 11146
+    },
+    {
+      "run": 4,
+      "cache_enabled": false,
+      "ready_ms": 8086.71,
+      "world_ms": 4612.46,
+      "layout_ms": 1032.18,
+      "layout_status": "generated",
+      "exit_code": 0,
+      "errors": [],
+      "houses": 4188,
+      "terrain_tiles": 225,
+      "collision_shapes": 11146
+    },
+    {
+      "run": 5,
+      "cache_enabled": false,
+      "ready_ms": 7989.33,
+      "world_ms": 4370.03,
+      "layout_ms": 943.38,
+      "layout_status": "generated",
+      "exit_code": 0,
+      "errors": [],
+      "houses": 4188,
+      "terrain_tiles": 225,
+      "collision_shapes": 11146
+    },
+    {
+      "run": 6,
+      "cache_enabled": true,
+      "ready_ms": 7172.6,
+      "world_ms": 3620.35,
+      "layout_ms": 291.53,
+      "layout_status": "loaded",
+      "exit_code": 0,
+      "errors": [],
+      "houses": 4188,
+      "terrain_tiles": 225,
+      "collision_shapes": 11146
+    },
+    {
+      "run": 7,
+      "cache_enabled": true,
+      "ready_ms": 7240.58,
+      "world_ms": 3739.76,
+      "layout_ms": 282.52,
+      "layout_status": "loaded",
+      "exit_code": 0,
+      "errors": [],
+      "houses": 4188,
+      "terrain_tiles": 225,
+      "collision_shapes": 11146
+    },
+    {
+      "run": 8,
+      "cache_enabled": false,
+      "ready_ms": 7901.63,
+      "world_ms": 4398.14,
+      "layout_ms": 943.42,
+      "layout_status": "generated",
+      "exit_code": 0,
+      "errors": [],
+      "houses": 4188,
+      "terrain_tiles": 225,
+      "collision_shapes": 11146
+    },
+    {
+      "run": 9,
+      "cache_enabled": false,
+      "ready_ms": 7898.11,
+      "world_ms": 4472.7,
+      "layout_ms": 957.02,
+      "layout_status": "generated",
+      "exit_code": 0,
+      "errors": [],
+      "houses": 4188,
+      "terrain_tiles": 225,
+      "collision_shapes": 11146
+    },
+    {
+      "run": 10,
+      "cache_enabled": true,
+      "ready_ms": 7243.15,
+      "world_ms": 3743.67,
+      "layout_ms": 316.38,
+      "layout_status": "loaded",
+      "exit_code": 0,
+      "errors": [],
+      "houses": 4188,
+      "terrain_tiles": 225,
+      "collision_shapes": 11146
+    }
+  ],
+  "headless_foliage_smoke": {
+    "full_ms": 1031.945,
+    "skip_ms": 77.849,
+    "trees": 1850,
+    "shrubs": 4700,
+    "grass": 13301,
+    "rocks": 480,
+    "trees_sha256_full": "530d711514d60b6efb5397ab43352ecf5c3057f1be0b403af8accdb9a7e3bd94",
+    "trees_sha256_skip": "530d711514d60b6efb5397ab43352ecf5c3057f1be0b403af8accdb9a7e3bd94",
+    "errors": [],
+    "exit_code": 0
+  },
+  "combined_flags_smoke": {
+    "housing_enabled": true,
+    "hillside_enabled": true,
+    "ready_ms": 6317.008,
+    "world_ms": 2948.565,
+    "layout_ms": 275.473,
+    "errors": [],
+    "exit_code": 0
+  },
+  "combined_flags_runtime_28bots": {
+    "count": 28,
+    "deployed": 28,
+    "vehicles": 8,
+    "moves": 1466,
+    "shots": 0,
+    "checks": 39,
+    "failures": [],
+    "exit_code": 0
+  },
+  "limitations": [
+    "Headless offline, not GTX1650 graphical FPS/P95/P99",
+    "No real ENet client attached",
+    "Bot fixture registered zero shots",
+    "Startup changes do not establish frame-time gains",
+    "Only isolated cache intervention has five pairs on JJ7; combined flags tested as single smoke"
+  ]
+}

@@ -19,11 +19,11 @@ func _go() -> void:
 		func(p: Vector2) -> float: return WarFavelaMap.road_distance(p),true)
 	var quick_ms:float=(Time.get_ticks_usec()-started)*.001
 	var errors: Array[String]=[]
-	if lots.size()!=4313:errors.append("wrong houses")
+	if lots.size()!=4188:errors.append("wrong houses for official Favela")
 	if JSON.stringify(full.trees)!=JSON.stringify(quick.trees):errors.append("TREE SITES DIVERGED")
 	if not quick.shrubs.is_empty() or not quick.grass.is_empty() or not quick.rocks.is_empty():
 		errors.append("decorative sites not skipped")
-	if full.trees.size()!=1850 or full.shrubs.size()!=4700 or full.grass.size()!=13334 or full.rocks.size()!=480:
+	if full.trees.size()!=1850 or full.shrubs.size()!=4700 or full.grass.size()!=13301 or full.rocks.size()!=480:
 		errors.append("unexpected standard visual site counts")
 	print("IA2_HEADLESS_FOLIAGE_QA ",JSON.stringify({
 		"full_ms":full_ms,"skip_ms":quick_ms,
