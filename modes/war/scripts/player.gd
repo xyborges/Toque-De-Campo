@@ -1,5 +1,6 @@
 extends GamePlayer
 class_name WarPlayer
+const P2_PROBE=preload("res://scripts/pose_cost_probe.gd")
 const BINOCULAR_MODEL=preload("res://modes/war/equipment/binoculars.tscn")
 var swim_camera_height:=1.5
 var war_team := -1
@@ -196,6 +197,7 @@ func _drone_controller_pose() -> void:
 		WarUniform.box(drone_controller,"Controller",Vector3.ZERO,Vector3(.26,.10,.14),WarVehicle.material("252b28"))
 		for side in [-1,1]:
 			WarUniform.box(drone_controller,"Stick",Vector3(side*.07,.065,-.015),Vector3(.025,.035,.025),WarVehicle.material("727963"))
+	if P2_PROBE.enabled:P2_PROBE.write(self,drone_controller,"position",avatar_parts.torso.position+Vector3(0,-.04,-.30),"modes/war/scripts/player.gd:_drone_controller_pose")
 	drone_controller.position=avatar_parts.torso.position+Vector3(0,-.04,-.30)
 	drone_controller.show()
 	var centre:=drone_controller.global_position
@@ -254,9 +256,11 @@ func _update_weapon_pose() -> void:
 	elif GameWeapons.ITEMS[weapon_id].kind not in ["firearm","launcher"]: weapon_root.position.y+=.32*stance.prone_weight
 	locomotion.pose_weapon(self)
 	if gadget_equipped and launcher_recoil>0:
+		if P2_PROBE.enabled:P2_PROBE.write(self,weapon_root,"position",weapon_root.position+(weapon_root.basis*Vector3(0,.025,launcher_recoil*.22)),"modes/war/scripts/player.gd:_update_weapon_pose")
 		weapon_root.position+=weapon_root.basis*Vector3(0,.025,launcher_recoil*.22)
 		weapon_root.rotation.x+=launcher_recoil*.10
 		if is_instance_valid(view_root):
+			if P2_PROBE.enabled:P2_PROBE.write(self,view_root,"position",view_root.position+(Vector3(0,.025,launcher_recoil*.22)),"modes/war/scripts/player.gd:_update_weapon_pose")
 			view_root.position+=Vector3(0,.025,launcher_recoil*.22)
 			view_root.rotation.x+=launcher_recoil*.10
 
@@ -419,6 +423,7 @@ func _binocular_pose() -> void:
 	var lower:=eye+aim_basis*Vector3(.04,-.28,-.45)
 	var eye_anchor: Vector3=utility_model.get_node("EyeAnchor").position
 	var raised:=eye-aim_basis*(eye_anchor+Vector3(0,0,.035))
+	if P2_PROBE.enabled:P2_PROBE.write(self,utility_model,"transform",Transform3D(aim_basis,lower.lerp(raised,utility_raise_weight)+aim_basis*Vector3(0,-.16*(1.-utility_equip_weight),.04*(1.-utility_equip_weight))),"modes/war/scripts/player.gd:_binocular_pose")
 	utility_model.transform=Transform3D(aim_basis,lower.lerp(raised,utility_raise_weight)+aim_basis*Vector3(0,-.16*(1.-utility_equip_weight),.04*(1.-utility_equip_weight)))
 	var optical:=is_local and utility_zoom>0
 	utility_model.visible=utility_equip_weight>.01 and not optical and (not is_local or not camera_close)
@@ -606,7 +611,9 @@ func _pose_arm(arm: Node3D,hand_position: Vector3,group: String) -> void:
 				if group=="armL" and reload_weapon==weapon_id and reload_left>0:
 					var pose:=reload_pose_state(weapon_id,reload_left,reload_total)
 					hand_position=model.to_global(pose.hand)
+		var _p2_ik_before:=P2_PROBE.before(arm) if P2_PROBE.ik_enabled else {}
 		WarHumanRig.pose(self,arm,hand_position,group)
+		if P2_PROBE.ik_enabled:P2_PROBE.after(self,arm,_p2_ik_before,"war._pose_arm")
 	else: super._pose_arm(arm,hand_position,group)
 
 func _update_first_person_hands() -> void:
