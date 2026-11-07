@@ -1,5 +1,6 @@
 extends CharacterBody3D
 class_name GamePlayer
+const POSE_PROBE = preload("res://scripts/pose_cost_probe.gd")
 
 const WEAPON_ZEROING=preload("res://scripts/weapon_zeroing.gd")
 
@@ -531,6 +532,7 @@ func _release_mouse() -> void:
 	_update_view()
 
 func _update_view() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.view") if POSE_PROBE.enabled else null
 	if not camera or not game or game.mode == "naval": return
 	if hp<=0:
 		aiming=false;iron_sights=false
@@ -588,6 +590,7 @@ func equip_quick_slot(number: int) -> void:
 	elif not id.is_empty(): equip_slot(["broom","squeegee","axe","ak","glock","sniper","fal","g3"].find(id))
 
 func _process(_delta: float) -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.process") if POSE_PROBE.enabled else null
 	weapon_optics.update(self)
 	if is_local and is_instance_valid(audio_listener):
 		var current:=get_viewport().get_camera_3d()
@@ -618,7 +621,10 @@ func equip_slot(slot: int) -> void:
 		game.update_hud()
 
 func _physics_process(delta: float) -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.physics") if POSE_PROBE.enabled else null
+	if _pose_scope:_pose_scope.section("base.optics_call")
 	weapon_optics.advance(self,delta)
+	if _pose_scope:_pose_scope.section("base.listener")
 	if is_local and not is_npc and hp>0 and vehicle_id.is_empty() and is_instance_valid(audio_listener):
 		audio_listener_check_clock+=delta
 		if audio_listener_check_clock>=.5:
@@ -628,9 +634,12 @@ func _physics_process(delta: float) -> void:
 				if is_instance_valid(game):GameDiagnostics.record("player_audio_listener_recovered",{"mode":str(game.mode),"life":life_id})
 	else:
 		audio_listener_check_clock=0.
+	if _pose_scope:_pose_scope.section("base.shared_motion_advance")
 	if shared_human_motion():
 		stance.advance(self,delta);locomotion.advance(self,delta)
+	if _pose_scope:_pose_scope.section("base.lean_advance")
 	GameInfantryPose.advance(self,delta)
+	if _pose_scope:_pose_scope.section("base.state_advance")
 	grenade_throw_left=maxf(0,grenade_throw_left-delta)
 	if grenade_prime_pending and grenade_held_id.is_empty(): grenade_fuse_left=maxf(0,grenade_fuse_left-delta)
 	fire_cooldown = maxf(-delta, fire_cooldown - delta)
@@ -654,6 +663,7 @@ func _physics_process(delta: float) -> void:
 			respawn_left = maxf(0.0, respawn_left - delta)
 			if respawn_left == 0.0 and not game.online: respawn()
 		return
+	if _pose_scope:_pose_scope.section("base.movement_and_presentation")
 	_advance_melee(delta)
 	if is_npc:
 		_npc_step(delta)
@@ -696,6 +706,7 @@ func _physics_process(delta: float) -> void:
 	_update_grenade_pose()
 
 func _animate_walk() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.body") if POSE_PROBE.enabled else null
 	if not is_instance_valid(body_root): return
 	var speed := Vector2(velocity.x, velocity.z).length()
 	var side_reaction := -1.0 if last_hit_region.ends_with("L") else 1.0
@@ -712,8 +723,11 @@ func _animate_walk() -> void:
 	if not is_npc: locomotion_torso_pose()
 	if not is_npc and _grenade_active():
 		avatar_parts.torso.rotation.x=-sin((1-grenade_throw_left/.75)*PI)*.06 if grenade_throw_left>0 else 0.
+	if _pose_scope:_pose_scope.section("base.lean_apply")
 	GameInfantryPose.apply(self)
+	if _pose_scope:_pose_scope.section("base.finish_body_call")
 	_finish_body_pose()
+	if _pose_scope:_pose_scope.section("base.weapon_and_arms")
 	if armed:
 		_update_weapon_pose()
 		_pose_weapon_arms()
@@ -724,6 +738,7 @@ func _animate_walk() -> void:
 		if float(limbs.armL) <= 0.0: avatar_parts.arm_l.rotation = Vector3(0.10,0,0.12)
 		if float(limbs.armR) <= 0.0: avatar_parts.arm_r.rotation = Vector3(0.10,0,-0.12)
 		avatar_parts.torso.rotation.x = punch * -0.10
+	if _pose_scope:_pose_scope.section("base.grenade_arms")
 	if not is_npc and (grenade_selected or not grenade_held_id.is_empty() or grenade_prime_pending or grenade_throw_left>0):
 		var progress:=1-grenade_throw_left/.75
 		var local_grip:=Vector3(.32,-.26,-.48)
@@ -731,6 +746,7 @@ func _animate_walk() -> void:
 		var aimed_grip: Vector3=camera_pivot.global_position+global_basis*Basis(Vector3.RIGHT,pitch)*local_grip
 		_pose_arm(avatar_parts.arm_r,aimed_grip,"armR")
 		_pose_arm(avatar_parts.arm_l,camera_pivot.global_position+global_basis*Vector3(-.26,-.40,-.18),"armL")
+	if _pose_scope:_pose_scope.section("base.shared_motion_pose")
 	if shared_human_motion():
 		locomotion.pose_body(self);stance.pose(self)
 
@@ -754,6 +770,7 @@ func weapon_hand_target(support: bool) -> Vector3:
 	return weapon_root.to_global(Vector3(0,-.015,-.16) if support else Vector3.ZERO)
 
 func _pose_weapon_arms() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.arms") if POSE_PROBE.enabled else null
 	if not is_instance_valid(weapon_root):return
 	_pose_arm(avatar_parts.arm_r,weapon_hand_target(false),"armR")
 	_pose_arm(avatar_parts.arm_l,weapon_hand_target(true),"armL")
@@ -769,6 +786,7 @@ func emit_step_sound(sequence: int,point: Vector3,running: bool) -> void:
 	if is_instance_valid(game.footsteps):game.footsteps.play_step(peer_id,life_id,sequence,point,running,crouched)
 
 func locomotion_torso_pose() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.locomotion_torso") if POSE_PROBE.enabled else null
 	locomotion.pose_torso(self)
 
 func grenade_hand_position() -> Vector3:
@@ -805,6 +823,7 @@ func clear_aim() -> void:
 	_update_view()
 
 func _update_weapon_pose() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.weapon") if POSE_PROBE.enabled else null
 	if not weapon_root or is_npc: return
 	var aim_pitch := clamp_aim_pitch(pitch + (recoil if is_local else 0.0))
 	var basis_pitch := Basis(Vector3.RIGHT, aim_pitch)
@@ -883,6 +902,7 @@ func _ak_hand_target(support: bool) -> Vector3:
 	return GameAKReload.hand(model,pose,support)
 
 func _update_ak_view_hands() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.ak_hands") if POSE_PROBE.enabled else null
 	if not is_local or not is_instance_valid(view_root):return
 	var model:=view_root.get_node_or_null("Imported_ak") as Node3D
 	if not model:return
@@ -910,6 +930,7 @@ func _sniper_hand_target(support: bool) -> Vector3:
 	return weapon_root.to_global(GameReloadPose.sniper_hand(model,pose.hand if support else pose.right_hand))
 
 func _update_sniper_view_hands() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.sniper_hands") if POSE_PROBE.enabled else null
 	if not is_local or not is_instance_valid(view_root): return
 	var model:=view_root.get_node_or_null("Imported_sniper") as Node3D
 	if not model: return
@@ -935,6 +956,7 @@ func presentation_material(support: bool,hand: bool) -> Material:
 	return part.material_override if part else GameCharacterColors.material(GameCharacterColors.normalize(get_meta("body_colors",{})).skin)
 
 func _update_first_person_hands() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.fpp_hands") if POSE_PROBE.enabled else null
 	var id:=GameWeapons.canonical(weapon_id)
 	if not is_local or not is_instance_valid(view_root):return
 	var firearm: bool=id in ["fal","glock","g3"]
@@ -965,11 +987,15 @@ func _update_first_person_hands() -> void:
 		forearm.basis=Basis(Quaternion(Vector3.DOWN,(wrist-anchor).normalized()))*Basis.from_scale(Vector3(1,wrist.distance_to(anchor)/maxf(.01,forearm.mesh.get_aabb().size.y),1))
 
 func _pose_arm(arm: Node3D, hand_position: Vector3, group: String) -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.ik") if POSE_PROBE.enabled else null
 	if CombatRules.limb_disability_enabled(game) and float(limbs.get(group,100.0)) <= 0.0:
 		arm.rotation = Vector3(0.10,0,0.12 if group == "armL" else -0.12)
 		return
 	if get_meta("articulated_arms",false):
-		WarHumanRig.pose(self,arm,hand_position,group);return
+		var _ik_before: Dictionary=POSE_PROBE.cache_before(arm) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
+		WarHumanRig.pose(self,arm,hand_position,group)
+		if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,arm,_ik_before)
+		return
 	var local_target := body_root.to_local(hand_position)
 	var direction := local_target - arm.position
 	if direction.length_squared() < 0.001: return
@@ -1425,6 +1451,7 @@ func _refresh_view_weapon() -> void:
 	_update_weapon_pose()
 
 func _advance_melee(delta: float) -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.melee") if POSE_PROBE.enabled else null
 	if not is_instance_valid(melee_rig) or not melee_rig.running: return
 	if CombatRules.limb_disability_enabled(game) and float(limbs.armR) <= 0.0 and float(limbs.armL) <= 0.0:
 		cancel_melee()
@@ -1455,6 +1482,7 @@ func _uses_first_person_presentation() -> bool:
 	return is_local and (not game.third_person or iron_sights or weapon_optics.presented() or camera_close)
 
 func _update_grenade_pose() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"base.grenade") if POSE_PROBE.enabled else null
 	var holding: bool=not grenade_held_id.is_empty() or grenade_prime_pending
 	var active: bool=hp>0 and _grenade_active()
 	if grenade_selected and not is_instance_valid(grenade_prop):

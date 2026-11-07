@@ -132,27 +132,38 @@ func apply_identity(team: int,role: String) -> void:
 	else: WarUniform.refresh_materials(self,maxi(0,team))
 
 func _physics_process(delta: float) -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.physics") if POSE_PROBE.enabled else null
+	if _pose_scope:_pose_scope.section("war.stance_advance")
 	stance.advance(self,delta)
+	if _pose_scope:_pose_scope.section("war.state_advance")
 	utility_equip_weight=move_toward(utility_equip_weight,1. if not utility_mode.is_empty() else 0.,delta*4.)
 	utility_raise_weight=move_toward(utility_raise_weight,1. if utility_mode=="binoculars" and utility_zoom>0 else 0.,delta*5.)
 	launcher_recoil=move_toward(launcher_recoil,0.0,delta*2.8)
+	if _pose_scope:_pose_scope.section("war.locomotion_advance")
 	locomotion.advance(self,delta)
+	if _pose_scope:_pose_scope.section("war.state_gates")
 	if hp<=0:
+		if _pose_scope:_pose_scope.section("war.dead_state")
 		weapon_optics.advance(self,delta)
 		utility_zoom=0;_update_binocular_overlay()
 		if is_instance_valid(utility_model): utility_model.hide()
 		if is_instance_valid(utility_view): utility_view.hide()
 		if is_instance_valid(drone_controller): drone_controller.hide()
+		if _pose_scope:_pose_scope.section("war.dead_reset")
 		GameInfantryPose.reset(self)
+		if _pose_scope:_pose_scope.section("war.dead_hide")
 		trigger_held=false;velocity=Vector3.ZERO
 		body_root.hide();weapon_root.hide();_hide_dead_presentations()
 		return
 	if not deployed or not vehicle_id.is_empty():
+		if _pose_scope:_pose_scope.section("war.inactive_state")
 		weapon_optics.advance(self,delta)
 		utility_zoom=0;_update_binocular_overlay()
 		if is_instance_valid(utility_model): utility_model.hide()
 		if is_instance_valid(utility_view): utility_view.hide()
+		if _pose_scope:_pose_scope.section("war.inactive_reset")
 		if not vehicle_id.begins_with("drone_"): GameInfantryPose.reset(self)
+		if _pose_scope:_pose_scope.section("war.inactive_hide")
 		trigger_held = false
 		velocity = Vector3.ZERO
 		if not vehicle_id.is_empty():
@@ -163,6 +174,7 @@ func _physics_process(delta: float) -> void:
 				for part in avatar_parts.values(): part.show()
 				_drone_controller_pose()
 			elif is_instance_valid(drone_controller): drone_controller.hide()
+			if _pose_scope:_pose_scope.section("war.rider_pose")
 			var transport: Node=game.vehicle_system.find_target(vehicle_id) if is_instance_valid(game.vehicle_system) else null
 			if is_instance_valid(transport) and game.vehicle_system._transport(transport): transport.pose_rider(self)
 		return
@@ -175,7 +187,9 @@ func _physics_process(delta: float) -> void:
 		GameInfantryPose.reset(self);_swim_physics(delta);return
 	elif swimming:
 		swimming=false;body_root.rotation.x=0;body_root.position.y=stance.visual_ground_offset(self);camera_pivot.position.y=swim_camera_height+stance.visual_ground_offset(self);camera_pivot.position.z=0;_update_view()
+	if _pose_scope:_pose_scope.section("war.base_call")
 	super._physics_process(delta)
+	if _pose_scope:_pose_scope.section("war.utility_and_bounds")
 	if not utility_mode.is_empty(): _utility_pose()
 	elif is_instance_valid(utility_model): utility_model.hide()
 	# Only the authority may recover a fallen actor. Spread expensive
@@ -191,6 +205,7 @@ func _physics_process(delta: float) -> void:
 	if global_position!=bounded: global_position=bounded
 
 func _drone_controller_pose() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.drone") if POSE_PROBE.enabled else null
 	if not is_instance_valid(drone_controller):
 		drone_controller=Node3D.new();drone_controller.name="DroneController";body_root.add_child(drone_controller)
 		WarUniform.box(drone_controller,"Controller",Vector3.ZERO,Vector3(.26,.10,.14),WarVehicle.material("252b28"))
@@ -199,10 +214,15 @@ func _drone_controller_pose() -> void:
 	drone_controller.position=avatar_parts.torso.position+Vector3(0,-.04,-.30)
 	drone_controller.show()
 	var centre:=drone_controller.global_position
+	var _ik_before_1: Dictionary=POSE_PROBE.cache_before(avatar_parts.arm_l) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
 	WarHumanRig.pose(self,avatar_parts.arm_l,centre+global_basis*Vector3(-.13,0,0),"armL")
+	if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,avatar_parts.arm_l,_ik_before_1)
+	var _ik_before_2: Dictionary=POSE_PROBE.cache_before(avatar_parts.arm_r) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
 	WarHumanRig.pose(self,avatar_parts.arm_r,centre+global_basis*Vector3(.13,0,0),"armR")
+	if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,avatar_parts.arm_r,_ik_before_2)
 
 func _animate_walk() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.body") if POSE_PROBE.enabled else null
 	# P1a opt-in host audit. Physical hit regions are still children of
 	# visual pivots. The existing distance LOD can leave hitboxes stale on
 	# listen servers. Full articulation at 60 Hz corrects that, but the 28
@@ -232,13 +252,17 @@ func _animate_walk() -> void:
 		_pose_arm(avatar_parts.arm_l,launcher_model.get_node("GripLeft").global_position,"armL")
 
 func _finish_body_pose() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.finish_body") if POSE_PROBE.enabled else null
 	# Finalize the legs/stance before the inherited weapon and arm solve.
 	# Previously stance changed the body height after both arms had already
 	# been solved, then rebuilt the weapon and both arms a second time.
+	if _pose_scope:_pose_scope.section("war.locomotion_pose_body")
 	locomotion.pose_body(self)
+	if _pose_scope:_pose_scope.section("war.stance_pose")
 	stance.pose(self,false)
 
 func _update_weapon_pose() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.weapon") if POSE_PROBE.enabled else null
 	if in_water():
 		weapon_root.hide()
 		if is_instance_valid(view_root): view_root.hide()
@@ -252,6 +276,7 @@ func _update_weapon_pose() -> void:
 		var head_clearance:=.19*clampf(float(body_proportions.get("head",1.)),.65,1.5)+.06
 		weapon_root.position.x=lerpf(weapon_root.position.x,maxf(weapon_root.position.x,head_clearance),stance.prone_weight)
 	elif GameWeapons.ITEMS[weapon_id].kind not in ["firearm","launcher"]: weapon_root.position.y+=.32*stance.prone_weight
+	if _pose_scope:_pose_scope.section("war.locomotion_pose_weapon")
 	locomotion.pose_weapon(self)
 	if gadget_equipped and launcher_recoil>0:
 		weapon_root.position+=weapon_root.basis*Vector3(0,.025,launcher_recoil*.22)
@@ -370,6 +395,7 @@ func _update_binocular_overlay() -> void:
 		binocular_overlay.material.set_shader_parameter("aspect",size.x/maxf(1.,size.y))
 
 func _process(delta: float) -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.process") if POSE_PROBE.enabled else null
 	super._process(delta)
 	_update_binocular_overlay()
 	if not is_local or not medic_pressed: return
@@ -380,6 +406,7 @@ func _process(delta: float) -> void:
 		medic_keepalive=.5;game.vehicle_system.request_command("med_hold",{"pressed":true})
 
 func _utility_pose() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.utility") if POSE_PROBE.enabled else null
 	if utility_mode=="binoculars":
 		_binocular_pose();return
 	if not is_instance_valid(utility_model):
@@ -404,8 +431,12 @@ func _utility_pose() -> void:
 			utility_view.position=Vector3(.26,-.22,-.45)
 		utility_view.visible=(not game.third_person or camera_close) and not (utility_mode=="binoculars" and utility_zoom>0)
 	var centre:=utility_model.global_position
+	var _ik_before_3: Dictionary=POSE_PROBE.cache_before(avatar_parts.arm_l) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
 	WarHumanRig.pose(self,avatar_parts.arm_l,centre+global_basis*Vector3(-.12,0,0),"armL")
+	if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,avatar_parts.arm_l,_ik_before_3)
+	var _ik_before_4: Dictionary=POSE_PROBE.cache_before(avatar_parts.arm_r) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
 	WarHumanRig.pose(self,avatar_parts.arm_r,centre+global_basis*Vector3(.12,0,0),"armR")
+	if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,avatar_parts.arm_r,_ik_before_4)
 
 func _binocular_pose() -> void:
 	if not is_instance_valid(utility_model):
@@ -435,7 +466,9 @@ func _binocular_pose() -> void:
 		var arm: Node3D=avatar_parts["arm_"+side.to_lower()]
 		var hand:=arm.get_node("Hand"+side) as Node3D
 		var target:=hand.global_position.lerp(marker.global_position,utility_equip_weight)
+		var _ik_before_5: Dictionary=POSE_PROBE.cache_before(arm) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
 		WarHumanRig.pose(self,arm,target,"arm"+side,marker)
+		if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,arm,_ik_before_5)
 
 func _set_crouched(value: bool) -> void:
 	# The legacy movement packet only has a crouch bit. A delayed packet must
@@ -598,6 +631,7 @@ func _refresh_view_weapon() -> void:
 	view_root.position=_weapon_offset()
 
 func _pose_arm(arm: Node3D,hand_position: Vector3,group: String) -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.ik") if POSE_PROBE.enabled else null
 	if get_meta("articulated_arms",false) and (float(limbs.get(group,100.))>0 or not CombatRules.limb_disability_enabled(game)):
 		if weapon_id in ["fal","glock","g3"] and not _grenade_active():
 			var model:=weapon_root.get_node_or_null("Imported_"+weapon_id) as Node3D
@@ -606,7 +640,9 @@ func _pose_arm(arm: Node3D,hand_position: Vector3,group: String) -> void:
 				if group=="armL" and reload_weapon==weapon_id and reload_left>0:
 					var pose:=reload_pose_state(weapon_id,reload_left,reload_total)
 					hand_position=model.to_global(pose.hand)
+		var _ik_before_6: Dictionary=POSE_PROBE.cache_before(arm) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
 		WarHumanRig.pose(self,arm,hand_position,group)
+		if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,arm,_ik_before_6)
 	else: super._pose_arm(arm,hand_position,group)
 
 func _update_first_person_hands() -> void:
@@ -616,6 +652,7 @@ func _uses_first_person_presentation() -> bool:
 	return is_local and utility_mode.is_empty() and vehicle_id.is_empty() and not in_water() and (not game.third_person or iron_sights or weapon_optics.presented())
 
 func _update_grenade_pose() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.grenade") if POSE_PROBE.enabled else null
 	super._update_grenade_pose()
 	if not vehicle_id.is_empty():
 		_hide_dead_presentations();weapon_root.hide();return
@@ -670,6 +707,7 @@ func in_water() -> bool:
 	return _water_value
 
 func _swim_physics(delta: float) -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.swim") if POSE_PROBE.enabled else null
 	if not swimming:
 		stance.reset(self);swim_camera_height=1.68;swimming=true
 		clear_aim();cancel_reload();cancel_melee();trigger_held=false;grenade_selected=false;grenade_aiming=false
@@ -697,6 +735,7 @@ func _swim_physics(delta: float) -> void:
 		camera.global_position.y=maxf(camera.global_position.y,WarCoast.wave(camera.global_position,float(game.war_clock))+.16)
 
 func _swim_pose() -> void:
+	var _pose_scope = POSE_PROBE.scope(self,"war.swim_pose") if POSE_PROBE.enabled else null
 	var phase:=float(game.war_clock)*4.8
 	body_root.rotation.x=-1.4;body_root.position.y=.8
 	if is_local:

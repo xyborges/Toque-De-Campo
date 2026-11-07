@@ -1,4 +1,5 @@
 extends RefCounted
+const POSE_PROBE = preload("res://scripts/pose_cost_probe.gd")
 
 const CATALOG=preload("res://scripts/optic_catalog.gd")
 const LENS_SHADER=preload("res://shaders/scope4x.gdshader")
@@ -27,6 +28,7 @@ func blend() -> float:
 	return smoothstep(0.,1.,aim_weight)
 
 func advance(actor: Node,delta: float) -> void:
+	var _pose_scope = POSE_PROBE.scope(actor,"optics.advance") if POSE_PROBE.enabled else null
 	var allowed: bool=not optical.is_empty() and actor.hp>0 and actor.reload_left<=0 and not actor._grenade_active() and actor.vehicle_id.is_empty()
 	if actor is WarPlayer:allowed=allowed and actor.deployed and actor.utility_mode.is_empty() and not actor.in_water()
 	if not allowed and actor.iron_sights and not optical.is_empty():actor.aiming=false;actor.iron_sights=false
@@ -115,6 +117,7 @@ func stop() -> void:
 	if is_instance_valid(glass):glass.set_shader_parameter("live_view",false)
 
 func update(actor: Node) -> void:
+	var _pose_scope = POSE_PROBE.scope(actor,"optics.update") if POSE_PROBE.enabled else null
 	var usable: bool=actor.is_local and actor.is_inside_tree() and not optical.is_empty() and actor.hp>0 and actor.iron_sights and aim_weight>=.999 and actor.reload_left<=0 and actor.vehicle_id.is_empty() and not actor._grenade_active()
 	if actor is WarPlayer:usable=usable and actor.deployed and actor.vehicle_id.is_empty() and actor.utility_mode.is_empty() and not actor.in_water()
 	if not usable or DisplayServer.get_name()=="headless" or not is_instance_valid(actor.view_root):stop();return
