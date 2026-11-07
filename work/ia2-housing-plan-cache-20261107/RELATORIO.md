@@ -50,4 +50,6 @@ Arquivos: `fallback-cache-missing.log`, `fallback-signature-invalid.log`, `verif
 
 **Arquivos de produção:** somente `modes/war/scripts/favela_map.gd` (loader opt-in/fallback) e `maps/prepared/favela/housing_plan_cache.res` (2,3 MB). **Testes:** `tests/ia2_housing_plan_cache_qa.gd` e UID se gerado. **Dados:** este diretório com 10 JSONs, 10 logs, dois pilotos, generator, fallback, 28 bots, CSV, análise e hashes SHA256.
 
+**Integridade dos arquivos brutos:** `SHA256SUMS.txt` contém SHA-256 dos **blobs Git versionados**, não dos bytes de checkout do Windows. Isso evita falsos erros por conversão automática CRLF/LF. Para verificar, execute `python work/ia2-housing-plan-cache-20261107/verify-git-sha256.py` após o checkout; o script compara com `git show HEAD:<arquivo>`. A geração é feita a partir dos blobs do índice Git, com `--generate` após o stage. Arquivos `.translation` e `.csv.import` produzidos automaticamente pelo editor Godot foram excluídos, pois não são evidências de benchmark.
+
 Este trabalho não modifica `bot_director.gd`, `step_motion.gd`, poses, hitboxes, rede, número de bots, geometria de mapa, Jolt ou o servidor dedicado. Branch isolada para revisão antes de eventual integração à main.
