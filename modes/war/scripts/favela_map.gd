@@ -229,13 +229,22 @@ static func housing_plan() -> Array[Dictionary]:
 			"duration_ms":(Time.get_ticks_usec()-started)*.001}
 	return housing_lots
 
+static func _ia2_stage_stamp(stages: Dictionary,key: String,start_us: int) -> int:
+	var now:=Time.get_ticks_usec()
+	stages[key]=roundf((now-start_us)*.001*1000.)*.001
+	return now
+
 func build() -> void:
 	var begun:=Time.get_ticks_msec()
+	var ia2_stage_profile:=OS.get_environment("TDC_IA2_MAP_STAGES")=="1"
+	var ia2_stages: Dictionary={}
+	var ia2_stage_at:=Time.get_ticks_usec()
 	set_meta("sector_colliders",true)
 	set_meta("war_detail_lod",true)
 	set_meta("use_occluders",false)
 	streets = STREET_SPACE.new(road_envelopes())
 	_reserve_buildings_and_spawns()
+	if ia2_stage_profile:ia2_stage_at=_ia2_stage_stamp(ia2_stages,"layout_reservations",ia2_stage_at)
 	if render_visuals and ground_material == null:
 		var mask := streets.pavement_mask(HALF, _pavement_areas())
 		if mask != null:
@@ -245,29 +254,38 @@ func build() -> void:
 			ground_material = EnvironmentKit.material("sand")
 	for iz in 15:
 		for ix in 15:_terrain_tile(ix,iz)
+	if ia2_stage_profile:ia2_stage_at=_ia2_stage_stamp(ia2_stages,"terrain_tiles",ia2_stage_at)
 	var kit:=EnvironmentKit.new(self,render_visuals,85.0)
 	street_fixtures=Node3D.new()
 	street_fixtures.name="InfraestruturaUrbana"
 	add_child(street_fixtures)
 	_bases(kit)
+	if ia2_stage_profile:ia2_stage_at=_ia2_stage_stamp(ia2_stages,"kit_and_bases",ia2_stage_at)
 	var neighborhood:=_neighborhoods(kit)
+	if ia2_stage_profile:ia2_stage_at=_ia2_stage_stamp(ia2_stages,"neighborhoods",ia2_stage_at)
 	var edge_summary:=_edge_infrastructure(kit)
+	if ia2_stage_profile:ia2_stage_at=_ia2_stage_stamp(ia2_stages,"edge",ia2_stage_at)
 	var baile:=BAILE_SCENE.instantiate() as Node3D
 	baile.name="CampoDeBaile"
 	baile.position=point(BAILE_CENTER.x,BAILE_CENTER.y)
 	add_child(baile)
 	BAILE.start(baile,render_visuals)
+	if ia2_stage_profile:ia2_stage_at=_ia2_stage_stamp(ia2_stages,"baile",ia2_stage_at)
 	_landmarks(kit)
 	_street_wiring(kit)
 	_urban_clutter(kit)
+	if ia2_stage_profile:ia2_stage_at=_ia2_stage_stamp(ia2_stages,"landmarks_wiring_clutter",ia2_stage_at)
 	for site: Dictionary in litter_sites:
 		_place_litter(site.position, site.yaw)
 	litter_sites.clear()
 	_vegetation(kit)
+	if ia2_stage_profile:ia2_stage_at=_ia2_stage_stamp(ia2_stages,"vegetation_and_litter",ia2_stage_at)
 	var hillside_summary := HILLSIDE.populate(kit, housing_plan(), BASES_2D, OBJECTIVES_2D,
 		func(p: Vector2) -> float: return road_distance(p),
 		func(x: float, z: float) -> float: return height_at(x, z))
+	if ia2_stage_profile:ia2_stage_at=_ia2_stage_stamp(ia2_stages,"hillside",ia2_stage_at)
 	kit.flush()
+	if ia2_stage_profile:ia2_stage_at=_ia2_stage_stamp(ia2_stages,"kit_flush",ia2_stage_at)
 	if render_visuals:
 		STREET_ART.paint_walls(self)
 		WarSceneryBatch.build(street_fixtures)
@@ -287,6 +305,10 @@ func build() -> void:
 	build_metrics.merge(neighborhood)
 	build_metrics.merge(edge_summary)
 	build_metrics.merge(hillside_summary)
+	if ia2_stage_profile:
+		_ia2_stage_stamp(ia2_stages,"finalization",ia2_stage_at)
+		build_metrics["ia2_stage_times_ms"]=ia2_stages
+		build_metrics["ia2_neighborhood_substages"]=get_meta("ia2_neighbor_substages_ms",{})
 	set_meta("favela_build_metrics",build_metrics)
 
 func _reserve_buildings_and_spawns() -> void:
@@ -426,6 +448,10 @@ func _bases(k: EnvironmentKit) -> void:
 			floor+Vector3(0,4,29),6,0.0)
 
 func _neighborhoods(k: EnvironmentKit) -> Dictionary:
+	var ia2_subprofile:=OS.get_environment("TDC_IA2_NEIGHBOR_SUBSTAGES")=="1"
+	var ia2_ground_usec:=0
+	var ia2_house_usec:=0
+	var ia2_shops_usec:=0
 	var count:=0
 	var stacked:=0
 	var roofs:=0
@@ -438,6 +464,7 @@ func _neighborhoods(k: EnvironmentKit) -> Dictionary:
 	var previous_lot: Dictionary={}
 	var shop_sites: Array[Dictionary] = []
 	for lot: Dictionary in housing_plan():
+		var ia2_at:=Time.get_ticks_usec() if ia2_subprofile else 0
 		var p: Vector2=lot.position
 		var size: Vector2=lot.size
 		var half_lot:=size*.5
@@ -449,13 +476,16 @@ func _neighborhoods(k: EnvironmentKit) -> Dictionary:
 			var ground:=height_at(at.x,at.y)
 			min_ground=minf(min_ground,ground)
 			max_ground=maxf(max_ground,ground)
+		if ia2_subprofile:ia2_ground_usec+=Time.get_ticks_usec()-ia2_at
 		var adjacent:=not previous_lot.is_empty() and int(previous_lot.row)==int(lot.row) and int(previous_lot.column)+1==int(lot.column)
 		var roof_pair: bool=not lot.sparse and int(lot.row)%4==2 and int(lot.column)%6 in [2,3] and float(lot.edge.gap)>1.35
 		var open_house: bool=lot.stair_clear and max_ground-min_ground<2.45 and (
 			roof_pair or (int(lot.profile)==0 and count%5==0 and float(lot.edge.gap)>1.35))
 		var storeys: int=lot.storeys
 		var upper_storeys:=mini(storeys-1,2) if storeys>=2 and int(lot.profile)!=3 and not open_house else 0
+		var ia2_house_at:=Time.get_ticks_usec() if ia2_subprofile else 0
 		_house(k,base,size.x,size.y,storeys,lot.finish,count,open_house,base.y-min_ground+.35,upper_storeys,lot)
+		if ia2_subprofile:ia2_house_usec+=Time.get_ticks_usec()-ia2_house_at
 		var market:=absf(base.z+15)<25.0 and absf(base.x)<360.0
 		var shop_interval:=2 if market else 4
 		if not open_house and not lot.sparse and count%shop_interval==0:
@@ -480,8 +510,16 @@ func _neighborhoods(k: EnvironmentKit) -> Dictionary:
 		else:previous_roof=Vector3.INF
 		previous_lot=lot
 		count+=1
+	var ia2_shops_at:=Time.get_ticks_usec() if ia2_subprofile else 0
 	for site: Dictionary in shop_sites:
 		_commercial_front(k, site.base, site.half, site.index, site.lot)
+	if ia2_subprofile:
+		ia2_shops_usec+=Time.get_ticks_usec()-ia2_shops_at
+		set_meta("ia2_neighbor_substages_ms",{
+			"ground_center_and_corners":ia2_ground_usec*.001,
+			"house":ia2_house_usec*.001,
+			"commercial_fronts":ia2_shops_usec*.001,
+			"houses":count,"shops":shop_sites.size()})
 	return {"houses":count,"stacked_houses":stacked,"walkable_roofs":roofs,"roof_bridges":bridges,
 		"moved_frontages":pulled,"compact_frontages":compact,"open_forecourts":forecourts}
 
