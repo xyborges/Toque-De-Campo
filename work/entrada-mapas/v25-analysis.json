@@ -1,0 +1,12 @@
+{
+  "revision": "7717aa5",
+  "A_mean_ms": 1277.6068,
+  "B_mean_ms": 287.3198,
+  "saved_ms": 990.287,
+  "gain_pct": 77.51109339743653,
+  "A_noise_pct": 3.7397264948808977,
+  "sha256": "cf02c42b719d067724e2913677870aaadadcd89ba463c577a33cf905e520ea55",
+  "all_sha256_equal": true,
+  "all_fallbacks_passed": true,
+  "samples": 12
+}
