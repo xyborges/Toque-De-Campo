@@ -191,9 +191,42 @@ static func road_envelopes() -> Array[Dictionary]:
 		roads.append({"id":roads.size(),"points":route,"width":MINI_STREET_WIDTH})
 	return roads
 
+# IA2 experimental plan cache. All inputs used by the deterministic plan
+# are fingerprinted. If the cache or source files differ, run the original
+# algorithm. Default OFF; source files may be absent in packaged builds.
+const IA2_HOUSING_CACHE_PATH := "res://maps/prepared/favela/housing_plan_cache.res"
+static var ia2_housing_cache_stats: Dictionary={}
+static func ia2_housing_source_signature() -> String:
+	var paths := [
+		"res://modes/war/scripts/favela_map.gd",
+		"res://modes/war/scripts/favela_layout.gd",
+		"res://modes/war/scripts/favela_street_space.gd"
+	]
+	var hashes: PackedStringArray=PackedStringArray()
+	for path: String in paths:
+		if not FileAccess.file_exists(path):return ""
+		hashes.append(FileAccess.get_sha256(path))
+	return ":".join(hashes).sha256_text()
+
 static func housing_plan() -> Array[Dictionary]:
 	if housing_lots.is_empty():
-		housing_lots=LAYOUT.generate(road_envelopes(),BASES_2D,OBJECTIVES_2D)
+		var started:=Time.get_ticks_usec()
+		var status: String="generated"
+		if OS.get_environment("TDC_IA2_HOUSING_CACHE")=="1":
+			var signature:=ia2_housing_source_signature()
+			if not signature.is_empty() and ResourceLoader.exists(IA2_HOUSING_CACHE_PATH):
+				var packed: Resource=ResourceLoader.load(IA2_HOUSING_CACHE_PATH,"",ResourceLoader.CACHE_MODE_IGNORE)
+				if packed!=null and str(packed.get_meta("signature",""))==signature:
+					var incoming: Variant=packed.get_meta("lots",[])
+					var digest: String=str(packed.get_meta("digest",""))
+					if incoming is Array and (incoming as Array).size()>0 and (
+							JSON.stringify(incoming).sha256_text()==digest):
+						housing_lots.assign(incoming)
+						status="loaded"
+		if housing_lots.is_empty():
+			housing_lots=LAYOUT.generate(road_envelopes(),BASES_2D,OBJECTIVES_2D)
+		ia2_housing_cache_stats={"status":status,"lots":housing_lots.size(),
+			"duration_ms":(Time.get_ticks_usec()-started)*.001}
 	return housing_lots
 
 func build() -> void:
