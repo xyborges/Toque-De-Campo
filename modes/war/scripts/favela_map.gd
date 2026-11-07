@@ -202,6 +202,25 @@ static func housing_plan() -> Array[Dictionary]:
 		housing_lots=LAYOUT.generate(road_envelopes(),BASES_2D,OBJECTIVES_2D)
 	return housing_lots
 
+# IA2: main-thread, frame-budgeted layout preparation. Never expose a
+# partial housing_plan(): the static cache is populated only after the final
+# sorted plan is complete, before ENet connects and before world construction.
+# Ordinary clients and server use the original synchronous planner.
+static func ia2_prepare_layout_staged(tree: SceneTree,budget_ms: float=8.0) -> Dictionary:
+	if not housing_lots.is_empty():
+		return {"cached":true,"lots":housing_lots.size(),"max_slice_ms":0.0,"yield_checks":0}
+	var planner=LAYOUT.new()
+	planner.routes=road_envelopes()
+	planner.bases=BASES_2D
+	planner.objectives=OBJECTIVES_2D
+	var started:=Time.get_ticks_usec()
+	var result: Array[Dictionary]=await planner._plan_staged(tree,budget_ms)
+	housing_lots=result
+	return {"cached":false,"lots":result.size(),
+		"duration_ms":(Time.get_ticks_usec()-started)*.001,
+		"max_slice_ms":planner.ia2_stage_max_slice_ms,
+		"yield_checks":planner.ia2_stage_yields}
+
 static func _ia2_mark_phase(phases: Dictionary,label: String,started_usec: int) -> int:
 	var now:=Time.get_ticks_usec()
 	phases[label]=roundf(float(now-started_usec)*.001*1000.)*.001

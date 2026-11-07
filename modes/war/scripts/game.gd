@@ -146,7 +146,16 @@ func join_game(kind: String) -> void:
 		loading_screen.detail.text="Carregando terreno e operação…"
 		ui_focus.open(loading_screen)
 		await get_tree().process_frame
-		if not is_inside_tree() or closing: return
+		if not is_inside_tree() or closing: preparing_world=false;return
+		# IA2 opt-in: reduce the uninterrupted part of Favela layout
+		# preparation, entirely before ENet is created or controls enabled.
+		# The layout cache is committed atomically after all rows and
+		# collision/footprint checks finish. The authority remains unchanged.
+		if operation_id==WarOperation.FAVELA and OS.get_environment("TDC_IA2_STAGED_FAVELA_LAYOUT")=="1":
+			loading_screen.detail.text="Organizando ruas e moradias..."
+			var staged: Dictionary=await WarFavelaMap.ia2_prepare_layout_staged(get_tree(),16.0)
+			if not is_inside_tree() or closing: preparing_world=false;return
+			GameDiagnostics.record("war_layout_staged",staged)
 		# Build BEFORE creating the ENet client. A slow machine must not stop
 		# acknowledging an already established connection while making terrain.
 		mode="pvp";map_kind="desert"

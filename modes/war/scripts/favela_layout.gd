@@ -208,3 +208,171 @@ func _plan() -> Array[Dictionary]:
 		lot.stair_clear=not overlaps(stair,p)
 	lots.sort_custom(func(a: Dictionary,b: Dictionary):return int(a.id)<int(b.id))
 	return lots
+
+
+# IA2 opt-in: preserve _plan() unchanged for server/ordinary clients; this
+# coroutine yields only between independent iterations, never during a
+# lot evaluation or collision query. It uses identical planning rules.
+var ia2_stage_yields := 0
+var ia2_stage_max_slice_ms := 0.0
+func ia2_record_slice(started_usec: int) -> void:
+	ia2_stage_max_slice_ms=maxf(ia2_stage_max_slice_ms,(Time.get_ticks_usec()-started_usec)*.001)
+	ia2_stage_yields+=1
+
+func _append_frontage_infill_staged(lots: Array[Dictionary],tree: SceneTree,budget_usec: int) -> int:
+	var started_usec:=Time.get_ticks_usec()
+	# Secondary growth hugs road edges only where the original block grid leaves
+	# a real buildable void. It is deliberately smaller and more irregular than
+	# the primary lots: this closes broad grey shoulders while preserving alleys.
+	var added:=0
+	for road: Dictionary in routes:
+		if Time.get_ticks_usec()-started_usec>=budget_usec:
+			ia2_record_slice(started_usec)
+			await tree.process_frame
+			started_usec=Time.get_ticks_usec()
+		var road_id:=int(road.id)
+		var route: Array=road.points
+		var radius:=float(road.width)*.5
+		for segment in route.size()-1:
+			var a: Vector2=route[segment]
+			var b: Vector2=route[segment+1]
+			var axis:=b-a
+			var length:=axis.length()
+			if length<12.0:continue
+			var tangent:=axis/length
+			var normal:=Vector2(-tangent.y,tangent.x)
+			var spacing:=10.5+float(posmod(road_id+segment,3))*.52
+			var steps:=maxi(1,floori(length/spacing))
+			for side_index in 2:
+				var side: float=-1.0 if side_index==0 else 1.0
+				for step in steps:
+					if Time.get_ticks_usec()-started_usec>=budget_usec:
+						ia2_record_slice(started_usec)
+						await tree.process_frame
+						started_usec=Time.get_ticks_usec()
+					var seed:=road_id*97+segment*31+side_index*17+step*13
+					# Keep an occasional narrow access/garage break instead of
+					# creating a continuous canyon with no tactical crossings.
+					if posmod(seed,9)==0:continue
+					var t:=(float(step)+.5)/float(steps)
+					if t<.045 or t>.955:continue
+					var front:=7.0+float(posmod(seed,4))*.62
+					var depth:=6.8+float(posmod(seed/3,5))*.58
+					var size:=Vector2(front,depth) if absf(tangent.x)>=absf(tangent.y) else Vector2(depth,front)
+					var half:=size*.5
+					var extent:=half.dot(normal.abs())
+					var setback:=.54+float(posmod(seed,5))*.11
+					var jitter:=(float(posmod(seed,7))-3.0)*.17
+					var p:=a.lerp(b,t)+tangent*jitter+normal*side*(radius+extent+setback)
+					var edge:=frontage(p,half)
+					# At crossings the nearest street can change; leave that
+					# corner open rather than pushing a house into two envelopes.
+					if int(edge.road)!=road_id or float(edge.gap)<.40 or float(edge.gap)>1.55:continue
+					var footprint:=Rect2(p-half,size).grow(HOUSE_GAP*.5)
+					if not clear(p,half,float(edge.gap) if ia2_reuse_frontage else INF) or overlaps(footprint):continue
+					occupy(footprint)
+					var block:=posmod(road_id+segment+side_index,PALETTES.size())
+					var profile:=posmod(seed,5)
+					var storeys:=2+posmod(seed/5,3)
+					if posmod(seed,29)==0:storeys=5
+					var palette: Array=PALETTES[block]
+					var synthetic_row:=1000+road_id*80+segment*4+side_index
+					lots.append({
+						"id":100000+road_id*10000+segment*1000+side_index*400+step,
+						"row":synthetic_row,"column":step,"position":p,"size":size,
+						"profile":profile,"block":block,"storeys":storeys,
+						"finish":palette[posmod(seed,palette.size())],
+						"sparse":false,"gap":edge.gap,"edge":edge,"moved":true,
+						"pocket":posmod(seed,13)==0,"infill":true
+					})
+					added+=1
+	ia2_record_slice(started_usec)
+	return added
+
+func _plan_staged(tree: SceneTree,budget_ms: float=8.0) -> Array[Dictionary]:
+	var budget_usec:=maxi(100,int(budget_ms*1000.0))
+	var started_usec:=Time.get_ticks_usec()
+	var candidates: Array[Dictionary]=[]
+	# Preserve the tested roof crossing spacing around the new field.
+	for row in 78:
+		if Time.get_ticks_usec()-started_usec>=budget_usec:
+			ia2_record_slice(started_usec)
+			await tree.process_frame
+			started_usec=Time.get_ticks_usec()
+		var z: float=-535.0+row*13.35
+		var block_row:=floori(row/4.0)
+		var shift:=sin(floorf(row*.5)*.84)*2.25
+		var fringe:=512.0+70*sin(z*.011)+36*cos(z*.026)
+		for column in 97:
+			var block_column:=floori(column/5.0)
+			var x: float=-635.0+column*13.35+shift
+			var sparse:=z>400 or absf(x-22*sin(z*.02))>fringe
+			if sparse and (row%2!=0 or column%3==0):continue
+			var block:=posmod(block_column+block_row*3,4)
+			var profile:=posmod(column+row*2+block,5)
+			var size: Vector2=SIZES[profile]
+			# Related homes share floor heights, palette and extension direction.
+			# The small repeating setbacks belong to a block, not a random house.
+			var p:=Vector2(x+float((column+block)%3-1)*.24,
+				z+float((row+profile)%3-1)*.30)
+			# A few houses in each cluster start as smaller footprints; their
+			# raised additions make visible construction phases and narrow gaps.
+			var extension_stage:=posmod(column*2+row+block,7)
+			if extension_stage in [1,4]: size*=Vector2(.91,.94)
+			var edge:=frontage(p,size*.5)
+			if float(edge.gap)<.4:continue
+			var storeys: int=[2,3,4,2,3][profile]
+			if block==2 and profile==2:storeys=5
+			if sparse:storeys=mini(storeys,2)
+			var palette: Array=PALETTES[block]
+			var extension_side:=posmod(block+floori(column/2.0)+floori(row/3.0),4)
+			if extension_stage==6: extension_side=posmod(extension_side+1,4)
+			candidates.append({"id":row*97+column,"row":row,"column":column,
+				"position":p,"size":size,"profile":profile,"block":block,
+				"storeys":storeys,"finish":palette[(column+row)%palette.size()],
+				"extension_side":extension_side,"extension_stage":extension_stage,
+				"sparse":sparse,"gap":edge.gap,"edge":edge,"moved":false})
+	candidates.sort_custom(func(a: Dictionary,b: Dictionary):
+		return int(a.id)<int(b.id) if float(a.gap)==float(b.gap) else float(a.gap)<float(b.gap))
+	var lots: Array[Dictionary]=[]
+	for lot: Dictionary in candidates:
+		if Time.get_ticks_usec()-started_usec>=budget_usec:
+			ia2_record_slice(started_usec)
+			await tree.process_frame
+			started_usec=Time.get_ticks_usec()
+		var p: Vector2=lot.position
+		var half: Vector2=lot.size*.5
+		var edge: Dictionary=lot.edge
+		var gap: float=edge.gap
+		# About one stretch in six keeps a forecourt for repair work or parking.
+		var pocket:=posmod(floori(p.x/70.0)+floori(p.y/64.0)*3,6)==0
+		var setback:=2.8 if pocket else .55+float(int(lot.profile)%3)*.13
+		if not lot.sparse and gap>setback and gap<18.0:
+			var candidate: Vector2=p-Vector2(edge.normal)*(gap-setback)
+			var footprint:=Rect2(candidate-half,half*2).grow(HOUSE_GAP*.5)
+			if clear(candidate,half) and not overlaps(footprint):
+				p=candidate
+				lot.moved=true
+		var rect:=Rect2(p-half,half*2).grow(HOUSE_GAP*.5)
+		if not clear(p,half,float(edge.gap) if ia2_reuse_frontage and not bool(lot.moved) else INF) or overlaps(rect):continue
+		occupy(rect)
+		lot.position=p
+		lot.edge=frontage(p,half) if not ia2_reuse_frontage or bool(lot.moved) else edge
+		lot.pocket=pocket
+		lot.infill=false
+		lots.append(lot)
+	ia2_record_slice(started_usec)
+	await _append_frontage_infill_staged(lots,tree,budget_usec)
+	started_usec=Time.get_ticks_usec()
+	for lot: Dictionary in lots:
+		if Time.get_ticks_usec()-started_usec>=budget_usec:
+			ia2_record_slice(started_usec)
+			await tree.process_frame
+			started_usec=Time.get_ticks_usec()
+		var p: Vector2=lot.position
+		var half: Vector2=lot.size*.5
+		var stair:=Rect2(p-Vector2(half.x+1.22,half.y-.45),Vector2(1.22,half.y*2-.9))
+		lot.stair_clear=not overlaps(stair,p)
+	lots.sort_custom(func(a: Dictionary,b: Dictionary):return int(a.id)<int(b.id))
+	ia2_record_slice(started_usec)
+	return lots
