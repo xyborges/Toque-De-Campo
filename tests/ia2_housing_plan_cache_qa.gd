@@ -92,7 +92,8 @@ func _execute() -> void:
 		"houses":metrics.get("houses",0),"tiles":metrics.get("terrain_tiles",0),
 		"collisions":metrics.get("collision_shapes",0),
 		"stages":metrics.get("ia2_stage_times_ms",{}),
-		"neighbor_substages":metrics.get("ia2_neighborhood_substages",{}),"lots":WarFavelaMap.housing_lots.size(),
+		"neighbor_substages":metrics.get("ia2_neighborhood_substages",{}),
+		"terrain_cache_status":map.ia2_terrain_cache_status if is_instance_valid(map) else "no_map","lots":WarFavelaMap.housing_lots.size(),
 		"plan_sha256":JSON.stringify(WarFavelaMap.housing_lots).sha256_text(),
 		"geometry_sha256":geometry_hash,"ray_sha256":ray_hash,"errors":errors}
 	print("IA2_HOUSING_PLAN_BENCH ",JSON.stringify(result))
