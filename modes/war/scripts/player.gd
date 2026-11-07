@@ -214,12 +214,12 @@ func _drone_controller_pose() -> void:
 	drone_controller.position=avatar_parts.torso.position+Vector3(0,-.04,-.30)
 	drone_controller.show()
 	var centre:=drone_controller.global_position
-	var _ik_before_1: Dictionary=POSE_PROBE.cache_before(avatar_parts.arm_l) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
+	var _ik_before_1: Variant=POSE_PROBE.cache_before(avatar_parts.arm_l) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else null
 	WarHumanRig.pose(self,avatar_parts.arm_l,centre+global_basis*Vector3(-.13,0,0),"armL")
-	if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,avatar_parts.arm_l,_ik_before_1)
-	var _ik_before_2: Dictionary=POSE_PROBE.cache_before(avatar_parts.arm_r) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
+	if _ik_before_1!=null:POSE_PROBE.cache_after(self,avatar_parts.arm_l,_ik_before_1)
+	var _ik_before_2: Variant=POSE_PROBE.cache_before(avatar_parts.arm_r) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else null
 	WarHumanRig.pose(self,avatar_parts.arm_r,centre+global_basis*Vector3(.13,0,0),"armR")
-	if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,avatar_parts.arm_r,_ik_before_2)
+	if _ik_before_2!=null:POSE_PROBE.cache_after(self,avatar_parts.arm_r,_ik_before_2)
 
 func _animate_walk() -> void:
 	var _pose_scope = POSE_PROBE.scope(self,"war.body") if POSE_PROBE.enabled else null
@@ -431,12 +431,12 @@ func _utility_pose() -> void:
 			utility_view.position=Vector3(.26,-.22,-.45)
 		utility_view.visible=(not game.third_person or camera_close) and not (utility_mode=="binoculars" and utility_zoom>0)
 	var centre:=utility_model.global_position
-	var _ik_before_3: Dictionary=POSE_PROBE.cache_before(avatar_parts.arm_l) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
+	var _ik_before_3: Variant=POSE_PROBE.cache_before(avatar_parts.arm_l) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else null
 	WarHumanRig.pose(self,avatar_parts.arm_l,centre+global_basis*Vector3(-.12,0,0),"armL")
-	if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,avatar_parts.arm_l,_ik_before_3)
-	var _ik_before_4: Dictionary=POSE_PROBE.cache_before(avatar_parts.arm_r) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
+	if _ik_before_3!=null:POSE_PROBE.cache_after(self,avatar_parts.arm_l,_ik_before_3)
+	var _ik_before_4: Variant=POSE_PROBE.cache_before(avatar_parts.arm_r) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else null
 	WarHumanRig.pose(self,avatar_parts.arm_r,centre+global_basis*Vector3(.12,0,0),"armR")
-	if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,avatar_parts.arm_r,_ik_before_4)
+	if _ik_before_4!=null:POSE_PROBE.cache_after(self,avatar_parts.arm_r,_ik_before_4)
 
 func _binocular_pose() -> void:
 	if not is_instance_valid(utility_model):
@@ -466,9 +466,9 @@ func _binocular_pose() -> void:
 		var arm: Node3D=avatar_parts["arm_"+side.to_lower()]
 		var hand:=arm.get_node("Hand"+side) as Node3D
 		var target:=hand.global_position.lerp(marker.global_position,utility_equip_weight)
-		var _ik_before_5: Dictionary=POSE_PROBE.cache_before(arm) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
+		var _ik_before_5: Variant=POSE_PROBE.cache_before(arm) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else null
 		WarHumanRig.pose(self,arm,target,"arm"+side,marker)
-		if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,arm,_ik_before_5)
+		if _ik_before_5!=null:POSE_PROBE.cache_after(self,arm,_ik_before_5)
 
 func _set_crouched(value: bool) -> void:
 	# The legacy movement packet only has a crouch bit. A delayed packet must
@@ -640,9 +640,9 @@ func _pose_arm(arm: Node3D,hand_position: Vector3,group: String) -> void:
 				if group=="armL" and reload_weapon==weapon_id and reload_left>0:
 					var pose:=reload_pose_state(weapon_id,reload_left,reload_total)
 					hand_position=model.to_global(pose.hand)
-		var _ik_before_6: Dictionary=POSE_PROBE.cache_before(arm) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
+		var _ik_before_6: Variant=POSE_PROBE.cache_before(arm) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else null
 		WarHumanRig.pose(self,arm,hand_position,group)
-		if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,arm,_ik_before_6)
+		if _ik_before_6!=null:POSE_PROBE.cache_after(self,arm,_ik_before_6)
 	else: super._pose_arm(arm,hand_position,group)
 
 func _update_first_person_hands() -> void:

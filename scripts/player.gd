@@ -992,9 +992,9 @@ func _pose_arm(arm: Node3D, hand_position: Vector3, group: String) -> void:
 		arm.rotation = Vector3(0.10,0,0.12 if group == "armL" else -0.12)
 		return
 	if get_meta("articulated_arms",false):
-		var _ik_before: Dictionary=POSE_PROBE.cache_before(arm) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else {}
+		var _ik_before: Variant=POSE_PROBE.cache_before(arm) if POSE_PROBE.enabled and POSE_PROBE.sampled(self) else null
 		WarHumanRig.pose(self,arm,hand_position,group)
-		if POSE_PROBE.enabled and POSE_PROBE.sampled(self):POSE_PROBE.cache_after(self,arm,_ik_before)
+		if _ik_before!=null:POSE_PROBE.cache_after(self,arm,_ik_before)
 		return
 	var local_target := body_root.to_local(hand_position)
 	var direction := local_target - arm.position
