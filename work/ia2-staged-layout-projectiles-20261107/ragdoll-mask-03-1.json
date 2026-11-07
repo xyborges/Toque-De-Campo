@@ -1,0 +1,1 @@
+{"bodies":15,"create_ms":{"count":16,"max_ms":41.459,"mean_ms":13.6455,"p95_ms":41.459,"p99_ms":41.459},"errors":[],"exceptions_in_last_corpse":28,"joints":14,"mode":"mask_only","ragdolls":16,"run":3}
