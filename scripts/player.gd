@@ -715,6 +715,7 @@ func _animate_walk() -> void:
 	var armed: bool = not is_npc
 	avatar_parts.leg_l.rotation.x = -gait * (0.2 if float(limbs.legL) <= 0.0 else 1.0)
 	avatar_parts.leg_r.rotation.x = gait * (0.2 if float(limbs.legR) <= 0.0 else 1.0)
+	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,avatar_parts.torso,"rotation",Vector3.ZERO,"_animate_walk")
 	avatar_parts.torso.rotation=Vector3.ZERO
 	if armed and is_instance_valid(melee_rig) and melee_rig.running:
 		body_root.rotation.y = sin(melee_rig.elapsed / float(MeleeRig.SPECS[weapon_id].duration) * TAU) * (0.16 if weapon_id == "broom" else 0.07)
@@ -733,7 +734,9 @@ func _animate_walk() -> void:
 		_pose_weapon_arms()
 	else:
 		var punch := sin(clampf(npc_attack_clock / 0.65,0.0,1.0) * PI) if npc_attack_clock >= 0.0 else 0.0
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,avatar_parts.arm_l,"rotation",Vector3(gait * 0.7 - punch * 0.9, 0, 0),"_animate_walk")
 		avatar_parts.arm_l.rotation = Vector3(gait * 0.7 - punch * 0.9, 0, 0)
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,avatar_parts.arm_r,"rotation",Vector3(-gait * 0.7 - punch * 1.8, 0, 0),"_animate_walk")
 		avatar_parts.arm_r.rotation = Vector3(-gait * 0.7 - punch * 1.8, 0, 0)
 		if float(limbs.armL) <= 0.0: avatar_parts.arm_l.rotation = Vector3(0.10,0,0.12)
 		if float(limbs.armR) <= 0.0: avatar_parts.arm_r.rotation = Vector3(0.10,0,-0.12)
@@ -827,8 +830,11 @@ func _update_weapon_pose() -> void:
 	if not weapon_root or is_npc: return
 	var aim_pitch := clamp_aim_pitch(pitch + (recoil if is_local else 0.0))
 	var basis_pitch := Basis(Vector3.RIGHT, aim_pitch)
+	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,weapon_root,"position",camera_pivot.position + basis_pitch * _weapon_offset(),"_update_weapon_pose")
 	weapon_root.position = camera_pivot.position + basis_pitch * _weapon_offset()
+	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,weapon_root,"rotation",Vector3(aim_pitch,0,0),"_update_weapon_pose")
 	weapon_root.rotation = Vector3(aim_pitch,0,0)
+	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,weapon_root,"scale",Vector3.ONE,"_update_weapon_pose")
 	weapon_root.scale = Vector3.ONE
 	if GameWeapons.ITEMS[weapon_id].kind in ["firearm","launcher"]:
 		var offset:=Vector3(.15,-.045,-.38) if GameWeapons.canonical(weapon_id) in ["fal","g3"] else (Vector3(.20,-.035,-.48) if GameWeapons.canonical(weapon_id)=="glock" else Vector3(.23,-.06,-.53))
@@ -839,16 +845,21 @@ func _update_weapon_pose() -> void:
 			# drawing a second copy centred under the optic.
 			var optical_basis:=basis_pitch*Basis(Vector3.BACK,-lean*GameInfantryPose.LEAN_ROLL)
 			var aimed:=Transform3D(optical_basis,camera_pivot.position+optical_basis*weapon_optics.aimed_offset(weapon_id))
+			if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,weapon_root,"transform",weapon_root.transform.interpolate_with(aimed,weapon_optics.blend()),"_update_weapon_pose")
 			weapon_root.transform=weapon_root.transform.interpolate_with(aimed,weapon_optics.blend())
 	if is_instance_valid(melee_rig):
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,weapon_root,"position",camera_pivot.position + Basis(Vector3.RIGHT,clampf(pitch,-0.65,0.65)) * Vector3(0.20,-0.48,-0.38),"_update_weapon_pose")
 		weapon_root.position = camera_pivot.position + Basis(Vector3.RIGHT,clampf(pitch,-0.65,0.65)) * Vector3(0.20,-0.48,-0.38)
 		weapon_root.rotation.x = clampf(pitch,-0.65,0.65)
 	if is_instance_valid(view_root):
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,view_root,"position",Vector3(0.42,-0.60,-0.90) if is_instance_valid(melee_rig) else _weapon_offset(),"_update_weapon_pose")
 		view_root.position = Vector3(0.42,-0.60,-0.90) if is_instance_valid(melee_rig) else _weapon_offset()
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,view_root,"rotation",Vector3.ZERO,"_update_weapon_pose")
 		view_root.rotation = Vector3.ZERO
 		if is_instance_valid(melee_rig):
 			var copy := view_root.get_node_or_null("MeleeView") as Node3D
 			if copy:
+				if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,copy,"transform",melee_rig.swing.transform,"_update_weapon_pose")
 				copy.transform = melee_rig.swing.transform
 				for side in ["R","L"]:
 					var arm := view_root.get_node_or_null("MeleeForearm"+side) as Node3D
@@ -857,7 +868,9 @@ func _update_weapon_pose() -> void:
 					var hand := copy.transform * marker.position
 					var anchor := Vector3(0.22,-0.30,0.65) if side == "R" else Vector3(-0.50,-0.35,0.62)
 					var delta := hand-anchor
+					if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,arm,"position",(hand+anchor)*0.5,"_update_weapon_pose")
 					arm.position = (hand+anchor)*0.5
+					if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,arm,"basis",Basis(Quaternion(Vector3.UP,delta.normalized())),"_update_weapon_pose")
 					arm.basis = Basis(Quaternion(Vector3.UP,delta.normalized()))
 					arm.scale.y = delta.length()
 	var model := weapon_root.get_node_or_null("Imported_" + GameWeapons.canonical(weapon_id)) as Node3D
@@ -865,6 +878,7 @@ func _update_weapon_pose() -> void:
 		var progress := reload_left / maxf(reload_total,0.001)
 		model.rotation.z = sin(progress * PI) * -0.65
 		var rest: Vector3 = model.get_meta("rest_position",Vector3.ZERO)
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,model,"position",rest + Vector3(sin(progress * PI) * -0.06,0,attack_anim * 0.08),"_update_weapon_pose")
 		model.position = rest + Vector3(sin(progress * PI) * -0.06,0,attack_anim * 0.08)
 		var reload_pose: Dictionary={}
 		if GameWeapons.canonical(weapon_id) in ["fal","glock","g3"]:
@@ -873,12 +887,15 @@ func _update_weapon_pose() -> void:
 			GameReloadPose.apply(model,weapon_id,reload_pose)
 		elif GameWeapons.canonical(weapon_id) in ["sniper","ak"]:
 			reload_pose=reload_pose_state(weapon_id,reload_left if reload_weapon==weapon_id else 0.,reload_total)
+			if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,model,"basis",Basis.from_euler(reload_pose.angles)*Basis(model.get_meta("rest_basis")),"_update_weapon_pose")
 			model.basis=Basis.from_euler(reload_pose.angles)*Basis(model.get_meta("rest_basis"))
+			if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,model,"position",rest+Vector3(reload_pose.offset)+Vector3(0,0,attack_anim*.08),"_update_weapon_pose")
 			model.position=rest+Vector3(reload_pose.offset)+Vector3(0,0,attack_anim*.08)
 			if GameWeapons.canonical(weapon_id)=="ak":GameReloadPose.apply(model,weapon_id,reload_pose)
 		if is_instance_valid(view_root):
 			var copy := view_root.get_node_or_null(NodePath(model.name)) as Node3D
 			if copy:
+				if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,copy,"transform",model.transform,"_update_weapon_pose")
 				copy.transform = model.transform
 				if not reload_pose.is_empty(): GameReloadPose.apply(copy,weapon_id,reload_pose)
 	if GameWeapons.canonical(weapon_id)=="sniper": _update_sniper_view_hands()
@@ -971,11 +988,14 @@ func _update_first_person_hands() -> void:
 		if not hand or not forearm:continue
 		if firearm:
 			var point: Vector3=pose.hand if support else (GlockModel.GRIP if id=="glock" else (G3Model.GRIP if id=="g3" else FALModel.GRIP))
+			if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,hand,"position",view_root.to_local(model.to_global(point)),"_update_first_person_hands")
 			hand.position=view_root.to_local(model.to_global(point))
 		else:
 			var marker:=view_root.find_child("GripLeft" if support else "GripRight",true,false) as Node3D
 			if not marker:continue
+			if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,hand,"position",view_root.to_local(marker.global_position),"_update_first_person_hands")
 			hand.position=view_root.to_local(marker.global_position)
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,hand,"basis",gun_basis,"_update_first_person_hands")
 		hand.basis=gun_basis
 		var grasp: bool=firearm and (id=="glock" or support and bool(pose.hand_grabbing))
 		hand.mesh=WarHumanRig.grip_glove(support,grasp) if firearm else WarHumanRig.glove(-1 if support else 1)
@@ -983,12 +1003,15 @@ func _update_first_person_hands() -> void:
 		var cuff:=Vector3(-.035,-.029,.075) if support and not grasp else Vector3(.023,-.025,.085)
 		var wrist:=hand.position+gun_basis*(cuff if firearm else Vector3(0,.067,0))
 		var anchor:=Vector3(-.31,-.22,.20) if support else Vector3(.15,-.24,.43)
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,forearm,"position",(wrist+anchor)*.5,"_update_first_person_hands")
 		forearm.position=(wrist+anchor)*.5
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,forearm,"basis",Basis(Quaternion(Vector3.DOWN,(wrist-anchor).normalized()))*Basis.from_scale(Vector3(1,wrist.distance_to(anchor)/maxf(.01,forearm.mesh.get_aabb().size.y),1)),"_update_first_person_hands")
 		forearm.basis=Basis(Quaternion(Vector3.DOWN,(wrist-anchor).normalized()))*Basis.from_scale(Vector3(1,wrist.distance_to(anchor)/maxf(.01,forearm.mesh.get_aabb().size.y),1))
 
 func _pose_arm(arm: Node3D, hand_position: Vector3, group: String) -> void:
 	var _pose_scope = POSE_PROBE.scope(self,"base.ik") if POSE_PROBE.enabled else null
 	if CombatRules.limb_disability_enabled(game) and float(limbs.get(group,100.0)) <= 0.0:
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,arm,"rotation",Vector3(0.10,0,0.12 if group == "armL" else -0.12),"_pose_arm")
 		arm.rotation = Vector3(0.10,0,0.12 if group == "armL" else -0.12)
 		return
 	if get_meta("articulated_arms",false):
@@ -999,8 +1022,10 @@ func _pose_arm(arm: Node3D, hand_position: Vector3, group: String) -> void:
 	var local_target := body_root.to_local(hand_position)
 	var direction := local_target - arm.position
 	if direction.length_squared() < 0.001: return
+	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,arm,"basis",Basis(Quaternion(Vector3.DOWN,direction.normalized())),"_pose_arm")
 	arm.basis = Basis(Quaternion(Vector3.DOWN,direction.normalized()))
 	var proportion := float(body_proportions.get("arms",1.0))
+	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,arm,"scale",Vector3(proportion, clampf(direction.length() / 0.78,0.6,1.5),proportion),"_pose_arm")
 	arm.scale = Vector3(proportion, clampf(direction.length() / 0.78,0.6,1.5),proportion)
 
 func _set_crouched(value: bool) -> void:
@@ -1490,6 +1515,7 @@ func _update_grenade_pose() -> void:
 	if is_instance_valid(grenade_prop):
 		GameGrenades.tune_prop(grenade_prop,str(get_meta("grenade_display_kind",get_meta("grenade_kind","grenade"))))
 		grenade_prop.visible=hp>0 and grenade_selected and not holding and not _uses_first_person_presentation()
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,grenade_prop,"global_position",grenade_hand_position(),"_update_grenade_pose")
 		grenade_prop.global_position=grenade_hand_position()
 	if active:
 		weapon_root.hide()
@@ -1513,6 +1539,7 @@ func _update_grenade_pose() -> void:
 		var progress:=1-grenade_throw_left/.75
 		# The FPP mesh occupies exactly the world hand's location. Changing
 		# cameras no longer substitutes a different grenade position.
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,grenade_view,"global_position",grenade_hand_position(),"_update_grenade_pose")
 		grenade_view.global_position=grenade_hand_position()
 		grenade_view.rotation.x=-sin(progress*PI)*.8 if grenade_throw_left>0 else -.15
 

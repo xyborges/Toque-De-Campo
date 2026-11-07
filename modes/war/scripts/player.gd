@@ -211,6 +211,7 @@ func _drone_controller_pose() -> void:
 		WarUniform.box(drone_controller,"Controller",Vector3.ZERO,Vector3(.26,.10,.14),WarVehicle.material("252b28"))
 		for side in [-1,1]:
 			WarUniform.box(drone_controller,"Stick",Vector3(side*.07,.065,-.015),Vector3(.025,.035,.025),WarVehicle.material("727963"))
+	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,drone_controller,"position",avatar_parts.torso.position+Vector3(0,-.04,-.30),"_drone_controller_pose")
 	drone_controller.position=avatar_parts.torso.position+Vector3(0,-.04,-.30)
 	drone_controller.show()
 	var centre:=drone_controller.global_position
@@ -279,9 +280,11 @@ func _update_weapon_pose() -> void:
 	if _pose_scope:_pose_scope.section("war.locomotion_pose_weapon")
 	locomotion.pose_weapon(self)
 	if gadget_equipped and launcher_recoil>0:
+		if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,weapon_root,"position",weapon_root.position+(weapon_root.basis*Vector3(0,.025,launcher_recoil*.22)),"_update_weapon_pose")
 		weapon_root.position+=weapon_root.basis*Vector3(0,.025,launcher_recoil*.22)
 		weapon_root.rotation.x+=launcher_recoil*.10
 		if is_instance_valid(view_root):
+			if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,view_root,"position",view_root.position+(Vector3(0,.025,launcher_recoil*.22)),"_update_weapon_pose")
 			view_root.position+=Vector3(0,.025,launcher_recoil*.22)
 			view_root.rotation.x+=launcher_recoil*.10
 
@@ -417,6 +420,7 @@ func _utility_pose() -> void:
 		else:
 			for side in [-1,1]: WarUniform.box(utility_model,"Optic",Vector3(float(side)*.065,0,0),Vector3(.10,.10,.20),WarVehicle.material("252b28"))
 			WarUniform.box(utility_model,"Bridge",Vector3.ZERO,Vector3(.18,.05,.10),WarVehicle.material("353d36"))
+	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,utility_model,"position",(body_root.to_local(avatar_parts.head.global_position)+Vector3(0,-.02,-.23)) if utility_mode=="binoculars" else avatar_parts.torso.position+Vector3(0,-.05,-.3),"_utility_pose")
 	utility_model.position=(body_root.to_local(avatar_parts.head.global_position)+Vector3(0,-.02,-.23)) if utility_mode=="binoculars" else avatar_parts.torso.position+Vector3(0,-.05,-.3)
 	utility_model.show();weapon_root.hide()
 	if is_instance_valid(view_root): view_root.hide()
@@ -428,6 +432,7 @@ func _utility_pose() -> void:
 				WarUniform.box(utility_view,"MedicalMark",Vector3(0,.083,0),Vector3(.10,.005,.025),WarVehicle.material("d3d8cc"))
 			else:
 				for side in [-1,1]: WarUniform.box(utility_view,"Optic",Vector3(float(side)*.065,0,0),Vector3(.10,.10,.20),WarVehicle.material("252b28"))
+			if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,utility_view,"position",Vector3(.26,-.22,-.45),"_utility_pose")
 			utility_view.position=Vector3(.26,-.22,-.45)
 		utility_view.visible=(not game.third_person or camera_close) and not (utility_mode=="binoculars" and utility_zoom>0)
 	var centre:=utility_model.global_position
@@ -450,6 +455,7 @@ func _binocular_pose() -> void:
 	var lower:=eye+aim_basis*Vector3(.04,-.28,-.45)
 	var eye_anchor: Vector3=utility_model.get_node("EyeAnchor").position
 	var raised:=eye-aim_basis*(eye_anchor+Vector3(0,0,.035))
+	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,utility_model,"transform",Transform3D(aim_basis,lower.lerp(raised,utility_raise_weight)+aim_basis*Vector3(0,-.16*(1.-utility_equip_weight),.04*(1.-utility_equip_weight))),"_binocular_pose")
 	utility_model.transform=Transform3D(aim_basis,lower.lerp(raised,utility_raise_weight)+aim_basis*Vector3(0,-.16*(1.-utility_equip_weight),.04*(1.-utility_equip_weight)))
 	var optical:=is_local and utility_zoom>0
 	utility_model.visible=utility_equip_weight>.01 and not optical and (not is_local or not camera_close)
