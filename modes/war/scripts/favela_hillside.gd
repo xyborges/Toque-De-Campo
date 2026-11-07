@@ -116,10 +116,16 @@ static func _points(kind: String, budget: int, attempts: int, seed_shift: int,
 	return result
 
 static func plan(lots: Array, bases: Array, objectives: Array,
-		road_distance: Callable) -> Dictionary:
+		road_distance: Callable,skip_visual_only:=false) -> Dictionary:
 	var cells := _indexed_lots(lots)
+	# Each category uses an independent fixed-seed RNG. Servers need only
+	# the collision-bearing tree positions; they never instantiate or render
+	# the decorative shrubs, grass and rocks. Do not change client plans.
+	var trees:=_points("trees", TREE_BUDGET, 10500, 17, cells, bases, objectives, road_distance)
+	if skip_visual_only:
+		return {"trees":trees,"shrubs":[],"grass":[],"rocks":[]}
 	return {
-		"trees": _points("trees", TREE_BUDGET, 10500, 17, cells, bases, objectives, road_distance),
+		"trees": trees,
 		"shrubs": _points("shrubs", SHRUB_BUDGET, 19000, 93, cells, bases, objectives, road_distance),
 		"grass": _points("grass", GRASS_BUDGET, 49000, 251, cells, bases, objectives, road_distance),
 		"rocks": _points("rocks", ROCK_BUDGET, 2700, 367, cells, bases, objectives, road_distance)
@@ -127,13 +133,15 @@ static func plan(lots: Array, bases: Array, objectives: Array,
 
 static func populate(kit: EnvironmentKit, lots: Array, bases: Array,
 		objectives: Array, road_distance: Callable, terrain_height: Callable) -> Dictionary:
-	var sites := plan(lots, bases, objectives, road_distance)
+	var skip_visual_only:=not kit.visuals and OS.get_environment("TDC_IA2_HEADLESS_SKIP_VISUAL_HILLSIDE")=="1"
+	var sites := plan(lots, bases, objectives, road_distance,skip_visual_only)
 	var summary := {
 		"hill_trees": sites.trees.size(),
 		"hill_shrubs": sites.shrubs.size(),
 		"hill_grass": sites.grass.size(),
 		"hill_rocks": sites.rocks.size(),
 		"hill_colliders": 0,
+		"hill_visual_plan_skipped": skip_visual_only,
 	}
 	var shrub_root := SHRUB_SCENE.instantiate() as Node3D
 	var rock_root := ROCK_SCENE.instantiate() as Node3D
