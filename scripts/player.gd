@@ -1,6 +1,7 @@
 extends CharacterBody3D
 class_name GamePlayer
 const POSE_PROBE = preload("res://scripts/pose_cost_probe.gd")
+static var p2_idle_grenade := OS.get_environment("TDC_P2_IDLE_GRENADE")=="1"
 
 const WEAPON_ZEROING=preload("res://scripts/weapon_zeroing.gd")
 
@@ -1508,6 +1509,9 @@ func _uses_first_person_presentation() -> bool:
 
 func _update_grenade_pose() -> void:
 	var _pose_scope = POSE_PROBE.scope(self,"base.grenade") if POSE_PROBE.enabled else null
+	if p2_idle_grenade and bool(get_meta("war_bot",false)) and not is_local and not is_npc and hp>0.0 and vehicle_id.is_empty() and not grenade_selected and grenade_held_id.is_empty() and not grenade_prime_pending and not grenade_aiming and grenade_throw_left<=0.0 and not is_instance_valid(grenade_prop) and not is_instance_valid(grenade_view) and is_instance_valid(weapon_root) and weapon_root.visible and (not is_instance_valid(view_root) or not view_root.visible):
+		# Equivalent no-grenade state: the baseline only reassigns these same visibility values.
+		return
 	var holding: bool=not grenade_held_id.is_empty() or grenade_prime_pending
 	var active: bool=hp>0 and _grenade_active()
 	if grenade_selected and not is_instance_valid(grenade_prop):
