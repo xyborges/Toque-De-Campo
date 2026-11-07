@@ -14,6 +14,7 @@ var camera: Camera3D
 var lens: MeshInstance3D
 var glass: ShaderMaterial
 var active:=false
+static var p2_idle_optics := OS.get_environment("TDC_P2_IDLE_OPTICS")=="1"
 var world_scope: Node3D
 var selected_optic:=""
 var selected_weapon:=""
@@ -29,6 +30,7 @@ func blend() -> float:
 
 func advance(actor: Node,delta: float) -> void:
 	var _pose_scope = POSE_PROBE.scope(actor,"optics.advance") if POSE_PROBE.enabled else null
+	if p2_idle_optics and optical.is_empty() and aim_weight==0.0 and not actor.iron_sights and not active and not is_instance_valid(view) and not is_instance_valid(glass):return
 	var allowed: bool=not optical.is_empty() and actor.hp>0 and actor.reload_left<=0 and not actor._grenade_active() and actor.vehicle_id.is_empty()
 	if actor is WarPlayer:allowed=allowed and actor.deployed and actor.utility_mode.is_empty() and not actor.in_water()
 	if not allowed and actor.iron_sights and not optical.is_empty():actor.aiming=false;actor.iron_sights=false
