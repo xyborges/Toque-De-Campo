@@ -1,6 +1,7 @@
 extends CharacterBody3D
 class_name GamePlayer
 const POSE_PROBE = preload("res://scripts/pose_cost_probe.gd")
+static var p2_equal_transform := OS.get_environment("TDC_P2_EQUAL_TRANSFORM")=="1"
 static var p2_idle_grenade := OS.get_environment("TDC_P2_IDLE_GRENADE")=="1"
 
 const WEAPON_ZEROING=preload("res://scripts/weapon_zeroing.gd")
@@ -832,11 +833,12 @@ func _update_weapon_pose() -> void:
 	var aim_pitch := clamp_aim_pitch(pitch + (recoil if is_local else 0.0))
 	var basis_pitch := Basis(Vector3.RIGHT, aim_pitch)
 	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,weapon_root,"position",camera_pivot.position + basis_pitch * _weapon_offset(),"_update_weapon_pose")
-	weapon_root.position = camera_pivot.position + basis_pitch * _weapon_offset()
+	var _p2_target_position := camera_pivot.position + basis_pitch * _weapon_offset()
+	if not p2_equal_transform or weapon_root.position!=_p2_target_position:weapon_root.position=_p2_target_position
 	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,weapon_root,"rotation",Vector3(aim_pitch,0,0),"_update_weapon_pose")
-	weapon_root.rotation = Vector3(aim_pitch,0,0)
+	if not p2_equal_transform or weapon_root.rotation!=Vector3(aim_pitch,0,0):weapon_root.rotation = Vector3(aim_pitch,0,0)
 	if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,weapon_root,"scale",Vector3.ONE,"_update_weapon_pose")
-	weapon_root.scale = Vector3.ONE
+	if not p2_equal_transform or weapon_root.scale!=Vector3.ONE:weapon_root.scale=Vector3.ONE
 	if GameWeapons.ITEMS[weapon_id].kind in ["firearm","launcher"]:
 		var offset:=Vector3(.15,-.045,-.38) if GameWeapons.canonical(weapon_id) in ["fal","g3"] else (Vector3(.20,-.035,-.48) if GameWeapons.canonical(weapon_id)=="glock" else Vector3(.23,-.06,-.53))
 		weapon_root.transform=GameInfantryPose.weapon_pose(self,offset)
@@ -889,7 +891,8 @@ func _update_weapon_pose() -> void:
 		elif GameWeapons.canonical(weapon_id) in ["sniper","ak"]:
 			reload_pose=reload_pose_state(weapon_id,reload_left if reload_weapon==weapon_id else 0.,reload_total)
 			if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,model,"basis",Basis.from_euler(reload_pose.angles)*Basis(model.get_meta("rest_basis")),"_update_weapon_pose")
-			model.basis=Basis.from_euler(reload_pose.angles)*Basis(model.get_meta("rest_basis"))
+			var _p2_model_basis:=Basis.from_euler(reload_pose.angles)*Basis(model.get_meta("rest_basis"))
+			if not p2_equal_transform or model.basis!=_p2_model_basis:model.basis=_p2_model_basis
 			if POSE_PROBE.setter_probe and POSE_PROBE.collecting:POSE_PROBE.record_setter(self,model,"position",rest+Vector3(reload_pose.offset)+Vector3(0,0,attack_anim*.08),"_update_weapon_pose")
 			model.position=rest+Vector3(reload_pose.offset)+Vector3(0,0,attack_anim*.08)
 			if GameWeapons.canonical(weapon_id)=="ak":GameReloadPose.apply(model,weapon_id,reload_pose)
