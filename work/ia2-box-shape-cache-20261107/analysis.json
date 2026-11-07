@@ -1,0 +1,82 @@
+{
+  "runs": 10,
+  "pairs": [
+    {
+      "pair": 1,
+      "original_world_ms": 4860.777,
+      "optimized_world_ms": 4881.623,
+      "delta_world_ms": -20.84599999999955,
+      "delta_ready_ms": -34.61499999999978,
+      "delta_create_ms": 5.045000000000002
+    },
+    {
+      "pair": 2,
+      "original_world_ms": 4898.149,
+      "optimized_world_ms": 5099.825,
+      "delta_world_ms": -201.67599999999948,
+      "delta_ready_ms": -241.4469999999983,
+      "delta_create_ms": 4.824999999999999
+    },
+    {
+      "pair": 3,
+      "original_world_ms": 5024.501,
+      "optimized_world_ms": 4842.014,
+      "delta_world_ms": 182.48700000000008,
+      "delta_ready_ms": 182.69900000000052,
+      "delta_create_ms": 5.981999999999996
+    },
+    {
+      "pair": 4,
+      "original_world_ms": 4866.455,
+      "optimized_world_ms": 5045.917,
+      "delta_world_ms": -179.46200000000044,
+      "delta_ready_ms": -291.10699999999997,
+      "delta_create_ms": 6.050999999999998
+    },
+    {
+      "pair": 5,
+      "original_world_ms": 4917.176,
+      "optimized_world_ms": 5277.654,
+      "delta_world_ms": -360.47800000000007,
+      "delta_ready_ms": -684.9900000000016,
+      "delta_create_ms": 4.948999999999998
+    }
+  ],
+  "world": {
+    "original_mean": 4913.4116,
+    "optimized_mean": 5029.4066,
+    "saved_ms": -115.99499999999989,
+    "gain_pct": -2.360783289557909,
+    "original_noise_amplitude_over_mean_pct": 3.3321857261052616
+  },
+  "ready": {
+    "original_mean": 9135.587,
+    "optimized_mean": 9349.479,
+    "saved_ms": -213.89199999999983,
+    "gain_pct": -2.3413054902766492,
+    "original_noise_amplitude_over_mean_pct": 1.9128929536766583
+  },
+  "create": {
+    "original_mean": 35.7828,
+    "optimized_mean": 30.4124,
+    "saved_ms": 5.3704,
+    "gain_pct": 15.008328023519677,
+    "original_noise_amplitude_over_mean_pct": 4.885028561208171
+  },
+  "attach": {
+    "original_mean": 447.3312,
+    "optimized_mean": 453.8302,
+    "saved_ms": -6.498999999999967,
+    "gain_pct": -1.4528385232239482,
+    "original_noise_amplitude_over_mean_pct": 4.520811425628262
+  },
+  "cache_hits_mean": 3826.0,
+  "world_wins": 1,
+  "ready_wins": 1,
+  "creation_wins": 5,
+  "geometry_identical": true,
+  "raycast_identical": true,
+  "box_count_identical": true,
+  "resources_original_mean": 8812.0,
+  "resources_cached_mean": 4986.0
+}
