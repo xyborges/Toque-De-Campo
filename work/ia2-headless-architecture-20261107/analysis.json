@@ -1,0 +1,59 @@
+{
+  "base_commit": "ee969af",
+  "runs": 10,
+  "original_world_ms": 5701.4282,
+  "optimized_world_ms": 5885.7394,
+  "original_ready_ms": 12250.2466,
+  "optimized_ready_ms": 12896.027,
+  "world_gain_pct": -3.232719829743714,
+  "ready_gain_pct": -5.2715706147499075,
+  "noise_world_pct": 19.783727172079445,
+  "noise_ready_pct": 21.901012180440514,
+  "geometry_identical": true,
+  "ray_results_identical": true,
+  "shape_counts_identical": true,
+  "pairs": [
+    {
+      "pair": 1,
+      "original_world_ms": 5719.486,
+      "optimized_world_ms": 5308.951,
+      "gain_world_pct": 7.177830315521358,
+      "original_ready_ms": 11810.666,
+      "optimized_ready_ms": 11278.541
+    },
+    {
+      "pair": 2,
+      "original_world_ms": 5151.211,
+      "optimized_world_ms": 5245.435,
+      "gain_world_pct": -1.8291621135302,
+      "original_ready_ms": 11251.481,
+      "optimized_ready_ms": 11191.806
+    },
+    {
+      "pair": 3,
+      "original_world_ms": 5296.422,
+      "optimized_world_ms": 5173.022,
+      "gain_world_pct": 2.3298747720630955,
+      "original_ready_ms": 11311.97,
+      "optimized_ready_ms": 11486.887
+    },
+    {
+      "pair": 4,
+      "original_world_ms": 6279.166,
+      "optimized_world_ms": 7660.836,
+      "gain_world_pct": -22.004036841835365,
+      "original_ready_ms": 13934.409,
+      "optimized_ready_ms": 16891.495
+    },
+    {
+      "pair": 5,
+      "original_world_ms": 6060.856,
+      "optimized_world_ms": 6040.453,
+      "gain_world_pct": 0.33663561714713797,
+      "original_ready_ms": 12942.707,
+      "optimized_ready_ms": 13631.406
+    }
+  ],
+  "world_wins": 3,
+  "ready_wins": 2
+}
