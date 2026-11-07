@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://ci7m63evw4ttw"
+
+[deps]
+
+files=["res://work/ia2-housing-plan-cache-20261107/housing-5pairs.variant.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.layout.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.world.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.ready.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.lots.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.houses.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.collision.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.plan.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.geometry.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.ray.translation"]
+
+source_file="res://work/ia2-housing-plan-cache-20261107/housing-5pairs.csv"
+dest_files=["res://work/ia2-housing-plan-cache-20261107/housing-5pairs.variant.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.layout.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.world.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.ready.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.lots.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.houses.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.collision.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.plan.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.geometry.translation", "res://work/ia2-housing-plan-cache-20261107/housing-5pairs.ray.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

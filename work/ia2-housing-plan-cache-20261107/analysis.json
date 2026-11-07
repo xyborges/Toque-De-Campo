@@ -1,0 +1,101 @@
+{
+  "runs": 10,
+  "layout": {
+    "original_mean_ms": 1090.0188,
+    "cached_mean_ms": 302.1188,
+    "saved_ms": 787.9000000000001,
+    "gain_pct": 72.28315695105444,
+    "baseline_noise_range_over_mean_pct": 4.367814573473402,
+    "original_median_ms": 1079.691,
+    "cached_median_ms": 284.296
+  },
+  "world": {
+    "original_mean_ms": 4899.0406,
+    "cached_mean_ms": 4176.3158,
+    "saved_ms": 722.7248,
+    "gain_pct": 14.752374168934217,
+    "baseline_noise_range_over_mean_pct": 3.783842901812232,
+    "original_median_ms": 4878.519,
+    "cached_median_ms": 4069.109
+  },
+  "ready": {
+    "original_mean_ms": 9221.9668,
+    "cached_mean_ms": 8480.0082,
+    "saved_ms": 741.9585999999999,
+    "gain_pct": 8.045557049717418,
+    "baseline_noise_range_over_mean_pct": 7.202758526521705,
+    "original_median_ms": 9079.044,
+    "cached_median_ms": 8289.433
+  },
+  "wins": {
+    "layout": 5,
+    "world": 5,
+    "ready": 4
+  },
+  "geometry_identical": true,
+  "lots_identical": true,
+  "raycasts_identical": true,
+  "counts_identical": true,
+  "pairs": [
+    {
+      "pair": 1,
+      "original_layout_ms": 1079.255,
+      "cached_layout_ms": 284.296,
+      "original_world_ms": 4835.492,
+      "cached_world_ms": 4218.208,
+      "original_ready_ms": 9071.164,
+      "cached_ready_ms": 8481.197,
+      "layout_saved_ms": 794.9590000000001,
+      "world_saved_ms": 617.2840000000006,
+      "ready_saved_ms": 589.9670000000006
+    },
+    {
+      "pair": 2,
+      "original_layout_ms": 1079.691,
+      "cached_layout_ms": 285.622,
+      "original_world_ms": 4853.424,
+      "cached_world_ms": 4052.514,
+      "original_ready_ms": 9031.909,
+      "cached_ready_ms": 8244.902,
+      "layout_saved_ms": 794.069,
+      "world_saved_ms": 800.9099999999999,
+      "ready_saved_ms": 787.0069999999996
+    },
+    {
+      "pair": 3,
+      "original_layout_ms": 1125.542,
+      "cached_layout_ms": 274.142,
+      "original_world_ms": 5020.864,
+      "cached_world_ms": 4069.109,
+      "original_ready_ms": 9696.145,
+      "cached_ready_ms": 8254.449,
+      "layout_saved_ms": 851.3999999999999,
+      "world_saved_ms": 951.7549999999997,
+      "ready_saved_ms": 1441.696
+    },
+    {
+      "pair": 4,
+      "original_layout_ms": 1077.932,
+      "cached_layout_ms": 275.004,
+      "original_world_ms": 4906.904,
+      "cached_world_ms": 4036.403,
+      "original_ready_ms": 9231.572,
+      "cached_ready_ms": 8289.433,
+      "layout_saved_ms": 802.928,
+      "world_saved_ms": 870.5010000000007,
+      "ready_saved_ms": 942.1389999999992
+    },
+    {
+      "pair": 5,
+      "original_layout_ms": 1087.674,
+      "cached_layout_ms": 391.53,
+      "original_world_ms": 4878.519,
+      "cached_world_ms": 4505.345,
+      "original_ready_ms": 9079.044,
+      "cached_ready_ms": 9130.06,
+      "layout_saved_ms": 696.144,
+      "world_saved_ms": 373.174,
+      "ready_saved_ms": -51.01599999999962
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "base_git_commit": "ee969afc8a889861c64639689087c1568d9bfb4b",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "flag": "TDC_IA2_HOUSING_CACHE=1",
+  "default_enabled": false,
+  "cache_asset": "maps/prepared/favela/housing_plan_cache.res",
+  "asset_bytes": 2307299,
+  "asset_sha256": "5b2f824d3f785bbb0aea68fab40ff896b628a7d8081db75e67e48affe0a2d090",
+  "source_files_sha256": {
+    "modes/war/scripts/favela_map.gd": "9651720bc0e43644056782eac4993a386f7d2372213457082fd61fb0df804bc8",
+    "modes/war/scripts/favela_layout.gd": "09057760109551897a3d83bef2f2bbea089a23302e24e09d5a9ee1dfa6294bcd",
+    "modes/war/scripts/favela_street_space.gd": "2e1c43998f1d9667f7ab828a645b5be3990b9041b1dbd2a6ba0a3c9f921e8b2f"
+  },
+  "source_signature": "c32fd8a5d8a5b58b84f9d550ae3f1949d3316cbeecadfef721275d40eae15dd4",
+  "lots": 4188,
+  "plan_sha256": "9264a7d132a78bf2b9fc4966dab849dd92e66bb622321f547133febc60d3a479"
+}
