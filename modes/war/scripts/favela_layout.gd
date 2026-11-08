@@ -7,8 +7,9 @@ var bases: Array=[]
 var objectives: Array=[]
 var occupied: Dictionary={}
 
-const SIZES := [Vector2(12.8,12.3),Vector2(11.8,13.5),Vector2(13.4,11.8),
-	Vector2(12.2,12.8),Vector2(13.2,13.0)]
+const SIZES := [Vector2(11.55,11.45),Vector2(11.35,11.70),Vector2(11.65,11.35),
+	Vector2(11.45,11.60),Vector2(11.60,11.45)]
+const HOUSE_GAP := 1.5
 const BAILE_CENTER := Vector2(430.0, -275.0)
 const BAILE_CLEARANCE := Rect2(BAILE_CENTER - Vector2(47.0, 34.0), Vector2(94.0, 68.0))
 const PALETTES := [
@@ -89,7 +90,7 @@ func _append_frontage_infill(lots: Array[Dictionary]) -> int:
 			if length<12.0:continue
 			var tangent:=axis/length
 			var normal:=Vector2(-tangent.y,tangent.x)
-			var spacing:=11.4+float(posmod(road_id+segment,3))*.75
+			var spacing:=10.5+float(posmod(road_id+segment,3))*.52
 			var steps:=maxi(1,floori(length/spacing))
 			for side_index in 2:
 				var side: float=-1.0 if side_index==0 else 1.0
@@ -112,7 +113,7 @@ func _append_frontage_infill(lots: Array[Dictionary]) -> int:
 					# At crossings the nearest street can change; leave that
 					# corner open rather than pushing a house into two envelopes.
 					if int(edge.road)!=road_id or float(edge.gap)<.40 or float(edge.gap)>1.55:continue
-					var footprint:=Rect2(p-half,size).grow(.34)
+					var footprint:=Rect2(p-half,size).grow(HOUSE_GAP*.5)
 					if not clear(p,half) or overlaps(footprint):continue
 					occupy(footprint)
 					var block:=posmod(road_id+segment+side_index,PALETTES.size())
@@ -135,14 +136,14 @@ func _append_frontage_infill(lots: Array[Dictionary]) -> int:
 func _plan() -> Array[Dictionary]:
 	var candidates: Array[Dictionary]=[]
 	# Preserve the tested roof crossing spacing around the new field.
-	for row in 72:
-		var z: float=-535.0+row*14.6
+	for row in 78:
+		var z: float=-535.0+row*13.35
 		var block_row:=floori(row/4.0)
 		var shift:=sin(floorf(row*.5)*.84)*2.25
 		var fringe:=512.0+70*sin(z*.011)+36*cos(z*.026)
-		for column in 88:
+		for column in 97:
 			var block_column:=floori(column/5.0)
-			var x: float=-635.0+column*14.6+shift
+			var x: float=-635.0+column*13.35+shift
 			var sparse:=z>400 or absf(x-22*sin(z*.02))>fringe
 			if sparse and (row%2!=0 or column%3==0):continue
 			var block:=posmod(block_column+block_row*3,4)
@@ -164,7 +165,7 @@ func _plan() -> Array[Dictionary]:
 			var palette: Array=PALETTES[block]
 			var extension_side:=posmod(block+floori(column/2.0)+floori(row/3.0),4)
 			if extension_stage==6: extension_side=posmod(extension_side+1,4)
-			candidates.append({"id":row*88+column,"row":row,"column":column,
+			candidates.append({"id":row*97+column,"row":row,"column":column,
 				"position":p,"size":size,"profile":profile,"block":block,
 				"storeys":storeys,"finish":palette[(column+row)%palette.size()],
 				"extension_side":extension_side,"extension_stage":extension_stage,
@@ -182,11 +183,11 @@ func _plan() -> Array[Dictionary]:
 		var setback:=2.8 if pocket else .55+float(int(lot.profile)%3)*.13
 		if not lot.sparse and gap>setback and gap<18.0:
 			var candidate: Vector2=p-Vector2(edge.normal)*(gap-setback)
-			var footprint:=Rect2(candidate-half,half*2).grow(.34)
+			var footprint:=Rect2(candidate-half,half*2).grow(HOUSE_GAP*.5)
 			if clear(candidate,half) and not overlaps(footprint):
 				p=candidate
 				lot.moved=true
-		var rect:=Rect2(p-half,half*2).grow(.34)
+		var rect:=Rect2(p-half,half*2).grow(HOUSE_GAP*.5)
 		if not clear(p,half) or overlaps(rect):continue
 		occupy(rect)
 		lot.position=p

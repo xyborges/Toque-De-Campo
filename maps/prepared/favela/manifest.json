@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 17,
+  "version": 25,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,8 +8,8 @@
     1500,
     1500
   ],
-  "content_hash": "bfc56c74b099813cc2d4294ccc2fd5e2a19dc05ef0c3d22d6d5d9fc4c87f2069",
-  "source_hash": "e4910ea6c20e6fc3c52be2dbd11f47f354ea0ed1d1b75802bd41e9c3a43de3fa",
+  "content_hash": "c4ea1660d9beea65acad9aaf26f31630b226f18b2f7bc0a4f8a0e1d7c153b33d",
+  "source_hash": "1107f2c0d71d6b2f547693bd0afb1c6dad3fd1b702a9474a0c493a1c2ac775df",
   "sources": [
     "res://modes/war/audio/baile/ak_do_flamengo.mp3",
     "res://modes/war/audio/baile/eu_vi_o_mano.mp3",
@@ -32,6 +32,7 @@
     "res://modes/war/library/favela_casa_laje.tscn",
     "res://modes/war/library/favela_comercio_fachada.tscn",
     "res://modes/war/library/favela_corrimao_beco.tscn",
+    "res://modes/war/library/favela_degrau_beco.tscn",
     "res://modes/war/library/favela_escada_externa.tscn",
     "res://modes/war/library/favela_janela_grade.tscn",
     "res://modes/war/library/favela_janela_madeira.tscn",
@@ -62,15 +63,21 @@
     "res://modes/war/scripts/favela_atmosphere.gd",
     "res://modes/war/scripts/favela_baile.gd",
     "res://modes/war/scripts/favela_edge_composition.gd",
+    "res://modes/war/scripts/favela_frontline.gd",
     "res://modes/war/scripts/favela_hillside.gd",
     "res://modes/war/scripts/favela_layout.gd",
     "res://modes/war/scripts/favela_map.gd",
+    "res://modes/war/scripts/favela_pedestrian_stairs.gd",
+    "res://modes/war/scripts/favela_rim.gd",
     "res://modes/war/scripts/favela_street_art.gd",
     "res://modes/war/scripts/favela_street_space.gd",
     "res://modes/war/scripts/favela_uniform.gd",
+    "res://modes/war/scripts/game.gd",
+    "res://modes/war/scripts/objective_bar.gd",
     "res://modes/war/scripts/operation.gd",
     "res://modes/war/scripts/prefab_factory.gd",
     "res://modes/war/scripts/rules.gd",
+    "res://modes/war/scripts/ui.gd",
     "res://modes/war/scripts/vehicles.gd"
   ],
   "grass_enabled": false,

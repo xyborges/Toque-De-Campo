@@ -138,6 +138,8 @@ static func fresh_objectives() -> Dictionary:
 	var result := {}
 	for id in OBJECTIVES:
 		result[id] = {"owner":-1,"side":-1,"progress":0.0,"idle":0.0,"contested":false,"count":[0,0]}
+	if WarFavelaFrontline.enabled(CURRENT_OPERATION):
+		WarFavelaFrontline.initial(result)
 	return result
 
 static func choose_team(wanted: int,teams: Dictionary,exclude := 0) -> int:

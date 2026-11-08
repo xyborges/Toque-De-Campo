@@ -294,6 +294,7 @@ func refresh_spawns() -> void:
 		spawn_select.add_item(entry[0]);spawn_select.set_item_metadata(spawn_select.item_count-1,entry[1])
 	for id in WarRules.OBJECTIVES:
 		if not WarRules.OBJECTIVES[id].active: continue
+		if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) and not WarFavelaFrontline.spawn_allowed(game.objective_states,team_select.selected,id):continue
 		if int(game.objective_states.get(id,{}).get("owner",-1))==team_select.selected:
 			spawn_select.add_item(id+" · "+str(WarRules.OBJECTIVES[id].name))
 			spawn_select.set_item_metadata(spawn_select.item_count-1,id)
@@ -402,7 +403,9 @@ func _process(delta: float) -> void:
 func _refresh_capture(actor: WarPlayer) -> void:
 	capture_panel.hide()
 	if not is_instance_valid(actor) or actor.hp<=0 or not actor.deployed or not actor.vehicle_id.is_empty() or game.ui_focus.blocked(): return
+	var focus := WarFavelaFrontline.active_id(game.objective_states) if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) else ""
 	for id in WarRules.OBJECTIVES:
+		if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION) and id!=focus:continue
 		var point: Vector3=WarRules.OBJECTIVES[id].position
 		if Vector2(actor.global_position.x-point.x,actor.global_position.z-point.z).length()>WarRules.CAPTURE_RADIUS: continue
 		var state: Dictionary=game.objective_states[id]
