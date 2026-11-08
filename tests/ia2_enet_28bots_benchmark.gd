@@ -247,6 +247,7 @@ func _segment(profile: String,pair: int,optimized: bool) -> Dictionary:
 	var physics: Array[float] = []
 	var callback_samples: Array[float] = []
 	var focus_lost := 0
+	var disconnected_frames := 0
 	var min_actors := 100
 	var worst_corpses := 0
 	var events := 0
@@ -260,6 +261,7 @@ func _segment(profile: String,pair: int,optimized: bool) -> Dictionary:
 		physics.append(Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS)*1000.0)
 		frame_last = now
 		if not DisplayServer.window_is_focused():focus_lost+=1
+		if not game.online or not game.multiplayer.get_peers().has(1):disconnected_frames+=1
 		var live_actors := _remote_actors()
 		min_actors=mini(min_actors,live_actors.size())
 		worst_corpses=maxi(worst_corpses,get_nodes_in_group("death_ragdolls").size())
@@ -286,12 +288,12 @@ func _segment(profile: String,pair: int,optimized: bool) -> Dictionary:
 	var ms := _stats(frame_times)
 	var call_stats := _stats(callback_samples)
 	var physics_stats := _stats(physics)
-	var valid := min_actors==28 and events>=5 and focus_lost==0 and not ms.is_empty()
+	var valid := min_actors==28 and events>=5 and focus_lost==0 and disconnected_frames==0 and not ms.is_empty()
 	if profile=="cap" and optimized:
 		valid=valid and worst_corpses<=10
 	return {"profile":profile,"pair":pair,"optimized":optimized,
 		"valid":valid,"min_remote_actors":min_actors,"events":events,
 		"frames":ms,"callbacks":call_stats,"physics":physics_stats,
-		"focus_lost":focus_lost,"max_corpses":worst_corpses,
+		"focus_lost":focus_lost,"disconnected_frames":disconnected_frames,"max_corpses":worst_corpses,
 		"actual_resolution":root.get_texture().get_size(),
 		"render_method":RenderingServer.get_current_rendering_method()}
