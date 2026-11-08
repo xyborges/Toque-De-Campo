@@ -567,7 +567,21 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 		var ramp_scale:=Vector3(1.0,(top.y-foot.y)/2.85,run/8.6)
 		ARCHITECTURE.place(k,"escada_externa",Transform3D(Basis.from_scale(ramp_scale),foot),true)
 		var landing:=Vector3(stair_x+.40,landing_y-.12,stair_end_z-.55)
-		k.box("DesembarqueLaje",landing,Vector3(1.42,.24,1.0),roof_color,true)
+		# Favela V26: the original landing collider overlapped the main roof
+		# collider by 0.62 m, leaving two coplanar solid floors under the
+		# player during the transition. Keep the full visible landing, but
+		# end its physical support 1.5 cm inside the roof edge. One floor
+		# owns each side of the seam, so slide/step contacts stay stable.
+		k.box("DesembarqueLaje",landing,Vector3(1.42,.24,1.0),roof_color,false)
+		var slab_left_x:=ground.x-w*.5-.15
+		var landing_left_x:=landing.x-.71
+		var landing_right_x:=slab_left_x+.015
+		var landing_support:=BoxShape3D.new()
+		landing_support.size=Vector3(landing_right_x-landing_left_x,.24,1.0)
+		var landing_support_center:=Vector3(
+			(landing_left_x+landing_right_x)*.5,landing.y,landing.z)
+		k._collider("DesembarqueLaje",landing_support,
+			Transform3D(Basis.IDENTITY,landing_support_center),"concrete")
 		var approach:=point(foot.x,foot.z+.75)+Vector3.UP*.05
 		var nav:=PackedVector3Array([approach,foot+Vector3.UP*.06])
 		for step in range(1,5):
