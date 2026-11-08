@@ -1,6 +1,6 @@
 # Atualiza??o 1.13.9 ? Favela v26, HUD unificado e efici?ncia headless
 
-**Estado:** 1.13.9/build 96 publicado e substitui??o corretiva pela build 97 em prepara??o (08/11/2026).
+**Estado:** PUBLICADA ? vers?o 1.13.9 / build 97 ativa no Ubuntu desde 08/11/2026; build 96 substitu?da por hotfix de integridade.
 
 ## Conte?do
 
@@ -36,3 +36,15 @@
 - Ap?s publicar build 96, preflight no checkout oficial detectou FAVELA_MANIFEST STALE e UKRAINE STALE por diferen?a de final de linha na worktree experimental (CRLF), enquanto o Git oficial distribui LF.
 - Normalizada a fonte da encosta para os bytes can?nicos LF e regenerados os SHA-256 de Favela (nova vers?o do manifesto 28) e Ucr?nia (nova vers?o 23). A altera??o de fonte ? apenas representa??o local; o blob versionado de gameplay permanece id?ntico.
 - A build 96 deve ser substitu?da por nova build 97 assinada e validada, sem ativar flags adicionais e sem alterar a jogabilidade.
+
+## Publica??o oficial e verifica??o da build 97
+
+- GitHub main: commit a14d5374a2b7d40e5873414f4b867af87cf01090, ap?s o hotfix can?nico LF.
+- Pacote assinado: SIGNED_UBUNTU_RELEASE 97; instala??o Windows assinada 13/13 PASS, inicializa??o protegida exit 0.
+- Preflight Ubuntu autenticado: PREFLIGHT build=97 publicado=96, PREFLIGHT_OK build=97.
+- Deploy pelo instalador autorizado: VERIFIED_READY build=97, DEPLOYED build=97 version=1.13.9.
+- Confer?ncia HTTPS com CA confi?vel: manifesto p?blico retornou build=97, version_name=1.13.9, archive=releases/game-97-cb06c3a6743d.zip.
+- Manifestos no checkout oficial: Favela 28 MATCH, Ucr?nia 23 READY, Afeganist?o 15 READY, Deserto 10 READY, Office 10 READY, Naval 10 READY.
+- A build 96 foi publicada previamente mas apresentava identidade de mapas inconsistente com os bytes LF distribu?dos; a build 97 foi produzida e publicada para substituir essa revis?o.
+- O instalador remoto confirmou ativa??o e a interface HTTPS anunciou a build 97. Nesta verifica??o n?o foi executada auditoria separada, unidade por unidade, dos servi?os systemd em produ??o.
+- Sem ganho de FPS do cliente homologado; benchmark gr?fico com perda de foco foi invalidado e permanece assim.
