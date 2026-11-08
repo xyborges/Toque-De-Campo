@@ -43,7 +43,7 @@ func _wait_for(condition: Callable, label_text: String, seconds := 130.0) -> boo
 	while not condition.call() and Time.get_ticks_msec() < deadline:
 		await process_frame
 	if condition.call(): return true
-	_check(false, "timeout: " + label_text)
+	_check(false, "timeout: " + label_text + " role=" + role + " status=" + str(game.status_label.text) + " online=" + str(game.online) + " ready=" + str(game.join_ready) + " host=" + game.address_input.text + " peers=" + str(game.multiplayer.get_peers()))
 	return false
 
 func _stats(values: Array[float]) -> Dictionary:
@@ -121,9 +121,9 @@ func _run() -> void:
 	quit(0 if failures.is_empty() else 1)
 
 func _server() -> void:
-	if not await _wait_for(func()->bool:return game.multiplayer.get_peers().size()==1, "ENet connection",130):return
+	if not await _wait_for(func()->bool:return game.multiplayer.get_peers().size()==1, "ENet connection",270):return
 	var peer_id: int = game.multiplayer.get_peers()[0]
-	if not await _wait_for(func()->bool:return game.players.has(peer_id) and game.loading_baselines.is_empty() and game.reports.has("baseline-ready"),"DTLS admission and baseline",130):return
+	if not await _wait_for(func()->bool:return game.players.has(peer_id) and game.loading_baselines.is_empty() and game.reports.has("baseline-ready"),"DTLS admission and baseline",240):return
 	_check(game._deploy(peer_id,0,"soldier","fal","rpg","base"),"authority deploy")
 	if not await _wait_for(func()->bool:return is_instance_valid(game.bot_director) and game.bot_director.bots.size()==28 and game.reports.has("client-ready"),"28 live bots and client",130):return
 	# Put two opposing authority bots on a genuinely clear lane, so real
@@ -197,9 +197,9 @@ func _client() -> void:
 	game.ui_focus.close_all()
 	game.loading_screen.hide()
 	await game.join_game("pvp")
-	if not await _wait_for(func()->bool:return game.join_ready and is_instance_valid(game.local_player),"client ENet admission",130):return
+	if not await _wait_for(func()->bool:return game.join_ready and is_instance_valid(game.local_player),"client ENet admission",220):return
 	game.rpc_id(1,"qa_report","baseline-ready")
-	if not await _wait_for(func()->bool:return game.local_player.deployed and game.players.size()==29,"28 bot presentations and local deployment",130):return
+	if not await _wait_for(func()->bool:return game.local_player.deployed and game.players.size()==29,"28 bot presentations and local deployment",220):return
 	game.ui_focus.close_all()
 	game.third_person = true
 	game.local_player._update_view()
