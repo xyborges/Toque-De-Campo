@@ -1,38 +1,34 @@
 {
-  "version": "1.13.8",
-  "date": "06/11/2026",
-  "title": "Favela: baile sincronizado e melhorias gráficas",
-  "summary": "O baile da Favela recebeu campo e palco detalhados, colisões compartilhadas entre servidor e jogadores, luzes de baixo custo e sincronização das seis músicas já existentes. O áudio espacial agora usa a posição real do paredão e o relógio da partida. O Windows adota Forward+ como renderizador padrão, preservando Compatibility na Web.",
+  "version": "1.13.9",
+  "date": "08/11/2026",
+  "title": "Favela v26, novo placar e carregamento mais enxuto",
+  "summary": "A Favela ganhou novas escadarias, bairros mais densos, setores de linha de frente A?E e corre??es nas lajes; o painel superior das partidas foi unificado para Guerra, Battle Royale e Naval. No servidor dedicado da Favela, o planejamento de vegeta??o puramente visual ? dispensado, preservando ?rvores f?sicas e terreno.",
   "changes": [
     {
-      "title": "Campo comunitário e palco aprimorados",
-      "text": "Campo com linhas, traves, redes, alambrados e arquibancada simples; palco com escada, treliças, iluminação, mesa de DJ e caixas com colisão coerente nos dois lados da rede."
+      "title": "Favela urbana ampliada",
+      "text": "4.313 casas, 31 lances com 217 degraus f?sicos, acesso entre lajes e concreto urbano texturizado, mantendo vias e passagens."
     },
     {
-      "title": "Baile sincronizado para todos",
-      "text": "As seis faixas já presentes seguem a mesma ordem e posição de reprodução em todos os clientes, inclusive entrada tardia, usando semente e relógio autoritativos sem RPC extra."
+      "title": "Linha de frente e contra-ataques",
+      "text": "Avan?o sequencial A?E com objetivos ativos, defesa, contra-ataque e regras sincronizadas de captura e implanta??o."
     },
     {
-      "title": "Som localizado no paredão",
-      "text": "Emissor 3D acompanha a posição real do palco; música toca dentro do raio de 100 metros e retorna no trecho sincronizado ao reaproximar."
+      "title": "Painel de partida unificado",
+      "text": "Tickets, tempo, equipes e objetivos num s? dashboard em Guerra; contadores e estados adequados em Battle Royale, Naval e outros modos."
     },
     {
-      "title": "Forward+ por padrão no desktop",
-      "text": "A versão para Windows passa a usar Forward+, mantendo o renderizador Compatibility na Web e o fallback gráfico existente."
+      "title": "Inicializa??o mais enxuta no servidor",
+      "text": "Servidor dedicado da Favela evita calcular posi??es decorativas que n?o renderiza; posi??o de ?rvores e colisores permanece igual. Opcionalmente desative com TDC_IA2_HEADLESS_SKIP_VISUAL_HILLSIDE=0."
     }
   ],
   "fixes": [
     {
-      "title": "Início do baile",
-      "text": "Removida a espera aleatória do controlador; a playlist é iniciada desde o relógio da operação, sem repetição imediata de faixa entre ciclos."
+      "title": "Lajes e telhados v26",
+      "text": "Corrige superf?cies coplanares que causavam tremor e bloqueio de movimento em certas lajes."
     },
     {
-      "title": "Colisão cliente/servidor",
-      "text": "Traves, caixas, pilares e estruturas acessíveis do palco compartilham geometria física nas partidas offline e online."
-    },
-    {
-      "title": "Identidade do mapa",
-      "text": "Manifesto da Favela v17 atualizado com hashes das fontes integradas; piso físico e visual da quadra ajustados para manter a mini-rua 5 desobstruída e preservar a compatibilidade entre cliente e servidor."
+      "title": "Coer?ncia do HUD",
+      "text": "Remove marcadores e barras redundantes do topo sem alterar resultados ou autoridade da partida."
     }
   ]
 }
