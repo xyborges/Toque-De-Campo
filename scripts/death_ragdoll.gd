@@ -2,6 +2,8 @@ extends RefCounted
 class_name DeathRagdoll
 
 static func create(parent: Node3D, source: Node3D, _position: Vector3, persistent:=false) -> Node3D:
+	# Experimental A/B switch. Default is the original, fully physical ragdoll.
+	var faster_physics: bool = OS.get_environment("TDC_R01_RAGDOLL_OPT") == "1" and not source.is_local and not persistent
 	var root := preload("res://scripts/ragdoll_lifetime.gd").new()
 	root.name = "DeathRagdoll"
 	root.add_to_group("death_ragdolls")
@@ -29,7 +31,8 @@ static func create(parent: Node3D, source: Node3D, _position: Vector3, persisten
 		body.linear_damp = 1.0
 		body.angular_damp = 3.5
 		body.linear_velocity = Vector3(source.get_meta("death_velocity",Vector3.ZERO)).limit_length(8.0)
-		body.continuous_cd = true
+		# Large trunk/head parts retain CCD; smaller connected limbs use discrete contacts.
+		body.continuous_cd = not faster_physics or key in ["Torso", "Head", "Pelvis"]
 		body.collision_layer = 8
 		body.collision_mask = 1
 		root.add_child(body)
@@ -69,10 +72,12 @@ static func create(parent: Node3D, source: Node3D, _position: Vector3, persisten
 		shape.position=original.mesh.get_aabb().get_center()*visual.scale
 		body.add_child(shape)
 		bodies[key] = body
-	# Adjacent and overlapping parts never resolve collisions against each other.
-	for body in bodies.values():
-		for other in bodies.values():
-			if body != other: body.add_collision_exception_with(other)
+	# In optimized mode, layer 8 / mask 1 already excludes every body in this
+	# ragdoll from every other body. Avoid the quadratic exception registration.
+	if not faster_physics:
+		for body in bodies.values():
+			for other in bodies.values():
+				if body != other: body.add_collision_exception_with(other)
 	var links := [["Torso","Head"],["Torso","Pelvis"],["Torso","ArmL"],["Torso","ArmR"],["ArmL","HandL"],["ArmR","HandR"],["Pelvis","LegL"],["Pelvis","LegR"],["LegL","ShoeL"],["LegR","ShoeR"]]
 	for side in ["L","R"]:
 		if bodies.has("Forearm"+side):
@@ -91,7 +96,7 @@ static func create(parent: Node3D, source: Node3D, _position: Vector3, persisten
 		joint.node_a = joint.get_path_to(bodies[link[0]])
 		joint.node_b = joint.get_path_to(bodies[link[1]])
 	apply_fatal_impact(bodies,source.last_hit_region,source.last_impact_direction,source.last_impact_weapon)
-	root.begin(bodies,materials,persistent)
+	root.begin(bodies,materials,persistent,faster_physics)
 	return bodies.Torso
 
 static func _equipment_kind(piece: Node,boundary: Node) -> String:
