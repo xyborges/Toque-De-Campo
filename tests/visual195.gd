@@ -15,6 +15,6 @@ func run() -> void:
 	actor.apply_identity(0,"marksman");actor.set_utility("binoculars");actor._utility_pose()
 	await create_timer(.3).timeout;await capture("binoculars")
 	game.war_ui.set_process(false)
-	game.war_ui.objective_bar.update_state(0,[260,210],{"A":{"owner":0},"B":{"owner":1},"C":{"owner":-1},"D":{"owner":0},"E":{"owner":1}},1024)
+	game.war_ui.match_dashboard.update_state(0,[260,210],{"A":{"owner":0},"B":{"owner":1},"C":{"owner":-1},"D":{"owner":0},"E":{"owner":1}},1024)
 	await capture("hud")
 	game.show_menu();game.queue_free();await process_frame;quit()

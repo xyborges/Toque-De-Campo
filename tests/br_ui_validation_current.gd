@@ -62,7 +62,7 @@ func run() -> void:
 	hud.refresh(state,inventory,loot)
 	check(not hud.waiting.visible and not hud.result_panel.visible,"active hides queue and result")
 	check(hud.health.text=="+ 73" and is_equal_approx(hud.health_bar.value,73),"live health display")
-	check(hud.ammunition.text=="FAL\n6 / 40" and "42" in hud.zone_text.text,"actual magazine and zone countdown")
+	check(hud.ammunition.text=="FAL\n6 / 40" and hud.match_dashboard.view=="survival" and hud.match_dashboard._clock_text()=="00:42","actual magazine and zone countdown")
 	game.local_player.position=Vector3(0,0,-1000);state.zone.radius=500.;hud.refresh(state,inventory,loot)
 	check(hud.alert.text.begins_with("↓") and hud.zone_overlay.visible,"zone behind north-facing player points backward")
 	game.local_player.position=Vector3(-1000,0,0);hud.refresh(state,inventory,loot);check(hud.alert.text.begins_with("→"),"zone to east points right")
