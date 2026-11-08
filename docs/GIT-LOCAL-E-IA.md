@@ -1,65 +1,65 @@
-# Git local do jogo — manual para todas as IAs
-Instalacao inicial: 04/11/2026. SEM GitHub, sem remoto configurado.
+# Git local e worktrees — complemento ao fluxo GitHub
 
-## Fonte de verdade e estrutura
-- MAIN: pasta original campo-cartunesco-godot/campo-cartunesco-godot (projeto de producao).
-- main: branch principal de integracao. A versao-base representa um snapshot do projeto no momento da criacao do Git; NAO e uma nova build publicada.
-- ia/<tarefa>: branch de trabalho individual.
-- campo-worktrees/<tarefa>: pasta fisica separada do MAIN, ao lado do diretorio externo do projeto, para cada IA.
-- .ai-coord/: registro local compartilhado POR TODAS AS WORKTREES, localizado na raiz do MAIN. Reservas protegem arquivos dentro da MESMA worktree; worktrees diferentes sao integradas via merge Git.
-- AGENTS.md e docs/COORDENACAO-IA.md: regras obrigatorias.
-- tools/git_guard.py e .githooks/pre-commit: bloqueios de segredos evidentes, arquivos privados e binarios acima de 50 MiB.
-- distribution/build, distribution/published, distribution/private, work, user_data, cache .godot e registro .ai-coord: ignorados SEM serem apagados. O conteudo de distribution/ubuntu e launcher (codigo-fonte) permanece versionado.
+Atualizado: 08/11/2026. **O GitHub é a fonte central**: https://github.com/xyborges/Toque-De-Campo. Leia antes docs/FLUXO-GITHUB-OFICIAL.md.
 
-## Rotina OBRIGATORIA — novo chat que pretende modificar jogo
-1. Ler AGENTS.md, docs/COORDENACAO-IA.md, este documento e os planos da sua area.
-2. Abrir a pasta de worktree dedicada a SUA tarefa; nao presumir que esta na raiz MAIN.
-3. Executar git status --short --branch e python tools/ai_coord.py status. Verificar se existe trabalho nao commitado e o estado das demais IAs.
-4. Reservar os ARQUIVOS na worktree: python tools/ai_coord.py start --agent "chat-armas" --task "Oticas G3" modes/.../file.gd (exemplo ilustrativo).
-5. Fazer check antes de cada edicao, checkpoint --confirm-own-changes apenas apos revisar as suas mudancas e finish --notes ao concluir. Verificar hashes inesperados antes de checkpoint.
-6. git diff --check; rodar testes relevantes; git status --short; git diff e revisar ANTES do stage.
-7. git add -- <arquivos revisados> (NAO use git add -f, git add . em massa ou --no-verify). Fazer commit claro e pequeno.
-8. Comunicar ao integrador: branch, worktree, objetivo, arquivos, testes, riscos, hash do commit e pendencias. NAO publicar build automaticamente.
+## O que é local e o que é central
 
-## Criar e listar uma worktree (a partir do MAIN LIMPO)
-No PowerShell dentro do MAIN:
-    python tools/ai_worktree.py create audio
-    python tools/ai_worktree.py create mapas
+- Git local: guarda commits, branches e worktrees independentes para executar o Godot e benchmarks.
+- origin/main no GitHub: versão principal aprovada. A main local pode estar atrasada. Nunca assumir que a cópia local é a fonte oficial.
+- Branch da IA: derivada de origin/main. Usar nome exclusivo incluindo a máquina e tarefa.
+- Reservas .ai-coord/: compartilhadas SOMENTE entre worktrees do mesmo repositório Git local. Não são sincronizadas entre dois PCs.
+- PRs, Issues, diffs e commits GitHub: rastreabilidade e coordenação ENTRE máquinas.
+- Arquivos ignorados (work/, caches, builds, segredos): permanecem no disco, não são enviados ao GitHub. Nunca usar git clean -fdx.
+
+## Iniciar uma tarefa
+
+Na pasta do jogo (checkout correto, nunca no diretório de build):
+
+    git remote -v
+    git fetch origin
+    git status -sb
     python tools/ai_worktree.py list
+    python tools/ai_worktree.py create favela-lajes-20261108
 
-Isso cria branches ia/audio ou ia/mapas e pastas irmas isoladas. Informar ao novo chat o caminho exato da pasta da SUA area. Nunca compartilhar uma unica worktree entre duas IAs que editam os mesmos arquivos.
+O programa cria worktree isolada e branch ia/<computador>-<tarefa> partindo de origin/main, mesmo se a main local estiver atrasada. A criação não altera os arquivos da main. Se GitHub estiver indisponível, a criação falha em vez de usar base antiga silenciosamente.
 
-Se o MAIN tem mudancas nao commitadas, a criacao e bloqueada: nao limpar a forca. Verificar e integrar/salvar as mudancas antes.
+Abrir a NOVA pasta gerada, executar python tools/ai_coord.py status e reservar os arquivos que serão editados. Use start / check / checkpoint / finish conforme docs/COORDENACAO-IA.md. Não compartilhar a mesma worktree entre duas IAs com escrita simultânea.
 
-## Integracao segura ao MAIN (feito pelo integrador)
-Antes: garantir que a branch tenha commits revisados, nenhum trabalho em andamento nessa worktree e o MAIN esteja limpo. Verificar git status --short --branch, git log --oneline --decorate -8 e git diff main..ia/<nome> --stat.
+## Comitar e enviar ao GitHub
 
-No MAIN, integrar uma branch por vez:
-    git merge --no-ff ia/audio
+Dentro da worktree:
+    git diff --check
+    python tools/github_preflight.py
+    git status -sb
+    git diff -- <arquivo>
+    git add -- <arquivos-revisados>
+    git diff --cached
+    git commit -m "tipo(escopo): resumo curto"
+    git push -u origin HEAD
 
-Se houver conflito, NAO usar git checkout --theirs . ou sobrescrever snapshot inteiro. Comparar as duas versoes, resolver cirurgicamente, rodar validacoes e concluir o merge. Se necessario interromper antes da conclusao: git merge --abort (somente se houver merge em andamento).
-Executar preflight, regressao e validacao multiplayer/desempenho conforme o escopo. Nao declarar publicacao sem seguir o pipeline de release existente.
+Depois, abrir PR da branch para main no GitHub. Não publicar a build automaticamente, não fazer push direto para main, nem usar --no-verify, --force ou reset --hard como atalho. O git_guard permanece ativo no pre-commit.
 
-## Comandos uteis (na pasta da worktree)
-- git status --short --branch: veja alteracoes pendentes e branch.
-- git diff: revise o que ainda NAO foi adicionado ao stage.
-- git diff --cached: revise o que entrara no commit.
-- git log --oneline -10: historico.
-- git restore --source=HEAD -- <arquivo>: ATENCAO, pode descartar alteracoes; so usar com revisao/autorizacao.
-- git show HEAD:<caminho>: consulte versao anterior sem tocar no arquivo atual.
-- git worktree list: veja pastas/branches.
+## Atualizar o checkout principal APÓS merge de PR
 
-## Politica de seguranca e tamanho
-- Git e LOCAL: git remote -v deve permanecer vazio ate autorizacao expressa; nenhuma conta online necessaria.
-- A lista .gitignore deve ser revisada quando entrarem tipos novos de output ou segredos; git status e pre-commit complementam, mas nao substituem auditoria.
-- .githooks/pre-commit so verifica staged. Evitar commits indiscriminados e jamais usar --no-verify para burlar falha.
-- Nunca versionar chaves privadas, credenciais, segredos de deploy, dados de usuario ou material de assinatura. Certificados publicos requeridos pelo jogo podem ser incluidos.
-- Arquivos grandes necessarios ao runtime podem ficar no Git local; limite defensivo de 50 MiB no hook evita incluir builds/logs acidentalmente. Discutir excecoes conscientemente.
-- NUNCA executar git clean -fdx: esse comando pode apagar work/, builds/publicados e estados ignorados. NUNCA executar git reset --hard em workspace com trabalho nao revisado.
-- Git LOCAL NAO e backup externo: pane/perda do SSD pode levar o codigo e historico. Replicar depois em disco/NAS separado ou servidor Git privado, SEM enviar para GitHub por padrao.
+Somente na main local sem alterações pendentes:
+    python tools/ai_worktree.py sync-main
 
-## Estado inicial conhecido
-- Documento de release mais recente: ATUALIZACAO-1.13.1.md indica build 87 publicada em 04/11/2026.
-- Alguns trabalhos (como mixer global e mudancas FPP/TPP) estao documentados como incompletos; verificar arquivos e testes reais.
-- O primeiro commit do Git apenas registra a base EXISTENTE. Ele nao muda o jogo nem prova que todo o multiplayer passou nos testes.
-- Trabalho de chats anteriores a essas regras nao foi automaticamente capturado na coordenacao; realizar inventario/revisao antes de mesclar.
+Esse comando usa git fetch origin + merge --ff-only. Se estiver em outra branch, houver arquivos modificados ou história divergente, interrompe sem sobrescrever. Em outra máquina, repetir a sincronização no clone correspondente; commits locais não aparecem magicamente em outro PC.
+
+## Revisão e trabalho em paralelo
+
+Antes de iniciar, consultar PRs/Issues/branches do GitHub para verificar se outra IA já trabalha no mesmo assunto. Mudanças sobrepostas em arquivos de diferentes worktrees são conciliadas por merge/revisão de PR, não pelo sistema local de locks. Se a branch ficou antiga, sincronizar a base de maneira explícita e repetir testes.
+
+Comandos úteis: git log --oneline -10, git worktree list, git status -sb, git diff, git diff --cached, git show HEAD:<caminho>. Consultas são seguras; restauração ou limpeza podem descartar trabalhos e exigem revisão.
+
+## Regras permanentes de proteção
+
+- Preservar scripts, assets e cenas ajustados por outras IAs. Não copiar snapshots ou laboratórios sobre o código atual.
+- Versionar somente arquivos necessários e revisados, sem chaves privadas ou configurações secretas. Repositório pode ser público; não presumir privacidade.
+- Não apagar caches/builds por engano. O projeto é grande e esses arquivos podem ser necessários para os testes.
+- GitHub não armazena dados ignorados, configurações privadas, builds locais nem backups automáticos do servidor. Preservar cópias separadas.
+- O hook local e o gate de GitHub são proteções complementares, não garantem cobertura integral de segredos ou bugs.
+
+## Histórico
+
+A instalação inicial do Git local foi feita em 04/11/2026; descrições antigas que diziam "SEM GitHub" pertencem àquela fase, não ao fluxo atual. A fonte oficial agora é origin/main.

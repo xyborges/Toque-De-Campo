@@ -1,71 +1,41 @@
-# Coordenacao entre IAs e protecao do projeto Godot
-Data de introducao: 04/11/2026
+# Coordenação multi-IA — regras locais e globais
 
-## Objetivo e limite importante
-Varias IAs/chats podem trabalhar no MESMO projeto sem substituir silenciosamente uma alteracao de outra. Preferir pastas Git worktree independentes por tarefa (veja docs/GIT-LOCAL-E-IA.md); o protocolo de hashes coordena edicoes que ocorram no mesmo workspace. O projeto ja possuia AGENTS.md (regras de criacao do jogo), mas nao tinha registro de reservas nem historico de hashes por tarefa.
+Atualizado: 08/11/2026. Ler em conjunto com AGENTS.md, docs/FLUXO-GITHUB-OFICIAL.md e docs/GIT-LOCAL-E-IA.md.
 
-O contexto compartilhado REAL fica no disco, nao dentro da memoria de um chat: AGENTS.md, este documento e o registro em .ai-coord/registry.json. Toda IA que atua neste diretorio deve reler esses arquivos ou executar o comando de status no inicio da tarefa. O registro nao enxerga automaticamente chats que nao usem o protocolo.
+## Dois níveis de coordenação (não confundir)
 
-O guardiao nao impede um editor externo que deliberadamente ignore as regras de sobrescrever arquivos. Ele detecta divergencias de hash entre checkpoints e bloqueia reservas conflitantes de IAs que seguem o protocolo. Os backups sao parciais, nao substituem Git nem backup completo.
+1. **Global, entre computadores:** GitHub xyborges/Toque-De-Campo, branch origin/main, Issues, branches, PRs, checks e relatórios versionados. É a fonte de verdade durável. Nenhum chat possui prioridade nem responsabilidade permanente sobre os demais.
+2. **Local, entre worktrees do MESMO Git:** tools/ai_coord.py e .ai-coord/registry.json, copiados no próprio computador. Esse registro NÃO é compartilhado com outro PC e NÃO impede conflitos cross-host. As outras máquinas precisam consultar o GitHub.
 
-## Caminho e fontes de verdade
-Projeto principal: C:/Users/Joao Borges/Documents/campo-cartunesco-godot/campo-cartunesco-godot/
-Manual de regras: AGENTS.md
-Registro compartilhado de tarefas: .ai-coord/registry.json na raiz do MAIN, acessado por TODAS as worktrees
-Copias anteriores a edicao: .ai-coord/backups/<sessao>/... na raiz do MAIN
-Programa: tools/ai_coord.py
-Documentos de release: ATUALIZACAO-1.13.1.md e futuros documentos de release
+O sistema local registra reservas, hashes SHA-256, snapshots de até 64 MiB por arquivo e estados de tarefas; se alguma IA o ignorar, não há bloqueio universal. Uma reserva antiga com ALERTA HASH exige auditoria, mas não autoriza apagar ou encerrar trabalhos alheios. Nenhuma reserva local equivale a aprovação de PR.
 
-Nao confundir os laboratorios de performance com a copia principal. NUNCA copiar um laboratorio, ZIP, mapa ou snapshot inteiro sobre o MAIN sem comparacao arquivo a arquivo, revisao de diffs e autorizacao explicita.
+## Procedimento obrigatório
 
-## Procedimento obrigatorio de toda instancia de IA
+1. Ler AGENTS.md e documentos indicados; executar git remote -v, git fetch origin, git status -sb. Inspecionar PRs e branches em andamento no GitHub antes de escolher tarefa.
+2. Criar worktree e branch exclusivas partindo de origin/main (python tools/ai_worktree.py create nome-da-tarefa). Nunca editar o checkout main como laboratório.
+3. Na NOVA worktree: executar python tools/ai_coord.py status, identificar arquivos exatos e reservar:
+   python tools/ai_coord.py start --agent "ia-favela" --task "Corrigir acesso as lajes" modes/war/scripts/favela_layout.gd
+   Exemplo ilustrativo; conferir nomes reais. Arquivos novos, cenas e recursos também entram na reserva.
+4. ANTES de cada rodada de escrita, executar python tools/ai_coord.py check ID. Se hash divergir, parar e apurar a origem; não aceitar cegamente as alterações como próprias.
+5. Após suas alterações e testes, usar python tools/ai_coord.py checkpoint ID --confirm-own-changes --note "Resumo e testes". A flag confirma que a IA verificou todas as diferenças como suas.
+6. Quando terminar, python tools/ai_coord.py check ID; python tools/ai_coord.py finish ID --notes "Arquivos, testes, resultados, riscos". Se abortar, usar abort --notes; abort não reverte arquivo algum.
+7. Conferir git diff --check, guard de segurança, revisão do stage, commits pequenos e push na SUA branch. Abrir PR e registrar evidências; não integrar ou publicar automaticamente.
 
-1. Abrir AGENTS.md, este documento e executar no terminal da raiz:
-   python tools/ai_coord.py status
+Se houver conflito de reserva na mesma worktree, não editar; separar o trabalho. Conflitos entre worktrees/PCs são tratados no GitHub por branches e PRs, não por hashes locais.
 
-2. Identificar todos os ARQUIVOS exatos a serem editados, incluindo cenas, scripts, assets, configs, testes e arquivos novos. Para cada conjunto, reservar:
-   python tools/ai_coord.py start --agent "chat-audio" --task "Mixer dinamico" audio/game_weapon_audio.gd audio/game_explosion_audio.gd
-   O exemplo contem caminhos ilustrativos; conferir os caminhos reais antes de reservar.
+## Riscos e restrições
 
-3. Se aparecer CONFLITO na mesma worktree, NAO editar os arquivos; coordenar com a outra sessao, esperar sua conclusao ou trabalhar em uma worktree Git separada. Modificacoes em worktrees distintas requerem integracao/merge revisado. Nao cancelar uma sessao de outro chat por conveniencia.
+- Um editor externo que não use o protocolo pode alterar arquivos; os hashes ajudam a detectar, mas não impedir fisicamente.
+- Snapshot/backup local não deve ser restaurado indiscriminadamente por cima de melhorias recentes. Revisar diff arquivo a arquivo.
+- Arquivos maiores que 64 MiB podem não ter snapshot automático; confirmar backup dedicado se necessário.
+- Não remover registry.lock sem validar que o processo responsável já terminou. Não apagar .ai-coord ou enviar esse diretório ao GitHub.
+- Ferramentas, geradores e testes que alteram arquivos também precisam usar reserva.
+- Não usar git clean -fdx, force push, merge/checkout --theirs indiscriminado ou reset --hard em cópia com trabalho pendente.
+- Publicação do cliente/servidor requer QA e processo de release específicos; PR merge NÃO publica build.
+- Dados brutos grandes de benchmarks não devem ser empurrados para o GitHub sem avaliar tamanho, segredos e utilidade. Relatórios devem indicar SHA, Godot, hardware, parâmetros, FPS/P95/P99 e falhas, quando relevantes.
 
-4. Imediatamente ANTES de cada rodada de edicao, executar:
-   python tools/ai_coord.py check ID-DA-SESSAO
-   Se o hash estiver diferente, parar e investigar QUEM mudou e O QUE mudou. Nao adotar diferenca externa como propria.
+## Estado e contexto
 
-5. Depois de editar SO os arquivos reservados, verificar sintaxe/regressao apropriada e fazer checkpoint:
-   python tools/ai_coord.py checkpoint ID-DA-SESSAO --confirm-own-changes --note "Etapa implementada e testes efetuados"
-   A flag confirma que a IA reconhece todas as diferencas como suas. Se houver duvida, nao executar checkpoint: fazer comparacao com o backup primeiro.
+O estado do jogo muda com novos PRs. Não usar notas de release antigas como versão atual sem comparar com origin/main. Para estado atual, examinar commits/PRs de origin/main e relatórios ligados à versão pretendida.
 
-6. Antes de concluir, executar check de novo, registrar testes/limites e encerrar:
-   python tools/ai_coord.py finish ID-DA-SESSAO --notes "Mudancas, testes, pendencias e arquivos afetados"
-   Sem conclusao comprovada usar:
-   python tools/ai_coord.py abort ID-DA-SESSAO --notes "Motivo, arquivos possivelmente alterados, proximo passo"
-   ATENCAO: abort NAO reverte arquivos.
-
-7. Nova etapa ou arquivo adicional? Abrir nova reserva. Nao editar arquivo nao reservado. Nao usar um arquivo amplo como "project.godot" sem antes verificar quem o reservou.
-
-## Casos especiais
-- Modificacoes anteriores a instalacao: NAO estao rastreadas retroativamente. Conferir com os planos e arquivos recentes antes de editar.
-- Um arquivo mudou inesperadamente: o check falha. Reabrir o arquivo atual, comparar com .ai-coord/backups/<sessao>, integrar manualmente SEM apagar alteracoes alheias e so entao resolver o estado. Nao usar checkpoint apenas para fazer o alerta desaparecer.
-- Arquivos maiores que 64 MiB: hash e reserva funcionam, mas a copia local automatica e ignorada para nao estourar o disco. Fazer backup dedicado quando necessario.
-- A estrutura .ai-coord/ tem .gdignore para nao importar arquivos de controle no Godot. Nao apaga-la, nem mover o registro durante uma tarefa.
-- Se registry.lock persistir por falha, verificar primeiro se existe processo executando o programa. Remover lock apenas se tiver certeza de que ficou orfao.
-- Arquivos criados por outra IA fora do programa: podem ser detectados por hash de arquivos ja reservados; NOVOS arquivos nao reservados nao sao detectados automaticamente.
-- O script nao bloqueia testes de apenas leitura. Se testes/geradores reescreverem arquivos, eles tambem precisam de reservas.
-- Geradores e formatadores que alteram varios arquivos devem declarar todos os caminhos previamente. Nao fazer operacoes em lote sem inventario.
-
-## Politica de publicacao e recuperacao
-- Publicacao so a partir do projeto principal, com tarefas conflitantes concluidas, versao coerente, preflight e testes. Um "finish" nao publica nada.
-- Nao trocar, reduzir ou ignorar verificacao de hash/manifestos de release como atalho para erros.
-- Nao sobrescrever o MAIN com artefatos de build, perf-labs ou snapshots antigos.
-- As copias em .ai-coord/backups servem para comparacao e recuperacao SELETIVA, nunca restauracao automatica por cima de mudancas novas.
-- Git local e worktrees ja foram adotados. Regras de branches, revisao, commits, integracao e protecao contra segredos: docs/GIT-LOCAL-E-IA.md. Git LFS nao e necessario para este baseline; reconsiderar somente se necessario.
-- Mesmo com Git, manter este quadro de contexto/ownership e usar merge consciente.
-
-## Estado de referencia em 04/11/2026
-A fonte mais recente lida, ATUALIZACAO-1.13.1.md, informa que 1.13.1/build 87 foi publicada. O relatorio antigo de 1.13.0 fala de bloqueio de build 85 e e historico, nao o estado atual de release.
-
-O plano docs/PLANO-MESTRE-AUDIO-20261104.md informa mixer dinamico/ducking e validacao de partida pendentes nessa revisao. docs/FPP-TPP-CORPO-UNICO-PLANO-20261104.md e documentos derivados registram trabalho de camera/corpo; nao assumir que todas as etapas estao prontas. Verificar os arquivos reais antes de declarar implementado.
-
-As reservas comecam a valer SOMENTE apos a instalacao deste protocolo. O comando status e a referencia para trabalhos que passaram a usa-lo.
+Os registros .ai-coord/ de máquinas diferentes não são mesclados automaticamente. Para continuidade de trabalho, registrar decisões e resultados em commits/documentos/PRs que sejam acessíveis a todos.

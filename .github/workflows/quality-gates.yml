@@ -1,0 +1,35 @@
+name: Quality gates (GitHub)
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-integrity:
+    name: Integridade do código e segurança
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout somente leitura
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verificar versão Python
+        run: python3 --version
+
+      - name: Validar scripts de coordenação
+        run: |
+          python3 -m py_compile tools/git_guard.py tools/ai_coord.py tools/ai_worktree.py tools/github_preflight.py
+
+      - name: Auditar arquivos versionados, tamanho e segredos óbvios
+        run: python3 tools/github_preflight.py
+
+      - name: Verificar integridade de whitespace do commit
+        run: git show --format= --check HEAD -- .github tools/ai_worktree.py tools/github_preflight.py AGENTS.md docs/FLUXO-GITHUB-OFICIAL.md docs/COORDENACAO-IA.md docs/GIT-LOCAL-E-IA.md
