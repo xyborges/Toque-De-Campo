@@ -1775,14 +1775,16 @@ func _collision_excludes(owner_id: int, naval: bool) -> Array[RID]:
 	return excluded
 
 # IA2: stagger remote presentation only. The local death camera stays
-# synchronous; server headless never creates a ragdoll. Default disabled.
-var ia2_remote_ragdoll_queue_enabled := OS.get_environment("TDC_IA2_DEFER_REMOTE_RAGDOLL")=="1"
+# synchronous; server headless never creates a ragdoll. Enabled by default.
+# Validated IA2 default. Set TDC_IA2_DEFER_REMOTE_RAGDOLL=0 to roll back.
+var ia2_remote_ragdoll_queue_enabled := not OS.has_environment("TDC_IA2_DEFER_REMOTE_RAGDOLL") or OS.get_environment("TDC_IA2_DEFER_REMOTE_RAGDOLL")=="1"
 var ia2_remote_ragdoll_jobs: Array[Dictionary] = []
 var ia2_remote_ragdoll_running := false
 var ia2_remote_ragdoll_created := 0
 # Defend the corpse cap against a burst of queue_free calls within one frame.
-# Remains opt-in until this bug fix passes live client regression checks.
-var ia2_ragdoll_strict_cap := OS.get_environment("TDC_IA2_RAGDOLL_STRICT_CAP")=="1"
+# Verified with dedicated ENet server, 28 bots and graphical client regression.
+# Validated IA2 default. Set TDC_IA2_RAGDOLL_STRICT_CAP=0 to roll back.
+var ia2_ragdoll_strict_cap := not OS.has_environment("TDC_IA2_RAGDOLL_STRICT_CAP") or OS.get_environment("TDC_IA2_RAGDOLL_STRICT_CAP")=="1"
 
 func spawn_ragdoll(pos: Vector3, _killer_id: int, source: GamePlayer = null) -> void:
 	if not is_instance_valid(source) or not is_instance_valid(world_root) or source.death_presented == source.life_id: return
