@@ -37,7 +37,22 @@ O benchmark original `tests/ia2_respawn_ragdoll_benchmark.gd` (28 atores, 4 raja
 - `tests/ragdoll_stability.gd -- --ticks40` com flag=1: 0 falhas.
 - `tests/r01_ragdoll_perf.gd` em ambas as condições: 0 falhas nas dez rodadas iniciais; verificação de preservação de cadáver local e persistente adicionada após essa bateria.
 
+## Verificação adicional na máquina principal (08/11/2026)
+
+- Máquina: DESKTOP-JJ7U3G3, i5-11400H, GTX 1650, Godot 4.7.2, commit de teste `a922f37` em worktree isolada. `main` intocada.
+- Teste existente `tests/run_war_frame_pacing.py`: duas comparações invertidas (A-B e B-A) com servidor ENet real, 28 bots e cliente Vulkan Forward+, `1280×800`, fases parado/correndo/tanque. Todos os processos terminaram com exit 0 e zero falhas. A variante ligada teve pequenas vantagens de FPS nas três fases (1,2% a 3,5%), porém esse teste **não força a criação de ragdolls**; não é prova causal de otimização dos cadáveres. Houve também avisos de cache de shaders.
+- Teste gráfico isolado criado apenas no `work/` ignorado da máquina principal: `work/ragdoll_qa_graphic.gd`, 10 ragdolls reais renderizados, alternância A/B, cinco execuções por modo, GPU GTX 1650. Resultados:
+
+| Métrica (média das cinco execuções) | Original | Experimental |
+| --- | ---: | ---: |
+| FPS médio | **112,52** | 111,67 |
+| P95 do intervalo entre quadros | 14,039 ms | 14,027 ms |
+| P99 do intervalo entre quadros | 15,322 ms | 15,418 ms |
+| Monitor de processamento físico | 1,928 ms | 1,912 ms |
+
+- Todos os testes isolados terminaram sem falhas, os dez cadáveres permaneceram visíveis. O experimento confirmou menos corpos simulados após o repouso, **mas não reproduziu um ganho de FPS**; a média otimizada foi 0,8% menor, sem significância demonstrada. O teste gráfico isolado não substitui o cenário real de 28 bots, 1080p Médio e mortes sucessivas.
+
 ## Decisão
-Manter a otimização como experimento **opt-in**. Antes de homologar, validar câmera de morte, equipamento, loot e quedas em terrenos acidentados, e realizar testes gráficos com cliente 1080p/Médio/Forward+ e 28 bots, medindo FPS, P95 e P99. A R01 havia apresentado cerca de 13 FPS em teste *anterior*, em commit e cenário diferentes; essa medição histórica não é resultado deste experimento.
+**NÃO HOMOLOGAR para produção nem ativar a flag por padrão.** A alteração permanece disponível para experimentos `TDC_R01_RAGDOLL_OPT=1` em branch separada. Preservar a câmera de morte local, loot persistente e integridade dos tiros; só reconsiderar com ganho sustentado de P95/P99 em cenário real de mortes e teste visual de câmera, terreno acidentado, equipamento e loot. A R01 havia apresentado cerca de 13 FPS em benchmark histórico (outro commit/cenário), não como resultado deste experimento.
 
 Não fazer merge na `main` ou publicar atualização apenas com esta evidência.
