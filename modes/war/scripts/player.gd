@@ -551,8 +551,9 @@ func equip_quick_slot(number: int) -> void:
 
 # IA2: only reuse a complete, same-ID world model for non-local actors.
 # The local first-person presentation still follows the original rebuild path.
-# Default OFF; no change to damage, muzzle or authoritative weapon selection.
-var ia2_respawn_weapon_reuse := OS.get_environment("TDC_IA2_REUSE_RESPAWN_WEAPON")=="1"
+# Enabled by default after ENet validation; damage and authoritative weapons unchanged.
+# Validated IA2 default. Set TDC_IA2_REUSE_RESPAWN_WEAPON=0 to roll back.
+var ia2_respawn_weapon_reuse := not OS.has_environment("TDC_IA2_REUSE_RESPAWN_WEAPON") or OS.get_environment("TDC_IA2_REUSE_RESPAWN_WEAPON")=="1"
 var ia2_weapon_reuse_hits := 0
 var ia2_weapon_full_builds := 0
 

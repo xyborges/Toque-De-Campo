@@ -393,7 +393,7 @@ func _think(id: int) -> void:
 		if _fight_armor(actor,record,armored): return
 	if actor.gadget_equipped and actor.war_class=="antitank":
 		actor.set_gadget(false,actor.gadget)
-		game._broadcast("gadget_selected",[actor.peer_id,actor.gadget,false])
+		if is_instance_valid(game.vehicle_system): game.vehicle_system._broadcast("gadget_selected",[actor.peer_id,actor.gadget,false])
 	if not is_instance_valid(target) and actor.grenade_held_id.is_empty() and _board(actor,record): return
 	if is_instance_valid(target) and int(record.target)!=target.peer_id: record.reaction_until=game.war_clock+.5+(id%5)*.09
 	record.target=target.peer_id if target else 0
@@ -548,7 +548,7 @@ func _fight_armor(actor: WarPlayer,record: Dictionary,vehicle: WarVehicle) -> bo
 	if not actor.gadget_equipped or actor.gadget!=launcher:
 		actor.set_gadget(true,launcher)
 		if not actor.gadget_equipped: return false
-		game._broadcast("gadget_selected",[actor.peer_id,launcher,true])
+		if is_instance_valid(game.vehicle_system): game.vehicle_system._broadcast("gadget_selected",[actor.peer_id,launcher,true])
 		record.next_armor_shot=game.war_clock+1.6
 	record.target=0;record.line_clear=false
 	if str(record.get("target_vehicle",""))!=vehicle.vehicle_id:
