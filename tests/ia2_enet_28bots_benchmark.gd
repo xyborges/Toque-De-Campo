@@ -132,7 +132,10 @@ func _server() -> void:
 	for bot_id in game.bot_director.bots:
 		var record: Dictionary = game.bot_director.bots[bot_id]
 		var team: int = int(record.get("team",-1))
-		if team in [0,1] and opponents[team]==null: opponents[team]=game.players[bot_id]
+		if team in [0,1] and opponents[team]==null:
+			var candidate: WarPlayer=game.players[bot_id] as WarPlayer
+			if is_instance_valid(candidate) and candidate.vehicle_id.is_empty() and candidate.deployed and candidate.hp>0:
+				opponents[team]=candidate
 	_check(opponents[0]!=null and opponents[1]!=null,"opposing bots selected")
 	var clear_point: Vector3 = WarTerrain.point(-120,0)
 	for x in range(-120,121,20):
@@ -144,8 +147,19 @@ func _server() -> void:
 		if not is_instance_valid(bot):continue
 		bot.global_position=WarTerrain.point(clear_point.x+team*10,clear_point.z)+Vector3.UP*.15
 		bot.velocity=Vector3.ZERO
+		bot.yaw=PI*.5 if team==0 else -PI*.5
+		bot.rotation.y=bot.yaw
 		game.bot_director.bots[bot.peer_id].next_shot=0.0
+		game.bot_director.bots[bot.peer_id].target=(opponents[1-team] as WarPlayer).peer_id
+		game.bot_director.bots[bot.peer_id].reaction_until=game.war_clock
 		game.members[bot.peer_id].shield=0.0
+	await create_timer(.7).timeout
+	var combat_debug: Array=[]
+	for team in [0,1]:
+		var bot:WarPlayer=opponents[team] as WarPlayer
+		var foe:WarPlayer=opponents[1-team] as WarPlayer
+		combat_debug.append({"id":bot.peer_id,"team":bot.war_team,"role":bot.war_class,"hp":bot.hp,"deployed":bot.deployed,"vehicle":bot.vehicle_id,"position":bot.global_position,"target_position":foe.global_position,"los":game.bot_director._has_clear_shot(bot,foe),"visible_enemy":game.bot_director._visible_enemy(bot)!=null})
+	print("IA2_COMBAT_SETUP ",JSON.stringify(combat_debug))
 	started_usec = Time.get_ticks_usec()
 	game.bot_director.measuring = true
 	game.measuring = true
