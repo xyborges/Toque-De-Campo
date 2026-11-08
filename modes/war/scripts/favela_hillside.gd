@@ -133,7 +133,12 @@ static func plan(lots: Array, bases: Array, objectives: Array,
 
 static func populate(kit: EnvironmentKit, lots: Array, bases: Array,
 		objectives: Array, road_distance: Callable, terrain_height: Callable) -> Dictionary:
-	var skip_visual_only:=not kit.visuals and OS.get_environment("TDC_IA2_HEADLESS_SKIP_VISUAL_HILLSIDE")=="1"
+	# Dedicated Favela server skips decorative planning by default: it still generates
+	# the same collision-bearing tree sites and keeps all client visuals unchanged.
+	# TDC_IA2_HEADLESS_SKIP_VISUAL_HILLSIDE=0 is the emergency opt-out.
+	var opt_mode:=OS.get_environment("TDC_IA2_HEADLESS_SKIP_VISUAL_HILLSIDE")
+	var dedicated_server:=OS.get_cmdline_user_args().has("--war-server")
+	var skip_visual_only:=not kit.visuals and opt_mode!="0" and (dedicated_server or opt_mode=="1")
 	var sites := plan(lots, bases, objectives, road_distance,skip_visual_only)
 	var summary := {
 		"hill_trees": sites.trees.size(),

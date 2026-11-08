@@ -51,7 +51,7 @@
 		3500.0,
 		3500.0
 	],
-	"content_hash": "68418e0751429bb7cf3eee47af7140812efbb75f324212a6905b7ae65ee95f07",
+	"content_hash": "9f4c730a07cd9561ce2d576535d59639cd4b008ee745854f6a4ad13428ee1bd9",
 	"grass_approved": false,
 	"grass_enabled": true,
 	"id": "ukraine",
@@ -105,7 +105,7 @@
 		"objectives",
 		"authored_terrain"
 	],
-	"source_hash": "7f07c5e618d55b247b80b4cd3afb58f0c4fb8c94875cbc89f95aedf0bb87c44a",
+	"source_hash": "95bd441abb3255c4668a2f20e4a90e10916c0dcab786fd5f6b5276b26203e42d",
 	"sources": [
 		"res://assets/war/biomes/nova_grama.png",
 		"res://modes/naval/scripts/catalog.gd",
@@ -222,7 +222,7 @@
 		"res://modes/war/scripts/map_content.gd",
 		"res://modes/war/scripts/module_snap.gd",
 		"res://modes/war/scripts/motorbike.gd",
-		"res://modes/war/scripts/objective_bar.gd",
+		"res://scripts/ui/match_dashboard.gd",
 		"res://modes/war/scripts/operation.gd",
 		"res://modes/war/scripts/outskirts.gd",
 		"res://modes/war/scripts/player.gd",
@@ -305,5 +305,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 21
+	"version": 22
 }

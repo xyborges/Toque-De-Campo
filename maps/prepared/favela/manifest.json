@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 26,
+  "version": 27,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,8 +8,8 @@
     1500,
     1500
   ],
-  "content_hash": "810b3bc3617fdaa052b0de7933bf0d3141239b7e226e88c2418c8b5f0336ad34",
-  "source_hash": "24d3a7b570ec7be0b580bf7346fad6a835f3a4f9837076c2c80b3260e76ab995",
+  "content_hash": "ca9ff2a5bbf3f44bf3c0de4007323a26b12241499efa7a142803427f8b1abf2c",
+  "source_hash": "c9d797a8c8c5ffef9c8ffcfe0b7f1a621a6252d51528de80f01923d25fe371d0",
   "sources": [
     "res://modes/war/audio/baile/ak_do_flamengo.mp3",
     "res://modes/war/audio/baile/eu_vi_o_mano.mp3",
@@ -73,7 +73,7 @@
     "res://modes/war/scripts/favela_street_space.gd",
     "res://modes/war/scripts/favela_uniform.gd",
     "res://modes/war/scripts/game.gd",
-    "res://modes/war/scripts/objective_bar.gd",
+    "res://scripts/ui/match_dashboard.gd",
     "res://modes/war/scripts/operation.gd",
     "res://modes/war/scripts/prefab_factory.gd",
     "res://modes/war/scripts/rules.gd",
