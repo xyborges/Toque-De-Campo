@@ -79,6 +79,8 @@ var match_stats:=GameMatchStats.new()
 var score_clock:=0.0
 var score_sent_revision:=-1
 var scoreboard: GameScoreboard
+var match_dashboard: GameMatchDashboard
+var dashboard_refresh_clock := 0.0
 var grenade_timers: GameGrenadeTimers
 var grenade_snapshot_clock:=0.0
 var combat_visuals: GameCombatVisuals
@@ -322,6 +324,9 @@ func _build_ui() -> void:
 	infantry_hud = GameInfantryHUD.new()
 	infantry_hud.game = self
 	hud_layer.add_child(infantry_hud)
+	match_dashboard = GameMatchDashboard.new()
+	hud_layer.add_child(match_dashboard)
+	GameUI.rect(match_dashboard,-310,16,310,158,Vector2(.5,0))
 	hp_label = infantry_hud.hp
 	ammo_label = infantry_hud.ammo
 	health_bar = infantry_hud.health
@@ -1499,6 +1504,14 @@ func _update_desert_result() -> void:
 
 func _process(delta: float) -> void:
 	_update_desert_result()
+	dashboard_refresh_clock += delta
+	if dashboard_refresh_clock >= .25:
+		dashboard_refresh_clock = 0.0
+		if is_instance_valid(match_dashboard) and hud_layer.visible and mode not in ["menu","war_v1","battle_royale","naval_v2"]:
+			var match_context := scoreboard_context()
+			var mode_name := "PVP DESERTO" if mode in ["pvp", "desert"] else ("TREINO" if mode == "training" else ("NAVAL" if mode == "naval" else "PARTIDA"))
+			var local_kills := int(local_player.kills) if is_instance_valid(local_player) else 0
+			match_dashboard.update_arena(mode_name,str(match_context.get("map","")),int(match_context.get("seconds",0)),str(match_context.get("time_label","")) == "RESTANTE",maxi(match_stats.rows.size(),1 if is_instance_valid(local_player) else 0),local_kills,str(match_context.get("objectives","")))
 	if is_instance_valid(loading_screen) and loading_screen.visible: loading_screen.detail.text = status_label.text
 	if not is_instance_valid(music_player) or music_player.stream == null: return
 	if is_instance_valid(naval_mode): return

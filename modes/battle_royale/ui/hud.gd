@@ -2,8 +2,7 @@ extends Control
 class_name BRHUD
 
 var game: Node
-var top: Label
-var zone_text: Label
+var match_dashboard: GameMatchDashboard
 var shown_phase:=""
 var action_notice: Label
 var action_notice_until:=0.
@@ -65,11 +64,10 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);mouse_filter=MOUSE_FILTER_IGNORE
 	add_to_group("game_hud")
 	zone_overlay=ColorRect.new();zone_overlay.color=Color(.22,.38,.65,.10);zone_overlay.mouse_filter=MOUSE_FILTER_IGNORE;zone_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_child(zone_overlay);zone_overlay.hide()
-	var heading:=GameUI.panel(self,14);GameUI.rect(heading,-205,18,205,85,Vector2(.5,0))
-	var headbox:=VBoxContainer.new();heading.add_child(headbox)
-	top=GameUI.label(headbox,"BATTLE ROYALE",19,FieldTheme.ACCENT);top.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	zone_text=GameUI.label(headbox,"DESERTO AFEGÃO",13);zone_text.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	alert=GameUI.label(self,"",18,FieldTheme.ACCENT);GameUI.rect(alert,-300,91,300,121,Vector2(.5,0));alert.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	match_dashboard=GameMatchDashboard.new()
+	add_child(match_dashboard)
+	GameUI.rect(match_dashboard,-310,16,310,158,Vector2(.5,0))
+	alert=GameUI.label(self,"",18,FieldTheme.ACCENT);GameUI.rect(alert,-300,166,300,196,Vector2(.5,0));alert.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	microphone=GameUI.label(self,"",13,FieldTheme.ACCENT);GameUI.rect(microphone,25,-217,345,-194,Vector2(0,1))
 	speech=GameUI.label(self,"",13,FieldTheme.INK);GameUI.rect(speech,25,-191,345,-161,Vector2(0,1))
 	var life:=GameUI.panel(self,18);GameUI.rect(life,20,-155,344,-20,Vector2(0,1))
@@ -102,7 +100,7 @@ func _ready() -> void:
 	var menu:=GameUI.hud_menu_button(self,func():
 		if is_instance_valid(game) and is_instance_valid(game.ui_focus): game.ui_focus.open(game.pause_panel)
 	)
-	live_widgets.assign([heading,alert,microphone,speech,life,weapon,minimap,prompt,death_banner,dead_results,menu])
+	live_widgets.assign([match_dashboard,alert,microphone,speech,life,weapon,minimap,prompt,death_banner,dead_results,menu])
 	waiting=GameUI.panel(self,24);GameUI.rect(waiting,-255,-285,255,285,Vector2(.5,.5));waiting.name="BRWaiting"
 	var waitbox:=VBoxContainer.new();waitbox.add_theme_constant_override("separation",14);waiting.add_child(waitbox)
 	GameUI.label(waitbox,"BATTLE ROYALE",25,FieldTheme.ACCENT)
@@ -248,12 +246,10 @@ func refresh(state: Dictionary,own_inventory: Dictionary,loot: Array) -> void:
 		elif phase=="active":GameUI.scene_fade(self)
 	for widget in live_widgets:widget.visible=phase!="waiting"
 	var alive:=int(state.get("alive",0));var total:=int(state.get("total",alive))
-	top.text="%d VIVOS    ·    %d ABATES"%[alive,int(state.get("kills",0))]
 	_update_waiting(state)
 	var zone: Dictionary=state.get("zone",{})
 	var seconds:=maxi(0,int(ceil(float(zone.get("remaining",0)))))
-	zone_text.text=("ZONA FECHANDO" if bool(zone.get("closing",false)) else "PRÓXIMA ZONA")+"  %d:%02d"%[seconds/60,seconds%60]
-	if phase=="waiting": zone_text.text="DESERTO AFEGÃO"
+	match_dashboard.update_survival(alive,total,int(state.get("kills",0)),seconds,bool(zone.get("closing",false)),phase)
 	var actor: GamePlayer=game.local_player if is_instance_valid(game) else null
 	var eliminated:=is_instance_valid(actor) and actor.hp<=0 and phase=="active"
 	dead_results.visible=eliminated

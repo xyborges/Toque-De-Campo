@@ -2,7 +2,7 @@ extends Control
 class_name WarUI
 var game: Node3D
 var deployment: Control
-var objective_bar: Control
+var match_dashboard: GameMatchDashboard
 var context: Label
 var vehicle_info: Label
 var team_select: OptionButton
@@ -50,10 +50,9 @@ func _ready() -> void:
 	theme = GameUI.THEME
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var top := GameUI.panel(self)
-	GameUI.rect(top,-255,16,255,73,Vector2(.5,0))
-	objective_bar=preload("res://modes/war/scripts/objective_bar.gd").new()
-	top.add_child(objective_bar)
+	match_dashboard=GameMatchDashboard.new()
+	add_child(match_dashboard)
+	GameUI.rect(match_dashboard,-310,16,310,158,Vector2(.5,0))
 	context = GameUI.label(self,"",12,FieldTheme.MUTED)
 	GameUI.rect(context,24,-348,550,-320,Vector2(0,1))
 	vehicle_panel=GameUI.panel(self)
@@ -78,7 +77,7 @@ func _ready() -> void:
 	# Shared pause/settings already expose audio and the shoulder camera.
 	var alerts:=CanvasLayer.new();alerts.layer=45;add_child(alerts)
 	combat_notice=GameUI.panel(alerts)
-	GameUI.rect(combat_notice,-340,88,340,146,Vector2(.5,0))
+	GameUI.rect(combat_notice,-340,164,340,222,Vector2(.5,0))
 	combat_notice.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	combat_notice_text=GameUI.label(combat_notice,"",18,FieldTheme.BAD)
 	combat_notice_text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
@@ -102,7 +101,7 @@ func _ready() -> void:
 	capture_progress=ProgressBar.new();capture_progress.show_percentage=false;capture_progress.custom_minimum_size.y=5;capture_box.add_child(capture_progress)
 	capture_panel.hide()
 	waiting_panel=GameUI.panel(self)
-	GameUI.rect(waiting_panel,-220,104,220,178,Vector2(.5,0))
+	GameUI.rect(waiting_panel,-220,164,220,238,Vector2(.5,0))
 	var waiting_box:=VBoxContainer.new();waiting_panel.add_child(waiting_box)
 	var waiting_title:=GameUI.label(waiting_box,"AGUARDANDO OPONENTE",20,FieldTheme.ACCENT);waiting_title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	var waiting_detail:=GameUI.label(waiting_box,"É preciso um jogador em cada equipe.",14,FieldTheme.MUTED);waiting_detail.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
@@ -364,7 +363,7 @@ func _process(delta: float) -> void:
 		else:
 			var respawn_seconds:=ceili(game.deployment_wait_left())
 			death_countdown_text.text="IMPLANTAÇÃO EM %d"%respawn_seconds if respawn_seconds>0 else "ESCOLHA ONDE IMPLANTAR"
-	objective_bar.update_state(actor.war_team if is_instance_valid(actor) else -1,game.tickets,game.objective_states,maxi(0,int(game.match_left)))
+	match_dashboard.update_state(actor.war_team if is_instance_valid(actor) else -1,game.tickets,game.objective_states,maxi(0,int(game.match_left)))
 	context.text = game.context_text() if game._battle_active() else ""
 	vehicle_info.text = game.vehicle_hud_text()
 	var riding: bool=is_instance_valid(game.local_player) and not game.local_player.vehicle_id.is_empty()
