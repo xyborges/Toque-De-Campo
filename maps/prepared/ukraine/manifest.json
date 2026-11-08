@@ -51,7 +51,7 @@
 		3500.0,
 		3500.0
 	],
-	"content_hash": "9f4c730a07cd9561ce2d576535d59639cd4b008ee745854f6a4ad13428ee1bd9",
+	"content_hash": "867b642b6f17f3a69753d095156b597939516611bfaa1169dff24a34fa6eab3e",
 	"grass_approved": false,
 	"grass_enabled": true,
 	"id": "ukraine",
@@ -105,7 +105,7 @@
 		"objectives",
 		"authored_terrain"
 	],
-	"source_hash": "95bd441abb3255c4668a2f20e4a90e10916c0dcab786fd5f6b5276b26203e42d",
+	"source_hash": "23301a19fbedb2a7dc22395af169265aa22273fc7751605efa98e8b3ca94a360",
 	"sources": [
 		"res://assets/war/biomes/nova_grama.png",
 		"res://modes/naval/scripts/catalog.gd",
@@ -305,5 +305,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 22
+	"version": 23
 }

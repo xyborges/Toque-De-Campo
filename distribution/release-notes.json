@@ -29,6 +29,10 @@
     {
       "title": "Coer?ncia do HUD",
       "text": "Remove marcadores e barras redundantes do topo sem alterar resultados ou autoridade da partida."
+    },
+    {
+      "title": "Identidade dos mapas no pacote",
+      "text": "Manifestos da Favela e da Ucr?nia ajustados para os hashes can?nicos LF do c?digo distribu?do, evitando incompatibilidade de conte?do entre m?quinas."
     }
   ]
 }

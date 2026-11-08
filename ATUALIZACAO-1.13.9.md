@@ -1,6 +1,6 @@
 # Atualiza??o 1.13.9 ? Favela v26, HUD unificado e efici?ncia headless
 
-**Estado inicial:** candidata em revis?o em 08/11/2026. **Build planejada:** 96 (anterior publicada: 95 / 1.13.8).
+**Estado:** 1.13.9/build 96 publicado e substitui??o corretiva pela build 97 em prepara??o (08/11/2026).
 
 ## Conte?do
 
@@ -30,3 +30,9 @@
 - **Avisos n?o bloqueantes:** algumas fixtures headless emitiram '1 resources still in use at exit' com exit 0; acompanhar.
 - **Gate GTX 1650:** 60 s, 1080p, M?dio, 28 bots: **COLETA INV?LIDA por foco 0%**. FPS observado 27,4 e P99 69,9 ms N?O s?o compara??o homolog?vel. Piloto de 10 s teve foco 1,7%, tamb?m inv?lido. N?o alegar cumprimento da meta 60 FPS/P99 nem regress?o causal de cliente.
 - **Limita??o f?sica:** teste V26 demonstra elimina??o das colis?es coplanares; a aus?ncia de tremor em multiplayer com jogador humano real ainda requer playtest.
+
+## Hotfix de identidade de mapas ? build 97
+
+- Ap?s publicar build 96, preflight no checkout oficial detectou FAVELA_MANIFEST STALE e UKRAINE STALE por diferen?a de final de linha na worktree experimental (CRLF), enquanto o Git oficial distribui LF.
+- Normalizada a fonte da encosta para os bytes can?nicos LF e regenerados os SHA-256 de Favela (nova vers?o do manifesto 28) e Ucr?nia (nova vers?o 23). A altera??o de fonte ? apenas representa??o local; o blob versionado de gameplay permanece id?ntico.
+- A build 96 deve ser substitu?da por nova build 97 assinada e validada, sem ativar flags adicionais e sem alterar a jogabilidade.
