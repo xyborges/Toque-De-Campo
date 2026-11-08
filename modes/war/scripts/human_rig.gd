@@ -3,6 +3,8 @@ class_name WarHumanRig
 const UPPER:=.37
 const LOWER:=.35
 static var gloves: Dictionary={}
+# R01 A/B pilot: keep the original path unless explicitly enabled.
+static var r01_fast_ik_lookup: bool=OS.get_environment("TDC_R01_IK_NODE_CACHE")=="1"
 
 static func grip_glove(support: bool,pistol:=false) -> Mesh:
 	var key: String="grip:%s:%s"%[support,pistol]
@@ -60,6 +62,10 @@ static func build(actor: GamePlayer) -> void:
 		var hand:=arm.get_node("Hand"+side) as MeshInstance3D
 		hand.mesh=glove(-1 if side=="L" else 1);hand.material_override=WarArtStyle.material("rubber")
 		hand.position=Vector3(0,-UPPER-LOWER-.053,0)
+		if r01_fast_ik_lookup:
+			# Arm nodes belong to this pivot; the cache dies with it and is
+			# rebuilt alongside the geometry on each avatar reconstruction.
+			arm.set_meta("r01_ik_nodes",[lower,hand,upper])
 		# Keep named hit regions attached to the physical segment they depict.
 		var forearm: Area3D=actor.hit_regions["forearm"+side]
 		if forearm.get_parent()!=lower: forearm.reparent(lower,false)
@@ -70,9 +76,11 @@ static func build(actor: GamePlayer) -> void:
 
 static func pose(actor: GamePlayer,arm: Node3D,target: Vector3,group: String,held_object: Node3D=null) -> void:
 	var side: String=group.right(1)
-	var lower:=arm.get_node_or_null("Forearm"+side+"Mesh") as MeshInstance3D
+	var cached: Array=arm.get_meta("r01_ik_nodes",[]) if r01_fast_ik_lookup else []
+	var cache_valid: bool=cached.size()==3 and is_instance_valid(cached[0]) and is_instance_valid(cached[1]) and is_instance_valid(cached[2])
+	var lower: MeshInstance3D=cached[0] if cache_valid else arm.get_node_or_null("Forearm"+side+"Mesh") as MeshInstance3D
 	if lower==null: return
-	var hand:=arm.get_node("Hand"+side) as MeshInstance3D
+	var hand: MeshInstance3D=cached[1] if cache_valid else arm.get_node("Hand"+side) as MeshInstance3D
 	var proportion:=clampf(float(actor.body_proportions.get("arms",1.)),.65,1.5)
 	var shoulder: Vector3=arm.position
 	var grip:=actor.body_root.to_local(target)
@@ -109,7 +117,7 @@ static func pose(actor: GamePlayer,arm: Node3D,target: Vector3,group: String,hel
 	var projection:=clampf((a*a-b*b+distance*distance)/(2*distance),0,a)
 	var elbow:=shoulder+along*projection+perpendicular*sqrt(maxf(0,a*a-projection*projection))
 	arm.basis=Basis(Quaternion(Vector3.DOWN,(elbow-shoulder).normalized()))
-	var upper:=arm.get_node("Arm"+side+"Mesh") as MeshInstance3D
+	var upper: MeshInstance3D=cached[2] if cache_valid else arm.get_node("Arm"+side+"Mesh") as MeshInstance3D
 	upper.position=Vector3(0,-a*.5,0);upper.scale=Vector3(proportion,a/UPPER,proportion)
 	var inverse:=arm.transform.affine_inverse()
 	var elbow_local:=inverse*elbow
