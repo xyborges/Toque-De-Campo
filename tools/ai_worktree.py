@@ -85,6 +85,12 @@ def create(args):
     for ref in (f"refs/heads/{branch}", f"refs/remotes/origin/{branch}"):
         if run("show-ref", "--verify", "--quiet", ref, check=False).returncode == 0:
             raise RuntimeError("Branch ja existe: " + branch + "; use nome novo.")
+    # A segunda maquina pode ter publicado uma branch apos o ultimo fetch local.
+    remote = run("ls-remote", "--exit-code", "--heads", "origin", branch, check=False)
+    if remote.returncode == 0:
+        raise RuntimeError("Branch ja existe no GitHub: " + branch + "; escolha outro nome.")
+    if remote.returncode != 2:  # 2 = sem correspondencia, para --exit-code.
+        raise RuntimeError("Falha ao conferir branch no GitHub: " + remote.stderr.strip())
     target.parent.mkdir(parents=True, exist_ok=True)
     print("Criando " + branch + " desde origin/main")
     run("worktree", "add", "--no-track", "-b", branch, str(target), "origin/main")
