@@ -1,0 +1,26 @@
+{
+  "ok": false,
+  "roles": {
+    "server": {
+      "checks": 0,
+      "failures": [
+        "timeout alpha"
+      ],
+      "role": "server"
+    },
+    "alpha": {
+      "checks": 0,
+      "failures": [
+        "timeout join"
+      ],
+      "role": "alpha"
+    },
+    "bravo": {
+      "failures": [
+        "no report"
+      ]
+    }
+  },
+  "pacing": {},
+  "scope": "War authority plus two real DTLS client processes; 28bots, incremental team balance, slow-client initial baseline acknowledgement, late join and actual movement/combat. Local isolated map fixture; not production or FPS benchmark."
+}

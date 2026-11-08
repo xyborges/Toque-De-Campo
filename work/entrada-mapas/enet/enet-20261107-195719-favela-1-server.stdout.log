@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+IA2_ENET_HOST_READY 1794092255554
+IA2_ENET_METRICS {"authority":true,"bot_states_ready_ms":-1.0,"bots_seen":0,"finished_unix_ms":1794092380575,"flags":{"housing":"1","terrain":"1"},"frame_ms":{"max":184.323,"mean":16.701650501002,"n":7485,"p50":16.678,"p95":18.606,"p99":19.753},"frames":[],"frames_over_100ms":1,"frames_over_50ms":4,"gpu":"","gpu_ms":{},"join_ready":false,"join_ready_ms":7638.506,"join_unix_ms":1794092255554,"label":"enet-20261107-195719-favela-1","max_physics_steps_per_frame":8,"members":0,"multistep_frames":11,"operation":"favela","physics_ms":{"max":7821.318,"mean":5.12809392117566,"n":7485,"p50":2.913,"p95":10.88,"p99":24.387},"pipeline_end":{},"pipeline_start":{},"remote_player_count":0,"rendering_method":"forward_plus","role":"server","unfocused_frames":0,"valid_connection":true,"warnings":[],"world_build_ms":4902.949}

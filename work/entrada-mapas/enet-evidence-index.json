@@ -1,0 +1,53 @@
+[
+  {
+    "source": "enet-20261107-195719-favela-1-server.json",
+    "archived": "enet-20261107-195719-favela-1-server.json.gz",
+    "sha256": "3955aa64296d5ba2ebe25cfe4e256599ebd212b14c9edbe9a3ecb8bfbc73b871",
+    "bytes_raw": 456172,
+    "bytes_gzip": 40337
+  },
+  {
+    "source": "enet-20261107-200212-favela-1-server.json",
+    "archived": "enet-20261107-200212-favela-1-server.json.gz",
+    "sha256": "3fb089e44366f08b9407b42efa8b417bf08de36e4db98c7e0e577f9c71f752bd",
+    "bytes_raw": 456335,
+    "bytes_gzip": 38949
+  },
+  {
+    "source": "enet-20261107-204816-favela-1-server.json",
+    "archived": "enet-20261107-204816-favela-1-server.json.gz",
+    "sha256": "403d42fe2646ac03a51a482589638377c047bca7b7b6d27630614c2350fb2832",
+    "bytes_raw": 452548,
+    "bytes_gzip": 41606
+  },
+  {
+    "source": "1103-bots-server.stdout.log",
+    "archived": "1103-qa-server.stdout.log",
+    "bytes_raw": 134
+  },
+  {
+    "source": "1103-bots-server.json",
+    "archived": "1103-qa-server.json",
+    "bytes_raw": 57
+  },
+  {
+    "source": "1103-bots-alpha.stdout.log",
+    "archived": "1103-qa-alpha.stdout.log",
+    "bytes_raw": 132
+  },
+  {
+    "source": "1103-bots-alpha.json",
+    "archived": "1103-qa-alpha.json",
+    "bytes_raw": 55
+  },
+  {
+    "source": "1103-bots-bravo.stdout.log",
+    "archived": "1103-qa-bravo.stdout.log",
+    "bytes_raw": 75
+  },
+  {
+    "source": "1103-war-bots-network.json",
+    "archived": "1103-qa-summary.json",
+    "bytes_raw": 622
+  }
+]
