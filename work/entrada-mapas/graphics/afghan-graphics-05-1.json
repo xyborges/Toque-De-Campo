@@ -1,0 +1,60 @@
+{
+  "adapter": "NVIDIA GeForce GTX 1650",
+  "bots_at_start": 0,
+  "bots_end": 28,
+  "deployed_end": 27,
+  "flags": {
+    "housing": "1",
+    "terrain": "1"
+  },
+  "frame_ms": {
+    "count": 481,
+    "max": 865.795,
+    "mean": 62.5017920997921,
+    "p50": 56.969,
+    "p95": 97.686,
+    "p99": 144.277
+  },
+  "frames_over_100": 23,
+  "frames_over_50": 309,
+  "gpu_ms": {
+    "count": 481,
+    "max": 40.8740005493164,
+    "mean": 15.4489771402799,
+    "p50": 15.4630002975464,
+    "p95": 19.0669994354248,
+    "p99": 38.1500015258789
+  },
+  "join_ready_ms": 25104.804,
+  "join_unix_ms": 1794095915577,
+  "label": "afghan-graphics-05-1",
+  "max_ticks": 8,
+  "multi_tick_frames": 481,
+  "operation": "afghan",
+  "physics_ms": {
+    "count": 481,
+    "max": 36.479,
+    "mean": 20.2063201663202,
+    "p50": 17.895,
+    "p95": 35.811,
+    "p99": 36.479
+  },
+  "pipeline_end": {
+    "draw": 33.0,
+    "mesh": 18.0,
+    "specialization": 49.0,
+    "surface": 46.0
+  },
+  "pipeline_start": {
+    "draw": 27.0,
+    "mesh": 14.0,
+    "specialization": 38.0,
+    "surface": 46.0
+  },
+  "render_scale": 1.0,
+  "rendering_method": "forward_plus",
+  "sample_started_unix_ms": 1794095915694,
+  "screen": "(1920.0, 1080.0)",
+  "unfocused_frames": 0,
+  "world_ms": 21365.422
+}

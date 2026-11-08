@@ -1,0 +1,60 @@
+{
+  "adapter": "NVIDIA GeForce GTX 1650",
+  "bots_at_start": 0,
+  "bots_end": 28,
+  "deployed_end": 28,
+  "flags": {
+    "housing": "1",
+    "terrain": "1"
+  },
+  "frame_ms": {
+    "count": 158,
+    "max": 776.69,
+    "mean": 190.009284810127,
+    "p50": 180.097,
+    "p95": 276.548,
+    "p99": 337.401
+  },
+  "frames_over_100": 153,
+  "frames_over_50": 158,
+  "gpu_ms": {
+    "count": 158,
+    "max": 38.4560012817383,
+    "mean": 28.208436712434,
+    "p50": 28.2999992370605,
+    "p95": 34.076000213623,
+    "p99": 36.8860015869141
+  },
+  "join_ready_ms": 19437.444,
+  "join_unix_ms": 1794093657962,
+  "label": "favela-graphics-05-1",
+  "max_ticks": 8,
+  "multi_tick_frames": 158,
+  "operation": "favela",
+  "physics_ms": {
+    "count": 158,
+    "max": 50.547,
+    "mean": 31.9321392405064,
+    "p50": 28.823,
+    "p95": 47.987,
+    "p99": 50.547
+  },
+  "pipeline_end": {
+    "draw": 19.0,
+    "mesh": 8.0,
+    "specialization": 25.0,
+    "surface": 40.0
+  },
+  "pipeline_start": {
+    "draw": 15.0,
+    "mesh": 4.0,
+    "specialization": 20.0,
+    "surface": 40.0
+  },
+  "render_scale": 1.0,
+  "rendering_method": "forward_plus",
+  "sample_started_unix_ms": 1794093658072,
+  "screen": "(1920.0, 1080.0)",
+  "unfocused_frames": 0,
+  "world_ms": 13512.513
+}
