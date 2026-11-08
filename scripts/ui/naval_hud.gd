@@ -11,7 +11,7 @@ var reticle: ColorRect
 var ammo: Label
 var turret_state: Label
 var reload: ProgressBar
-var status: Label
+var match_dashboard: GameMatchDashboard
 func _ready() -> void:
 	add_to_group("game_hud")
 	name = "NavalHUD"
@@ -69,8 +69,9 @@ func _ready() -> void:
 	notification.anchor_right = 0.80
 	notification.offset_top = 110
 	notification.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	status = GameUI.label(self,"PVP NAVAL",12,FieldTheme.ACCENT)
-	GameUI.rect(status,22,22,300,55)
+	match_dashboard = GameMatchDashboard.new()
+	add_child(match_dashboard)
+	GameUI.rect(match_dashboard,-310,16,310,158,Vector2(.5,0))
 	GameUI.hud_menu_button(self,func(): mode._open("pause"))
 func refresh(ship: NavalShip) -> void:
 	telemetry.text = "%s · %d / %d\n%.1f m/s · INTEGRIDADE" % [ship.spec.name.to_upper(),ship.hp,ship.spec.hp,absf(ship.speed)]
@@ -87,4 +88,4 @@ func refresh(ship: NavalShip) -> void:
 		var turret: NavalTurret = ship.turrets[id]
 		states.append("%s %s" % [{"lightMG":"L","heavyMG":"P","missile":"M","torpedo":"T"}[id],"BLOQUEADA" if turret.blocked else ("PRONTA" if turret.reachable else "LIMITE")])
 	turret_state.text = " · ".join(states)
-	status.text = "PVP NAVAL · %d COMANDANTES%s" % [mode.ships.size()," · SUPERFÍCIE" if ship.kind=="submarine" else ""]
+	match_dashboard.update_naval(mode.ships.size(),"SUBMARINO" if ship.kind=="submarine" else "SUPERFÍCIE")
