@@ -2,6 +2,7 @@ extends RefCounted
 class_name WarLocomotion
 
 const TACTICAL_BODY_POSE = preload("res://modes/war/scripts/tactical_body_pose.gd")
+const TACTICAL_WORLD_BODY = preload("res://modes/war/scripts/tactical_world_body.gd")
 
 # Presentation follows distance actually covered, including replicated actors.
 # It never integrates stale network velocity or changes the camera transform.
@@ -31,6 +32,12 @@ var presentation_fall_speed := 0.0
 var presentation_was_grounded := false
 var tactical_motion_pilot := OS.get_environment("TDC_TACTICAL_MOTION_PILOT")=="1" or "--tactical-motion-pilot" in OS.get_cmdline_user_args()
 var tactical_body_pilot := OS.get_environment("TDC_TACTICAL_BODY_PILOT")=="1" or "--tactical-body-pilot" in OS.get_cmdline_user_args()
+# Separate R2C gate: may move physical world pivots ONLY in local offline TPP.
+var tactical_world_pilot := OS.get_environment("TDC_TACTICAL_WORLD_PILOT")=="1" or "--tactical-world-pilot" in OS.get_cmdline_user_args()
+# Restore the exact original physical pivot before the next base pose.
+# GameInfantryPose.apply resets pelvis Z only; without this X/Y would drift.
+var world_pelvis_rest := Transform3D.IDENTITY
+var world_pelvis_dirty := false
 const PRESENTATION_ACCEL_SCALE := 2.2
 const PRESENTATION_RESPONSE_IN := 24.0
 const PRESENTATION_RESPONSE_OUT := 3.2
@@ -197,6 +204,16 @@ func pose_torso(actor: GamePlayer) -> void:
 	if actor._grenade_active() or (is_instance_valid(actor.melee_rig) and actor.melee_rig.running): return
 	actor.avatar_parts.torso.rotation.x=-.085*sprint*maxf(0,-local_direction.z)
 	actor.avatar_parts.torso.rotation.z=-local_direction.x*.035*moving
+
+func clear_tactical_world_body(actor: GamePlayer) -> void:
+	if not world_pelvis_dirty: return
+	if is_instance_valid(actor.body_root):
+		var pelvis:=actor.body_root.get_node_or_null("Pelvis") as Node3D
+		if is_instance_valid(pelvis): pelvis.transform=world_pelvis_rest
+	world_pelvis_dirty=false
+
+func pose_tactical_world_body(actor: GamePlayer) -> bool:
+	return TACTICAL_WORLD_BODY.apply(actor,self) if tactical_world_pilot else false
 
 func _allows_tactical_body_fpp(actor: GamePlayer) -> bool:
 	if not tactical_motion_pilot or not tactical_body_pilot or not actor.is_local or not actor is WarPlayer: return false
