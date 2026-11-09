@@ -50,7 +50,7 @@ func describe(samples: Array) -> Dictionary:
 		"p99": sorted[mini(n - 1, ceili(n * .99) - 1)], "max": sorted[-1]}
 
 func run() -> void:
-	if count not in [0,6,12,28]: fail("invalid bot count"); return
+	if count not in [0,6,12,22,28]: fail("invalid bot count"); return
 	if operation not in ["afghan","favela"]: fail("invalid map"); return
 	if DisplayServer.get_name() == "headless": fail("visual Forward+ benchmark required"); return
 	seed(712907)
