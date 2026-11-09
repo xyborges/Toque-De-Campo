@@ -81,7 +81,7 @@ func build_legs(actor: GamePlayer) -> void:
 			var area: Area3D=actor.hit_regions["leg"+side]
 			area.position=Vector3(0,-.20,0)
 			(area.get_child(0) as CollisionShape3D).shape=BoxShape3D.new();area.get_child(0).shape.size=Vector3(.25,.42,.28)
-		var area:=Area3D.new();area.name="ShinHit"+side;area.collision_layer=2;area.collision_mask=0;area.monitoring=false;area.set_meta("hit_region","leg"+side)
+		var area:=Area3D.new();area.name="ShinHit"+side;area.collision_layer=2;area.collision_mask=0;area.monitoring=false;area.set_meta("hit_region","shin"+side)
 		var volume:=CollisionShape3D.new();var box:=BoxShape3D.new();box.size=Vector3(.22,.38,.25);volume.shape=box;area.position=Vector3(0,-.20,0);area.add_child(volume);knee.add_child(area);actor.hit_regions["shin"+side]=area
 		# Cache the sole bounds once. Walking needs eight point transforms per
 		# boot, not another ground ray, collision body or grass interaction.

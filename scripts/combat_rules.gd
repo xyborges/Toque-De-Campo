@@ -3,7 +3,7 @@ class_name CombatRules
 
 # Layers: 1 scenery, 2 combat regions, 4 movement capsules, 8 corpses.
 const SHOT_MASK := 3
-const DAMAGE := {"head":2.5, "chest":1.0, "abdomen":0.9, "armL":0.65, "armR":0.65, "forearmL":0.65, "forearmR":0.65, "handL":0.4, "handR":0.4, "legL":0.75, "legR":0.75, "footL":0.4, "footR":0.4}
+const DAMAGE := {"head":2.5, "chest":1.0, "abdomen":0.9, "armL":0.65, "armR":0.65, "forearmL":0.65, "forearmR":0.65, "handL":0.4, "handR":0.4, "legL":0.75, "legR":0.75, "shinL":0.75, "shinR":0.75, "footL":0.4, "footR":0.4}
 const MODES := {"training":{"fatal_headshot":true,"limb_disability":true,"dismemberment":true}, "desert":{"fatal_headshot":true,"limb_disability":true,"dismemberment":true}, "pvp":{"fatal_headshot":true,"limb_disability":false,"dismemberment":false}}
 const WEAPON_OPTIONS := {
 	"broom":{"simulation":"melee","mode":"semi","reserve":0,"recoil":0.0,"spread":0.0,"sever":false},
@@ -32,8 +32,8 @@ static func weapon(id: String) -> Dictionary:
 static func region_group(region: String) -> String:
 	if region in ["armL","forearmL","handL"]: return "armL"
 	if region in ["armR","forearmR","handR"]: return "armR"
-	if region in ["legL","footL"]: return "legL"
-	if region in ["legR","footR"]: return "legR"
+	if region in ["legL","shinL","footL"]: return "legL"
+	if region in ["legR","shinR","footR"]: return "legR"
 	if region in ["torso","chest","abdomen","abdomenPelvis"]: return "torso"
 	return "head"
 

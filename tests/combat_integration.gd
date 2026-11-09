@@ -13,11 +13,29 @@ func check(value: bool, label: String) -> void:
 	if not value: errors.append(label)
 
 func cast_region(actor: GamePlayer, key: String) -> Dictionary:
-	var area: Area3D = actor.hit_regions[key]
-	var center := area.global_position
-	var query := PhysicsRayQueryParameters3D.create(center + Vector3(0,0,2),center - Vector3(0,0,2),CombatRules.SHOT_MASK,game._collision_excludes(1,false))
-	query.collide_with_areas = true
-	return game.get_world_3d().direct_space_state.intersect_ray(query)
+	# Ray must encounter the intended physical region first. A single front
+	# direction may legitimately hit a thigh before a shoe or a forearm
+	# before a hand. Keep every hitbox active and try exterior directions.
+	var area: Area3D=actor.hit_regions[key]
+	var center: Vector3=area.global_position
+	var target_name: String="abdomen" if key=="abdomenPelvis" else key
+	var directions: Array[Vector3]=[
+		Vector3.RIGHT,Vector3.LEFT,Vector3.UP,Vector3.DOWN,
+		Vector3.FORWARD,Vector3.BACK,
+		Vector3(1,1,0).normalized(),Vector3(-1,1,0).normalized(),
+		Vector3(1,-1,0).normalized(),Vector3(-1,-1,0).normalized(),
+		Vector3(1,0,1).normalized(),Vector3(-1,0,1).normalized(),
+		Vector3(1,0,-1).normalized(),Vector3(-1,0,-1).normalized(),
+		Vector3(0,1,1).normalized(),Vector3(0,-1,1).normalized(),
+		Vector3(0,1,-1).normalized(),Vector3(0,-1,-1).normalized()
+	]
+	for direction: Vector3 in directions:
+		var query:=PhysicsRayQueryParameters3D.create(center+direction*1.8,center-direction*1.8,CombatRules.SHOT_MASK,game._collision_excludes(1,false))
+		query.collide_with_areas=true
+		var hit: Dictionary=game.get_world_3d().direct_space_state.intersect_ray(query)
+		if not hit.is_empty() and str(hit.collider.get_meta("hit_region","none"))==target_name:
+			return hit
+	return {}
 
 func run() -> void:
 	game = load("res://scripts/main.gd").new()
