@@ -7,6 +7,7 @@ class_name WarTacticalWorldBody
 # pose. Remote players, bots and real network rooms are deliberately excluded
 # until P1k's independent physical PoseFrame passes the performance gate.
 const INTENT = preload("res://modes/war/scripts/tactical_body_pose.gd")
+const POSE_FRAME = preload("res://modes/war/scripts/tactical_pose_frame.gd")
 
 static func eligible(actor: GamePlayer,motion) -> bool:
 	if not actor is WarPlayer: return false
@@ -39,9 +40,11 @@ static func apply(actor: GamePlayer,motion) -> bool:
 	# The Area3D hit regions stay descendants of both modified pivots.
 	var pelvis:=actor.body_root.get_node("Pelvis") as Node3D
 	var torso:=actor.avatar_parts.torso as Node3D
-	motion.world_pelvis_rest=pelvis.transform
+	if not is_instance_valid(motion.world_pose_frame): motion.world_pose_frame=POSE_FRAME.new()
+	var frame: POSE_FRAME=motion.world_pose_frame
+	frame.compose(pelvis.transform,torso.transform,offset,hip_turn,torso_turn,Engine.get_physics_frames(),actor.life_id)
+	motion.world_pelvis_rest=frame.pelvis_base
 	motion.world_pelvis_dirty=true
-	pelvis.position+=offset
-	pelvis.basis=pelvis.basis*Basis.from_euler(hip_turn)
-	torso.basis=torso.basis*Basis.from_euler(torso_turn)
+	pelvis.transform=frame.pelvis
+	torso.transform=frame.torso
 	return true

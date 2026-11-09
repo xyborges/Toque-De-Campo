@@ -3,6 +3,7 @@ class_name WarLocomotion
 
 const TACTICAL_BODY_POSE = preload("res://modes/war/scripts/tactical_body_pose.gd")
 const TACTICAL_WORLD_BODY = preload("res://modes/war/scripts/tactical_world_body.gd")
+const TACTICAL_POSE_FRAME = preload("res://modes/war/scripts/tactical_pose_frame.gd")
 
 # Presentation follows distance actually covered, including replicated actors.
 # It never integrates stale network velocity or changes the camera transform.
@@ -38,6 +39,8 @@ var tactical_world_pilot := OS.get_environment("TDC_TACTICAL_WORLD_PILOT")=="1" 
 # GameInfantryPose.apply resets pelvis Z only; without this X/Y would drift.
 var world_pelvis_rest := Transform3D.IDENTITY
 var world_pelvis_dirty := false
+# Lazily allocated only for an eligible, non-neutral local offline R2C pose.
+var world_pose_frame: TACTICAL_POSE_FRAME
 const PRESENTATION_ACCEL_SCALE := 2.2
 const PRESENTATION_RESPONSE_IN := 24.0
 const PRESENTATION_RESPONSE_OUT := 3.2
@@ -211,6 +214,7 @@ func clear_tactical_world_body(actor: GamePlayer) -> void:
 		var pelvis:=actor.body_root.get_node_or_null("Pelvis") as Node3D
 		if is_instance_valid(pelvis): pelvis.transform=world_pelvis_rest
 	world_pelvis_dirty=false
+	if is_instance_valid(world_pose_frame): world_pose_frame.invalidate()
 
 func pose_tactical_world_body(actor: GamePlayer) -> bool:
 	return TACTICAL_WORLD_BODY.apply(actor,self) if tactical_world_pilot else false
