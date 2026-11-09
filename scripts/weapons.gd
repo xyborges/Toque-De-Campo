@@ -16,7 +16,7 @@ static var ITEMS := {
     "g3": {"slot":2,"priority":1,"name":"G3","kind":"firearm","damage":60.0,"range":1050.0,"cooldown":0.13,"power":8.0,"mag":20,"reload":3.1,"speed":785.0,"gravity":9.81,"color":Color("#596b39")},
     "fal": {"slot":2, "priority":1, "name":"FAL", "kind":"firearm", "damage":62.0, "range":1100.0, "cooldown":0.13, "power":8.0, "mag":20, "reload":6.0, "speed":800.0, "gravity":9.81, "color":Color("#30362e")},
     "sniper": {"slot":2, "priority":2, "name":"Sniper", "kind":"firearm", "category":"precision", "damage":100.0, "range":2200.0, "cooldown":1.15, "power":12.0, "mag":5, "reload":4.5, "speed":900.0, "gravity":12.0, "color":Color("#171b1b")},
-    "rpg": {"slot":7, "priority":0, "name":"RPG-7", "kind":"launcher", "category":"antiarmor", "war_only":true, "optic_fovs":[26.0], "damage":430.0, "range":650.0, "cooldown":5.5, "power":12.0, "mag":0, "reload":0.0, "speed":82.0, "gravity":5.2, "color":Color("#66764b")},
+    "rpg": {"slot":7, "priority":0, "name":"RPG-7", "kind":"launcher", "category":"antiarmor", "war_only":true, "optic_fovs":[26.0], "damage":430.0, "range":650.0, "cooldown":5.5, "power":12.0, "mag":0, "reload":0.0, "speed":WarRpgBallistics.SPEED, "gravity":WarRpgBallistics.GRAVITY, "color":Color("#66764b")},
     "stinger": {"slot":8, "priority":0, "name":"FIM-92 Stinger", "kind":"launcher", "category":"antitank", "war_only":true, "optic_fovs":[35.0], "damage":280.0, "range":700.0, "cooldown":6.5, "power":12.0, "mag":0, "reload":0.0, "speed":125.0, "gravity":0.0, "color":Color("#727455")}
 }
 

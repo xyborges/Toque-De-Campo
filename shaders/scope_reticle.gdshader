@@ -8,6 +8,10 @@ uniform float pixel_size = 0.00125;
 uniform float mrad_spacing = 0.004;
 // 0=standard scope, 1=integral PGO-7, 2=FIM-92 aperture/seeker.
 uniform int launcher_mode = 0;
+// First six dots of the integral PGO-7: 100, 200, ... 600 metres.
+// Angles are calibrated by WarRpgBallistics against the live flight model.
+uniform vec4 rpg_marks_near = vec4(19.3, 39.4, 62.8, 91.2);
+uniform vec2 rpg_marks_far = vec2(126.2, 170.5);
 
 void fragment() {
 	vec2 p = (UV - vec2(0.5)) * vec2(aspect, 1.0);
@@ -27,13 +31,15 @@ void fragment() {
 	if (launcher_mode == 1) {
 		// PGO-7 inspired engraved stadia: fixed side scale and falling aim chevrons.
 		float horizontal = (1.0 - smoothstep(pixel_size * 0.5, pixel_size * 1.4, abs(p.y))) * (1.0 - step(0.15, abs(p.x)));
-		float vertical = (1.0 - smoothstep(pixel_size * 0.45, pixel_size * 1.2, abs(p.x))) * step(0.0, p.y) * (1.0 - step(0.105, p.y));
+		float vertical = (1.0 - smoothstep(pixel_size * 0.45, pixel_size * 1.2, abs(p.x))) * step(0.0, p.y) * (1.0 - step(0.395, p.y));
 		float stadia = 0.0;
-		for (int i = 1; i <= 5; i++) {
-			float y = float(i) * mrad_spacing * 3.0;
-			float arms = mix(0.012, 0.003, float(i) / 5.0);
+		for (int i = 0; i < 6; i++) {
+			float hold = i < 4 ? rpg_marks_near[i] : rpg_marks_far[i - 4];
+			float y = hold * mrad_spacing;
+			float arms = mix(0.013, 0.005, float(i) / 5.0);
 			float tick = (1.0 - smoothstep(pixel_size * 0.6, pixel_size * 1.4, abs(p.y - y))) * (1.0 - step(arms, abs(p.x)));
-			stadia = max(stadia, tick);
+			float centre_dot = 1.0 - smoothstep(pixel_size * 1.1, pixel_size * 1.9, length(p - vec2(0.0, y)));
+			stadia = max(stadia, max(tick, centre_dot));
 		}
 		float range_curve = 1.0 - smoothstep(pixel_size * 0.7, pixel_size * 1.4, abs(p.x + 0.11 - 0.24 * p.y));
 		range_curve *= step(-0.09, p.y) * (1.0 - step(0.09, p.y));

@@ -130,7 +130,7 @@ const SECONDARY := {
 	"abrams":{"name":"METRALHADORA COAXIAL","weapon":"hmg","capacity":80,"reserve":400,"reload":4.0,"cooldown":.10},
 	"t90":{"name":"METRALHADORA COAXIAL","weapon":"hmg","capacity":80,"reserve":400,"reload":4.0,"cooldown":.10}}
 const SPECIAL := {
-	"rpg":{"speed":82.0,"gravity":5.2,"damage":430.0,"radius":7.0,"cooldown":5.5,"range":650.0,"color":Color("f49a51")},
+	"rpg":{"speed":WarRpgBallistics.SPEED,"gravity":WarRpgBallistics.GRAVITY,"damage":430.0,"radius":7.0,"cooldown":5.5,"range":650.0,"color":Color("f49a51")},
 	"stinger":{"speed":125.0,"gravity":0.0,"damage":280.0,"radius":5.0,"cooldown":6.5,"range":700.0,"color":Color("ffd8a0")},
 	"grenade":{"speed":20.0,"gravity":9.81,"damage":160.0,"radius":8.0,"cooldown":1.2,"range":120.0,"color":Color("d9c990")}}
 
