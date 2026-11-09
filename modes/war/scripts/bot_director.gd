@@ -24,6 +24,8 @@ var strategy_at:=0.0
 var metrics_at:=0.
 var bot_probe_enabled:=false
 var next_cover_query:=0.
+var next_armor_cover_query:=0.
+var next_foot_escape_query:=0.
 # Shared states avoid per-passenger timers and reboarding failed vehicles.
 var blocked_vehicles: Dictionary={}
 var evacuations: Dictionary={}
@@ -31,7 +33,7 @@ var bot_ids: Array=[]
 var spatial: Dictionary={}
 var spatial_at:=0.0
 var world_los: PhysicsRayQueryParameters3D=PhysicsRayQueryParameters3D.new()
-var diagnostics: Dictionary={"moves":0,"shots":0,"reloads":0,"deployments":0,"routes":0,"deploy_failures":0,"target_acquisitions":0,"clear_shot_ticks":0,"shot_attempts":0,"shot_rejections":0,"grenades":0,"armor_engagements":0,"vehicle_evacuations":0,"vehicle_detours":0}
+var diagnostics: Dictionary={"moves":0,"shots":0,"reloads":0,"deployments":0,"routes":0,"deploy_failures":0,"target_acquisitions":0,"clear_shot_ticks":0,"shot_attempts":0,"shot_rejections":0,"grenades":0,"armor_engagements":0,"vehicle_evacuations":0,"vehicle_detours":0,"foot_escapes":0,"armor_evades":0}
 
 class BotRoutes extends OfflineDirector:
 	var heights:=PackedFloat32Array()
@@ -157,11 +159,13 @@ func populate(human_team: int) -> void:
 func reset() -> void:
 	if navigation: navigation.routes.clear()
 	blocked_vehicles.clear();evacuations.clear()
-	metrics_at=0.
+	metrics_at=0.;next_armor_cover_query=0.;next_foot_escape_query=0.
 	think_cursor=0;think_accumulator=0
 	for id in bots:
 		bots[id].target=0;bots[id].direction=Vector3.ZERO;bots[id].next_shot=game.war_clock+1.
-		bots[id].stuck=0.
+		bots[id].stuck=0.;bots[id].escape_point=Vector3.INF;bots[id].escape_until=0.
+		bots[id].no_progress=0.;bots[id].progress_at=0.;bots[id].progress_distance=INF
+		bots[id].armor_cover_until=0.;bots[id].armor_cover_point=Vector3.INF
 		bots[id].boarded_once=false;bots[id].vehicle_path=[];bots[id].foot_path=[]
 
 func stop() -> void:
@@ -304,6 +308,9 @@ func _deploy_bot(id: int) -> void:
 		game._register_match_stat(actor)
 		record.target=0;record.direction=Vector3.ZERO;record.next_shot=game.war_clock+1.
 		record.next_deploy_attempt=0.;record.boarded_once=false;record.vehicle_path=[];record.foot_path=[]
+		record.stuck=0.;record.escape_point=Vector3.INF;record.escape_until=0.;record.escape_attempts=0
+		record.no_progress=0.;record.progress_at=0.;record.progress_distance=INF
+		record.armor_cover_until=0.;record.armor_cover_point=Vector3.INF
 		record.target_vehicle="";record.grenade_throw_at=0.;record.next_grenade=game.war_clock+2.+float(id%7)*.6
 		diagnostics.deployments=int(diagnostics.deployments)+1
 	else:
@@ -325,7 +332,7 @@ func _physics_process(delta: float) -> void:
 			if int(state.get("target",0))>0 or not str(state.get("target_vehicle","")).is_empty(): active_targets+=1
 			var bot_actor:=game.players.get(bot_id) as WarPlayer
 			if is_instance_valid(bot_actor) and not bot_actor.vehicle_id.is_empty(): in_vehicles+=1
-		GameDiagnostics.record("war_bot_metrics",{"bots":bot_ids.size(),"engaged":active_targets,"in_vehicles":in_vehicles,"shots":diagnostics.shots,"grenades":diagnostics.grenades,"armor_engagements":diagnostics.armor_engagements,"vehicle_evacuations":diagnostics.vehicle_evacuations,"vehicle_detours":diagnostics.vehicle_detours})
+		GameDiagnostics.record("war_bot_metrics",{"bots":bot_ids.size(),"engaged":active_targets,"in_vehicles":in_vehicles,"shots":diagnostics.shots,"grenades":diagnostics.grenades,"armor_engagements":diagnostics.armor_engagements,"vehicle_evacuations":diagnostics.vehicle_evacuations,"vehicle_detours":diagnostics.vehicle_detours,"foot_escapes":diagnostics.foot_escapes,"armor_evades":diagnostics.armor_evades})
 	if game.match_ended:
 		for id in bots:
 			var actor:=game.players.get(id) as WarPlayer
@@ -391,6 +398,13 @@ func _think(id: int) -> void:
 	var armored:=_visible_vehicle(actor) if actor.war_class=="antitank" and int(game.members[id].get("charges",0))>0 else null
 	if is_instance_valid(armored) and (not is_instance_valid(target) or actor.position.distance_to(target.position)>45.):
 		if _fight_armor(actor,record,armored): return
+	record.target_vehicle=""
+	# Unprotected riflemen should not charge an occupied APC or tank head-on.
+	# This sensor is staggered with the shared think budget (not 60 Hz).
+	var armor_threat:=_visible_vehicle(actor,115.,true)
+	if is_instance_valid(armor_threat):
+		if _evade_armor(actor,record,armor_threat): return
+	elif _continue_armor_evasion(actor,record): return
 	if actor.gadget_equipped and actor.war_class=="antitank":
 		actor.set_gadget(false,actor.gadget)
 		if is_instance_valid(game.vehicle_system): game.vehicle_system._broadcast("gadget_selected",[actor.peer_id,actor.gadget,false])
@@ -474,6 +488,78 @@ func _cover_goal(actor: WarPlayer,enemy: WarPlayer,record: Dictionary) -> Vector
 	return Vector3.INF
 
 
+# Deliberately separate armor suppression from infantry duels. An ordinary
+# rifleman should seek a physical obstacle that blocks the armored gun, not
+# run head-on until the vehicle hits him.
+func _armor_cover_candidate(actor: WarPlayer,vehicle: WarVehicle) -> Vector3:
+	var from:=actor.global_position
+	var away:=from-vehicle.global_position;away.y=0.
+	if away.length_squared()<.1: away=Vector3.FORWARD
+	away=away.normalized()
+	var side:=away.cross(Vector3.UP).normalized()
+	var space:=game.get_world_3d().direct_space_state
+	var best:=Vector3.INF
+	var best_score:=-INF
+	for distance in [7.,12.,18.]:
+		for offset in [-1.5,-.8,0.,.8,1.5]:
+			var towards: Vector3=(away+side*float(offset)).normalized()
+			var at:=from+towards*float(distance)
+			var candidate:=WarTerrain.point(at.x,at.z)
+			if absf(candidate.y-from.y)>1.25: continue
+			var move_query:=PhysicsRayQueryParameters3D.create(from+Vector3.UP*.85,candidate+Vector3.UP*.85,1,[actor.get_rid()])
+			if not space.intersect_ray(move_query).is_empty():continue
+			var shot_query:=PhysicsRayQueryParameters3D.create(vehicle.global_position+Vector3.UP*1.8,candidate+Vector3.UP*1.3,1|16,[vehicle.get_rid(),actor.get_rid()])
+			if space.intersect_ray(shot_query).is_empty():continue
+			var score:=candidate.distance_to(vehicle.global_position)-float(distance)*.38
+			if score>best_score:best=candidate;best_score=score
+	return best
+
+func _continue_armor_evasion(actor: WarPlayer,record: Dictionary) -> bool:
+	if game.war_clock>=float(record.get("armor_cover_until",0.)):return false
+	var point: Vector3=record.get("armor_cover_point",Vector3.INF)
+	if not point.is_finite() or actor.global_position.distance_squared_to(point)<4.:return false
+	record.goal=point
+	var direction:=_route_direction(actor,point,record)
+	if direction.length_squared()<.01:direction=(point-actor.global_position).normalized()
+	direction.y=0.
+	record.direction=_avoid(actor,direction)
+	record.target=0;record.line_clear=false
+	return true
+
+func _evade_armor(actor: WarPlayer,record: Dictionary,vehicle: WarVehicle) -> bool:
+	var cache: String=str(record.get("armor_cover_vehicle",""))
+	if cache!=vehicle.vehicle_id:diagnostics.armor_evades=int(diagnostics.get("armor_evades",0))+1
+	var point: Vector3=record.get("armor_cover_point",Vector3.INF)
+	if cache!=vehicle.vehicle_id or game.war_clock>=float(record.get("armor_recheck_at",0.)) or not point.is_finite():
+		if game.war_clock>=next_armor_cover_query:
+			next_armor_cover_query=game.war_clock+.08
+			point=_armor_cover_candidate(actor,vehicle)
+		else:point=Vector3.INF
+		if not point.is_finite():
+			# No nearby hard cover: break the vehicle's firing lane instead of
+			# standing still. Alternate a consistent flank, never random jitter.
+			var away:=actor.global_position-vehicle.global_position;away.y=0.
+			if away.length_squared()<.1:away=Vector3.FORWARD
+			away=away.normalized()
+			var side:=away.cross(Vector3.UP)
+			var sign_value:=1. if actor.peer_id%2==0 else -1.
+			var at:=actor.global_position+away*11.+side*sign_value*8.
+			point=WarTerrain.point(at.x,at.z)
+		record.armor_cover_vehicle=vehicle.vehicle_id
+		record.armor_cover_point=point
+		record.armor_recheck_at=game.war_clock+1.6
+	record.armor_cover_until=game.war_clock+2.3
+	record.goal=point
+	var direction:=_route_direction(actor,point,record)
+	if direction.length_squared()<.01:
+		direction=point-actor.global_position;direction.y=0.
+		direction=direction.normalized()
+	record.direction=_avoid(actor,direction)
+	record.target=0;record.line_clear=false
+	# A visible, occupied armored vehicle is still a threat after infantry
+	# loses sight for a fraction of a second; keep the selected escape briefly.
+	return true
+
 func _grenade_tactics(actor: WarPlayer,record: Dictionary,target: WarPlayer) -> void:
 	if not is_instance_valid(game.grenades_system) or not game.grenade_allowed(actor): return
 	var held:=not actor.grenade_held_id.is_empty()
@@ -510,12 +596,13 @@ func _grenade_tactics(actor: WarPlayer,record: Dictionary,target: WarPlayer) -> 
 
 # A vehicle is a separate tactical target. Infantry hidden inside one cannot
 # be treated as a visible soldier, nor can rifle rounds penetrate a tank.
-func _visible_vehicle(actor: WarPlayer) -> WarVehicle:
+func _visible_vehicle(actor: WarPlayer,max_range:=500.,armored_only:=false) -> WarVehicle:
 	if not is_instance_valid(game.vehicle_system): return null
 	var best: WarVehicle=null
-	var distance_best:=500.*500.
+	var distance_best:=max_range*max_range
 	for candidate: WarVehicle in game.vehicle_system.vehicles.values():
 		if not is_instance_valid(candidate) or candidate.destroyed or candidate.hp<=0 or candidate.team==actor.war_team or candidate is WarShip: continue
+		if armored_only and (candidate.kind not in ["guarani","bmp2","abrams","t90"] or candidate.driver<=0): continue
 		var distance:=actor.global_position.distance_squared_to(candidate.global_position)
 		if distance>=distance_best: continue
 		var target:=candidate.global_position+Vector3.UP*1.3
@@ -675,8 +762,85 @@ func _avoid(actor: WarPlayer,direction: Vector3) -> Vector3:
 		if space.intersect_ray(query).is_empty(): return trial
 	return Vector3.ZERO
 
+# Stuck recovery is persistent across _think calls. The old one-frame
+# 0.9-radian turn was overwritten at the next decision and could repeatedly
+# send a soldier into the same wall, especially around the football pitch.
+func _choose_escape_point(actor: WarPlayer,record: Dictionary) -> Vector3:
+	var from:=actor.global_position
+	var towards: Vector3=record.get("goal",from+record.get("direction",Vector3.FORWARD)*10.)-from
+	towards.y=0.
+	if towards.length_squared()<.1: towards=Vector3.FORWARD
+	towards=towards.normalized()
+	var tries:=int(record.get("escape_attempts",0))
+	var sign_value:=1. if (actor.peer_id+tries)%2==0 else -1.
+	var side:=towards.cross(Vector3.UP)
+	var space:=game.get_world_3d().direct_space_state
+	var front_query:=PhysicsRayQueryParameters3D.create(from+Vector3.UP*.9,from+towards*3.2+Vector3.UP*.9,1,[actor.get_rid()])
+	var blocked_ahead:=not space.intersect_ray(front_query).is_empty()
+	var best:=Vector3.INF
+	var best_score:=-INF
+	for angle in [1.55*sign_value,-1.55*sign_value,2.35*sign_value,-2.35*sign_value,3.14,.85*sign_value,-.85*sign_value]:
+		# A wall directly ahead requires a real sideways flank. Small
+		# diagonals merely lead to another collision two metres later.
+		if blocked_ahead and absf(float(angle))<1.2:continue
+		var direction:=towards.rotated(Vector3.UP,float(angle))
+		for radius in [5.,9.,13.]:
+			var offset:=from+direction*float(radius)
+			var candidate:=WarTerrain.point(offset.x,offset.z)
+			if absf(candidate.y-from.y)>1.3: continue
+			var query:=PhysicsRayQueryParameters3D.create(from+Vector3.UP*.9,candidate+Vector3.UP*.9,1,[actor.get_rid()])
+			if not space.intersect_ray(query).is_empty():continue
+			var left:=direction.cross(Vector3.UP)*.38
+			query.from=from+Vector3.UP*.9+left;query.to=candidate+Vector3.UP*.9+left
+			if not space.intersect_ray(query).is_empty():continue
+			query.from=from+Vector3.UP*.9-left;query.to=candidate+Vector3.UP*.9-left
+			if not space.intersect_ray(query).is_empty():continue
+			# Prefer a flank far enough past the obstacle edge to permit a
+			# forward turn, even if that temporarily increases goal distance.
+			var onward:=PhysicsRayQueryParameters3D.create(candidate+Vector3.UP*.9,candidate+towards*4.+Vector3.UP*.9,1,[actor.get_rid()])
+			var onward_clear:=space.intersect_ray(onward).is_empty()
+			var goal: Vector3=record.get("goal",from)
+			var gain:=from.distance_to(goal)-candidate.distance_to(goal)
+			var lateral:=absf((candidate-from).dot(side))
+			var score:=minf(lateral,9.)*2.8+gain*.2-float(radius)*.24+(12. if onward_clear else 0.)
+			if score>best_score:best=candidate;best_score=score
+	return best
+
+func _begin_foot_escape(actor: WarPlayer,record: Dictionary) -> void:
+	# One costly multi-ray escape query every 80 ms across all bots,
+	# rather than a synchronous burst when an entire squad hits a fence.
+	if game.war_clock<next_foot_escape_query:
+		record.stuck=.95
+		return
+	next_foot_escape_query=game.war_clock+.08
+	var point:=_choose_escape_point(actor,record)
+	record.roof_follow=false
+	record.escape_attempts=int(record.get("escape_attempts",0))+1
+	record.escape_point=point
+	record.escape_until=game.war_clock+2.8 if point.is_finite() else game.war_clock+.7
+	record.stuck=0.
+	record.no_progress=0.
+	record.progress_at=game.war_clock+.5
+	record.progress_distance=INF
+	if navigation:navigation.routes.erase(actor.peer_id)
+	record.foot_path=[];record.transit_goal=Vector3.INF
+	if point.is_finite():diagnostics.foot_escapes=int(diagnostics.get("foot_escapes",0))+1
+
 func _move(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	var direction: Vector3=record.direction
+	var escape: Vector3=record.get("escape_point",Vector3.INF)
+	if escape.is_finite():
+		var offset:=escape-actor.global_position;offset.y=0.
+		if game.war_clock<float(record.get("escape_until",0.)) and offset.length_squared()>2.25:
+			# Keep the same side of the obstacle while normal strategy updates.
+			direction=offset.normalized()
+			if int(record.get("target",0))==0:
+				actor.yaw=atan2(-direction.x,-direction.z)
+				actor.rotation.y=actor.yaw
+		else:
+			record.escape_point=Vector3.INF
+			record.stuck=0.
+
 	if WarRules.CURRENT_OPERATION==WarOperation.FAVELA and bool(record.get("roof_follow",false)):
 		var vertical_path: PackedVector3Array=record.roof_path
 		if not vertical_path.is_empty() and (int(record.roof_index)>0 or actor.global_position.distance_squared_to(vertical_path[0])<4.0):
@@ -698,13 +862,32 @@ func _move(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	if not actor.is_on_floor(): actor.velocity.y-=9.81*delta
 	else: actor.velocity.y=minf(0,actor.velocity.y)
 	GameStepMotion.move(actor,delta)
-	if direction.length_squared()>.1:
-		diagnostics.moves=int(diagnostics.moves)+1
-		var moved:=actor.global_position.distance_squared_to(record.last_position)
-		record.stuck=float(record.stuck)+delta if moved<.00001 else 0.
-		if float(record.stuck)>1.2:
-			navigation.routes.erase(actor.peer_id);record.direction=direction.rotated(Vector3.UP,.9 if actor.peer_id%2 else -.9);record.stuck=0.
-	else: record.stuck=0.
+	var moved:=actor.global_position.distance_squared_to(record.get("last_position",actor.global_position))
+	var goal: Vector3=record.get("goal",actor.global_position)
+	var goal_gap:=Vector2(goal.x-actor.global_position.x,goal.z-actor.global_position.z).length()
+	var holding:=bool(record.get("defend_all",false)) and goal_gap<WarRules.CAPTURE_RADIUS
+	var holding_launcher:=not str(record.get("target_vehicle","")).is_empty() and direction.length_squared()<.01
+	var seeking:=goal_gap>3. and not holding and not holding_launcher and (direction.length_squared()>.01 or int(record.get("target",0))==0)
+	if seeking:
+		if direction.length_squared()>.1:diagnostics.moves=int(diagnostics.moves)+1
+		record.stuck=float(record.get("stuck",0.))+delta if moved<.0004 else 0.
+		# A bot sliding along a long fence can move without getting closer
+		# to its objective. Check net progress twice a second, not every tick.
+		if game.war_clock>=float(record.get("progress_at",0.)):
+			var previous: float=record.get("progress_distance",INF)
+			var old_goal: Vector3=record.get("progress_goal",goal)
+			if old_goal.distance_squared_to(goal)>16.:
+				record.no_progress=0.
+			elif goal_gap>previous-.35:
+				record.no_progress=float(record.get("no_progress",0.))+.5
+			else:record.no_progress=0.
+			record.progress_at=game.war_clock+.5
+			record.progress_distance=goal_gap
+			record.progress_goal=goal
+		if float(record.stuck)>1.1 or float(record.get("no_progress",0.))>3.:
+			_begin_foot_escape(actor,record)
+	else:
+		record.stuck=0.;record.no_progress=0.
 	record.last_position=actor.global_position
 	# WarPlayer owns the authoritative terrain-fall reset every tick.
 	# Do not evaluate the expensive Afghan height a second time per bot.
@@ -929,6 +1112,7 @@ func _board(actor: WarPlayer,record: Dictionary) -> bool:
 			record.boarded_once=true;record.boarding_until=game.war_clock+(.7 if bool(vehicle.spec.get("transport",false)) else (7. if slot==0 else 1.))
 			return true
 	var approach:=vehicle.position+Basis(Vector3.UP,vehicle.heading)*Vector3(-float(vehicle.spec.size.x)*.5-1.4,0,0)
+	record.goal=approach
 	record.direction=_avoid(actor,(approach-actor.position).normalized());return true
 
 func _nearby_transport(actor: WarPlayer,record: Dictionary) -> WarVehicle:
