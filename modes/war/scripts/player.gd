@@ -132,6 +132,9 @@ func apply_identity(team: int,role: String) -> void:
 	else: WarUniform.refresh_materials(self,maxi(0,team))
 
 func _physics_process(delta: float) -> void:
+	# Death, water and vehicles bypass _animate_walk; release prior R2C pose.
+	if locomotion.world_pelvis_dirty and (hp<=0 or not deployed or not vehicle_id.is_empty() or in_water()):
+		locomotion.clear_tactical_world_body(self)
 	stance.advance(self,delta)
 	utility_equip_weight=move_toward(utility_equip_weight,1. if not utility_mode.is_empty() else 0.,delta*4.)
 	utility_raise_weight=move_toward(utility_raise_weight,1. if utility_mode=="binoculars" and utility_zoom>0 else 0.,delta*5.)
@@ -203,6 +206,9 @@ func _drone_controller_pose() -> void:
 	WarHumanRig.pose(self,avatar_parts.arm_r,centre+global_basis*Vector3(.13,0,0),"armR")
 
 func _animate_walk() -> void:
+	# R2C must undo the previous physical hip delta BEFORE the shared pose
+	# re-seeds Z only; otherwise X/Y would accumulate across animation ticks.
+	if locomotion.world_pelvis_dirty: locomotion.clear_tactical_world_body(self)
 	# P1a opt-in host audit. Physical hit regions are still children of
 	# visual pivots. The existing distance LOD can leave hitboxes stale on
 	# listen servers. Full articulation at 60 Hz corrects that, but the 28
@@ -237,6 +243,9 @@ func _finish_body_pose() -> void:
 	# been solved, then rebuilt the weapon and both arms a second time.
 	locomotion.pose_body(self)
 	stance.pose(self,false)
+	# R2C: re-seeded authoritative offline TPP physical mesh + hitbox pivots.
+	# This comes BEFORE world weapon/hand IK, never from a render LOD tick.
+	if locomotion.tactical_world_pilot: locomotion.pose_tactical_world_body(self)
 
 func _update_weapon_pose() -> void:
 	if in_water():

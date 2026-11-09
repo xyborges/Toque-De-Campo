@@ -1,7 +1,7 @@
 extends SceneTree
 
-const START:=Vector3(-566,0,32)
-const OBSERVER:=Vector3(-552,0,38)
+const START:=Vector3(-650,0,-650)
+const OBSERVER:=Vector3(-636,0,-644)
 var game: WarGame
 var role:="server"
 var checks:=0
@@ -30,11 +30,12 @@ func place(actor: WarPlayer,point: Vector3,yaw_value: float) -> void:
 	game._broadcast("qa_pose",[actor.peer_id,feet,yaw_value,0.])
 func run() -> void:
 	Engine.max_fps=60
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://work/war-locomotion-qa"))
 	game=load("res://tests/war_locomotion_network_fixture.gd").new()
 	game.set_meta("war_test",true);game.set_meta("test_mode",true);game.set_meta("war_host",role=="server")
 	root.add_child(game);game.nickname_input.text=role;game.address_input.text="127.0.0.1"
 	if role=="server": await server_flow()
-	elif await wait_for(func():return game.join_ready and is_instance_valid(game.local_player) and game.local_player.deployed,"client deployment",30):
+	elif await wait_for(func():return game.join_ready and is_instance_valid(game.local_player) and game.local_player.deployed,"client deployment",75):
 		game.ui_focus.close_all();Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
 		game.local_player.set_physics_process(false)
 		if role=="mover":
@@ -46,18 +47,18 @@ func run() -> void:
 		game.rpc_id(1,"qa_report",role+"-ready")
 		if role=="mover": await mover_flow()
 		else: await observer_flow()
-	var report: Dictionary={"role":role,"checks":checks,"failures":failures,"samples":samples,"fixture":"Real ENet server, headless legal-position mover and native observer. The mover sends 8.4 m/s positions through server_player_state every 50 ms; after motion the fixture pauses periodic server snapshots to test stale velocity without disconnecting transport."}
-	NavalStorage.write_json("res://tests/war-locomotion-network-"+role+".json",report);print(JSON.stringify(report))
+	var report: Dictionary={"role":role,"checks":checks,"failures":failures,"samples":samples,"fixture":"Real encrypted ENet two-client Afghan QA on verified map; 8.4 m/s on flat terrain with monotonic authoritative state sequences. After real stop the observer injects a synthetic stale velocity to test no phantom gait."}
+	NavalStorage.write_json("res://work/war-locomotion-qa/"+role+".json",report);print(JSON.stringify(report))
 	game.show_menu();game.queue_free();await create_timer(.3).timeout
 	Input.mouse_mode=Input.MOUSE_MODE_VISIBLE;quit(0 if failures.is_empty() else 1)
 func server_flow() -> void:
-	if not await wait_for(func():return game.players.size()==2,"two ENet players",35): return
+	if not await wait_for(func():return game.players.size()==2 and game.loading_baselines.is_empty(),"two ENet players and completed initial transfers",90): return
 	check(game.multiplayer.multiplayer_peer is ENetMultiplayerPeer and game.multiplayer.get_peers().size()==2,"isolated authority has two real ENet peers")
 	var actors: Dictionary={}
 	for actor: WarPlayer in game.players.values(): actors[str(actor.name)]=actor
 	var mover:=actors.mover as WarPlayer;var observer:=actors.observer as WarPlayer
-	check(game._deploy(mover.peer_id,0,"soldier","fal","rpg","base"),"moving player deploys through normal team/class validation")
-	check(game._deploy(observer.peer_id,1,"soldier","fal","rpg","base"),"native observer deploys on the opposing team")
+	check(game._deploy(mover.peer_id,0,"soldier","fal","stinger","base"),"moving player deploys through normal team/class validation")
+	check(game._deploy(observer.peer_id,1,"soldier","g3","rpg","base"),"native observer deploys on the opposing team")
 	if not await wait_for(func():return game.reports.has("mover-ready") and game.reports.has("observer-ready"),"both clients ready"): return
 	place(mover,START,0);place(observer,OBSERVER,1.15)
 	await create_timer(.4).timeout
@@ -76,15 +77,15 @@ func server_flow() -> void:
 func mover_flow() -> void:
 	var actor:=game.local_player as WarPlayer
 	if not await wait_for(func():return game.phase=="run","run phase"): return
-	var origin:=actor.position;var clock:=Time.get_ticks_msec();var sent_at:=0
+	var origin:=actor.position;var clock:=Time.get_ticks_msec();var sent_at:=0;var sequence:=0
 	while Time.get_ticks_msec()-clock<4000:
 		await process_frame
 		var elapsed:=Time.get_ticks_msec()-clock
 		if elapsed-sent_at<50: continue
-		sent_at=elapsed
+		sent_at=elapsed;sequence+=1
 		var z:=origin.z-float(elapsed)*.001*8.4
 		actor.position=WarTerrain.point(origin.x,z)+Vector3.UP*.08
-		game.rpc_id(1,"server_player_state",actor.position,0.,0.,"fal",false,0,actor.life_id)
+		game.rpc_id(1,"server_player_state",actor.position,0.,0.,"fal",false,0,actor.life_id,sequence,0.0)
 	check(game.corrections==0,"ordinary server state validation does not correct the legal sprint")
 	game.rpc_id(1,"qa_report","motion-done")
 	await wait_for(func():return game.phase=="finish","finish phase",10)
@@ -114,15 +115,19 @@ func observer_flow() -> void:
 	check(game.local_player.camera.rotation.is_equal_approx(camera_rotation),"remote sprint does not rotate or shake the observer camera")
 	await create_timer(.9).timeout
 	var stopped_steps:=mover.locomotion.step_sequence;var stopped_audio:=game.soundscape.footstep_count
-	var before:=mover.global_position;var stale_speed:=Vector2(mover.velocity.x,mover.velocity.z).length()
+	var before:=mover.global_position;var natural_stale_speed:=Vector2(mover.velocity.x,mover.velocity.z).length()
+	# QA-only: force a stale velocity after the real last network packet.
+	# We require the remote gait/footsteps to stay stopped despite that stale value.
+	mover.velocity=Vector3(0,0,-8.4)
+	var stale_speed:=Vector2(mover.velocity.x,mover.velocity.z).length()
 	await create_timer(1.4).timeout
-	samples.merge({"peak_sprint":peak_sprint,"peak_stride":peak_stride,"moving_steps":stopped_steps-step_before,"stale_speed":stale_speed,"stop_drift":mover.global_position.distance_to(before),"voices":game.soundscape.foley.size()})
-	check(stale_speed>5,"snapshot pause preserves a nonzero last remote velocity")
+	samples.merge({"peak_sprint":peak_sprint,"peak_stride":peak_stride,"moving_steps":stopped_steps-step_before,"stale_speed":stale_speed,"natural_stale_speed":natural_stale_speed,"stale_injection":"qa-only synthetic velocity after genuine stop","stop_drift":mover.global_position.distance_to(before),"voices":game.soundscape.foley.size()})
+	check(stale_speed>5,"QA-injected stale remote velocity is nonzero")
 	check(mover.global_position.distance_to(before)<.01 and mover.locomotion.step_sequence==stopped_steps,"remote gait stops at its final replicated position despite stale velocity")
 	check(game.soundscape.footstep_count==stopped_audio and mover.locomotion.moving<.01 and mover.locomotion.sprint<.01,"no phantom remote footsteps or sprint animation continue after stopping")
 	check(mover.avatar_parts.leg_l.rotation.is_zero_approx() and mover.avatar_parts.leg_r.rotation.is_zero_approx(),"actual remote leg joints stay neutral with the previous moving packet's velocity")
 	check(game.soundscape.foley.size()==24,"real multiplayer playback reuses the existing bounded 24-voice pool")
 	await process_frame;RenderingServer.force_draw(false)
-	root.get_texture().get_image().save_png("res://work/war-locomotion-network-observer.png")
+	root.get_texture().get_image().save_png("res://work/war-locomotion-qa/observer.png")
 	game.rpc_id(1,"qa_report","observer-done")
 	await wait_for(func():return game.phase=="finish","finish phase",5)
