@@ -23,8 +23,8 @@ var local_direction := Vector3.ZERO
 var presentation_longitudinal := 0.0
 var tactical_motion_pilot := OS.get_environment("TDC_TACTICAL_MOTION_PILOT")=="1" or "--tactical-motion-pilot" in OS.get_cmdline_user_args()
 const PRESENTATION_ACCEL_SCALE := 2.2
-const PRESENTATION_RESPONSE_IN := 12.0
-const PRESENTATION_RESPONSE_OUT := 7.0
+const PRESENTATION_RESPONSE_IN := 24.0
+const PRESENTATION_RESPONSE_OUT := 3.2
 const PRESENTATION_FPP_TRAVEL := 0.028
 
 func reset(actor: GamePlayer) -> void:

@@ -69,8 +69,23 @@ Cobriu AK, FAL, G3 e sniper com `prism4x`, `pso4x`, `hensoldt4x` e `precision8x`
 
 A fixture `tests/war_locomotion.gd` não foi usada como gate desta entrega porque seu baseline ficou desatualizado na 1.13.9: ela ainda espera 12 atores, não obteve input no cenário atual, tenta capturas gráficas em headless e terminou em erro próprio do pool de passos. Antes de retirar os checks temporários, os **6 checks específicos do R1A passaram**, mas o resultado geral da fixture é inválido para homologar esta etapa. O teste original foi restaurado sem mudanças.
 
+## Calibração visual G3
+
+Foi feito um passe renderizado em Forward+ / GTX 1650 usando a G3 em FPP e a resposta física real do jogo, que hoje muda de 0 para `WarRules.WALK_SPEED` (4,8 m/s) praticamente em um frame.
+
+A primeira versão (`response in = 12/s`, `return = 7/s`) entregava apenas **5,6 mm** de deslocamento por **50 ms**. Nas capturas a diferença era correta, mas pequena demais para comunicar peso.
+
+A calibração final mantém o limite estrutural de **2,8 cm**, mas usa `response in = 24/s` e `return = 3,2/s`. No degrau real 0 → 4,8 → 0, o efeito observado ficou em:
+
+- pico de aceleração: **+11,2 mm**;
+- pico de frenagem: **-11,2 mm**;
+- retorno a menos de 0,5 mm: **150 ms**;
+- deslocamento da arma mundial/autoritativa durante as três capturas: **0,0 mm**.
+
+A fixture `tests/realismo_r1a_g3_calibration.gd` mantém como gate pico entre **8 e 14 mm** e retorno entre **100 e 180 ms**.
+
 ## Limites desta etapa
 
 R1A não adiciona ainda inclinação de quadril, giro de tronco, peso lateral em curvas, contato de calcanhar/ponta, aterrissagem, TPP ou Skeleton3D. Também não tenta corrigir a fixture histórica de locomoção.
 
-O próximo passo deve continuar pequeno: primeiro playtest visual do ganho longitudinal em FPP/G3; só depois decidir se calibramos os 2,8 cm/tempos de resposta ou avançamos para uma R1B lateral.
+O playtest/calibração FPP/G3 desta etapa está concluído. O próximo passo deve continuar pequeno: uma R1B lateral/curvas, ainda somente de apresentação, sem alterar velocidade, cápsula, hitboxes, IA ou rede.
