@@ -17,13 +17,16 @@ var ground_point := Vector3.ZERO
 var step_sequence := 0
 var local_direction := Vector3.ZERO
 
-# R1A tactical-motion pilot. This state is presentation-only: it is derived
-# from covered distance and never feeds CharacterBody velocity, hitboxes,
-# weapon_root, the camera or replicated state.
+# R1 tactical-motion pilot. These states are presentation-only: they are
+# derived from real actor motion and never feed CharacterBody velocity,
+# hitboxes, weapon_root, the camera or replicated state.
 var presentation_longitudinal := 0.0
 var presentation_lateral := 0.0
 var presentation_lateral_speed := 0.0
 var presentation_yaw := 0.0
+var presentation_landing := 0.0
+var presentation_fall_speed := 0.0
+var presentation_was_grounded := false
 var tactical_motion_pilot := OS.get_environment("TDC_TACTICAL_MOTION_PILOT")=="1" or "--tactical-motion-pilot" in OS.get_cmdline_user_args()
 const PRESENTATION_ACCEL_SCALE := 2.2
 const PRESENTATION_RESPONSE_IN := 24.0
@@ -35,12 +38,17 @@ const PRESENTATION_LATERAL_RESPONSE_OUT := 3.2
 const PRESENTATION_LATERAL_FPP_TRAVEL := 0.022
 const PRESENTATION_TURN_RATE_SCALE := 2.2
 const PRESENTATION_TURN_WEIGHT_LIMIT := 0.4
+const PRESENTATION_LANDING_THRESHOLD := 2.5
+const PRESENTATION_LANDING_FULL_SPEED := 6.0
+const PRESENTATION_LANDING_FPP_TRAVEL := 0.035
+const PRESENTATION_LANDING_RECOVERY := 4.5
 
 func reset(actor: GamePlayer) -> void:
 	previous=actor.global_position;initialized=true;life=actor.life_id
 	phase=0;distance_since_step=0;speed=0;moving=0;sprint=0;grounded=false;ground_clock=0
-	local_direction=Vector3.ZERO;presentation_longitudinal=0.;presentation_lateral=0.
-	presentation_lateral_speed=0.;presentation_yaw=actor.rotation.y
+	local_direction=Vector3.ZERO;presentation_longitudinal=0.;presentation_lateral=0.;presentation_landing=0.
+	presentation_lateral_speed=0.;presentation_yaw=actor.rotation.y;presentation_fall_speed=0.
+	presentation_was_grounded=actor.is_on_floor()
 
 static func longitudinal_target(previous_speed: float,current_speed: float,delta: float,reference_speed: float) -> float:
 	var safe_delta:=maxf(delta,.001)
@@ -76,6 +84,25 @@ func _advance_lateral(previous_lateral_speed_value: float,current_lateral_speed:
 	var response:=PRESENTATION_LATERAL_RESPONSE_IN if absf(target)>absf(presentation_lateral) else PRESENTATION_LATERAL_RESPONSE_OUT
 	presentation_lateral=move_toward(presentation_lateral,target,delta*response)
 
+static func landing_target(fall_speed: float) -> float:
+	if fall_speed<=PRESENTATION_LANDING_THRESHOLD:return 0.
+	return smoothstep(PRESENTATION_LANDING_THRESHOLD,PRESENTATION_LANDING_FULL_SPEED,fall_speed)
+
+func _advance_landing(actor: GamePlayer,delta: float) -> void:
+	var current_grounded:=actor.is_on_floor()
+	if not tactical_motion_pilot or not actor.is_local:
+		presentation_landing=0.;presentation_fall_speed=0.;presentation_was_grounded=current_grounded
+		return
+	presentation_landing=move_toward(presentation_landing,0.,delta*PRESENTATION_LANDING_RECOVERY)
+	if not current_grounded:
+		presentation_fall_speed=maxf(presentation_fall_speed,maxf(0.,-actor.velocity.y))
+	elif not presentation_was_grounded:
+		presentation_landing=maxf(presentation_landing,landing_target(presentation_fall_speed))
+		presentation_fall_speed=0.
+	else:
+		presentation_fall_speed=0.
+	presentation_was_grounded=current_grounded
+
 func advance(actor: GamePlayer,delta: float) -> void:
 	if actor.in_water(): reset(actor);return
 	if not initialized or life!=actor.life_id:
@@ -89,6 +116,7 @@ func advance(actor: GamePlayer,delta: float) -> void:
 	# interpolation covers real distance and therefore gives the same cadence.
 	var actual_speed:=distance/maxf(delta,.001)
 	var previous_speed_value:=speed
+	_advance_landing(actor,delta)
 	if tactical_motion_pilot and actor.is_local:
 		_advance_presentation(previous_speed_value,actual_speed,delta,actor.move_speed)
 		var local_motion:=actor.global_basis.inverse()*displacement
@@ -169,7 +197,8 @@ func pose_torso(actor: GamePlayer) -> void:
 
 func pose_weapon(actor: GamePlayer) -> void:
 	if actor.hp<=0 or not actor.deployed or not actor.vehicle_id.is_empty(): return
-	if moving==0 and sprint==0: return
+	var landing_only:=tactical_motion_pilot and actor.is_local and presentation_landing>0.
+	if moving==0 and sprint==0 and not landing_only: return
 	# Aiming, firing, reloads and grenade poses own their complete transform.
 	# The muzzle and both world-space grips move with the actual weapon root.
 	if actor.aiming or actor.iron_sights or actor.reload_left>0 or actor.fire_cooldown>0 or actor._grenade_active() or actor.gadget_equipped: return
@@ -184,9 +213,10 @@ func pose_weapon(actor: GamePlayer) -> void:
 	if is_instance_valid(actor.view_root):
 		actor.view_root.position+=offset
 		actor.view_root.rotation+=rotation_offset
-		# Only the local FPP copy receives R1A/R1B inertia. Aiming/reload/fire
+		# Only the local FPP copy receives R1A/R1B/R1C inertia. Aiming/reload/fire
 		# paths returned above preserve exact sight alignment and ballistic origin.
 		if tactical_motion_pilot and actor.is_local:
 			actor.view_root.position.z+=presentation_longitudinal*PRESENTATION_FPP_TRAVEL
 			actor.view_root.position.x+=presentation_lateral*PRESENTATION_LATERAL_FPP_TRAVEL
+			actor.view_root.position.y-=presentation_landing*PRESENTATION_LANDING_FPP_TRAVEL
 
