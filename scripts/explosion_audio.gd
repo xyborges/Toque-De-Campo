@@ -39,8 +39,25 @@ func _ready() -> void:
 		AudioServer.add_bus()
 		index=AudioServer.bus_count-1
 		AudioServer.set_bus_name(index,bus_name)
-	if AudioServer.get_bus_effect_count(index)==0:
+	# Keep a gentle, attack-preserving compressor before the peak limiter.
+	# Multiple close armored blasts used to drive the master ceiling for an
+	# audible fraction of a second. Distant blasts remain below this threshold.
+	var compressor_present:=false
+	var limiter_present:=false
+	for effect_index in AudioServer.get_bus_effect_count(index):
+		var effect:=AudioServer.get_bus_effect(index,effect_index)
+		if effect is AudioEffectCompressor: compressor_present=true
+		if effect is AudioEffectLimiter: limiter_present=true
+	if not limiter_present:
 		AudioServer.add_bus_effect(index,AudioEffectLimiter.new())
+	if not compressor_present:
+		var transient_shaper:=AudioEffectCompressor.new()
+		transient_shaper.threshold=-3.5
+		transient_shaper.ratio=3.5
+		transient_shaper.attack_us=5000.0
+		transient_shaper.release_ms=180.0
+		transient_shaper.gain=0.0
+		AudioServer.add_bus_effect(index,transient_shaper,0)
 	if AudioServer.get_bus_index(category)>=0 and category!=bus_name:
 		AudioServer.set_bus_send(index,category)
 	for path in GameCombatAudioCatalog.EXPLOSIONS+GameCombatAudioCatalog.EXPLOSIONS_FAR+PRESSURE_PATHS+GameCombatAudioCatalog.AUTOCANNON_IMPACTS:
