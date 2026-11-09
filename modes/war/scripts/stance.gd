@@ -100,16 +100,21 @@ func build_legs(actor: GamePlayer) -> void:
 func pose(actor: GamePlayer,refresh_grips:=true) -> void:
 	if actor.hp<=0 or not actor.deployed or not actor.vehicle_id.is_empty() or actor.swimming: return
 	build_legs(actor)
+	var guard: bool=GamePlayer.r01_bot_pose_dirty_guard and actor is WarPlayer and not actor.is_local and bool(actor.get_meta("war_bot",false))
 	var c:=crouch_weight;var p:=prone_weight
 	var previous_height:=actor.body_root.position.y
-	actor.body_root.position.y=visual_ground_offset(actor)*(1.-p)-.54*leg_scale(actor)*c+.22*p
+	var height: float=visual_ground_offset(actor)*(1.-p)-.54*leg_scale(actor)*c+.22*p
+	if not guard or actor.body_root.position.y!=height: actor.body_root.position.y=height
 	if c==0 and p==0:
-		for data: Dictionary in leg_parts.values(): data.knee.rotation.x=0;data.shoe.rotation=Vector3.ZERO
+		for data: Dictionary in leg_parts.values():
+			if not guard or data.knee.rotation.x!=0.: data.knee.rotation.x=0.
+			if not guard or data.shoe.rotation!=Vector3.ZERO: data.shoe.rotation=Vector3.ZERO
 		# Swinging around a fixed hip shortened both legs vertically, leaving
 		# a visible gap while running. Plant the lowest sole during grounded
 		# gait; the independent camera stays smooth and jumps keep their pose.
 		if actor.locomotion.grounded and actor.locomotion.moving>0:
-			actor.body_root.position.y=_walking_ground_offset(actor)
+			var walking_height: float=_walking_ground_offset(actor)
+			if not guard or actor.body_root.position.y!=walking_height: actor.body_root.position.y=walking_height
 		# The base animation solved grips using the previous body height.
 		# Finish them against the corrected torso in the same presentation tick.
 		if refresh_grips and not is_equal_approx(previous_height,actor.body_root.position.y): _refresh_grip_pose(actor)

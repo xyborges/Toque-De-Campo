@@ -1,6 +1,10 @@
 extends CharacterBody3D
 class_name GamePlayer
 
+# Experiment: avoid re-dirtying unchanged physical pivots on authoritative War bots.
+# Never affect human players, and default OFF until complete CPU/FPS validation.
+static var r01_bot_pose_dirty_guard: bool=OS.get_environment("TDC_BOT_POSE_DIRTY_GUARD")=="1"
+
 const WEAPON_ZEROING=preload("res://scripts/weapon_zeroing.gd")
 
 signal shot_requested(shooter: GamePlayer, origin: Vector3, direction: Vector3, weapon_id: String, is_melee: bool)
@@ -698,17 +702,21 @@ func _physics_process(delta: float) -> void:
 func _animate_walk() -> void:
 	if not is_instance_valid(body_root): return
 	var speed := Vector2(velocity.x, velocity.z).length()
+	var guard: bool=r01_bot_pose_dirty_guard and self is WarPlayer and not is_local and bool(get_meta("war_bot",false))
 	var side_reaction := -1.0 if last_hit_region.ends_with("L") else 1.0
-	body_root.rotation.z = reaction * 0.1 * side_reaction
+	var reaction_roll:=reaction*.1*side_reaction
+	if not guard or body_root.rotation.z != reaction_roll: body_root.rotation.z = reaction_roll
 	var gait := sin(Time.get_ticks_msec() * 0.012) * minf(speed / 6.0, 1.0) * 0.32
 	var armed: bool = not is_npc
-	avatar_parts.leg_l.rotation.x = -gait * (0.2 if float(limbs.legL) <= 0.0 else 1.0)
-	avatar_parts.leg_r.rotation.x = gait * (0.2 if float(limbs.legR) <= 0.0 else 1.0)
-	avatar_parts.torso.rotation=Vector3.ZERO
+	var leg_l_angle: float=-gait * (0.2 if float(limbs.legL) <= 0.0 else 1.0)
+	var leg_r_angle: float=gait * (0.2 if float(limbs.legR) <= 0.0 else 1.0)
+	if not guard or avatar_parts.leg_l.rotation.x != leg_l_angle: avatar_parts.leg_l.rotation.x=leg_l_angle
+	if not guard or avatar_parts.leg_r.rotation.x != leg_r_angle: avatar_parts.leg_r.rotation.x=leg_r_angle
+	if not guard or avatar_parts.torso.rotation!=Vector3.ZERO: avatar_parts.torso.rotation=Vector3.ZERO
 	if armed and is_instance_valid(melee_rig) and melee_rig.running:
 		body_root.rotation.y = sin(melee_rig.elapsed / float(MeleeRig.SPECS[weapon_id].duration) * TAU) * (0.16 if weapon_id == "broom" else 0.07)
 		avatar_parts.torso.rotation.x = -sin(melee_rig.elapsed / float(MeleeRig.SPECS[weapon_id].duration) * PI) * 0.12
-	else: body_root.rotation.y=0.
+	elif not guard or body_root.rotation.y!=0.: body_root.rotation.y=0.
 	if not is_npc: locomotion_torso_pose()
 	if not is_npc and _grenade_active():
 		avatar_parts.torso.rotation.x=-sin((1-grenade_throw_left/.75)*PI)*.06 if grenade_throw_left>0 else 0.

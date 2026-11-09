@@ -44,6 +44,7 @@ static func upper_transform(actor: GamePlayer) -> Transform3D:
 
 static func apply(actor: GamePlayer) -> void:
 	if actor.avatar_parts.is_empty() or not allowed(actor): return
+	var guard: bool=GamePlayer.r01_bot_pose_dirty_guard and actor is WarPlayer and not actor.is_local and bool(actor.get_meta("war_bot",false))
 	var upper:=upper_transform(actor)
 	var torso: Node3D=actor.avatar_parts.torso
 	var head: Node3D=actor.avatar_parts.head
@@ -52,30 +53,39 @@ static func apply(actor: GamePlayer) -> void:
 	var rest: Dictionary=actor.get_meta("upper_body_rest")
 	var hip_shift:=actor.lean*.04
 	var pelvis:=actor.body_root.get_node("Pelvis") as Node3D
-	pelvis.position=Vector3(rest.pelvis)+Vector3(hip_shift,0,0)
-	pelvis.rotation.z=-actor.lean*.035
+	var pelvis_pos: Vector3=Vector3(rest.pelvis)+Vector3(hip_shift,0,0)
+	var pelvis_roll: float=-actor.lean*.035
+	if not guard or pelvis.position!=pelvis_pos: pelvis.position=pelvis_pos
+	if not guard or pelvis.rotation.z!=pelvis_roll: pelvis.rotation.z=pelvis_roll
 	for leg_key in ["leg_l","leg_r"]:
 		var leg: Node3D=actor.avatar_parts[leg_key]
-		leg.position=Vector3(rest[leg_key])+Vector3(hip_shift,0,0)
-		# Counter-angle the planted legs instead of leaving the pelvis behind.
+		var leg_pos: Vector3=Vector3(rest[leg_key])+Vector3(hip_shift,0,0)
+		if not guard or leg.position!=leg_pos: leg.position=leg_pos
 		# Gait owns X; stance owns this small lateral weight transfer.
-		leg.rotation.z=-atan2(hip_shift,.78)
+		var leg_roll: float=-atan2(hip_shift,.78)
+		if not guard or leg.rotation.z!=leg_roll: leg.rotation.z=leg_roll
 	# Keep authored melee/gait rotations while distributing the vertical aim
 	# between waist and neck. Uniforms and hit regions are children of these.
 	var animation:=Basis.from_euler(torso.rotation)
-	torso.position=upper*Vector3(rest.torso)
-	torso.basis=upper.basis*animation*Basis.from_scale(Vector3.ONE*clampf(float(actor.body_proportions.get("torso",1.)),.65,1.5))
+	var torso_pos: Vector3=upper*Vector3(rest.torso)
+	var torso_basis: Basis=upper.basis*animation*Basis.from_scale(Vector3.ONE*clampf(float(actor.body_proportions.get("torso",1.)),.65,1.5))
+	if not guard or torso.position!=torso_pos: torso.position=torso_pos
+	if not guard or torso.basis!=torso_basis: torso.basis=torso_basis
 	var neck:=Vector3(0,float(rest.head.y)-.21,0)
 	var head_basis:=Basis(Vector3.RIGHT,clampf(actor.pitch*.92,-1.12,1.12))*Basis(Vector3.BACK,-actor.lean*LEAN_ROLL)
-	head.position=upper*neck+head_basis*(Vector3(rest.head)-neck)
-	head.basis=head_basis*Basis.from_scale(Vector3.ONE*clampf(float(actor.body_proportions.get("head",1.)),.65,1.5))
+	var head_pos: Vector3=upper*neck+head_basis*(Vector3(rest.head)-neck)
+	var new_head_basis: Basis=head_basis*Basis.from_scale(Vector3.ONE*clampf(float(actor.body_proportions.get("head",1.)),.65,1.5))
+	if not guard or head.position!=head_pos: head.position=head_pos
+	if not guard or head.basis!=new_head_basis: head.basis=new_head_basis
 	for entry in [["arm_l","left"],["arm_r","right"]]:
 		var point: Vector3=rest[entry[1]]
 		if actor.get_meta("articulated_arms",false):
 			# The shoulder joint belongs outside the plate carrier, including
 			# saved torso widths. Elbows then solve outside its silhouette.
 			point.x=signf(point.x)*(.325*clampf(float(actor.body_proportions.get("torso",1.)),.65,1.5)+.025)
-		actor.avatar_parts[entry[0]].position=upper*point
+		var arm: Node3D=actor.avatar_parts[entry[0]]
+		var arm_pos: Vector3=upper*point
+		if not guard or arm.position!=arm_pos: arm.position=arm_pos
 
 static func weapon_pose(actor: GamePlayer,offset: Vector3) -> Transform3D:
 	var pitch:=actor.clamp_aim_pitch(actor.pitch+(actor.recoil if actor.is_local else 0.))
