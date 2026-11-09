@@ -1,10 +1,10 @@
 # Auditoria independente — Realismo R2A/R2B e compatibilidade P1k
 
-**Data:** 09/11/2026  
-**Jogo:** Toque de Campo, Godot 4.7.2, Windows, Forward+ na GTX 1650  
-**Base do ramo de realismo:** `origin/main a7b9010`  
-**Candidato exato:** `origin/ia/realismo-r2b-g3-fpp-20261109 @ 52079b0`  
-**QA isolada:** `ia/qa-realismo-r2b-20261109` (worktree independente, sem editar `main`)  
+- **Data:** 09/11/2026
+- **Jogo:** Toque de Campo, Godot 4.7.2, Windows, Forward+ na GTX 1650
+- **Base do ramo de realismo:** `origin/main a7b9010`
+- **Candidato exato:** `origin/ia/realismo-r2b-g3-fpp-20261109 @ 52079b0`
+- **QA isolada:** `ia/qa-realismo-r2b-20261109` (worktree independente, sem editar `main`)
 **Flags do piloto:** `TDC_TACTICAL_MOTION_PILOT=1` **e** `TDC_TACTICAL_BODY_PILOT=1`. Ambas OFF por padrão.
 
 ## Escopo dos commits, verificado no Git
