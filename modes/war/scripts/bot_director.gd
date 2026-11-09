@@ -135,6 +135,8 @@ func populate(human_team: int) -> void:
 	# balanced teams, rather than refusing the second consecutive teammate.
 	for team in [human_team,1-human_team]:
 		var count:=game.offline_participants/2+(game.offline_participants%2 if team==human_team else 0)-(1 if team==human_team else 0)
+		# Offline QA may intentionally exercise 28+ bots; normal play never exceeds 11 per side.
+		if not bool(game.get_meta("test_mode",false)): count=mini(count,GameBotPopulation.BOTS_PER_TEAM)
 		for slot in count:
 			var id:=FIRST_ID+serial;serial+=1
 			while game.players.has(id): id+=WarRules.CAPACITY
@@ -203,23 +205,15 @@ func clear_online() -> void:
 	for id in bot_ids.duplicate(): remove_bot(int(id))
 
 func _online_targets() -> Array:
-	var humans:=[0,0];var total:=0
-	for id in game.members:
-		var member: Dictionary=game.members[id]
+	var humans:=[0,0]
+	for member: Dictionary in game.members.values():
 		if bool(member.get("bot",false)): continue
-		total+=1
-		if int(member.team) in [0,1]: humans[int(member.team)]+=1
-	if humans[0]+humans[1]<1: return [0,0]
-	var targets:=[14,14]
-	# Keep bot population fixed; balance the smaller human team first.
-	var difference:=int(humans[0])-int(humans[1]);var transfer:=floori(absf(float(difference))*.5)
-	if difference>1: targets[0]-=transfer;targets[1]+=transfer
-	elif difference< -1:targets[1]-=transfer;targets[0]+=transfer
-	var unassigned: int=0
-	for i in unassigned:
-		var side:=0 if targets[0]>=targets[1] else 1
-		targets[side]=maxi(0,targets[side]-1)
-	return targets
+		var team:=int(member.get("team",-1))
+		if team in [0,1]: humans[team]+=1
+	# Only explicitly marked test fixtures retain the old 14+14 population.
+	# All real Guerra maps share the same limit; humans are not capped.
+	var qa_28_bots:=bool(game.get_meta("test_mode",false)) and bool(game.get_meta("online_bots_test",false))
+	return GameBotPopulation.war_online_targets(humans,qa_28_bots)
 
 func _add_online_bot(team: int,slot: int) -> void:
 	var creation_started:=Time.get_ticks_usec()
