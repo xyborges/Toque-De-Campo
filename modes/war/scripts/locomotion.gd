@@ -17,10 +17,33 @@ var ground_point := Vector3.ZERO
 var step_sequence := 0
 var local_direction := Vector3.ZERO
 
+# R1A tactical-motion pilot. This state is presentation-only: it is derived
+# from covered distance and never feeds CharacterBody velocity, hitboxes,
+# weapon_root, the camera or replicated state.
+var presentation_longitudinal := 0.0
+var tactical_motion_pilot := OS.get_environment("TDC_TACTICAL_MOTION_PILOT")=="1" or "--tactical-motion-pilot" in OS.get_cmdline_user_args()
+const PRESENTATION_ACCEL_SCALE := 2.2
+const PRESENTATION_RESPONSE_IN := 12.0
+const PRESENTATION_RESPONSE_OUT := 7.0
+const PRESENTATION_FPP_TRAVEL := 0.028
+
 func reset(actor: GamePlayer) -> void:
 	previous=actor.global_position;initialized=true;life=actor.life_id
 	phase=0;distance_since_step=0;speed=0;moving=0;sprint=0;grounded=false;ground_clock=0
-	local_direction=Vector3.ZERO
+	local_direction=Vector3.ZERO;presentation_longitudinal=0.
+
+static func longitudinal_target(previous_speed: float,current_speed: float,delta: float,reference_speed: float) -> float:
+	var safe_delta:=maxf(delta,.001)
+	var acceleration:=(current_speed-previous_speed)/safe_delta
+	# Ignore tiny correction noise. The scale follows the actor's own movement
+	# speed instead of assuming one fixed walk speed for every class/mode.
+	if absf(acceleration)<.35:return 0.
+	return clampf(acceleration/maxf(reference_speed*PRESENTATION_ACCEL_SCALE,4.),-1.,1.)
+
+func _advance_presentation(previous_speed: float,current_speed: float,delta: float,reference_speed: float) -> void:
+	var target:=longitudinal_target(previous_speed,current_speed,delta,reference_speed)
+	var response:=PRESENTATION_RESPONSE_IN if absf(target)>absf(presentation_longitudinal) else PRESENTATION_RESPONSE_OUT
+	presentation_longitudinal=move_toward(presentation_longitudinal,target,delta*response)
 
 func advance(actor: GamePlayer,delta: float) -> void:
 	if actor.in_water(): reset(actor);return
@@ -34,6 +57,11 @@ func advance(actor: GamePlayer,delta: float) -> void:
 	# A teleport, respawn or correction is not a foot contact. Normal remote
 	# interpolation covers real distance and therefore gives the same cadence.
 	var actual_speed:=distance/maxf(delta,.001)
+	var previous_speed_value:=speed
+	if tactical_motion_pilot and actor.is_local:
+		_advance_presentation(previous_speed_value,actual_speed,delta,actor.move_speed)
+	elif presentation_longitudinal!=0.:
+		presentation_longitudinal=0.
 	speed=actual_speed
 	# Stationary replicated actors can retain a nonzero last velocity. Only
 	# actual displacement starts a gait, and there is no reason to raycast an
@@ -115,4 +143,8 @@ func pose_weapon(actor: GamePlayer) -> void:
 	if is_instance_valid(actor.view_root):
 		actor.view_root.position+=offset
 		actor.view_root.rotation+=rotation_offset
+		# Only the local FPP copy receives R1A inertia. Aiming/reload/fire paths
+		# returned above, preserving exact sight alignment and ballistic origin.
+		if tactical_motion_pilot and actor.is_local:
+			actor.view_root.position.z+=presentation_longitudinal*PRESENTATION_FPP_TRAVEL
 
