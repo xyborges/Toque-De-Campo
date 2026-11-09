@@ -24,6 +24,14 @@
 Todos os cinco pares melhoraram média e P99. Raw local: `work/botposes-r01/pairs.txt` (ignorado no Git).
 **Limite**: o valor mede o custo de 28 chamadas sequenciais `_animate_walk()` forçadas. Não inclui `WarBotDirector`, `GameStepMotion.move`, física completa 60 Hz, renderização, tráfego ENet, nem representa ganho direto de FPS.
 
+## QA adicional — paridade física de posturas e armas em 28 bots
+- Fixture `tests/r01_bot_pose_stance_qa.gd` com `war_bot=true`, rig/hitboxes reais de 28 WarPlayers.
+- 4 armas (FAL, AK, Glock, G3), transições em pé/agachado/deitado, 3 ângulos de pitch e lean.
+- **25.200 verificações** por variante, 13 regiões físicas e duas mãos.
+- OFF: exit 0, erros 0, checksum físico **1915.82259598156**.
+- ON: exit 0, erros 0, checksum físico **1915.82259598156**, idêntico.
+- Testes headless do projeto com ON: pose189 2.196/2.196, prone weapon 1.126/1.126, AK reload 1.101/1.101, P1a de hitboxes 5 distâncias PASS. Nem todas essas suites exercitam o guard diretamente, que só atua nos bots; a fixture nova foi feita para isso.
+
 ## Gate de segurança e publicação
 - Antes de qualquer integração: validação de postura/arma/recarga/FPP/TPP, hitboxes em 10/70/150/300/1700m e teste de 28 bots no multiplayer em GTX 1650 com tempo real de quadro e P99. Especialmente observar se guardas adicionais custam mais do que evitam em bots correndo.
 - **Não ativar a flag nem integrar o experimento à main com base só neste microbenchmark**.
