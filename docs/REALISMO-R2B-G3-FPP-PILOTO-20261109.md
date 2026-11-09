@@ -33,6 +33,8 @@ Os três pesos são sempre saturados no intervalo correto e entradas não finita
 
 Regressões `realismo_r1a_motion_weight.gd` **8/8**, `realismo_r1b_lateral_weight.gd` **13/13**, `realismo_r1c_landing_weight.gd` **16/16**, todas PASS após a refatoração. A suíte `optics_universal_validation_20261103.gd` passou **242/242**, com **as duas flags habilitadas**, nas armas AK, FAL, G3 e sniper e nas ópticas prism4x, pso4x, hensoldt4x e precision8x.
 
+O gate físico independente `tests/realismo_r1c_physics_landing.gd` foi repetido com **as duas flags habilitadas** e passou **10/10**: o corpo tocou o chão no frame 28 e o peso visual da aterrissagem disparou no frame 29, já no chão, sem nenhum impulso antecipado no ar. Isso valida que a nova classe de pose não atravessou o fluxo de colisão da R1C.
+
 ## Evidência visual G3 / Forward+ / GTX 1650
 
 `tests/realismo_r2b_g3_calibration.gd` renderizou quatro capturas em **1280 × 720, Forward+**, com viewport FPP confirmado: `neutral`, `accelerate`, `strafe` e `landing`. Resultado **25/25 PASS**, com invariância de `weapon_root`, câmera, torso e deslocamento da R1.
