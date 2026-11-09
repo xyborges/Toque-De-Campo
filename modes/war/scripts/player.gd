@@ -1,5 +1,6 @@
 extends GamePlayer
 class_name WarPlayer
+const V27_ROOF_TRACE=preload("res://modes/war/scripts/roof_motion_trace.gd")
 const BINOCULAR_MODEL=preload("res://modes/war/equipment/binoculars.tscn")
 var swim_camera_height:=1.5
 var war_team := -1
@@ -176,6 +177,8 @@ func _physics_process(delta: float) -> void:
 	elif swimming:
 		swimming=false;body_root.rotation.x=0;body_root.position.y=stance.visual_ground_offset(self);camera_pivot.position.y=swim_camera_height+stance.visual_ground_offset(self);camera_pivot.position.z=0;_update_view()
 	super._physics_process(delta)
+	if is_local and WarRules.CURRENT_OPERATION==WarOperation.FAVELA and OS.get_cmdline_user_args().has('--v27-roof-trace'):
+		V27_ROOF_TRACE.record(self,delta)
 	if not utility_mode.is_empty(): _utility_pose()
 	elif is_instance_valid(utility_model): utility_model.hide()
 	# Only the authority may recover a fallen actor. Spread expensive
