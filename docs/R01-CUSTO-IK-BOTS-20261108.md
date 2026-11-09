@@ -38,6 +38,22 @@ Isso representa **aproximadamente 6% de redução de CPU no lote sintético isol
 Durante as repetições A/B alternadas a carga da CPU da R01 chegou a aproximadamente **94%**. Uma execução original passou de 2,60 ms para 9,38 ms de média, com p99 de 52,65 ms, variação muito superior à otimização que se buscava medir.
 Confirmado por inspeção dos processos: outra instância de IA estava realizando teste ENet com a R01 como cliente e DESKTOP-JJ7U3G3 como servidor, ambos usando Godot 4.7.2. A bateria foi **interrompida sem encerrar nem modificar processos da outra IA**.
 
+## Retomada da bateria A/B sem concorrência (08/11/2026, noite)
+Os dois computadores foram verificados sem processos do Godot em andamento e a R01 informou carga de CPU de 0–2% antes da coleta. Cinco pares, ordem `0,1,1,0,0,1,1,0,0,1`, todas as execuções em processos separados Godot 4.7.2 e com mesmo commit de código `73a5232`.
+
+| Média dos 5 ensaios por variante | Original | Cache opt-in |
+| --- | ---: | ---: |
+| 56 IK por lote, média de CPU | **2,283288 ms** | **2,132034 ms** |
+| P95 de custo do lote | 2,4016 ms | 2,3302 ms |
+| P99 de custo do lote | **2,5928 ms** | 2,7624 ms |
+| Chamadas de IK por execução | 33.600 | 33.600 |
+| Erros/posições divergentes | 0 | 0 |
+| Checksum de poses | 3980,89246164644 | 3980,89246164644 |
+
+O cache foi mais rápido **em todos os cinco pares no tempo médio**, com economia média de **6,62% do tempo de IK**. O P95 teve ganho médio de ~2,97%, mas o **P99 do lote piorou ~6,54%** por variação/picos em uma execução otimizada. Não declarar ganho em stutter. Resultados brutos locais em `work/r01-arm-ik/r01-paired-20261108.txt` (ignorado no Git, não publicação de evidência bruta). O piloto não modifica as regras de combate nem as poses resultantes.
+
+A `main` remota foi atualizada paralelamente para `a7b9010` com integrações IA2; a comparação acima usou código fixo e base antiga `4e41854`, sem misturar versões. A validação em 28 bots ENet sobre a `main` nova deve ser registrada separadamente.
+
 ## Veredito
 - Correção funcional inicial do piloto: **PASS** na fixture de 28 avatares, mesma pose exata e nenhuma exceção de script.
 - Ganho de FPS, P95/P99 real, desempenho de IA ativa e hitreg multiplayer: **NÃO COMPROVADOS**.
