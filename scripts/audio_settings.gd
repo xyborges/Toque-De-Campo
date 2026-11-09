@@ -28,6 +28,19 @@ static func ensure() -> void:
 			AudioServer.add_bus();index=AudioServer.bus_count-1;AudioServer.set_bus_name(index,category)
 		AudioServer.set_bus_send(index,PARENTS[category])
 	for category in LABELS: _apply(category)
+	_ensure_master_peak_ceiling()
+
+static func _ensure_master_peak_ceiling() -> void:
+	# Combat has multiple independent 3D voices. Keep the sum under digital
+	# full scale without compressing each weapon or changing user sliders.
+	var master:=AudioServer.get_bus_index("Master")
+	if master<0: return
+	for index in AudioServer.get_bus_effect_count(master):
+		if AudioServer.get_bus_effect(master,index) is AudioEffectLimiter: return
+	var peak:=AudioEffectLimiter.new()
+	peak.threshold_db=-1.0
+	peak.ceiling_db=-1.0
+	AudioServer.add_bus_effect(master,peak)
 
 static func get_volume(category: String) -> float:
 	return clampf(float(values.get(category,1.0)),0,1)

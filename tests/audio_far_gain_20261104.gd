@@ -53,17 +53,17 @@ func run() -> void:
 	var distant_gun:=guns._play_now(101,"g3",Vector3(0,0,-600))
 	check(is_instance_valid(near_gun) and is_instance_valid(distant_gun),"G3 sounds load at 50 and 600 meters")
 	if is_instance_valid(near_gun) and is_instance_valid(distant_gun):
-		check(close(near_gun.volume_db,float(near_gun.get_meta("base_db")),.002),"50m shot remains at original close-range gain")
-		check(close(distant_gun.volume_db,float(distant_gun.get_meta("base_db"))+boost,.002),"600m shot gains 0.424dB without changing panning or dropoff")
+		check(close(near_gun.volume_db,float(near_gun.get_meta("base_db"))+GameSoundPropagation.combat_presence_db(50.),.002),"50m shot keeps the global calibrated combat presence")
+		check(close(distant_gun.volume_db,float(distant_gun.get_meta("base_db"))+GameSoundPropagation.combat_presence_db(600.)+boost,.002),"600m shot keeps both the existing 5% trim and the new global combat presence")
 		check(distant_gun.global_position==Vector3(0,0,-600),"600m shot retains the actual spatial origin")
 
 	var near_blast:=explosions._start("far-gain:near",Vector3(0,0,-50),"destroy")
 	var far_blast:=explosions._start("far-gain:600",Vector3(0,0,-600),"destroy")
 	check(is_instance_valid(near_blast) and is_instance_valid(far_blast),"tank explosion near/far versions still play")
 	if is_instance_valid(near_blast) and is_instance_valid(far_blast):
-		var expected_near:=float(explosions.event_profile("destroy").db)+GameExplosionAudio.near_presence_db("destroy",50.)
+		var expected_near:=float(explosions.event_profile("destroy").db)+GameExplosionAudio.near_presence_db("destroy",50.)+GameSoundPropagation.combat_presence_db(50.)
 		check(close(near_blast.volume_db,expected_near,.002),"nearby tank explosion preserves original strong impact")
-		var expected_far:=float(explosions.event_profile("destroy").db)+boost
+		var expected_far:=float(explosions.event_profile("destroy").db)+GameSoundPropagation.combat_presence_db(600.)+boost
 		check(close(far_blast.volume_db,expected_far,.002),"600m tank explosion gains exactly five percent before 3D falloff")
 		check(far_blast.stream.resource_path==GameCombatAudioCatalog.EXPLOSIONS_FAR[1],"distant tank keeps its V3 distant sample")
 		check(far_blast.unit_size==float(explosions.event_profile("destroy").unit) and far_blast.global_position==Vector3(0,0,-600),"distance profile and 3D position remain intact")

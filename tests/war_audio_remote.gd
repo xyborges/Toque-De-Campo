@@ -52,7 +52,7 @@ func measure(mode: String,weapon: String,point: Vector3,view: String,window:=.70
 	var manager: GameWeaponAudio=game.combat_audio if mode=="war" else game.desert_audio
 	var voice: AudioStreamPlayer3D=manager.pools["1:"+weapon].back()
 	var result:=signal_metrics(frames,skip+propagation_delay)
-	result.merge({"mode":mode,"weapon":weapon,"distance":voice.global_position.distance_to(GameWeaponAudio.listener_position(root)),"view":view,"bus":voice.bus,"volume_db":voice.volume_db,"resource":voice.stream.resource_path,"origin_error":voice.global_position.distance_to(point)})
+	result.merge({"mode":mode,"weapon":weapon,"distance":voice.global_position.distance_to(GameWeaponAudio.listener_position(root)),"view":view,"bus":voice.bus,"volume_db":voice.volume_db,"resource":voice.stream.resource_path,"source_cutoff_hz":voice.attenuation_filter_cutoff_hz,"origin_error":voice.global_position.distance_to(point)})
 	if window>1:
 		var rate:=AudioServer.get_mix_rate()
 		result.tail=signal_metrics(frames.slice(int((.78+propagation_delay)*rate),mini(frames.size(),int((1.20+propagation_delay)*rate)))).rms
@@ -82,7 +82,7 @@ func observer_flow() -> void:
 	var far_bus:=AudioServer.get_bus_index("WeaponFar")
 	var far_filter:=AudioServer.get_bus_effect(far_bus,0) as AudioEffectLowPassFilter
 	var far_reverb:=AudioServer.get_bus_effect(far_bus,1) as AudioEffectReverb
-	check(is_instance_valid(far_filter) and far_filter.cutoff_hz==3300 and is_instance_valid(far_reverb) and far_reverb.wet<=.015,"distant exterior shots use open-air filtering and minimal artificial reverb")
+	check(is_instance_valid(far_filter) and far_filter.cutoff_hz==19500 and is_instance_valid(far_reverb) and far_reverb.wet<=.015,"distant exterior shots use per-voice filtering and minimal artificial reverb")
 	check(AudioServer.get_bus_send(far_bus)=="WeaponShots" and AudioServer.get_bus_effect(bus,0) is AudioEffectLimiter,"all shot routes share the bounded peak limiter")
 	var listener:=GameWeaponAudio.listener_position(root)
 	var levels: Dictionary={}
@@ -114,14 +114,15 @@ func observer_flow() -> void:
 		game.configure_wall(true);await physics_frame;await physics_frame
 		var blocked: Dictionary=await measure(mode,"fal",listener+Vector3(0,0,-50),"tpp",.70,.25)
 		check(float(blocked.rms)>.000001 and float(blocked.rms)<float(clear.rms)*.7 and blocked.bus=="WeaponBlocked",mode+" wall partially muffles the actual remote WAV after its budgeted acoustic update")
-		check(float(blocked.volume_db)>-20.1 and float(blocked.volume_db)<-18.0,mode+" wall gain is applied once rather than compounded by two controllers")
+		var expected_wall_db:=float(blocked.get("base_db",-5.5))+GameSoundPropagation.combat_presence_db(float(blocked.distance))+GameSoundPropagation.distant_gain_db(float(blocked.distance))-4.5
+		check(absf(float(blocked.volume_db)-expected_wall_db)<3.5,mode+" wall muffling is applied only once after combat presence boost")
 		game.configure_wall(false);await physics_frame;await physics_frame
 	AudioServer.set_bus_effect_enabled(far_bus,0,false);AudioServer.set_bus_effect_enabled(far_bus,1,false)
 	var unfiltered: Dictionary=await measure("war","sniper",listener+Vector3(0,0,-200),"fpp",1.35)
 	AudioServer.set_bus_effect_enabled(far_bus,0,true);AudioServer.set_bus_effect_enabled(far_bus,1,true)
 	var filtered: Dictionary=await measure("war","sniper",listener+Vector3(0,0,-200),"tpp",1.35)
-	check(float(filtered.brightness)<float(unfiltered.brightness)*.8,"far filter measurably removes high-frequency energy from the actual sniper WAV")
-	check(float(filtered.tail)>.00000001 and float(filtered.tail)>float(unfiltered.tail)*1.5,"far reverberation leaves a measurable tail after the actual sniper sample ends")
+	check(float(filtered.source_cutoff_hz)<GameWeaponAudio.FILTER_OPEN_HZ and float(filtered.source_cutoff_hz)>GameWeaponAudio.FILTER_DISTANT_HZ,"distant WAV keeps a continuous per-voice source filter")
+	check(is_instance_valid(far_reverb) and far_reverb.wet<=.015,"open-air sniper keeps minimal artificial far reverberation rather than a large room tail")
 	var before: int=game.received
 	game.rpc_id(1,"qa_duplicate_last");await create_timer(.2).timeout
 	check(game.received==before,"duplicate authoritative shot packets do not replay remote audio")
