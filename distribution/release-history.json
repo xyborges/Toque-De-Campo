@@ -19,22 +19,22 @@
   },
   {
     "version": "1.13.4",
-    "title": "Atualiza??o 1.13.4 ? Favela renovada, mata e melhorias do combate",
+    "title": "Atualização 1.13.4 — Favela renovada, mata e melhorias do combate",
     "additions": [
-      "Novo mapa Favela offline: Pol?cia contra Bandidos num mapa de 1,5 km, com cinco objetivos, becos, lajes acess?veis, motos e blindados Guarani. JOGAR COM BOTS abre a opera??o pelo menu offline.",
-      "Comunidade mais densa: Mais de 4.100 lotes, com fachadas pr?ximas, moradias sobrepostas, com?rcio, grades, tubula??o, conten??es, drenagem, escadarias e passarelas, respeitando o espa?o das vias.",
-      "Mata e encostas vivas: Vegeta??o em manchas, ?rvores, arbustos, capim, rochas e eros?o superficial nas encostas; dist?ncias das ruas e objetivos preservadas para n?o bloquear a circula??o.",
-      "Atmosfera de morro: C?u com nuvens e aberturas azuis, neblina discreta nas baixadas e condensa??o distante, com efeitos leves para o renderizador Compatibility.",
-      "Resultados de vit?ria e derrota: Apresenta??o audiovisual das partidas com vit?ria, derrota, empate e resultados neutros, preservando as c?meras dos demais modos.",
-      "Fuma?a distante dos tanques: Carca?as de tanques destru?dos recebem plumas vis?veis de longe com limites de desenho e processamento.",
-      "Bots de moto mais cont?nuos: Corre??o do acelera-e-freia repetitivo de motos pilotadas por bots e das rotas de acesso dos ve?culos."
+      "Novo mapa Favela offline: Polícia contra Bandidos num mapa de 1,5 km, com cinco objetivos, becos, lajes acessíveis, motos e blindados Guarani. JOGAR COM BOTS abre a operação pelo menu offline.",
+      "Comunidade mais densa: Mais de 4.100 lotes, com fachadas próximas, moradias sobrepostas, comércio, grades, tubulação, contenções, drenagem, escadarias e passarelas, respeitando o espaço das vias.",
+      "Mata e encostas vivas: Vegetação em manchas, árvores, arbustos, capim, rochas e erosão superficial nas encostas; distâncias das ruas e objetivos preservadas para não bloquear a circulação.",
+      "Atmosfera de morro: Céu com nuvens e aberturas azuis, neblina discreta nas baixadas e condensação distante, com efeitos leves para o renderizador Compatibility.",
+      "Resultados de vitória e derrota: Apresentação audiovisual das partidas com vitória, derrota, empate e resultados neutros, preservando as câmeras dos demais modos.",
+      "Fumaça distante dos tanques: Carcaças de tanques destruídos recebem plumas visíveis de longe com limites de desenho e processamento.",
+      "Bots de moto mais contínuos: Correção do acelera-e-freia repetitivo de motos pilotadas por bots e das rotas de acesso dos veículos."
     ],
     "fixes": [
-      "Desembarque mais seguro: A sa?da de Guarani, BMP-2, Abrams e T-90 evita surgimento sob a blindagem ou em solo inadequado.",
-      "?pticas n?o migram para a pistola: A sele??o de arma recupera corretamente a apresenta??o da luneta ap?s entrar ou sair do ve?culo.",
-      "Identidade do mapa: Manifesto da Favela consolidado e verific?vel, com as fontes reais das altera??es arquitet?nicas e de combate.",
-      "A Favela est? dispon?vel para partidas offline com bots; servidor dedicado de partidas p?blicas continua pendente.",
-      "Meta de 60 FPS est?veis na GTX 1650/1080p/Alta permanece pendente de perfil isolado, com carga de combate."
+      "Desembarque mais seguro: A saída de Guarani, BMP-2, Abrams e T-90 evita surgimento sob a blindagem ou em solo inadequado.",
+      "Ópticas não migram para a pistola: A seleção de arma recupera corretamente a apresentação da luneta após entrar ou sair do veículo.",
+      "Identidade do mapa: Manifesto da Favela consolidado e verificável, com as fontes reais das alterações arquitetônicas e de combate.",
+      "A Favela está disponível para partidas offline com bots; servidor dedicado de partidas públicas continua pendente.",
+      "Meta de 60 FPS estáveis na GTX 1650/1080p/Alta permanece pendente de perfil isolado, com carga de combate."
     ]
   },
   {
