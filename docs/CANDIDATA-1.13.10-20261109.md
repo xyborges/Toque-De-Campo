@@ -5,7 +5,7 @@ Build de referência no Ubuntu: **1.13.9/build 97**, validada por HTTPS. `main`/
 
 ## Objetivo e escopo
 
-Preparar a possível **1.13.10 / build 98** sem interferir no único prompt ainda em desenvolvimento (Caveirão 3D) nem em worktrees experimentais. Após `git fetch origin --prune`, inventário: 38 branches locais e 53 refs remotas não incorporadas. Muitas são variantes e relatórios de experiências reprovadas; não contar como 91 novidades.
+Preparar a possível **1.13.10 / build 98** sem interferir no prompt do Caveirão durante o desenvolvimento nem em worktrees experimentais. O Caveirão foi recolhido **somente após** o encerramento da sessão e commit. Após `git fetch origin --prune`, inventário: 38 branches locais e 53 refs remotas não incorporadas. Muitas são variantes e relatórios de experiências reprovadas; não contar como 91 novidades.
 
 Worktree: `campo-worktrees/release-11310-candidate-20261109`
 Branch: `ia/release-11310-candidate-20261109`
@@ -18,9 +18,10 @@ Base: `ce2653e`. **Não executar push, build assinado nem deploy nesta fase de c
 3. **Presença de tiros e dinâmica das explosões** — `origin/ia/r01-explosion-dynamics-20261109`, que já contém `0abd0c4`, `bb462d4`, `6bea316` e `25303d4`; merge `d1a40ce`. Inclui presença distante, limitador Master, compressor somente de explosões e testes. **Não** integrar `ia/audio-presenca-global-1108` novamente, pois está contida nesta branch. Na R01: testes áudio 326/326; multiplayer de explosões 144/144 (Ucrânia + Favela, 28 bots cada); nenhum WAV/MP3 foi regravado. Falta validar os merges da candidata nesta máquina e conferir desempenho/escuta humana.
 4. **Manifesto Favela v29** — `21ea7db`, gerado da fonte real `tools/prepare_favela_manifest.py --write`. Corrige v28 obsoleto com **68 fontes**, hashes de conteúdo e de origem conferidos. O status permanece `testing` até homologação da candidata.
 
+5. **Caveirão 3D cinza — SOMENTE asset estático de biblioteca** — `ia/caveirao-cinza-3d-20261109`, commits `5d09c4d` e `117b48e`; merge `e48c15c`. Modelo `caveirao_caminhao.glb` de 762.640 bytes + cena `caveirao_cinza.tscn`. A sessão `gpt6-caveirao-trucknose` foi encerrada antes do merge. **Não está registrado no catálogo de prefabs e não há lógica WarVehicle, spawn, ocupação ou controle de jogador. NÃO anunciar como dirigível.**
+
 ## Fora desta candidata (não interpretar como autorizado para produção)
 
-- **Caveirão:** `ia/caveirao-cinza-3d-20261109` inclui cena isolada `5d09c4d`, mas existe sessão ativa `gpt6-caveirao-trucknose` e alterações não commitadas em `caveirao_cinza.tscn` e no novo `.glb`. Não tocar, mesclar ou substituir. Reavaliar APÓS conclusão, commit e QA de composição/colisão/LOD/servidor.
 - **Favela V27, lajes:** `origin/ia/favela-v27-roof-diagnostic-20261109` inclui apenas testes e relatório. Testou 142 lajes e 706 amostras sem reproduzir tremor, recuo ou travamento. A queixa do jogador permanece **não resolvida**; não anunciar correção.
 - **R2B/G3 FPP e realismo R1A–R1C/R2A:** o benchmark `ia/bench-realismo-r2b-jj7-20261109` terminou 5 pares/10 janelas, 28 bots reais e equivalência sem falhas, porém ~38 FPS com e sem R2B; **não homologado para publicação**. Mantê-lo opt-in OFF, sem mesclar nesta versão. P1k/CollisionRig também não passou gate de produção.
 - **Bot pose dirty-guard / IK cache:** CPU isolada mostrou economia, mas o A/B gráfico não foi homologado; `ia/qa-bot-pose-main-20261108` reprova entrada em produção. `ia/ik-28bots-qa-20261108` rejeita ganho FPS/P99. Não incluir.
@@ -37,6 +38,7 @@ Base: `ce2653e`. **Não executar push, build assinado nem deploy nesta fase de c
 - Dinâmica de explosões: `r01_explosion_dynamics_20261109.gd` **25/25 PASS** no mixer real, 4 detonações simultâneas limitadas, audição a 400–600 m preservada.
 - ENet/DTLS Favela: servidor e **2 clientes**, exit 0, **12 + 6 + 6 verificações PASS**. Este smoke NÃO simula 28 bots ou valida o cenário de explosões com os 28 bots simultâneos.
 - Teste de origem R01 anterior ao merge: **144/144 verificações de explosões** em Ucrânia e Favela, com 28 bots em cada mapa; permanece **pendente repetir sobre este commit candidato**.
+- Caveirão, Godot 4.7.2: import do GLB exit 0; `tests/caveirao_candidate_qa.gd` **8/8 PASS**, 16 MeshInstance3D, 8.906 triângulos, três BoxShape3D físicos, metadados de biblioteca e LOD declarados; `playable=false` por contrato. Não confundir modelo visual com veículo operante.
 - O runner R01 de explosões tem paths específicos de `C:/Users/Microgate/Documents/Codex/2026-11-06/fa-a`; não executá-lo diretamente no JJ7 sem adaptar engine e certificados QA. A tentativa de `--help` só diagnosticou a ausência do executável nesse caminho, não contou como teste.
 
 Os resultados originais estão nos arquivos ignorados `work/release-11310-qa/`. Não houve teste A/B de FPS nem deploy.
@@ -50,7 +52,7 @@ Os resultados originais estão nos arquivos ignorados `work/release-11310-qa/`. 
 - [x] Mixagem nativa `combat_presence_audio_20261108.gd` 103/103 + `r01_explosion_dynamics_20261109.gd` 25/25 PASS com limitador sem clipping.
 - [ ] Multiplayer local ENet/DTLS com 28 bots: partidas Ucrânia/Favela, explosões reais e colisões; validar eventuais `0xC0000005` de encerramento.
 - [ ] Bench gráfico pareado GTX 1650, 1080p, escala 100%, Médio, foco de janela 100%: FPS, P95/P99, GPU, CPU, 28 bots; não piorar a cauda.
-- [ ] Reavaliar mudanças do único prompt ativo (Caveirão) somente após `finish` do coordenador e commit completo.
+- [x] Caveirão recolhido após `finish`/commit, import/meshes/colisões 8/8 PASS como **asset estático**. **Pendente:** registrar no catálogo e criar integração WarVehicle/spawn antes de anunciar no jogo.
 - [ ] Revisar `git diff main...candidata`, emitir veredito e somente então integrar à main mediante autorização de lançamento.
 - [ ] Se aprovada: incrementar versão, preparar build 98, assinatura, QA de instalação, preflight e deploy com proteção de jogadores ativa, conferindo manifesto e seis serviços.
 
