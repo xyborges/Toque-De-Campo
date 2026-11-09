@@ -350,7 +350,11 @@ func update_scope_reticle() -> void:
 	else: super.update_scope_reticle()
 	if is_local and game and is_instance_valid(game.scope_overlay):
 		var material:=game.scope_overlay.material as ShaderMaterial
-		if material: material.set_shader_parameter("launcher_mode",1 if weapon_id=="rpg" else (2 if weapon_id=="stinger" else 0))
+		if material:
+			material.set_shader_parameter("launcher_mode",1 if weapon_id=="rpg" else (2 if weapon_id=="stinger" else 0))
+			if weapon_id=="rpg":
+				material.set_shader_parameter("rpg_marks_near",WarRpgBallistics.reticle_near())
+				material.set_shader_parameter("rpg_marks_far",WarRpgBallistics.reticle_far())
 	_update_binocular_overlay()
 
 func _update_binocular_overlay() -> void:

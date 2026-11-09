@@ -1,6 +1,7 @@
 extends RefCounted
 class_name WarArmorBallistics
 static func drag_for(weapon: String,base: float,distance: float,speed: float) -> float:
+	if weapon=="rpg": return WarRpgBallistics.drag_for(base,distance,speed)
 	if weapon not in ["tank","autocannon"]: return base
 	var start:=80. if weapon=="tank" else 55.
 	var spatial_rate:=.00115 if weapon=="tank" else .00145

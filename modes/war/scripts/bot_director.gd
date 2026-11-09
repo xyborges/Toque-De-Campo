@@ -528,12 +528,13 @@ func _visible_vehicle(actor: WarPlayer) -> WarVehicle:
 func _aim_armor(actor: WarPlayer,vehicle: WarVehicle) -> void:
 	var point:=vehicle.global_position+Vector3.UP*1.25
 	var item: Dictionary=WarRules.SPECIAL[actor.gadget]
-	var travel:=actor.global_position.distance_to(point)/maxf(1.,float(item.speed))
+	var distance:=actor.camera_pivot.global_position.distance_to(point)
+	var travel:=WarRpgBallistics.flight_seconds(distance) if actor.gadget=="rpg" else distance/maxf(1.,float(item.speed))
 	# Lock-on launchers must aim at the hull itself; aggressive lead can
 	# move the 4-degree seeker outside its valid target cone.
 	if actor.gadget=="rpg":
 		point+=vehicle.velocity*minf(1.5,travel*.45)
-		point.y+=float(item.gravity)*travel*travel*.50
+		point.y+=distance*tan(WarRpgBallistics.hold_mrad(distance)*.001)
 	var aim: Vector3=(point-actor.camera_pivot.global_position).normalized()
 	actor.yaw=atan2(-aim.x,-aim.z)
 	actor.pitch=clampf(asin(clampf(aim.y,-1.,1.)),-1.2,1.2)
