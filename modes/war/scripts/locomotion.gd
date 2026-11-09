@@ -21,16 +21,26 @@ var local_direction := Vector3.ZERO
 # from covered distance and never feeds CharacterBody velocity, hitboxes,
 # weapon_root, the camera or replicated state.
 var presentation_longitudinal := 0.0
+var presentation_lateral := 0.0
+var presentation_lateral_speed := 0.0
+var presentation_yaw := 0.0
 var tactical_motion_pilot := OS.get_environment("TDC_TACTICAL_MOTION_PILOT")=="1" or "--tactical-motion-pilot" in OS.get_cmdline_user_args()
 const PRESENTATION_ACCEL_SCALE := 2.2
 const PRESENTATION_RESPONSE_IN := 24.0
 const PRESENTATION_RESPONSE_OUT := 3.2
 const PRESENTATION_FPP_TRAVEL := 0.028
+const PRESENTATION_LATERAL_ACCEL_SCALE := 2.4
+const PRESENTATION_LATERAL_RESPONSE_IN := 20.0
+const PRESENTATION_LATERAL_RESPONSE_OUT := 3.2
+const PRESENTATION_LATERAL_FPP_TRAVEL := 0.022
+const PRESENTATION_TURN_RATE_SCALE := 2.2
+const PRESENTATION_TURN_WEIGHT_LIMIT := 0.4
 
 func reset(actor: GamePlayer) -> void:
 	previous=actor.global_position;initialized=true;life=actor.life_id
 	phase=0;distance_since_step=0;speed=0;moving=0;sprint=0;grounded=false;ground_clock=0
-	local_direction=Vector3.ZERO;presentation_longitudinal=0.
+	local_direction=Vector3.ZERO;presentation_longitudinal=0.;presentation_lateral=0.
+	presentation_lateral_speed=0.;presentation_yaw=actor.rotation.y
 
 static func longitudinal_target(previous_speed: float,current_speed: float,delta: float,reference_speed: float) -> float:
 	var safe_delta:=maxf(delta,.001)
@@ -44,6 +54,27 @@ func _advance_presentation(previous_speed: float,current_speed: float,delta: flo
 	var target:=longitudinal_target(previous_speed,current_speed,delta,reference_speed)
 	var response:=PRESENTATION_RESPONSE_IN if absf(target)>absf(presentation_longitudinal) else PRESENTATION_RESPONSE_OUT
 	presentation_longitudinal=move_toward(presentation_longitudinal,target,delta*response)
+
+static func lateral_target(previous_lateral_speed: float,current_lateral_speed: float,yaw_delta: float,delta: float,reference_speed: float,forward_speed: float) -> float:
+	var safe_delta:=maxf(delta,.001)
+	var lateral_acceleration:=(current_lateral_speed-previous_lateral_speed)/safe_delta
+	var strafe:=0.
+	if absf(lateral_acceleration)>=.35:
+		# The held weapon visually lags the acceleration instead of leading it.
+		strafe=-lateral_acceleration/maxf(reference_speed*PRESENTATION_LATERAL_ACCEL_SCALE,4.)
+	var yaw_rate:=yaw_delta/safe_delta
+	var forward_factor:=clampf(absf(forward_speed)/maxf(reference_speed,.1),0.,1.4)
+	var turn:=0.
+	if absf(yaw_rate)>=.03 and forward_factor>.05:
+		# Positive Godot yaw turns left, so the FPP copy moves right: a small
+		# inertial lag opposite the curve.
+		turn=clampf(yaw_rate/PRESENTATION_TURN_RATE_SCALE*forward_factor,-PRESENTATION_TURN_WEIGHT_LIMIT,PRESENTATION_TURN_WEIGHT_LIMIT)
+	return clampf(strafe+turn,-1.,1.)
+
+func _advance_lateral(previous_lateral_speed_value: float,current_lateral_speed: float,yaw_delta: float,delta: float,reference_speed: float,forward_speed: float) -> void:
+	var target:=lateral_target(previous_lateral_speed_value,current_lateral_speed,yaw_delta,delta,reference_speed,forward_speed)
+	var response:=PRESENTATION_LATERAL_RESPONSE_IN if absf(target)>absf(presentation_lateral) else PRESENTATION_LATERAL_RESPONSE_OUT
+	presentation_lateral=move_toward(presentation_lateral,target,delta*response)
 
 func advance(actor: GamePlayer,delta: float) -> void:
 	if actor.in_water(): reset(actor);return
@@ -60,8 +91,18 @@ func advance(actor: GamePlayer,delta: float) -> void:
 	var previous_speed_value:=speed
 	if tactical_motion_pilot and actor.is_local:
 		_advance_presentation(previous_speed_value,actual_speed,delta,actor.move_speed)
-	elif presentation_longitudinal!=0.:
-		presentation_longitudinal=0.
+		var local_motion:=actor.global_basis.inverse()*displacement
+		var safe_delta:=maxf(delta,.001)
+		var current_lateral_speed:=local_motion.x/safe_delta
+		var forward_speed:=absf(local_motion.z)/safe_delta
+		var yaw_delta:=wrapf(actor.rotation.y-presentation_yaw,-PI,PI)
+		_advance_lateral(presentation_lateral_speed,current_lateral_speed,yaw_delta,delta,actor.move_speed,forward_speed)
+		presentation_lateral_speed=current_lateral_speed
+		presentation_yaw=actor.rotation.y
+	else:
+		if presentation_longitudinal!=0.:presentation_longitudinal=0.
+		if presentation_lateral!=0.:presentation_lateral=0.
+		presentation_lateral_speed=0.;presentation_yaw=actor.rotation.y
 	speed=actual_speed
 	# Stationary replicated actors can retain a nonzero last velocity. Only
 	# actual displacement starts a gait, and there is no reason to raycast an
@@ -143,8 +184,9 @@ func pose_weapon(actor: GamePlayer) -> void:
 	if is_instance_valid(actor.view_root):
 		actor.view_root.position+=offset
 		actor.view_root.rotation+=rotation_offset
-		# Only the local FPP copy receives R1A inertia. Aiming/reload/fire paths
-		# returned above, preserving exact sight alignment and ballistic origin.
+		# Only the local FPP copy receives R1A/R1B inertia. Aiming/reload/fire
+		# paths returned above preserve exact sight alignment and ballistic origin.
 		if tactical_motion_pilot and actor.is_local:
 			actor.view_root.position.z+=presentation_longitudinal*PRESENTATION_FPP_TRAVEL
+			actor.view_root.position.x+=presentation_lateral*PRESENTATION_LATERAL_FPP_TRAVEL
 
