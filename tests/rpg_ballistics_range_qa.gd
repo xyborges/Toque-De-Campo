@@ -62,6 +62,30 @@ func run() -> void:
 		verify(float(speed_at.get(100, 0.0)) > 154.0, "real projectile keeps fast first 100 m")
 		verify(float(speed_at.get(200, 999.0)) < 150.0, "real projectile slows after 100 m")
 		verify(float(speed_at.get(400, 999.0)) < 120.0, "real projectile loses substantial speed by 400 m")
+	# Six end-to-end shots use the actual live physics integrator and rays,
+	# not the independent calibration helper.
+	for i in WarRpgBallistics.MARK_RANGES.size():
+		var target_metres: float = WarRpgBallistics.MARK_RANGES[i]
+		var angle: float = WarRpgBallistics.MARK_HOLD_MRAD[i] * .001
+		var origin := Vector3(0.0, 400.0, 0.0)
+		var direction := Vector3(0.0, sin(angle), -cos(angle))
+		var id := "range_dot_shot_" + str(int(target_metres))
+		if not projectiles.spawn(1, origin, direction, "rpg", false, id, WarRules.SPECIAL.rpg):
+			verify(false, "%d m dot shot spawns" % int(target_metres))
+			continue
+		var round: Dictionary = projectiles.find_round(id)
+		var end_y := -999.0
+		for tick in 1200:
+			if not bool(round.active): break
+			var old: Vector3 = round.position
+			projectiles._step(round, 1.0 / 120.0)
+			var current: Vector3 = round.position
+			if -current.z >= target_metres:
+				var t := clampf((-target_metres - old.z) / (current.z - old.z), 0.0, 1.0)
+				end_y = lerpf(old.y, current.y, t) - origin.y
+				break
+		print("REAL_RPG_DOT ", int(target_metres), "m vertical error=", end_y)
+		verify(absf(end_y) < .3, "%d m dot lands within 30 cm with real WarProjectiles" % int(target_metres))
 	fixture.queue_free()
 	await process_frame
 	print("RPG_RANGE_QA ", passed, " passed; ", failures.size(), " failed")
