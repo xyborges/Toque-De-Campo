@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 28,
+  "version": 30,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,9 +8,12 @@
     1500,
     1500
   ],
-  "content_hash": "b7d03715ea9f083ba20dd383063ff14e4610ac304f3c19c6186099aa04d932a7",
-  "source_hash": "ec8061b317d757eb9b392574b6cb2607c0df4ce1c39b0015164727a575f69f7b",
+  "content_hash": "c96bf44fb98c24de75c6bfeb8511d70c488fa04777e72240d18865a4f4d81a21",
+  "source_hash": "5b9f93fe389157723db9bab2da0303cd50e71527e315cec35213b4e783a08f01",
   "sources": [
+    "res://assets/environment/materials/concrete-albedo.png",
+    "res://assets/environment/materials/concrete-normal.png",
+    "res://assets/environment/materials/concrete-roughness.png",
     "res://modes/war/audio/baile/ak_do_flamengo.mp3",
     "res://modes/war/audio/baile/eu_vi_o_mano.mp3",
     "res://modes/war/audio/baile/g3_chegou_clareando.mp3",
@@ -57,6 +60,7 @@
     "res://modes/war/library/favela_toldo.tscn",
     "res://modes/war/library/favela_tubulacao_externa.tscn",
     "res://modes/war/library/favela_varal.tscn",
+    "res://modes/war/library/favela_z_stair_tread.tscn",
     "res://modes/war/scripts/bot_director.gd",
     "res://modes/war/scripts/bot_transit.gd",
     "res://modes/war/scripts/favela_architecture.gd",
@@ -72,13 +76,14 @@
     "res://modes/war/scripts/favela_street_art.gd",
     "res://modes/war/scripts/favela_street_space.gd",
     "res://modes/war/scripts/favela_uniform.gd",
+    "res://modes/war/scripts/favela_z_stairway.gd",
     "res://modes/war/scripts/game.gd",
-    "res://scripts/ui/match_dashboard.gd",
     "res://modes/war/scripts/operation.gd",
     "res://modes/war/scripts/prefab_factory.gd",
     "res://modes/war/scripts/rules.gd",
     "res://modes/war/scripts/ui.gd",
-    "res://modes/war/scripts/vehicles.gd"
+    "res://modes/war/scripts/vehicles.gd",
+    "res://scripts/ui/match_dashboard.gd"
   ],
   "grass_enabled": false,
   "grass_approved": false,
