@@ -3,7 +3,7 @@ class_name BotCostProbe
 
 # Instrumentacao experimental da IA 1; NUNCA habilitada em gameplay normal.
 # Os acumuladores sao drenados a cada quadro renderizado pelo runner.
-const SCOPES: Array[String] = ["move_slide", "step_test", "perception", "line_of_sight", "navigation", "pose", "think_total"]
+const SCOPES: Array[String] = ["move_slide", "step_test", "perception", "line_of_sight", "navigation", "pose", "think_total", "bot_move_total", "bot_separation"]
 static var enabled: bool = "--ia1-physics-probe" in OS.get_cmdline_user_args()
 static var usec: Dictionary = {}
 static var calls: Dictionary = {}

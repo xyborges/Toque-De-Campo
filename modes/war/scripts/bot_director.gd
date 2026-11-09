@@ -352,7 +352,12 @@ func _physics_process(delta: float) -> void:
 			_drive(actor,bots[id],delta);continue
 		# WarPlayer owns buoyancy and swimming once per physics tick.
 		if actor.in_water(): continue
-		_move(actor,bots[id],delta)
+		if BotCostProbe.enabled:
+			var _move_started:=Time.get_ticks_usec()
+			_move(actor,bots[id],delta)
+			BotCostProbe.record("bot_move_total",Time.get_ticks_usec()-_move_started)
+		else:
+			_move(actor,bots[id],delta)
 		var record: Dictionary=bots[id]
 		var target:=game.players.get(int(record.target)) as WarPlayer
 		if is_instance_valid(target) and target.hp>0 and not actor.grenade_selected and actor.grenade_held_id.is_empty() and bool(record.get("line_clear",false)): _shoot(actor,target,record)
@@ -703,12 +708,14 @@ func _move(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 			else:
 				record.roof_follow=false
 				direction=Vector3.ZERO
+	var _sep_started:=Time.get_ticks_usec() if BotCostProbe.enabled else 0
 	var separation:=Vector3.ZERO
 	for ally: WarPlayer in _near_actors(actor.global_position):
 		if not is_instance_valid(ally) or not ally.is_inside_tree() or ally==actor or ally.hp<=0 or not ally.deployed or not ally.vehicle_id.is_empty(): continue
 		var offset:=actor.global_position-ally.global_position;offset.y=0
 		var distance:=offset.length()
 		if distance>.01 and distance<1.1: separation+=offset/distance*(1.1-distance)
+	if BotCostProbe.enabled: BotCostProbe.record("bot_separation",Time.get_ticks_usec()-_sep_started)
 	if direction.length_squared()>.01: direction=(direction+separation*.8).normalized()
 	var leg_factor: float=(.55 if float(actor.limbs.legL)<=0 else 1.)*(.55 if float(actor.limbs.legR)<=0 else 1.) if CombatRules.limb_disability_enabled(game) else 1.0
 	var speed:=actor.move_speed*.78*leg_factor*(.6 if actor.reaction>0 else 1.)*actor.infantry_protection.multiplier()
