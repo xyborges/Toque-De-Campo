@@ -31,6 +31,9 @@ func _ready() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--audio-port="): port=int(arg.trim_prefix("--audio-port="))
 	var transport:=ENetMultiplayerPeer.new()
+	# Match production transport initialization. Without this watcher the
+	# GameNetworkBroadcast ready-peer guard drops every remote_shot_packet.
+	GameNetworkPeers.watch(transport)
 	if "--role=server" in OS.get_cmdline_user_args():
 		dedicated_pvp=true
 		transport.create_server(port,1,4)

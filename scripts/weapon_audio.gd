@@ -7,7 +7,7 @@ const LIMIT := 96
 const FILTER_OPEN_HZ := 18000.0
 const FILTER_DISTANT_HZ := 9200.0
 const FILTER_REAR_HZ := 10800.0
-const FILTER_BLOCKED_HZ := 4300.0
+const FILTER_BLOCKED_HZ := 5600.0
 const FILTER_INTERIOR_HZ := 14500.0
 const FILTER_SMOOTH_RATE := 8.0
 const PATHS := {"fists":"melee_swing_generated.wav","ak":"ak-005.wav","fal":"fal-098.wav","g3":"g3_near.mp3","glock":"pistol-109.wav","sniper":"sound_026.wav","lightMG":"light-mg.wav","heavyMG":"heavy-mg.wav","hmg":"heavy-mg.wav","autocannon":"apc30mm/APC_30mm_disparo_01.wav","tank":"missile.wav","rpg":"missile.wav","stinger":"missile.wav","tv":"missile.wav","missile":"missile.wav","torpedo":"torpedo.wav","grenade":"melee_swing_generated.wav","broom":"melee_swing_generated.wav","squeegee":"melee_swing_generated.wav","axe":"melee_swing_generated.wav"}
@@ -99,7 +99,9 @@ static func apply_acoustics(voice: AudioStreamPlayer3D,distance_to: float,blocke
 	voice.set_meta("acoustic_blocked",blocked)
 	voice.set_meta("acoustic_enclosed",enclosed)
 	var edge:=1.0-smoothstep(voice.max_distance*.78,voice.max_distance,distance_to)
-	var goal:=float(voice.get_meta("base_db",-12))+GameSoundPropagation.distant_gain_db(distance_to)-(8.0 if blocked else 0.0)+linear_to_db(maxf(.001,edge))
+	var name:=str(voice.get_meta("weapon",""))
+	var gain:=0.0 if name in ["fists","broom","squeegee","axe","grenade"] else GameSoundPropagation.combat_presence_db(distance_to)
+	var goal:=float(voice.get_meta("base_db",-12))+gain+GameSoundPropagation.distant_gain_db(distance_to)-(4.5 if blocked else 0.0)+linear_to_db(maxf(.001,edge))
 	voice.volume_db=lerpf(voice.volume_db,goal,clampf(smoothing,0,1))
 
 func _update_voice_filters(delta: float) -> void:
@@ -113,7 +115,7 @@ func _update_voice_filters(delta: float) -> void:
 		var blocked:=bool(voice.get_meta("acoustic_blocked",false))
 		var enclosed:=bool(voice.get_meta("acoustic_enclosed",false))
 		var target_hz:=filter_target_hz(distance_to,voice.max_distance,blocked,enclosed,source_rear_blend(viewport,voice.global_position))
-		var target_db: float=-18.0 if blocked else (-14.0 if enclosed else -12.0)
+		var target_db: float=-14.0 if blocked else (-14.0 if enclosed else -12.0)
 		voice.attenuation_filter_cutoff_hz=lerpf(voice.attenuation_filter_cutoff_hz,target_hz,blend)
 		voice.attenuation_filter_db=lerpf(voice.attenuation_filter_db,target_db,blend)
 
@@ -209,7 +211,7 @@ func play(emitter: int,weapon: String,point: Vector3,elapsed:=0.0) -> AudioStrea
 	return _play_now(emitter,weapon,point)
 
 func _new_voice() -> AudioStreamPlayer3D:
-	var voice:=AudioStreamPlayer3D.new();voice.name="WeaponVoice"+str(voices.size());voice.max_polyphony=1;voice.max_db=-3
+	var voice:=AudioStreamPlayer3D.new();voice.name="WeaponVoice"+str(voices.size());voice.max_polyphony=1;voice.max_db=2.0
 	# Preserve the real 3D origin while making lateral direction easier to hear.
 	voice.panning_strength=1.5
 	voice.add_to_group("spatial_sfx");voice.set_meta("category","Armas")
@@ -284,6 +286,9 @@ func _play_now(emitter: int,weapon: String,point: Vector3) -> AudioStreamPlayer3
 		autocannon_sequence[emitter]=shot_index+1
 		if autocannon_sequence.size()>128: autocannon_sequence.erase(autocannon_sequence.keys()[0])
 	voice.volume_db=float(settings.db)
+	# Do not let the old -3 dB 3D ceiling undo the distance calibration.
+	# Melee and tool sounds retain their old ceiling and distance character.
+	voice.max_db=-3.0 if weapon in ["fists","broom","squeegee","axe","grenade"] else (3.0 if weapon in ["tank","rpg","stinger","tv","missile","autocannon"] else 2.0)
 	voice.unit_size=float(settings.unit)
 	voice.max_distance=float(settings.range)
 	voice.attenuation_model=AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE

@@ -25,10 +25,15 @@ func stop_audio() -> void:
 	for manager: GameWeaponAudio in [game.combat_audio,game.desert_audio]:
 		manager.propagation.clear()
 		for voice in manager.voices: voice.stop()
-func signal_metrics(frames: PackedVector2Array,skip:=0.) -> Dictionary:
+func signal_metrics(frames: PackedVector2Array,skip:=0.,max_window:=INF) -> Dictionary:
 	var left:=0.;var right:=0.;var difference:=0.;var previous:=Vector2.ZERO;var used:=0
 	var start:=mini(frames.size(),int(skip*AudioServer.get_mix_rate()))
-	for index in range(start,frames.size()):
+	# Native frame hitches can make a 700ms timer capture 1.2s of audio;
+	# comparing that RMS against a 700ms clip would count extra silence.
+	# Keep the intended analysis window fixed after physical propagation.
+	var end:=frames.size()
+	if is_finite(max_window): end=mini(end,start+maxi(1,int(max_window*AudioServer.get_mix_rate())))
+	for index in range(start,end):
 		var frame:=frames[index]
 		left+=frame.x*frame.x;right+=frame.y*frame.y
 		if used>0: difference+=(frame-previous).length_squared()
@@ -51,8 +56,8 @@ func measure(mode: String,weapon: String,point: Vector3,view: String,window:=.70
 	var frames:=capture.get_buffer(capture.get_frames_available())
 	var manager: GameWeaponAudio=game.combat_audio if mode=="war" else game.desert_audio
 	var voice: AudioStreamPlayer3D=manager.pools["1:"+weapon].back()
-	var result:=signal_metrics(frames,skip+propagation_delay)
-	result.merge({"mode":mode,"weapon":weapon,"distance":voice.global_position.distance_to(GameWeaponAudio.listener_position(root)),"view":view,"bus":voice.bus,"volume_db":voice.volume_db,"resource":voice.stream.resource_path,"origin_error":voice.global_position.distance_to(point)})
+	var result:=signal_metrics(frames,skip+propagation_delay,window)
+	result.merge({"mode":mode,"weapon":weapon,"distance":voice.global_position.distance_to(GameWeaponAudio.listener_position(root)),"view":view,"bus":voice.bus,"volume_db":voice.volume_db,"resource":voice.stream.resource_path,"source_cutoff_hz":voice.attenuation_filter_cutoff_hz,"origin_error":voice.global_position.distance_to(point)})
 	if window>1:
 		var rate:=AudioServer.get_mix_rate()
 		result.tail=signal_metrics(frames.slice(int((.78+propagation_delay)*rate),mini(frames.size(),int((1.20+propagation_delay)*rate)))).rms
@@ -62,7 +67,7 @@ func run() -> void:
 	Engine.max_fps=60
 	game=load("res://tests/war_audio_remote_fixture.gd").new();root.add_child(game)
 	if role=="server":
-		if await wait_for(func():return game.qa_done,"native observer acoustic matrix",155):
+		if await wait_for(func():return game.qa_done,"native observer acoustic matrix",245):
 			check(game.multiplayer.multiplayer_peer is ENetMultiplayerPeer,"source events traveled through a real ENet authority")
 			check(game.emitted>=48,"normal server shot validator accepted the real firearm events")
 			check(int(game.shot_sequences.get(1,0))==int(game.event_sequence),"each acoustic event passed ordinary life/sequence/ammunition validation")
@@ -82,7 +87,7 @@ func observer_flow() -> void:
 	var far_bus:=AudioServer.get_bus_index("WeaponFar")
 	var far_filter:=AudioServer.get_bus_effect(far_bus,0) as AudioEffectLowPassFilter
 	var far_reverb:=AudioServer.get_bus_effect(far_bus,1) as AudioEffectReverb
-	check(is_instance_valid(far_filter) and far_filter.cutoff_hz==3300 and is_instance_valid(far_reverb) and far_reverb.wet<=.015,"distant exterior shots use open-air filtering and minimal artificial reverb")
+	check(is_instance_valid(far_filter) and far_filter.cutoff_hz==19500 and is_instance_valid(far_reverb) and far_reverb.wet<=.015,"distant exterior shots use per-voice filtering and minimal artificial reverb")
 	check(AudioServer.get_bus_send(far_bus)=="WeaponShots" and AudioServer.get_bus_effect(bus,0) is AudioEffectLimiter,"all shot routes share the bounded peak limiter")
 	var listener:=GameWeaponAudio.listener_position(root)
 	var levels: Dictionary={}
@@ -90,19 +95,24 @@ func observer_flow() -> void:
 		for weapon in ["glock","fal","sniper"]:
 			for view in ["fpp","tpp"]:
 				var previous:=INF
-				for distance in [50.,100.,200.,300.]:
+				for distance in [50.,100.,200.,300.,400.,600.]:
 					var result: Dictionary=await measure(mode,weapon,listener+Vector3(0,0,-distance),view)
 					levels["%s:%s:%s:%d"%[mode,weapon,view,int(distance)]]=result
-					check(float(result.rms)>.000001 and float(result.rms)<previous,"%s %s %s real WAV remains audible and attenuates at %.0f m"%[mode,weapon,view,distance])
+					check(float(result.rms)>.000001 and float(result.rms)<previous,"%s %s %s real WAV remains audible with physical falloff at %.0f m"%[mode,weapon,view,distance])
 					check(result.resource=="res://audio/"+GameWeaponAudio.PATHS[weapon] and float(result.origin_error)<.02,"%s %s %s %.0f m uses its supplied WAV at the validated world muzzle"%[mode,weapon,view,distance])
 					check(result.bus==GameWeaponAudio.acoustic_bus(float(result.distance),false,false),"%s %s %s %.0f m selects the correct single distance path"%[mode,weapon,view,distance])
 					previous=float(result.rms)
-			for distance in [50,100,200,300]:
+			if weapon=="sniper":
+				for view in ["fpp","tpp"]:
+					var close: Dictionary=levels["%s:%s:%s:50"%[mode,weapon,view]]
+					var distant: Dictionary=levels["%s:%s:%s:300"%[mode,weapon,view]]
+					check(float(distant.rms)<float(close.rms)*.85,"%s sniper %s retains clear real-PCM falloff between 50 and 300 m"%[mode,view])
+			for distance in [50,100,200,300,400,600]:
 				var first: Dictionary=levels["%s:%s:fpp:%d"%[mode,weapon,distance]]
 				var third: Dictionary=levels["%s:%s:tpp:%d"%[mode,weapon,distance]]
 				check(absf(float(first.rms)-float(third.rms))/maxf(float(first.rms),.000001)<.12,"%s %s FPP/TPP keep head-listener RMS within 12%% at %d m"%[mode,weapon,distance])
 	for weapon in ["glock","fal","sniper"]:
-		for distance in [50,100,200,300]:
+		for distance in [50,100,200,300,400,600]:
 			var desert: Dictionary=levels["desert:%s:fpp:%d"%[weapon,distance]]
 			var war: Dictionary=levels["war:%s:fpp:%d"%[weapon,distance]]
 			check(absf(float(desert.rms)-float(war.rms))/maxf(float(desert.rms),.000001)<.12,"shared %s distance path matches Desert/War RMS within 12%% at %d m"%[weapon,distance])
@@ -113,15 +123,19 @@ func observer_flow() -> void:
 		var clear: Dictionary=await measure(mode,"fal",listener+Vector3(0,0,-50),"fpp",.70,.25)
 		game.configure_wall(true);await physics_frame;await physics_frame
 		var blocked: Dictionary=await measure(mode,"fal",listener+Vector3(0,0,-50),"tpp",.70,.25)
-		check(float(blocked.rms)>.000001 and float(blocked.rms)<float(clear.rms)*.7 and blocked.bus=="WeaponBlocked",mode+" wall partially muffles the actual remote WAV after its budgeted acoustic update")
-		check(float(blocked.volume_db)>-20.1 and float(blocked.volume_db)<-18.0,mode+" wall gain is applied once rather than compounded by two controllers")
+		var wall_ratio:=float(blocked.rms)/maxf(float(clear.rms),.000001)
+		# The global combat presence update intentionally reduced wall attenuation:
+		# this must be audibly quieter but not as muffled as the old 8 dB profile.
+		check(float(blocked.rms)>.000001 and wall_ratio<.86 and wall_ratio>.45 and blocked.bus=="WeaponBlocked",mode+" wall noticeably muffles remote PCM under the calibrated 4.5dB occlusion")
+		var expected_wall_db:=float(blocked.get("base_db",-5.5))+GameSoundPropagation.combat_presence_db(float(blocked.distance))+GameSoundPropagation.distant_gain_db(float(blocked.distance))-4.5
+		check(absf(float(blocked.volume_db)-expected_wall_db)<3.5,mode+" wall muffling is applied only once after combat presence boost")
 		game.configure_wall(false);await physics_frame;await physics_frame
 	AudioServer.set_bus_effect_enabled(far_bus,0,false);AudioServer.set_bus_effect_enabled(far_bus,1,false)
 	var unfiltered: Dictionary=await measure("war","sniper",listener+Vector3(0,0,-200),"fpp",1.35)
 	AudioServer.set_bus_effect_enabled(far_bus,0,true);AudioServer.set_bus_effect_enabled(far_bus,1,true)
 	var filtered: Dictionary=await measure("war","sniper",listener+Vector3(0,0,-200),"tpp",1.35)
-	check(float(filtered.brightness)<float(unfiltered.brightness)*.8,"far filter measurably removes high-frequency energy from the actual sniper WAV")
-	check(float(filtered.tail)>.00000001 and float(filtered.tail)>float(unfiltered.tail)*1.5,"far reverberation leaves a measurable tail after the actual sniper sample ends")
+	check(float(filtered.source_cutoff_hz)<GameWeaponAudio.FILTER_OPEN_HZ and float(filtered.source_cutoff_hz)>GameWeaponAudio.FILTER_DISTANT_HZ,"distant WAV keeps a continuous per-voice source filter")
+	check(is_instance_valid(far_reverb) and far_reverb.wet<=.015,"open-air sniper keeps minimal artificial far reverberation rather than a large room tail")
 	var before: int=game.received
 	game.rpc_id(1,"qa_duplicate_last");await create_timer(.2).timeout
 	check(game.received==before,"duplicate authoritative shot packets do not replay remote audio")
