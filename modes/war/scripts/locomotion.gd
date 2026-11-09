@@ -1,6 +1,8 @@
 extends RefCounted
 class_name WarLocomotion
 
+const TACTICAL_BODY_POSE = preload("res://modes/war/scripts/tactical_body_pose.gd")
+
 # Presentation follows distance actually covered, including replicated actors.
 # It never integrates stale network velocity or changes the camera transform.
 var previous := Vector3.ZERO
@@ -28,6 +30,7 @@ var presentation_landing := 0.0
 var presentation_fall_speed := 0.0
 var presentation_was_grounded := false
 var tactical_motion_pilot := OS.get_environment("TDC_TACTICAL_MOTION_PILOT")=="1" or "--tactical-motion-pilot" in OS.get_cmdline_user_args()
+var tactical_body_pilot := OS.get_environment("TDC_TACTICAL_BODY_PILOT")=="1" or "--tactical-body-pilot" in OS.get_cmdline_user_args()
 const PRESENTATION_ACCEL_SCALE := 2.2
 const PRESENTATION_RESPONSE_IN := 24.0
 const PRESENTATION_RESPONSE_OUT := 3.2
@@ -195,6 +198,14 @@ func pose_torso(actor: GamePlayer) -> void:
 	actor.avatar_parts.torso.rotation.x=-.085*sprint*maxf(0,-local_direction.z)
 	actor.avatar_parts.torso.rotation.z=-local_direction.x*.035*moving
 
+func _allows_tactical_body_fpp(actor: GamePlayer) -> bool:
+	if not tactical_motion_pilot or not tactical_body_pilot or not actor.is_local or not actor is WarPlayer: return false
+	var soldier := actor as WarPlayer
+	if not is_instance_valid(soldier.game) or soldier.game.third_person: return false
+	if soldier.crouched or soldier.prone or not soldier.utility_mode.is_empty(): return false
+	if soldier.grenade_selected or not soldier.grenade_held_id.is_empty() or soldier.grenade_throw_left>0.: return false
+	return GameWeapons.canonical(soldier.weapon_id)=="g3"
+
 func pose_weapon(actor: GamePlayer) -> void:
 	if actor.hp<=0 or not actor.deployed or not actor.vehicle_id.is_empty(): return
 	var landing_only:=tactical_motion_pilot and actor.is_local and presentation_landing>0.
@@ -219,4 +230,9 @@ func pose_weapon(actor: GamePlayer) -> void:
 			actor.view_root.position.z+=presentation_longitudinal*PRESENTATION_FPP_TRAVEL
 			actor.view_root.position.x+=presentation_lateral*PRESENTATION_LATERAL_FPP_TRAVEL
 			actor.view_root.position.y-=presentation_landing*PRESENTATION_LANDING_FPP_TRAVEL
+			# R2B is a presentation-only G3 shoulder reaction. The prospective
+			# hip/torso targets are NOT applied to body pivots or hit regions.
+			# Keep the full War-specific action/stance/perspective contract narrow.
+			if _allows_tactical_body_fpp(actor):
+				actor.view_root.rotation+=TACTICAL_BODY_POSE.fpp_weapon_angles(presentation_longitudinal,presentation_lateral,presentation_landing)
 
