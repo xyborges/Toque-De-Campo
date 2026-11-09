@@ -27,6 +27,7 @@ const STREET_SPACE := preload("res://modes/war/scripts/favela_street_space.gd")
 const STREET_ART := preload("res://modes/war/scripts/favela_street_art.gd")
 const RIM := preload("res://modes/war/scripts/favela_rim.gd")
 const PEDESTRIAN_STAIRS := preload("res://modes/war/scripts/favela_pedestrian_stairs.gd")
+const Z_STAIRS := preload("res://modes/war/scripts/favela_z_stairway.gd")
 const BAILE := preload("res://modes/war/scripts/favela_baile.gd")
 const BAILE_SCENE := preload("res://modes/war/library/favela_campo_baile.tscn")
 const BAILE_CENTER := Vector2(430.0, -275.0)
@@ -39,6 +40,7 @@ const PRIMARY := [
 ]
 const CROSS_STREETS := [340.0,165.0,-15.0,-200.0,-395.0]
 const VERTICAL_STREETS := [-520.0,-320.0,-105.0,105.0,355.0,560.0]
+const Z_STAIR_ROUTE_INDEX := 0 # Western zig-zag near (-300, 111)
 const MINI_STREETS := [
 	[Vector2(-320,165),Vector2(-292,144),Vector2(-301,108),Vector2(-274,76),Vector2(-282,36),Vector2(-256,-15)],
 	[Vector2(-105,-15),Vector2(-132,-46),Vector2(-139,-82),Vector2(-121,-122),Vector2(-140,-164),Vector2(-105,-200)],
@@ -195,8 +197,10 @@ static func road_envelopes() -> Array[Dictionary]:
 		roads.append({"id":roads.size(),"points":[Vector2(-640,z),Vector2(640,z)],"width":CROSS_WIDTH})
 	for x: float in VERTICAL_STREETS:
 		roads.append({"id":roads.size(),"points":[Vector2(x,-550),Vector2(x,500)],"width":ALLEY_WIDTH,"asphalt":false})
-	for route: Array in MINI_STREETS:
-		roads.append({"id":roads.size(),"points":route,"width":MINI_STREET_WIDTH})
+	for i in MINI_STREETS.size():
+		var route: Array=MINI_STREETS[i]
+		roads.append({"id":roads.size(),"points":route,"width":MINI_STREET_WIDTH,
+			"asphalt":i!=Z_STAIR_ROUTE_INDEX})
 	return roads
 
 static func housing_plan() -> Array[Dictionary]:
@@ -238,10 +242,15 @@ func build() -> void:
 	_landmarks(kit)
 	_street_wiring(kit)
 	_urban_clutter(kit)
-	var stair_flights: Array[Dictionary] = PEDESTRIAN_STAIRS.plan(MINI_STREETS,
+	var ordinary_lanes: Array=[]
+	for i in MINI_STREETS.size():
+		if i!=Z_STAIR_ROUTE_INDEX:ordinary_lanes.append(MINI_STREETS[i])
+	var stair_flights: Array[Dictionary] = PEDESTRIAN_STAIRS.plan(ordinary_lanes,
 		BASES_2D, OBJECTIVES_2D,
 		func(x: float,z: float) -> float: return height_at(x,z))
 	var stair_summary: Dictionary = PEDESTRIAN_STAIRS.populate(kit, stair_flights)
+	var z_stair_summary: Dictionary=Z_STAIRS.populate(kit,MINI_STREETS[Z_STAIR_ROUTE_INDEX],
+		func(x: float,z: float)->float:return height_at(x,z))
 	for site: Dictionary in litter_sites:
 		_place_litter(site.position, site.yaw)
 	litter_sites.clear()
@@ -272,6 +281,7 @@ func build() -> void:
 	build_metrics.merge(hillside_summary)
 	build_metrics.merge({"pedestrian_stair_flights": int(stair_summary.flights),
 		"pedestrian_stair_treads": int(stair_summary.treads)})
+	build_metrics.merge(z_stair_summary)
 	set_meta("favela_build_metrics",build_metrics)
 
 func _reserve_buildings_and_spawns() -> void:
