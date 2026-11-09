@@ -18,6 +18,7 @@ const COMMERCE := preload("res://modes/war/library/favela_comercio_fachada.tscn"
 const POLE := preload("res://modes/war/library/favela_poste_cabos.tscn")
 const CABLE := preload("res://modes/war/library/favela_rede_aerea.tscn")
 const ARCHITECTURE := preload("res://modes/war/scripts/favela_architecture.gd")
+const DOOR_PATHS := preload("res://modes/war/scripts/favela_door_paths.gd")
 const LAYOUT := preload("res://modes/war/scripts/favela_layout.gd")
 const EDGE_COMPOSITION := preload("res://modes/war/scripts/favela_edge_composition.gd")
 const HILLSIDE := preload("res://modes/war/scripts/favela_hillside.gd")
@@ -66,6 +67,7 @@ var tag_count:=0
 var litter_count:=0
 var shop_connections: Array[Vector3]=[]
 var house_connections: Array[Vector3]=[]
+var door_accesses: Array[Dictionary]=[]
 var roof_paths: Array[PackedVector3Array]=[]
 var parked_cars:=0
 var urban_parked_cars:=0
@@ -223,7 +225,10 @@ func build() -> void:
 	street_fixtures.name="InfraestruturaUrbana"
 	add_child(street_fixtures)
 	_bases(kit)
+	door_accesses.clear()
 	var neighborhood:=_neighborhoods(kit)
+	var footpath_summary:=DOOR_PATHS.populate(self,door_accesses,road_envelopes(),
+		func(x: float,z: float)->float:return height_at(x,z),render_visuals)
 	var edge_summary:=_edge_infrastructure(kit)
 	var baile:=BAILE_SCENE.instantiate() as Node3D
 	baile.name="CampoDeBaile"
@@ -262,6 +267,7 @@ func build() -> void:
 		"baile_field":baile!=null,
 		"build_ms":Time.get_ticks_msec()-begun,"visuals":render_visuals}
 	build_metrics.merge(neighborhood)
+	build_metrics.merge(footpath_summary)
 	build_metrics.merge(edge_summary)
 	build_metrics.merge(hillside_summary)
 	build_metrics.merge({"pedestrian_stair_flights": int(stair_summary.flights),
@@ -624,6 +630,8 @@ func _house(k: EnvironmentKit,ground: Vector3,w: float,d: float,
 		if entrance.y+2.33<ground.y+height:
 			ARCHITECTURE.place(k,"porta_entrada",Transform3D(Basis(Vector3.UP,facade_yaw),entrance))
 			facade_modules+=1
+			door_accesses.append({"position":Vector2(entrance.x,entrance.z)+Vector2(frontage.x,frontage.z)*.64,
+				"outward":Vector2(frontage.x,frontage.z)})
 	if not lot.sparse and float(lot.edge.gap)<4.0 and index%3==0:
 		house_connections.append(ground+frontage*(front_depth*.5+.10)+tangent*.70+Vector3.UP*minf(height-.16,3.1))
 	if not open_house and index%3==0:
