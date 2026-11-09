@@ -1,0 +1,230 @@
+{
+  "bots": 22,
+  "bots_alive_at_end": 22,
+  "bots_by_team": [
+    11,
+    11
+  ],
+  "draw_calls_max": 1548.0,
+  "fixture_note": "Real WarGame offline, stationary local 3rd person camera, unmodified AI. Pairwise bot collision exceptions diagnostic only, not a gameplay candidate.",
+  "fps_average": 57.5550247703272,
+  "frame_ms": {
+    "max": 392.364,
+    "mean": 17.3746776061776,
+    "n": 1036,
+    "p50": 16.084,
+    "p95": 24.593,
+    "p99": 41.19
+  },
+  "frames_over_33ms": 21,
+  "frames_with_multiple_physics_ticks": 71,
+  "gpu": "NVIDIA GeForce GTX 1650",
+  "gpu_render_ms": {
+    "max": 13.5419998168945,
+    "mean": 4.53368436806911,
+    "n": 1036,
+    "p50": 4.48699998855591,
+    "p95": 5.84999990463257,
+    "p99": 11.746000289917
+  },
+  "label": "favela-22-probe-jj7-20261109",
+  "max_ticks_per_frame": 8,
+  "measured_s": 18.0,
+  "measurement_window_unix_ms": {
+    "end": 1794248656525,
+    "start": 1794248638522
+  },
+  "no_bot_bot_collision": false,
+  "operation": "favela",
+  "physics_ms": {
+    "max": 38.137,
+    "mean": 16.0871061776062,
+    "n": 1036,
+    "p50": 14.146,
+    "p95": 38.137,
+    "p99": 38.137
+  },
+  "physics_ticks_per_frame": {
+    "max": 8.0,
+    "mean": 1.03185328185328,
+    "n": 1036,
+    "p50": 1.0,
+    "p95": 2.0,
+    "p99": 3.0
+  },
+  "population_min": 22,
+  "preset": "Médio",
+  "probe_enabled": true,
+  "renderer": "forward_plus",
+  "reported_vram_mib_max": 444.504165649414,
+  "resolution": "1920x1080",
+  "scale": 1.0,
+  "scope_note": "Per-frame accumulated GDScript wall clock; pose excludes deferred Jolt broadphase; perception includes LOS as subset; think_total includes perception/navigation. Do not sum overlapping scopes.",
+  "scopes": {
+    "bot_move_total": {
+      "calls_per_frame": {
+        "max": 168.0,
+        "mean": 21.2007722007722,
+        "n": 1036,
+        "p50": 21.0,
+        "p95": 40.0,
+        "p99": 60.0
+      },
+      "ms": {
+        "max": 17.797,
+        "mean": 2.50537162162162,
+        "n": 1036,
+        "p50": 2.351,
+        "p95": 4.646,
+        "p99": 7.632
+      }
+    },
+    "bot_separation": {
+      "calls_per_frame": {
+        "max": 168.0,
+        "mean": 21.2007722007722,
+        "n": 1036,
+        "p50": 21.0,
+        "p95": 40.0,
+        "p99": 60.0
+      },
+      "ms": {
+        "max": 2.825,
+        "mean": 0.343010617760618,
+        "n": 1036,
+        "p50": 0.318,
+        "p95": 0.629,
+        "p99": 1.037
+      }
+    },
+    "line_of_sight": {
+      "calls_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "n": 1036,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "ms": {
+        "max": 0.0,
+        "mean": 0.0,
+        "n": 1036,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      }
+    },
+    "move_slide": {
+      "calls_per_frame": {
+        "max": 168.0,
+        "mean": 21.2007722007722,
+        "n": 1036,
+        "p50": 21.0,
+        "p95": 40.0,
+        "p99": 60.0
+      },
+      "ms": {
+        "max": 10.664,
+        "mean": 1.594,
+        "n": 1036,
+        "p50": 1.513,
+        "p95": 2.98,
+        "p99": 5.013
+      }
+    },
+    "navigation": {
+      "calls_per_frame": {
+        "max": 5.0,
+        "mean": 0.629343629343629,
+        "n": 1036,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 2.0
+      },
+      "ms": {
+        "max": 0.767,
+        "mean": 0.0870704633204633,
+        "n": 1036,
+        "p50": 0.051,
+        "p95": 0.323,
+        "p99": 0.503
+      }
+    },
+    "perception": {
+      "calls_per_frame": {
+        "max": 5.0,
+        "mean": 0.643822393822394,
+        "n": 1036,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 2.0
+      },
+      "ms": {
+        "max": 0.159,
+        "mean": 0.0235472972972973,
+        "n": 1036,
+        "p50": 0.029,
+        "p95": 0.055,
+        "p99": 0.092
+      }
+    },
+    "pose": {
+      "calls_per_frame": {
+        "max": 168.0,
+        "mean": 21.2007722007722,
+        "n": 1036,
+        "p50": 21.0,
+        "p95": 40.0,
+        "p99": 60.0
+      },
+      "ms": {
+        "max": 6.776,
+        "mean": 0.725974903474902,
+        "n": 1036,
+        "p50": 0.028,
+        "p95": 4.871,
+        "p99": 5.577
+      }
+    },
+    "step_test": {
+      "calls_per_frame": {
+        "max": 4.0,
+        "mean": 0.0984555984555985,
+        "n": 1036,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 2.0
+      },
+      "ms": {
+        "max": 0.05,
+        "mean": 0.00108494208494209,
+        "n": 1036,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.025
+      }
+    },
+    "think_total": {
+      "calls_per_frame": {
+        "max": 5.0,
+        "mean": 0.688223938223938,
+        "n": 1036,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 2.0
+      },
+      "ms": {
+        "max": 1.39,
+        "mean": 0.221417953667954,
+        "n": 1036,
+        "p50": 0.236,
+        "p95": 0.56,
+        "p99": 0.887
+      }
+    }
+  },
+  "unfocused_frames": 0,
+  "valid": true,
+  "warmup_s": 6.0
+}

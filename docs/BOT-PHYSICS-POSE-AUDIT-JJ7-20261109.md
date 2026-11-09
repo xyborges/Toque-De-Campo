@@ -83,3 +83,22 @@ Além do risco de sobreposição de corpos e cobertura física, esse resultado n
 **Diagnóstico:** o custo de Jolt por chamada se manteve aproximadamente estável entre 12 e 28 bots. A quantidade de chamadas por quadro aumentou de 7,28 para 34,91 devido ao maior número de atores e ao menor FPS; a separação mostrou aumento de custo por chamada com maior densidade. As poses têm distribuição irregular com pico P95 considerável. A medição sem probe **não é um par A/B controlado**, apenas uma contraprova de execução sem instrumentação. O FPS menor sem probe **não comprova que a instrumentação ajuda**, pois há variação entre partidas e aquecimento.
 
 A meta oficial de 60 FPS e P99 ≤33,3 ms **não foi alcançada com 28 bots**. As três coletas duram 18 s e, portanto, são diagnósticas, não homologação de 60 s. Todas as medições estão preservadas em JSON na pasta docs/benchmark-results/bot-physics-jj7-20261109. A branch acrescenta apenas instrumentação opt-in, sem mudança de movimento ou hitboxes. A R2C continua aguardando uma otimização segura e validada.
+
+## Continuação: população de 22 bots, teto provisório (09/11)
+
+Após o usuário solicitar um teto temporário de **até 11 bots por equipe**, ampliamos o mesmo fixture para aceitar **22** sem retirar as cargas de 28 bots. O **teto de gameplay foi feito em outra branch** (`ia/bot-limit-11-each-20261109`, commit `73a8a30`) e **não é uma otimização de física**.
+
+Amostras na JJ7, Favela, Forward+ 1080p, preset Médio, escala 100%, física 60 Hz, 6 s de aquecimento + 18 s úteis, foco integral, 22 ou 28 bots distribuídos igualmente, sem desligar colisões nem poses:
+
+| População | Profiler | FPS médio | P99 frame | Física média | Movimento total | move_and_slide | Separação | Poses |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 22 (11+11) | ON | **57,56** | **41,19 ms** | 16,09 ms | 2,505 ms | 1,594 ms | 0,343 ms | 0,726 ms |
+| 22 (11+11) | OFF | **55,55** | **42,81 ms** | 15,79 ms | — | — | — | — |
+| 28 (14+14) | ON | 45,35 | 46,26 ms | 16,71 ms | 4,199 ms | 2,629 ms | 0,615 ms | 1,222 ms |
+| 28 (14+14) | OFF | 40,65 | 63,84 ms | 18,96 ms | — | — | — | — |
+
+Medidas internas são acumuladas por quadro renderizado e têm subescopos aninhados. As quatro coletas foram separadas no tempo, sem pareamento aleatório e com apenas 18 s úteis; diferenças de FPS entre 22/28 e ON/OFF não isolam causa nem autorizam alegação de aceleração do código. A redução de carga é compatível com o menor número de personagens, não com uma nova otimização.
+
+**Conclusão atual:** 22 bots aliviam o custo de movimento/poses, mas ainda não satisfazem 60 FPS médios nem **P99 ≤33,3 ms**. O Jolt (`move_and_slide`) e os picos de poses continuam os gargalos prioritários. A próxima hipótese de código deve reduzir trabalho redundante de apresentação visual sem alterar física/hitboxes, e só poderá ser homologada após regressões físicas e A/B pareados de 60 s.
+
+Dados brutos versionados em `docs/benchmark-results/bot-physics-jj7-20261109/favela-22-probe.json` e `favela-22-no-probe.json`. Os testes de 28 bots continuam disponíveis, mesmo que partidas normais tenham limite inferior.
