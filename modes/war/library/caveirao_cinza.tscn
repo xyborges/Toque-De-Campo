@@ -1,0 +1,44 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://modes/war/library/meshes/caveirao_caminhao.glb" id="1_model"]
+
+[sub_resource type="BoxShape3D" id="troop_hull"]
+size = Vector3(2.95, 2.50, 3.90)
+
+[sub_resource type="BoxShape3D" id="driver_cab"]
+size = Vector3(2.80, 2.37, 1.75)
+
+[sub_resource type="BoxShape3D" id="truck_hood"]
+size = Vector3(2.48, 1.12, 2.17)
+
+[node name="CaveiraoCinza" type="Node3D"]
+metadata/library_id = "caveirao_cinza"
+metadata/footprint = Vector2(3.55, 8.85)
+metadata/surface = "vehicle"
+metadata/origin = "road_surface"
+metadata/asset_revision = 2
+metadata/lod_near = 95.0
+metadata/lod_far = 285.0
+metadata/destructible = false
+metadata/model_variant = "caminhao_bicudo"
+
+[node name="VisualCaveirao" parent="." instance=ExtResource("1_model")]
+
+[node name="Corpo" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="ColisaoCompartimento" type="CollisionShape3D" parent="Corpo"]
+position = Vector3(0, 2.35, 1.55)
+shape = SubResource("troop_hull")
+metadata/surface = "vehicle"
+
+[node name="ColisaoCabine" type="CollisionShape3D" parent="Corpo"]
+position = Vector3(0, 2.40, -1.28)
+shape = SubResource("driver_cab")
+metadata/surface = "vehicle"
+
+[node name="ColisaoCapo" type="CollisionShape3D" parent="Corpo"]
+position = Vector3(0, 1.91, -3.15)
+shape = SubResource("truck_hood")
+metadata/surface = "vehicle"
