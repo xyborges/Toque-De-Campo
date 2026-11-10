@@ -76,22 +76,25 @@ func _run() -> void:
 	game.players={10001:actor,10002:enemy}
 	game.war_clock=0.
 	var director:=WarBotDirector.new()
-	check(not director.pilot_ai_lod_enabled,"real director defaults to unchanged scheduler")
+	check(director.ai_lod_enabled,"director initialized with tactical LOD enabled")
+	check(AI_LOD.enabled_from_args(PackedStringArray()),"no command-line flag enables LOD by default")
+	check(not AI_LOD.enabled_from_args(PackedStringArray(["--war-bot-ai-lod-legacy"])),"legacy argument disables LOD explicitly")
+	check(AI_LOD.enabled_from_args(OS.get_cmdline_user_args())==not OS.get_cmdline_user_args().has("--war-bot-ai-lod-legacy"),"runtime command-line arguments parsed consistently")
 	director.game=game
 	director.bots={10001:{"target":0,"objective":""}}
 	var ids: Array=[10001]
-	check(director._pilot_next_think_id(ids)==10001,"real director schedules initial distant bot")
+	check(director._next_think_id(ids)==10001,"real director schedules initial distant bot")
 	check(is_equal_approx(float(director.bots[10001].ai_lod_next),1.),"real director schedules distant interval 1s")
 	game.war_clock=.2
-	check(director._pilot_next_think_id(ids)==-1,"real director skips expensive distant re-think")
+	check(director._next_think_id(ids)==-1,"real director skips expensive distant re-think")
 	director.bots[10001].target=10002
 	game.war_clock=.5
-	check(director._pilot_next_think_id(ids)==10001,"engaged target wakes previously distant bot early")
+	check(director._next_think_id(ids)==10001,"engaged target wakes previously distant bot early")
 	check(is_equal_approx(float(director.bots[10001].ai_lod_next),.75),"combat target uses .25s")
 	director.bots[10001].target=0
 	enemy.position=Vector3(100,0,0)
 	game.war_clock=.76
-	check(director._pilot_next_think_id(ids)==10001,"real director detects nearby enemy")
+	check(director._next_think_id(ids)==10001,"real director detects nearby enemy")
 	check(is_equal_approx(float(director.bots[10001].ai_lod_next),1.01),"near enemy uses .25s")
 	director.free();actor.free();enemy.free();game.free()
 	var result={"checks":checks,"failures":failures,"simulated_10s_28_bots":{"near":near,"middle":medium,"far":far},"simulated_10s_12_bots":{"near":near12,"middle":medium12,"far":far12}}

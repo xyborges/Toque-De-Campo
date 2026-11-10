@@ -24,7 +24,7 @@ var squads: Dictionary={}
 var strategy_at:=0.0
 var metrics_at:=0.
 var bot_probe_enabled:=false
-var pilot_ai_lod_enabled:=false
+var ai_lod_enabled:=true
 var next_cover_query:=0.
 var next_armor_cover_query:=0.
 var next_foot_escape_query:=0.
@@ -120,7 +120,8 @@ class BotRoutes extends OfflineDirector:
 func setup(owner_game: WarGame,fill_online:=false) -> void:
 	game=owner_game
 	bot_probe_enabled="--bot-ai-probe" in OS.get_cmdline_user_args()
-	pilot_ai_lod_enabled="--war-bot-ai-lod-pilot" in OS.get_cmdline_user_args()
+	# Enabled by default for all Guerra operations; explicit legacy opt-out for A/B QA.
+	ai_lod_enabled=AI_LOD.enabled_from_args(OS.get_cmdline_user_args())
 	online_fill=fill_online
 	enabled=game.multiplayer.is_server() and (bool(game.get("offline_operation")) or (fill_online and game.online))
 	set_physics_process(enabled)
@@ -348,8 +349,8 @@ func _physics_process(delta: float) -> void:
 	# 40 shared decisions/s supports 28 bots today and scales without a timer per bot.
 	if think_accumulator>=.025:
 		think_accumulator-=.025
-		var id: int=_pilot_next_think_id(ids) if pilot_ai_lod_enabled else int(ids[think_cursor%ids.size()])
-		if not pilot_ai_lod_enabled:think_cursor+=1
+		var id: int=_next_think_id(ids) if ai_lod_enabled else int(ids[think_cursor%ids.size()])
+		if not ai_lod_enabled:think_cursor+=1
 		if id>=0:_think(id)
 	for id: int in ids:
 		var actor:=game.players.get(id) as WarPlayer
@@ -374,9 +375,9 @@ func _physics_process(delta: float) -> void:
 					if batch.size()>=4: game._broadcast("war_bot_states",[batch]);batch=[]
 			if not batch.is_empty(): game._broadcast("war_bot_states",[batch])
 
-func _pilot_next_think_id(ids: Array) -> int:
-	# An opt-in scheduler only. Walking/physics and authoritative shooting still
-	# run at their existing rate; this changes only the expensive _think pass.
+func _next_think_id(ids: Array) -> int:
+	# Default tactical decision LOD. Walking/physics and authoritative shooting
+	# keep their existing rate; only the expensive _think pass is deferred.
 	for _slot in ids.size():
 		var id: int=int(ids[think_cursor%ids.size()])
 		think_cursor+=1
