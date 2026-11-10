@@ -1,8 +1,8 @@
-# Atualização 1.13.10 — candidata final (build 98)
+# Atualização 1.13.10 — publicada (build 98)
 
-**Data:** 10/11/2026. **Estado:** homologação final em andamento; **NÃO PUBLICADA** até confirmação pós-deploy. Branch isolada: `ia/release-11310-final-20261110`, worktree local `release-11310-ablate-stairs-20261109`. Referência: `main e8891ae`, servidor publicado `1.13.9/build 97`.
+**Data:** 10/11/2026. **Estado:** PUBLICADA no Ubuntu como `1.13.10/build 98`, após `VERIFIED_READY` e `DEPLOYED` oficiais. Fonte publicada: merge local `main bd90373`, com candidata homologada `7da5dba`. GitHub: branch `ia/release-11310-final-20261110` enviada, `origin/main` ainda pendente de PR/revisão; não houve push direto na main remota.
 
-## Incluído na candidata
+## Incluído na atualização
 
 - **Favela:** 253 caminhos de terra conectando portas residenciais a vias e becos, mapa com 4.313 casas, 142 lajes transitáveis e 49 rotas.
 - **Bots:** fuga de obstáculos, escolha de cobertura contra blindados ocupados, limite temporário de **11 bots por equipe** no Guerra (e 22 bots no Battle Royale). QA ainda pode simular 28 bots; esse limite não deve ser anunciado como melhora de FPS por otimização de código.
@@ -38,6 +38,6 @@ Conservar a escadaria para investigação de LOD/custo gráfico/colisão em vers
 
 O FPS com 28 bots continua abaixo de 60 na GTX 1650; não alegar otimização geral. A meta de P99 abaixo de 33,3 ms não foi homologada. Os direitos de redistribuição das seis músicas já presentes na Favela não foram verificados nesta rodada.
 
-**Critérios restantes:** testar a fonte final, confirmar manifesto Favela v30/68 fontes, commit e integração revisados, preparar build 98 assinada no diretório oficial com chaves existentes, QA de instalação, preflight antes de upload, deploy protegido e conferência do manifesto HTTPS e serviços. Nenhuma alteração no servidor deve preceder esses gates.
+**Critérios concluídos:** fonte final e manifesto Favela v30/68 fontes validados; integração revisada em `bd90373`; build 98 assinada com 11 artefatos; instalação protegida aprovada 13/13; preflight `PREFLIGHT_OK build=98` (anterior 97); Ubuntu respondeu `VERIFIED_READY` e `DEPLOYED`; HTTPS e oito verificações de integridade/serviços aprovadas. Pendência de repositório: integrar por PR a branch no GitHub sem push direto à `origin/main`.
 
-**Publicação:** PENDENTE. Atualizar apenas após provas reais de deploy.
+**Publicação:** CONCLUÍDA. `https://192.168.101.24/` anuncia `1.13.10/build 98` e corresponde byte a byte ao manifesto assinado. `/opt/toque-de-campo/current` aponta para `/opt/toque-de-campo/releases/build-98`. Seis serviços ativos: `toque-war`, `toque-war-afghan`, `toque-war-favela`, `toque-br`, `toque-naval`, `toque-pvp`; UDP 3017 em escuta. SHA-256 de `ToqueDeCampo.x86_64` e `ToqueDeCampo.pck` conferem com o manifesto. Logs locais de prova: `work/release11310-deploy.log`, `work/release11310-live-verify.log` (ignorados pelo Git).
