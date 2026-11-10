@@ -120,14 +120,18 @@ func observer_flow() -> void:
 		var left: Dictionary=await measure(mode,"fal",listener+Vector3(-40,0,-10),"fpp")
 		var right: Dictionary=await measure(mode,"fal",listener+Vector3(40,0,-10),"tpp")
 		check(float(left.left)>float(left.right)*1.2 and float(right.right)>float(right.left)*1.2,mode+" remote WAV pans correctly to the source's left and right")
-		var clear: Dictionary=await measure(mode,"fal",listener+Vector3(0,0,-50),"fpp",.70,.25)
+		# Capture the direct muzzle transient after propagation, not mostly the
+		# reverb tail. The old 250ms skip could invert the wall ratio when
+		# distance filtering changed the spectral content of late reflections.
+		var clear: Dictionary=await measure(mode,"fal",listener+Vector3(0,0,-50),"fpp",.70,.05)
 		game.configure_wall(true);await physics_frame;await physics_frame
-		var blocked: Dictionary=await measure(mode,"fal",listener+Vector3(0,0,-50),"tpp",.70,.25)
+		var blocked: Dictionary=await measure(mode,"fal",listener+Vector3(0,0,-50),"tpp",.70,.05)
 		var wall_ratio:=float(blocked.rms)/maxf(float(clear.rms),.000001)
+		print("REMOTE_WALL_DIRECT_PCM ",JSON.stringify({"mode":mode,"clear_rms":clear.rms,"blocked_rms":blocked.rms,"ratio":wall_ratio}))
 		# The global combat presence update intentionally reduced wall attenuation:
 		# this must be audibly quieter but not as muffled as the old 8 dB profile.
-		check(float(blocked.rms)>.000001 and wall_ratio<.86 and wall_ratio>.45 and blocked.bus=="WeaponBlocked",mode+" wall noticeably muffles remote PCM under the calibrated 4.5dB occlusion")
-		var expected_wall_db:=float(blocked.get("base_db",-5.5))+GameSoundPropagation.combat_presence_db(float(blocked.distance))+GameSoundPropagation.distant_gain_db(float(blocked.distance))-4.5
+		check(float(blocked.rms)>.000001 and wall_ratio<.86 and wall_ratio>.45 and blocked.bus=="WeaponBlocked",mode+" wall noticeably muffles direct remote PCM with original 4.5dB occlusion")
+		var expected_wall_db:=float(blocked.get("base_db",-5.5))+GameSoundPropagation.combat_presence_db(float(blocked.distance))+GameSoundPropagation.distant_gain_db(float(blocked.distance))+GameWeaponAudio.distant_shot_relief_db("fal",float(blocked.distance))-4.5
 		check(absf(float(blocked.volume_db)-expected_wall_db)<3.5,mode+" wall muffling is applied only once after combat presence boost")
 		game.configure_wall(false);await physics_frame;await physics_frame
 	AudioServer.set_bus_effect_enabled(far_bus,0,false);AudioServer.set_bus_effect_enabled(far_bus,1,false)
