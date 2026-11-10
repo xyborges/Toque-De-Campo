@@ -55,11 +55,17 @@ static func populate(kit: EnvironmentKit,route: Array,height: Callable) -> Dicti
 		var item: Dictionary=steps[n]
 		var origin: Vector3=item.position
 		var yaw: float=item.yaw
-		ARCHITECTURE.place(kit,"favela_z_stair_tread",Transform3D(Basis(Vector3.UP,yaw),origin),true)
+		# Keep the reusable scene's original textured MultiMesh visuals, but do
+		# not add 276 independent broad-phase collision shapes to the sector.
+		ARCHITECTURE.place(kit,"favela_z_stair_tread",Transform3D(Basis(Vector3.UP,yaw),origin),false)
 		if kit.visuals and n%13==7:
 			var mark:=origin+Vector3.UP*.130
 			kit.box("ReparoCimentoEscadariaZ",mark,Vector3(.32,.010,.11),
 				"concrete:99988f",false,Vector3(0,yaw,0),true)
+	# A short fitted collision ramp for each group of treads replaces 276
+	# expensive step colliders; all visual treads remain. The identical fitted
+	# BoxShapes are built for the client and the headless authority.
+	_compact_collisions(kit,steps)
 	var posts:=0
 	if kit.visuals:
 		# Railings and vertical posts stay outside the 2.30m usable footway.
@@ -86,6 +92,34 @@ static func populate(kit: EnvironmentKit,route: Array,height: Callable) -> Dicti
 	return {"z_stair_treads":steps.size(),"z_stair_landings":landings.size(),
 		"z_stair_max_rise":float(layout.max_rise),"z_stair_rails_posts":posts,
 		"z_stair_route_length_m":_length(route)}
+
+static func _compact_collisions(kit: EnvironmentKit, steps: Array) -> void:
+	# Short aligned BoxShape ramps are cheap in Jolt's broad phase; the 276
+	# textured visual treads remain unchanged. Small groups approximate the
+	# continuous terrain below each step instead of triangle-mesh contacts.
+	var group: Array[Dictionary]=[]
+	var previous_segment: int=-1
+	for item: Dictionary in steps:
+		var segment:=int(item.segment)
+		if not group.is_empty() and (segment!=previous_segment or group.size()>=6):
+			_add_ramp_collider(kit,group)
+			group.clear()
+		group.append(item)
+		previous_segment=segment
+	if not group.is_empty():_add_ramp_collider(kit,group)
+
+static func _add_ramp_collider(kit: EnvironmentKit, group: Array[Dictionary]) -> void:
+	var start: Vector3=group.front().position
+	var end: Vector3=group.back().position
+	var horizontal:=Vector2(start.x,start.z).distance_to(Vector2(end.x,end.z))
+	var tilt: float=-atan2(end.y-start.y,maxf(.001,horizontal))
+	var slope_length:=horizontal/maxf(.001,cos(tilt))
+	var shape:=BoxShape3D.new()
+	shape.size=Vector3(WIDTH,.24,slope_length+TREAD_LENGTH)
+	var pose:=Transform3D(
+		Basis(Vector3.UP,float(group.front().yaw))*Basis(Vector3.RIGHT,tilt),
+		(start+end)*.5)
+	kit._collider("Favela_favela_z_stair_tread",shape,pose,"concrete")
 
 static func _length(route: Array) -> float:
 	var result:=0.0
