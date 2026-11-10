@@ -5,6 +5,7 @@ class_name WarBotDirector
 # rooms. Bots use ordinary actors, hitboxes, inventory and authoritative shots.
 # is_npc remains false: the original training NPC is an unarmed melee attacker.
 const FIRST_ID:=10001
+const AI_LOD := preload("res://scripts/bot_ai_lod.gd")
 const BOT_ROLES: Array[String]=["soldier","medic","soldier","antitank","marksman","soldier"]
 const CALLSIGNS: Array[String]=["RAMOS","LIMA","COSTA","NUNES","SILVA","ROCHA","VOLK","SOKOL","BURAN","KEDR","RYS","URAL"]
 var game: WarGame
@@ -23,6 +24,7 @@ var squads: Dictionary={}
 var strategy_at:=0.0
 var metrics_at:=0.
 var bot_probe_enabled:=false
+var pilot_ai_lod_enabled:=false
 var next_cover_query:=0.
 var next_armor_cover_query:=0.
 var next_foot_escape_query:=0.
@@ -118,6 +120,7 @@ class BotRoutes extends OfflineDirector:
 func setup(owner_game: WarGame,fill_online:=false) -> void:
 	game=owner_game
 	bot_probe_enabled="--bot-ai-probe" in OS.get_cmdline_user_args()
+	pilot_ai_lod_enabled="--war-bot-ai-lod-pilot" in OS.get_cmdline_user_args()
 	online_fill=fill_online
 	enabled=game.multiplayer.is_server() and (bool(game.get("offline_operation")) or (fill_online and game.online))
 	set_physics_process(enabled)
@@ -165,6 +168,7 @@ func reset() -> void:
 	think_cursor=0;think_accumulator=0
 	for id in bots:
 		bots[id].target=0;bots[id].direction=Vector3.ZERO;bots[id].next_shot=game.war_clock+1.
+		bots[id].erase("ai_lod_next")
 		bots[id].stuck=0.;bots[id].escape_point=Vector3.INF;bots[id].escape_until=0.
 		bots[id].no_progress=0.;bots[id].progress_at=0.;bots[id].progress_distance=INF
 		bots[id].armor_cover_until=0.;bots[id].armor_cover_point=Vector3.INF
@@ -344,8 +348,9 @@ func _physics_process(delta: float) -> void:
 	# 40 shared decisions/s supports 28 bots today and scales without a timer per bot.
 	if think_accumulator>=.025:
 		think_accumulator-=.025
-		var id: int=ids[think_cursor%ids.size()];think_cursor+=1
-		_think(id)
+		var id: int=_pilot_next_think_id(ids) if pilot_ai_lod_enabled else int(ids[think_cursor%ids.size()])
+		if not pilot_ai_lod_enabled:think_cursor+=1
+		if id>=0:_think(id)
 	for id: int in ids:
 		var actor:=game.players.get(id) as WarPlayer
 		if not is_instance_valid(actor) or actor.hp<=0 or not actor.deployed: continue
@@ -368,6 +373,37 @@ func _physics_process(delta: float) -> void:
 					batch.append([id,actor.global_position,actor.yaw,actor.pitch,actor.weapon_id,actor.hp,actor.crouched,actor.life_id,actor.kills,actor.deaths,2 if actor.iron_sights else (1 if actor.aiming else 0),actor.lean,game.network_diagnostics.next_pose_sequence(id,actor.life_id)])
 					if batch.size()>=4: game._broadcast("war_bot_states",[batch]);batch=[]
 			if not batch.is_empty(): game._broadcast("war_bot_states",[batch])
+
+func _pilot_next_think_id(ids: Array) -> int:
+	# An opt-in scheduler only. Walking/physics and authoritative shooting still
+	# run at their existing rate; this changes only the expensive _think pass.
+	for _slot in ids.size():
+		var id: int=int(ids[think_cursor%ids.size()])
+		think_cursor+=1
+		var record: Dictionary=bots.get(id,{})
+		if record.is_empty():continue
+		var actor:=game.players.get(id) as WarPlayer
+		if not is_instance_valid(actor):continue
+		var urgent:=actor.hp<=0 or not actor.deployed or not actor.vehicle_id.is_empty()
+		urgent=urgent or int(record.get("target",0))>0 or not str(record.get("target_vehicle","")).is_empty()
+		var due_at:=float(record.get("ai_lod_next",-1.0))
+		if game.war_clock<due_at and not (urgent and due_at-game.war_clock>.25):continue
+		var enemy_sq:=INF
+		if not urgent:
+			for enemy: WarPlayer in game.players.values():
+				if not is_instance_valid(enemy) or enemy==actor or enemy.hp<=0 or not enemy.deployed or enemy.war_team==actor.war_team:continue
+				enemy_sq=minf(enemy_sq,actor.global_position.distance_squared_to(enemy.global_position))
+				if enemy_sq<=AI_LOD.COMBAT_RANGE_SQ:break
+		var objective_near:=false
+		if not urgent:
+			var objective_id:=str(record.get("objective",""))
+			if WarRules.OBJECTIVES.has(objective_id):
+				var objective_position: Vector3=WarRules.OBJECTIVES[objective_id].position
+				objective_near=actor.global_position.distance_squared_to(objective_position)<=AI_LOD.OBJECTIVE_RANGE_SQ
+		var interval:=AI_LOD.interval(enemy_sq,urgent,objective_near)
+		record.ai_lod_next=game.war_clock+interval
+		return id
+	return -1
 
 func _think(id: int) -> void:
 	var actor:=game.players.get(id) as WarPlayer
