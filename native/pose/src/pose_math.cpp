@@ -24,6 +24,7 @@ void WarNativePoseMath::_bind_methods() {
     ClassDB::bind_method(D_METHOD("arm_batch", "shoulders", "grips", "hand_bases", "upper_bases", "left_sides", "proportions", "cuffs"), &WarNativePoseMath::arm_batch);
     ClassDB::bind_method(D_METHOD("arm_batch_dicts", "inputs"), &WarNativePoseMath::arm_batch_dicts);
     ClassDB::bind_method(D_METHOD("apply_arms_direct", "inputs"), &WarNativePoseMath::apply_arms_direct);
+    ClassDB::bind_method(D_METHOD("separation_batch", "positions"), &WarNativePoseMath::separation_batch);
 }
 Transform3D WarNativePoseMath::upper_transform(double pitch, double lean) const {
     const real_t bend = clamp_real(real_t(pitch) * real_t(0.42), real_t(-0.49), real_t(0.49));
@@ -202,4 +203,32 @@ int WarNativePoseMath::apply_arms_direct(const Array &inputs) const {
         ++applied;
     }
     return applied;
+}
+
+PackedVector3Array WarNativePoseMath::separation_batch(
+    const PackedVector3Array &positions) const {
+    const int count = positions.size();
+    PackedVector3Array out;
+    out.resize(count);
+    constexpr real_t radius = real_t(1.1);
+    constexpr real_t radius_sq = radius * radius;
+    constexpr real_t minimum_sq = real_t(0.01) * real_t(0.01);
+    for (int i = 0; i < count; ++i) {
+        const Vector3 centre = positions[i];
+        Vector3 total;
+        for (int j = 0; j < count; ++j) {
+            if (i == j) continue;
+            const Vector3 other = positions[j];
+            const real_t dx = centre.x - other.x;
+            const real_t dz = centre.z - other.z;
+            const real_t d_sq = dx * dx + dz * dz;
+            if (d_sq <= minimum_sq || d_sq >= radius_sq) continue;
+            const real_t distance = std::sqrt(d_sq);
+            const real_t factor = (radius - distance) / distance;
+            total.x += dx * factor;
+            total.z += dz * factor;
+        }
+        out.set(i, total);
+    }
+    return out;
 }

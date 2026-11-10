@@ -32,6 +32,13 @@ var evacuations: Dictionary={}
 var bot_ids: Array=[]
 var spatial: Dictionary={}
 var spatial_at:=0.0
+# Opt-in CPU batch. Do not change the gameplay's steering/hitbox mechanics
+# unless tests confirm the native separation calculations are equivalent.
+var native_separation_enabled:=OS.get_cmdline_user_args().has("--experimental-native-separation")
+var native_separation_checked:=false
+var native_separation_math: Object
+var native_separation_ready:=false
+var native_separation_by_id: Dictionary={}
 var world_los: PhysicsRayQueryParameters3D=PhysicsRayQueryParameters3D.new()
 var diagnostics: Dictionary={"moves":0,"shots":0,"reloads":0,"deployments":0,"routes":0,"deploy_failures":0,"target_acquisitions":0,"clear_shot_ticks":0,"shot_attempts":0,"shot_rejections":0,"grenades":0,"armor_engagements":0,"vehicle_evacuations":0,"vehicle_detours":0,"foot_escapes":0,"armor_evades":0}
 
@@ -346,6 +353,7 @@ func _physics_process(delta: float) -> void:
 		think_accumulator-=.025
 		var id: int=ids[think_cursor%ids.size()];think_cursor+=1
 		_think(id)
+	_prepare_native_separations()
 	for id: int in ids:
 		var actor:=game.players.get(id) as WarPlayer
 		if not is_instance_valid(actor) or actor.hp<=0 or not actor.deployed: continue
@@ -821,6 +829,29 @@ func _begin_foot_escape(actor: WarPlayer,record: Dictionary) -> void:
 	record.foot_path=[];record.transit_goal=Vector3.INF
 	if point.is_finite():diagnostics.foot_escapes=int(diagnostics.get("foot_escapes",0))+1
 
+func _prepare_native_separations() -> void:
+	native_separation_ready=false
+	if not native_separation_enabled:return
+	if not native_separation_checked:
+		native_separation_checked=true
+		if ClassDB.class_exists("WarNativePoseMath"):
+			native_separation_math=ClassDB.instantiate("WarNativePoseMath")
+	if native_separation_math==null or not native_separation_math.has_method("separation_batch"):return
+	var positions:=PackedVector3Array()
+	var actor_ids: Array[int]=[]
+	for candidate in game.players.values():
+		var ally:=candidate as WarPlayer
+		if not is_instance_valid(ally) or not ally.is_inside_tree() or ally.hp<=0 or not ally.deployed or not ally.vehicle_id.is_empty():continue
+		positions.append(ally.global_position)
+		actor_ids.append(ally.peer_id)
+	if positions.is_empty():return
+	var resolved: PackedVector3Array=native_separation_math.separation_batch(positions)
+	if resolved.size()!=positions.size():return
+	native_separation_by_id.clear()
+	for index in actor_ids.size():
+		native_separation_by_id[actor_ids[index]]=resolved[index]
+	native_separation_ready=true
+
 func _move(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 	var direction: Vector3=record.direction
 	var escape: Vector3=record.get("escape_point",Vector3.INF)
@@ -845,11 +876,14 @@ func _move(actor: WarPlayer,record: Dictionary,delta: float) -> void:
 				record.roof_follow=false
 				direction=Vector3.ZERO
 	var separation:=Vector3.ZERO
-	for ally: WarPlayer in _near_actors(actor.global_position):
-		if not is_instance_valid(ally) or not ally.is_inside_tree() or ally==actor or ally.hp<=0 or not ally.deployed or not ally.vehicle_id.is_empty(): continue
-		var offset:=actor.global_position-ally.global_position;offset.y=0
-		var distance:=offset.length()
-		if distance>.01 and distance<1.1: separation+=offset/distance*(1.1-distance)
+	if native_separation_ready and native_separation_by_id.has(actor.peer_id):
+		separation=native_separation_by_id[actor.peer_id]
+	else:
+		for ally: WarPlayer in _near_actors(actor.global_position):
+			if not is_instance_valid(ally) or not ally.is_inside_tree() or ally==actor or ally.hp<=0 or not ally.deployed or not ally.vehicle_id.is_empty(): continue
+			var offset:=actor.global_position-ally.global_position;offset.y=0
+			var distance:=offset.length()
+			if distance>.01 and distance<1.1: separation+=offset/distance*(1.1-distance)
 	if direction.length_squared()>.01: direction=(direction+separation*.8).normalized()
 	var leg_factor: float=(.55 if float(actor.limbs.legL)<=0 else 1.)*(.55 if float(actor.limbs.legR)<=0 else 1.) if CombatRules.limb_disability_enabled(game) else 1.0
 	var speed:=actor.move_speed*.78*leg_factor*(.6 if actor.reaction>0 else 1.)*actor.infantry_protection.multiplier()

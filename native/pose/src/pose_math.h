@@ -23,6 +23,9 @@ public:
     // Solve and apply the visual arms directly to existing Godot Node3D nodes.
     // Returns number of fully updated arms; GDScript can fall back on failure.
     int apply_arms_direct(const Array &inputs) const;
+    // Calculate all bot separation forces with a single C++ call and compact
+    // vector arrays. No physics world or Godot nodes are touched.
+    PackedVector3Array separation_batch(const PackedVector3Array &positions) const;
     Array arm_batch(const PackedVector3Array &shoulders, const PackedVector3Array &grips,
                     const Array &hand_bases, const Array &upper_bases,
                     const PackedInt32Array &left_sides, const PackedFloat32Array &proportions,
