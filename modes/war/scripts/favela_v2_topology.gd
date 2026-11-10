@@ -3,6 +3,10 @@ extends RefCounted
 ## Coordenadas em metros no plano X/Z. Curvas sao vias; morros sao limites,
 ## NUNCA atalhos. Morro oeste comunica-se SOMENTE com o miolo central.
 const BOUNDS := Rect2(Vector2(-425,-300),Vector2(850,600))
+## Mode Guerra team base anchors (future spawn integration):
+## Team 1 POLICIA starts at the bottom, Team 2 TRAFICANTES at the summit.
+const TEAM_BASES := {1:"base_sul",2:"base_norte"}
+const TEAM_LABELS := {1:"Policia",2:"Traficantes"}
 const SECTOR_LEFT := "morro_esquerdo"
 const SECTOR_CORE := "miolo"
 const SECTOR_RIGHT := "leste"

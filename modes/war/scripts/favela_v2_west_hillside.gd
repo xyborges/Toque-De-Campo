@@ -5,6 +5,18 @@ const TOPO=preload("res://modes/war/scripts/favela_v2_topology.gd")
 const TERRAIN=preload("res://modes/war/scripts/favela_v2_terrain.gd")
 const STAIR=preload("res://modes/war/library/favela_v2_stair_tread.tscn")
 const HOUSE=preload("res://modes/war/library/favela_casa_laje.tscn")
+# Keep the existing Favela library as the source of truth. The V2 only
+# composes these saved meshes; it does not regenerate or overwrite them.
+const REUSED_FACADES={
+	"door":preload("res://modes/war/library/favela_porta_entrada.tscn"),
+	"grid":preload("res://modes/war/library/favela_janela_grade.tscn"),
+	"wood":preload("res://modes/war/library/favela_janela_madeira.tscn"),
+	"awning":preload("res://modes/war/library/favela_toldo.tscn"),
+	"comercio":preload("res://modes/war/library/favela_comercio_fachada.tscn"),
+	"varal":preload("res://modes/war/library/favela_varal.tscn"),
+	"roof_kit":preload("res://modes/war/library/favela_laje_domestica.tscn"),
+	"puxadinho":preload("res://modes/war/library/favela_puxadinho_chapa.tscn")
+}
 const STAIR_IDS=["l02","l03","l04","l07","l09"]
 const STEP_RUN:=.765
 const EDGE_MARGIN:=1.35
@@ -206,11 +218,65 @@ static func plan_houses()->Array[Dictionary]:
 						break
 	return results
 
-static func _add_houses(parent: Node3D,houses: Array[Dictionary],visuals: bool)->void:
+static var _shared_wall_materials: Array[Material]=[]
+
+static func _wall_material(variant: int)->Material:
+	if _shared_wall_materials.is_empty():
+		for shade in ["#b9a68f","#adaaa0","#c0b6a7","#a69787","#b3a88c"]:
+			var m:=StandardMaterial3D.new()
+			m.albedo_color=Color(shade)
+			m.roughness=.96
+			_shared_wall_materials.append(m)
+	return _shared_wall_materials[posmod(variant,_shared_wall_materials.size())]
+
+static func _reuse_detail(house: Node3D,id: String,at: Vector3)->void:
+	var decor:=REUSED_FACADES[id].instantiate() as Node3D
+	decor.name="Reuso_"+id
+	decor.position=at
+	house.add_child(decor)
+	# Facades/roof kits are visually reused; the building's existing
+	# StaticBody3D remains the *single* combat collider. This prevents
+	# roof-support coplanar collisions (the old Favela roof jitter).
+	for body: CollisionObject3D in decor.find_children("*","CollisionObject3D",true,false):
+		body.collision_layer=0
+		body.collision_mask=0
+
+static func _decorate_house(house: Node3D,i: int)->int:
+	var shell:=house.get_node_or_null("Edificio") as MeshInstance3D
+	if shell!=null:shell.set_surface_override_material(0,_wall_material(i))
+	var variant:=posmod(i,5)
+	var modules:=0
+	# Front (+Z) is the same facade convention as favela_casa_laje.
+	_reuse_detail(house,"door",Vector3(-.25,.10,5.10))
+	modules+=1
+	_reuse_detail(house,"wood" if variant in [1,4] else "grid",
+		Vector3(-2.85,3.60,5.12))
+	modules+=1
+	if variant in [0,2,4]:
+		_reuse_detail(house,"awning",Vector3(-.35,2.80,5.13))
+		modules+=1
+	if variant==3:
+		_reuse_detail(house,"comercio",Vector3(.15,0.0,5.15))
+		modules+=1
+	if variant==0:
+		_reuse_detail(house,"puxadinho",Vector3(1.65,7.23,-1.60))
+		modules+=1
+	elif variant==1:
+		_reuse_detail(house,"roof_kit",Vector3(-1.80,7.23,-1.35))
+		modules+=1
+	else:
+		_reuse_detail(house,"varal",Vector3(-1.35,7.22,-1.15))
+		modules+=1
+	house.set_meta("house_variant",variant)
+	return modules
+
+static func _add_houses(parent: Node3D,houses: Array[Dictionary],visuals: bool)->int:
 	var holder:=Node3D.new()
 	holder.name="ResidenciasEscalonadas"
 	parent.add_child(holder)
-	# Keep collision geometry identical on both peers, irrespective of visuals.
+	# Keep the original house's structural collider on both peers,
+	# but the client alone instantiates decorative facade/roof modules.
+	var module_count:=0
 	for i in houses.size():
 		var house: Dictionary=houses[i]
 		var p: Vector2=house["pos"]
@@ -220,9 +286,12 @@ static func _add_houses(parent: Node3D,houses: Array[Dictionary],visuals: bool)-
 		obj.rotation.y=float(house["yaw"])
 		obj.scale=Vector3(HOUSE_SCALE.x,HOUSE_SCALE.y*(1.0+.13*float(i%3)),HOUSE_SCALE.z)
 		holder.add_child(obj)
-		if not visuals:
+		if visuals:
+			module_count+=_decorate_house(obj,i)
+		else:
 			for mesh: MeshInstance3D in obj.find_children("*","MeshInstance3D",true,false):
 				mesh.visible=false
+	return module_count
 
 static func build(parent: Node3D,visuals: bool=true,with_houses: bool=true)->Dictionary:
 	_resources()
@@ -237,8 +306,9 @@ static func build(parent: Node3D,visuals: bool=true,with_houses: bool=true)->Dic
 	var rail_count:=_edge_posts(root,flights) if visuals else 0
 	var houses: Array[Dictionary]=[]
 	if with_houses:houses=plan_houses()
-	_add_houses(root,houses,visuals)
+	var reused_modules:=_add_houses(root,houses,visuals)
 	return {"flights":flights.size(),"treads":step_total,
-		"houses":houses.size(),"rails":rail_count,
+		"houses":houses.size(),"reused_facade_modules":reused_modules,
+		"reused_house_variants":5,"rails":rail_count,
 		"physical_stair_bodies":flights.size(),
 		"west_gateways":TOPO.left_gate_links().size()}

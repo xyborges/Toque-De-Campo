@@ -23,18 +23,21 @@ const WEST_CLIFF_B=[
 	Vector2(-194,-101),Vector2(-199,-148),Vector2(-222,-175),
 	Vector2(-260,-197),Vector2(-329,-204),Vector2(-402,-215)
 ]
+# Uphill war: police starts below, criminals defend the summit.
+# The western houses remain a SIDE BRANCH from central_hub, never a
+# shortcut to base_norte. Height values are deliberate gameplay anchors.
 const NODE_HEIGHTS={
-	"base_sul":11.0,"rua_baixa":13.0,"curva_entrada":14.0,
-	"praca":16.0,"central_hub":19.0,"mercadinho":22.0,
-	"escada_central":26.0,"retorno_alto":27.0,
-	"rua_norte":29.0,"acesso_norte":30.0,"base_norte":33.0,
-	"campinho":20.0,"curva_leste":24.0,"beco_leste":26.0,
-	"praceta_leste":27.0,
-	"portal_oeste":23.0,"beco_baixo":26.0,
-	"escada_sul":31.0,"patio_oeste":35.0,
-	"escada_longa":41.0,"plato_casas":46.0,
-	"mirante":49.0,"beco_meio":32.0,"escada_curta":39.0,
-	"plato_telha":49.0
+	"base_sul":10.0,"rua_baixa":14.0,"curva_entrada":21.0,
+	"praca":30.0,"central_hub":40.0,"mercadinho":49.0,
+	"escada_central":58.0,"retorno_alto":66.0,
+	"rua_norte":78.0,"acesso_norte":87.0,"base_norte":98.0,
+	"campinho":35.0,"curva_leste":44.0,"beco_leste":57.0,
+	"praceta_leste":66.0,
+	"portal_oeste":43.0,"beco_baixo":47.0,
+	"escada_sul":55.0,"patio_oeste":61.0,
+	"escada_longa":70.0,"plato_casas":77.0,
+	"mirante":83.0,"beco_meio":56.0,"escada_curta":70.0,
+	"plato_telha":82.0
 }
 static var _samples:=PackedFloat32Array()
 static var _segments: Array[Dictionary]=[]
@@ -76,10 +79,11 @@ static func _setup()->void:
 			_cliff_segments.append({"a":contour[i],"b":contour[i+1]})
 
 static func _natural(p: Vector2)->float:
-	# Urban base is not a square plateau: a west hill rises around stairs.
-	var base:=18.0-p.y*.018+1.5*sin(p.x*.015)*cos(p.y*.012)
+	# South-to-north hill: steep overall ascent, local roads terraced to
+	# the NODE_HEIGHTS above. No flat square map between bases anymore.
+	var base:=47.0-p.y*.132+1.8*sin(p.x*.015)*cos(p.y*.012)
 	var d:=Vector2((p.x+283.0)/148.0,(p.y+60.0)/145.0)
-	base+=21.0*exp(-.5*d.length_squared())
+	base+=12.0*exp(-.5*d.length_squared())
 	for hill: Dictionary in TOPO.HILL_CONTOURS:
 		var center: Vector2=hill["center"]
 		var radius: Vector2=hill["radius"]
