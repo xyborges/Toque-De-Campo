@@ -7,6 +7,7 @@ const T=preload("res://modes/war/scripts/favela_v2_terrain.gd")
 const WEST=preload("res://modes/war/scripts/favela_v2_west_hillside.gd")
 const HOUSE=preload("res://modes/war/library/favela_casa_laje.tscn")
 const FIELD=preload("res://modes/war/library/favela_campo_baile.tscn")
+const VISUAL_POLICY=preload("res://modes/war/scripts/favela_v2_visual_optimization.gd")
 const MAIN_HOUSE_SCALE:=Vector3(.70,.78,.70)
 const STAGE_NODES=["curva_entrada","praca","central_hub","mercadinho","rua_norte"]
 const STAGE_LETTERS=["A","B","C","D","E"]
@@ -117,9 +118,14 @@ static func build(parent: Node3D,visuals: bool=true)->Dictionary:
 	var west_data:Dictionary=WEST.build(sector,visuals)
 	var middle_data:Dictionary=_build_houses(sector,visuals)
 	var field_count:=_build_campinho(sector,visuals)
+	# Native culling is opt-in; same game physics in either branch of A/B.
+	var occlusion_on:bool=visuals and VISUAL_POLICY.enabled_by_command_line()
+	if visuals:sector.get_viewport().use_occlusion_culling=occlusion_on
+	var visual_policy:Dictionary=VISUAL_POLICY.apply(sector,visuals,occlusion_on)
 	return {
 		"terrain":terrain_data,"west":west_data,
 		"main":middle_data,"campinho":field_count,
+		"visual_policy":visual_policy,
 		"objectives_proposed":STAGE_NODES.size(),
 		"police_height":T.NODE_HEIGHTS["base_sul"],
 		"trafficker_height":T.NODE_HEIGHTS["base_norte"],

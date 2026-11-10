@@ -1,0 +1,156 @@
+{
+  "date": "2026-11-10",
+  "gpu": "NVIDIA GeForce GTX 1650",
+  "engine": "Godot 4.7.2 Forward+",
+  "test": "Favela V2 S-ascent blockout (197 houses, 0 bots), two reversed-order AB pairs",
+  "sampling": "150 rendered frames per camera position after 75 warmup frames; 1920x1080",
+  "focus_verified": false,
+  "uncontended_gpu_verified": false,
+  "recommendation": "Experimental only; keep default OFF until stable P95/P99 without concurrent Godot workloads",
+  "passes": {
+    "r1_off": {
+      "build_ms": 993,
+      "cell_m": 32.0,
+      "enabled": false,
+      "houses": 197,
+      "lod_details": 2899,
+      "occluders": 0,
+      "renderer": "forward_plus",
+      "resolution": "1920x1080",
+      "views": {
+        "alta": {
+          "draw_calls_mean": 82.0,
+          "fps": 405.1,
+          "mean_ms": 2.47,
+          "p50_ms": 2.13,
+          "p95_ms": 4.95,
+          "p99_ms": 5.77
+        },
+        "baixa": {
+          "draw_calls_mean": 153.0,
+          "fps": 283.0,
+          "mean_ms": 3.53,
+          "p50_ms": 3.12,
+          "p95_ms": 5.07,
+          "p99_ms": 5.87
+        },
+        "miolo": {
+          "draw_calls_mean": 108.0,
+          "fps": 309.6,
+          "mean_ms": 3.23,
+          "p50_ms": 2.72,
+          "p95_ms": 6.08,
+          "p99_ms": 9.1
+        }
+      }
+    },
+    "r1_on": {
+      "build_ms": 944,
+      "cell_m": 32.0,
+      "enabled": true,
+      "houses": 197,
+      "lod_details": 2899,
+      "occluders": 107,
+      "renderer": "forward_plus",
+      "resolution": "1920x1080",
+      "views": {
+        "alta": {
+          "draw_calls_mean": 82.0,
+          "fps": 420.7,
+          "mean_ms": 2.38,
+          "p50_ms": 2.27,
+          "p95_ms": 4.3,
+          "p99_ms": 5.25
+        },
+        "baixa": {
+          "draw_calls_mean": 125.0,
+          "fps": 385.7,
+          "mean_ms": 2.59,
+          "p50_ms": 2.63,
+          "p95_ms": 3.95,
+          "p99_ms": 5.06
+        },
+        "miolo": {
+          "draw_calls_mean": 107.0,
+          "fps": 390.1,
+          "mean_ms": 2.56,
+          "p50_ms": 2.32,
+          "p95_ms": 5.03,
+          "p99_ms": 5.93
+        }
+      }
+    },
+    "r2_on": {
+      "build_ms": 1134,
+      "cell_m": 32.0,
+      "enabled": true,
+      "houses": 197,
+      "lod_details": 2899,
+      "occluders": 107,
+      "renderer": "forward_plus",
+      "resolution": "1920x1080",
+      "views": {
+        "alta": {
+          "draw_calls_mean": 82.0,
+          "fps": 398.2,
+          "mean_ms": 2.51,
+          "p50_ms": 2.26,
+          "p95_ms": 4.87,
+          "p99_ms": 5.71
+        },
+        "baixa": {
+          "draw_calls_mean": 125.0,
+          "fps": 300.9,
+          "mean_ms": 3.32,
+          "p50_ms": 2.9,
+          "p95_ms": 5.67,
+          "p99_ms": 7.23
+        },
+        "miolo": {
+          "draw_calls_mean": 107.0,
+          "fps": 366.9,
+          "mean_ms": 2.73,
+          "p50_ms": 2.33,
+          "p95_ms": 5.07,
+          "p99_ms": 5.97
+        }
+      }
+    },
+    "r2_off": {
+      "build_ms": 1021,
+      "cell_m": 32.0,
+      "enabled": false,
+      "houses": 197,
+      "lod_details": 2899,
+      "occluders": 0,
+      "renderer": "forward_plus",
+      "resolution": "1920x1080",
+      "views": {
+        "alta": {
+          "draw_calls_mean": 82.0,
+          "fps": 418.7,
+          "mean_ms": 2.39,
+          "p50_ms": 2.11,
+          "p95_ms": 4.54,
+          "p99_ms": 5.12
+        },
+        "baixa": {
+          "draw_calls_mean": 153.0,
+          "fps": 346.8,
+          "mean_ms": 2.88,
+          "p50_ms": 2.81,
+          "p95_ms": 5.09,
+          "p99_ms": 6.09
+        },
+        "miolo": {
+          "draw_calls_mean": 108.0,
+          "fps": 407.1,
+          "mean_ms": 2.46,
+          "p50_ms": 2.25,
+          "p95_ms": 4.73,
+          "p99_ms": 5.21
+        }
+      }
+    }
+  }
+}
