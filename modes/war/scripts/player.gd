@@ -629,6 +629,23 @@ func _refresh_view_weapon() -> void:
 		view_root.add_child(arm)
 	view_root.position=_weapon_offset()
 
+func _pose_arms_pair(right_target: Vector3,left_target: Vector3) -> void:
+	# Preserve exact WarPlayer imported grip/reload and disabled-limb behavior.
+	var disabled:=CombatRules.limb_disability_enabled(game) and (float(limbs.get("armR",100.))<=0. or float(limbs.get("armL",100.))<=0.)
+	if not GameInfantryPose.native_pose_enabled or not get_meta("articulated_arms",false) or disabled:
+		_pose_arm(avatar_parts.arm_r,right_target,"armR")
+		_pose_arm(avatar_parts.arm_l,left_target,"armL")
+		return
+	if weapon_id in ["fal","glock","g3"] and not _grenade_active():
+		var model:=weapon_root.get_node_or_null("Imported_"+weapon_id) as Node3D
+		if model:
+			right_target=model.get_node("GripRight").global_position
+			left_target=model.get_node("SupportGrip").global_position
+			if reload_weapon==weapon_id and reload_left>0:
+				var pose:=reload_pose_state(weapon_id,reload_left,reload_total)
+				left_target=model.to_global(pose.hand)
+	WarHumanRig.pose_pair(self,right_target,left_target)
+
 func _pose_arm(arm: Node3D,hand_position: Vector3,group: String) -> void:
 	if get_meta("articulated_arms",false) and (float(limbs.get(group,100.))>0 or not CombatRules.limb_disability_enabled(game)):
 		if weapon_id in ["fal","glock","g3"] and not _grenade_active():

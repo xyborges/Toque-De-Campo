@@ -162,8 +162,7 @@ func _refresh_grip_pose(actor: GamePlayer) -> void:
 		var progress:=1-actor.grenade_throw_left/.75
 		var grip:=Vector3(.32,-.26,-.48)
 		if actor.grenade_throw_left>0: grip+=Vector3(-.10,.12,-.35)*sin(progress*PI)
-		actor._pose_arm(actor.avatar_parts.arm_r,actor.camera_pivot.global_position+actor.global_basis*Basis(Vector3.RIGHT,actor.pitch)*grip,"armR")
-		actor._pose_arm(actor.avatar_parts.arm_l,actor.camera_pivot.global_position+actor.global_basis*Vector3(-.26,-.40,-.18),"armL")
+		actor._pose_arms_pair(actor.camera_pivot.global_position+actor.global_basis*Basis(Vector3.RIGHT,actor.pitch)*grip,actor.camera_pivot.global_position+actor.global_basis*Vector3(-.26,-.40,-.18))
 	else:
 		actor._update_weapon_pose()
 		var right:=actor.melee_rig.grip_right.global_position if is_instance_valid(actor.melee_rig) else actor.weapon_root.global_position
@@ -172,8 +171,7 @@ func _refresh_grip_pose(actor: GamePlayer) -> void:
 		if actor.weapon_id=="sniper": right=actor._sniper_hand_target(false);left=actor._sniper_hand_target(true)
 		elif actor.weapon_id=="ak":right=actor._ak_hand_target(false);left=actor._ak_hand_target(true)
 		elif actor.weapon_id=="g3":right=actor.weapon_hand_target(false);left=actor.weapon_hand_target(true)
-		actor._pose_arm(actor.avatar_parts.arm_r,right,"armR")
-		actor._pose_arm(actor.avatar_parts.arm_l,left,"armL")
+		actor._pose_arms_pair(right,left)
 
 func reset(actor: GamePlayer) -> void:
 	actor.prone=false;actor.crouched=false;crouch_weight=0;prone_weight=0

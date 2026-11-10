@@ -755,8 +755,15 @@ func weapon_hand_target(support: bool) -> Vector3:
 
 func _pose_weapon_arms() -> void:
 	if not is_instance_valid(weapon_root):return
-	_pose_arm(avatar_parts.arm_r,weapon_hand_target(false),"armR")
-	_pose_arm(avatar_parts.arm_l,weapon_hand_target(true),"armL")
+	_pose_arms_pair(weapon_hand_target(false),weapon_hand_target(true))
+
+func _pose_arms_pair(right_target: Vector3,left_target: Vector3) -> void:
+	var disabled:=CombatRules.limb_disability_enabled(game) and (float(limbs.get("armR",100.))<=0. or float(limbs.get("armL",100.))<=0.)
+	if GameInfantryPose.native_pose_enabled and get_meta("articulated_arms",false) and not disabled:
+		WarHumanRig.pose_pair(self,right_target,left_target)
+		return
+	_pose_arm(avatar_parts.arm_r,right_target,"armR")
+	_pose_arm(avatar_parts.arm_l,left_target,"armL")
 
 func shared_human_motion() -> bool:
 	# WarPlayer already advances and applies this same controller itself.
