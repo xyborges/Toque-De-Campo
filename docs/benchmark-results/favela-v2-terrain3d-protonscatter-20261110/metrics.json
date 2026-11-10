@@ -1,0 +1,478 @@
+{
+  "date": "2026-11-10",
+  "godot": "4.7.2-stable Forward+",
+  "gpu": "NVIDIA GeForce GTX 1650",
+  "resolution": "1920x1080",
+  "terrain3d_version": "1.1.0-stable",
+  "terrain3d_sha256": "51B78BC758F5759CBC8EAAAB14E5CF4E8661717E265FDD760F5ABF945F15B243",
+  "protonscatter_commit": "7198cc00078ebde61307578137c3f35223c6e438",
+  "sample": "120 frames per camera after 75 warmup, 3 camera viewpoints, 2 reversed-order A/B runs, plus combined run; 197 houses, zero bots",
+  "limitations": [
+    "window focus not controlled",
+    "concurrent GPU workload not ruled out",
+    "no 28-bot combat",
+    "Terrain3D compared as render-only alongside original shared collision, original ground meshes were constructed then hidden",
+    "ProtonScatter renderer exercised with deterministic seeded transforms; modifier-rule authoring not benchmarked",
+    "preliminary, cannot establish production benefit"
+  ],
+  "height_check": {
+    "region_count": 4,
+    "sample_spacing_m": 4.0,
+    "worst_error_at_four_nodes_m": 0.451660248894775
+  },
+  "average_of_pairs": {
+    "legacy": {
+      "avg_build_ms": 993,
+      "avg_p99_by_view_ms": {
+        "baixa": 6.09,
+        "miolo": 4.6,
+        "alta": 4.45
+      },
+      "avg_draw_calls_by_view": {
+        "baixa": 163.0,
+        "miolo": 110.0,
+        "alta": 80.0
+      },
+      "avg_frame_ms_by_view": {
+        "baixa": 2.9,
+        "miolo": 2.24,
+        "alta": 2.21
+      }
+    },
+    "terrain3d": {
+      "avg_build_ms": 1436.5,
+      "avg_p99_by_view_ms": {
+        "baixa": 5.57,
+        "miolo": 5.77,
+        "alta": 4.43
+      },
+      "avg_draw_calls_by_view": {
+        "baixa": 137.0,
+        "miolo": 103.0,
+        "alta": 86.0
+      },
+      "avg_frame_ms_by_view": {
+        "baixa": 2.84,
+        "miolo": 3.31,
+        "alta": 3.28
+      }
+    },
+    "native_multimesh": {
+      "avg_build_ms": 1093.5,
+      "avg_p99_by_view_ms": {
+        "baixa": 4.91,
+        "miolo": 4.97,
+        "alta": 4.59
+      },
+      "avg_draw_calls_by_view": {
+        "baixa": 163.0,
+        "miolo": 111.0,
+        "alta": 80.0
+      },
+      "avg_frame_ms_by_view": {
+        "baixa": 2.52,
+        "miolo": 2.3,
+        "alta": 2.28
+      }
+    },
+    "proton": {
+      "avg_build_ms": 1084.5,
+      "avg_p99_by_view_ms": {
+        "baixa": 5.43,
+        "miolo": 4.26,
+        "alta": 4.27
+      },
+      "avg_draw_calls_by_view": {
+        "baixa": 163.0,
+        "miolo": 111.0,
+        "alta": 80.0
+      },
+      "avg_frame_ms_by_view": {
+        "baixa": 2.54,
+        "miolo": 2.17,
+        "alta": 2.17
+      }
+    }
+  },
+  "all_runs": {
+    "legacy_1": {
+      "combined_startup_ms": 1033,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "original_houses": 197,
+      "original_terrain_phys_shapes": 54,
+      "original_v2_build_ms": 1033,
+      "pass": true,
+      "renderer": "Forward+",
+      "resolution": "1920x1080",
+      "scatter": "none",
+      "scatter_build_ms": 0,
+      "shrubs": 0,
+      "terrain3d": false,
+      "terrain_import_ms": 0,
+      "terrain_regions": 0,
+      "views": {
+        "alta": {
+          "draw_calls": 80.0,
+          "fps": 453.1,
+          "mean_ms": 2.2,
+          "p50_ms": 2.24,
+          "p95_ms": 3.04,
+          "p99_ms": 3.54
+        },
+        "baixa": {
+          "draw_calls": 163.0,
+          "fps": 298.0,
+          "mean_ms": 3.36,
+          "p50_ms": 3.06,
+          "p95_ms": 6.3,
+          "p99_ms": 7.6
+        },
+        "miolo": {
+          "draw_calls": 110.0,
+          "fps": 424.3,
+          "mean_ms": 2.36,
+          "p50_ms": 2.08,
+          "p95_ms": 4.54,
+          "p99_ms": 5.86
+        }
+      }
+    },
+    "terrain3d_1": {
+      "combined_startup_ms": 1590,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "original_houses": 197,
+      "original_terrain_phys_shapes": 54,
+      "original_v2_build_ms": 957,
+      "pass": true,
+      "renderer": "Forward+",
+      "resolution": "1920x1080",
+      "scatter": "none",
+      "scatter_build_ms": 0,
+      "shrubs": 0,
+      "terrain3d": true,
+      "terrain_import_ms": 632,
+      "terrain_regions": 4,
+      "views": {
+        "alta": {
+          "draw_calls": 86.0,
+          "fps": 303.5,
+          "mean_ms": 3.3,
+          "p50_ms": 2.88,
+          "p95_ms": 4.3,
+          "p99_ms": 4.52
+        },
+        "baixa": {
+          "draw_calls": 137.0,
+          "fps": 386.0,
+          "mean_ms": 2.6,
+          "p50_ms": 2.14,
+          "p95_ms": 4.8,
+          "p99_ms": 5.26
+        },
+        "miolo": {
+          "draw_calls": 103.0,
+          "fps": 296.5,
+          "mean_ms": 3.38,
+          "p50_ms": 3.08,
+          "p95_ms": 5.42,
+          "p99_ms": 6.46
+        }
+      }
+    },
+    "native_multimesh_1": {
+      "combined_startup_ms": 1096,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "original_houses": 197,
+      "original_terrain_phys_shapes": 54,
+      "original_v2_build_ms": 973,
+      "pass": true,
+      "renderer": "Forward+",
+      "resolution": "1920x1080",
+      "scatter": "native",
+      "scatter_build_ms": 74,
+      "shrubs": 480,
+      "terrain3d": false,
+      "terrain_import_ms": 0,
+      "terrain_regions": 0,
+      "views": {
+        "alta": {
+          "draw_calls": 80.0,
+          "fps": 453.3,
+          "mean_ms": 2.2,
+          "p50_ms": 2.04,
+          "p95_ms": 3.22,
+          "p99_ms": 4.0
+        },
+        "baixa": {
+          "draw_calls": 163.0,
+          "fps": 397.0,
+          "mean_ms": 2.52,
+          "p50_ms": 2.56,
+          "p95_ms": 4.02,
+          "p99_ms": 4.64
+        },
+        "miolo": {
+          "draw_calls": 111.0,
+          "fps": 433.9,
+          "mean_ms": 2.3,
+          "p50_ms": 2.24,
+          "p95_ms": 3.5,
+          "p99_ms": 5.06
+        }
+      }
+    },
+    "proton_1": {
+      "combined_startup_ms": 1089,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "original_houses": 197,
+      "original_terrain_phys_shapes": 54,
+      "original_v2_build_ms": 961,
+      "pass": true,
+      "renderer": "Forward+",
+      "resolution": "1920x1080",
+      "scatter": "proton",
+      "scatter_build_ms": 77,
+      "shrubs": 480,
+      "terrain3d": false,
+      "terrain_import_ms": 0,
+      "terrain_regions": 0,
+      "views": {
+        "alta": {
+          "draw_calls": 80.0,
+          "fps": 455.1,
+          "mean_ms": 2.2,
+          "p50_ms": 2.1,
+          "p95_ms": 3.16,
+          "p99_ms": 4.16
+        },
+        "baixa": {
+          "draw_calls": 163.0,
+          "fps": 367.0,
+          "mean_ms": 2.72,
+          "p50_ms": 2.62,
+          "p95_ms": 4.32,
+          "p99_ms": 6.0
+        },
+        "miolo": {
+          "draw_calls": 111.0,
+          "fps": 463.7,
+          "mean_ms": 2.16,
+          "p50_ms": 1.82,
+          "p95_ms": 3.1,
+          "p99_ms": 3.54
+        }
+      }
+    },
+    "combined_1": {
+      "combined_startup_ms": 1434,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "original_houses": 197,
+      "original_terrain_phys_shapes": 54,
+      "original_v2_build_ms": 957,
+      "pass": true,
+      "renderer": "Forward+",
+      "resolution": "1920x1080",
+      "scatter": "proton",
+      "scatter_build_ms": 75,
+      "shrubs": 480,
+      "terrain3d": true,
+      "terrain_import_ms": 344,
+      "terrain_regions": 4,
+      "views": {
+        "alta": {
+          "draw_calls": 86.0,
+          "fps": 309.8,
+          "mean_ms": 3.22,
+          "p50_ms": 2.86,
+          "p95_ms": 4.12,
+          "p99_ms": 4.4
+        },
+        "baixa": {
+          "draw_calls": 137.0,
+          "fps": 387.4,
+          "mean_ms": 2.58,
+          "p50_ms": 2.12,
+          "p95_ms": 4.58,
+          "p99_ms": 4.96
+        },
+        "miolo": {
+          "draw_calls": 104.0,
+          "fps": 257.7,
+          "mean_ms": 3.88,
+          "p50_ms": 2.94,
+          "p95_ms": 7.12,
+          "p99_ms": 8.38
+        }
+      }
+    },
+    "terrain3d_2": {
+      "combined_startup_ms": 1283,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "original_houses": 197,
+      "original_terrain_phys_shapes": 54,
+      "original_v2_build_ms": 955,
+      "pass": true,
+      "renderer": "Forward+",
+      "resolution": "1920x1080",
+      "scatter": "none",
+      "scatter_build_ms": 0,
+      "shrubs": 0,
+      "terrain3d": true,
+      "terrain_import_ms": 328,
+      "terrain_regions": 4,
+      "views": {
+        "alta": {
+          "draw_calls": 86.0,
+          "fps": 306.6,
+          "mean_ms": 3.26,
+          "p50_ms": 2.98,
+          "p95_ms": 4.18,
+          "p99_ms": 4.34
+        },
+        "baixa": {
+          "draw_calls": 137.0,
+          "fps": 324.0,
+          "mean_ms": 3.08,
+          "p50_ms": 2.86,
+          "p95_ms": 5.58,
+          "p99_ms": 5.88
+        },
+        "miolo": {
+          "draw_calls": 103.0,
+          "fps": 307.8,
+          "mean_ms": 3.24,
+          "p50_ms": 2.94,
+          "p95_ms": 4.5,
+          "p99_ms": 5.08
+        }
+      }
+    },
+    "legacy_2": {
+      "combined_startup_ms": 953,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "original_houses": 197,
+      "original_terrain_phys_shapes": 54,
+      "original_v2_build_ms": 953,
+      "pass": true,
+      "renderer": "Forward+",
+      "resolution": "1920x1080",
+      "scatter": "none",
+      "scatter_build_ms": 0,
+      "shrubs": 0,
+      "terrain3d": false,
+      "terrain_import_ms": 0,
+      "terrain_regions": 0,
+      "views": {
+        "alta": {
+          "draw_calls": 80.0,
+          "fps": 449.3,
+          "mean_ms": 2.22,
+          "p50_ms": 1.8,
+          "p95_ms": 3.96,
+          "p99_ms": 5.36
+        },
+        "baixa": {
+          "draw_calls": 163.0,
+          "fps": 411.4,
+          "mean_ms": 2.44,
+          "p50_ms": 2.54,
+          "p95_ms": 3.84,
+          "p99_ms": 4.58
+        },
+        "miolo": {
+          "draw_calls": 110.0,
+          "fps": 472.2,
+          "mean_ms": 2.12,
+          "p50_ms": 1.84,
+          "p95_ms": 3.02,
+          "p99_ms": 3.34
+        }
+      }
+    },
+    "proton_2": {
+      "combined_startup_ms": 1080,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "original_houses": 197,
+      "original_terrain_phys_shapes": 54,
+      "original_v2_build_ms": 954,
+      "pass": true,
+      "renderer": "Forward+",
+      "resolution": "1920x1080",
+      "scatter": "proton",
+      "scatter_build_ms": 77,
+      "shrubs": 480,
+      "terrain3d": false,
+      "terrain_import_ms": 0,
+      "terrain_regions": 0,
+      "views": {
+        "alta": {
+          "draw_calls": 80.0,
+          "fps": 468.8,
+          "mean_ms": 2.14,
+          "p50_ms": 1.76,
+          "p95_ms": 3.2,
+          "p99_ms": 4.38
+        },
+        "baixa": {
+          "draw_calls": 163.0,
+          "fps": 423.8,
+          "mean_ms": 2.36,
+          "p50_ms": 2.28,
+          "p95_ms": 4.14,
+          "p99_ms": 4.86
+        },
+        "miolo": {
+          "draw_calls": 111.0,
+          "fps": 457.9,
+          "mean_ms": 2.18,
+          "p50_ms": 1.76,
+          "p95_ms": 3.28,
+          "p99_ms": 4.98
+        }
+      }
+    },
+    "native_multimesh_2": {
+      "combined_startup_ms": 1091,
+      "gpu": "NVIDIA GeForce GTX 1650",
+      "original_houses": 197,
+      "original_terrain_phys_shapes": 54,
+      "original_v2_build_ms": 965,
+      "pass": true,
+      "renderer": "Forward+",
+      "resolution": "1920x1080",
+      "scatter": "native",
+      "scatter_build_ms": 76,
+      "shrubs": 480,
+      "terrain3d": false,
+      "terrain_import_ms": 0,
+      "terrain_regions": 0,
+      "views": {
+        "alta": {
+          "draw_calls": 80.0,
+          "fps": 424.8,
+          "mean_ms": 2.36,
+          "p50_ms": 1.76,
+          "p95_ms": 4.8,
+          "p99_ms": 5.18
+        },
+        "baixa": {
+          "draw_calls": 163.0,
+          "fps": 395.9,
+          "mean_ms": 2.52,
+          "p50_ms": 2.58,
+          "p95_ms": 4.22,
+          "p99_ms": 5.18
+        },
+        "miolo": {
+          "draw_calls": 111.0,
+          "fps": 435.7,
+          "mean_ms": 2.3,
+          "p50_ms": 2.1,
+          "p95_ms": 3.26,
+          "p99_ms": 4.88
+        }
+      }
+    }
+  },
+  "decision": "Reject Terrain3D replacement and ProtonScatter substitution for native MultiMesh on current evidence; keep optional research artifacts only"
+}
