@@ -7,21 +7,19 @@ const ROCK_FACE=preload("res://modes/war/library/favela_v2_rock_barrier.tscn")
 const STEP:=5.0
 const CHUNK:=100.0
 const BOUNDS=TOPO.BOUNDS
-const COLS:=171 # (850 / 5) + 1
-const ROWS:=121 # (600 / 5) + 1
-const CLIFF_HEIGHT:=23.0
-const CLIFF_WIDTH:=5.5
-## The west hillside is bounded by rocky contours with ONE opening at
-## (-155, 14), facing central_hub. No path crosses the perimeter elsewhere.
+const COLS:=129 # (640 / 5) + 1
+const ROWS:=135 # (670 / 5) + 1
+const CLIFF_HEIGHT:=14.0
+const CLIFF_WIDTH:=8.0
+## Rock geology runs along TWO isolated hillside outcrops. It never
+## encloses the neighborhood in a perimeter, bowl, or ring. Bots use the
+## explicit topology; central_hub -> portal_oeste is its ONLY access.
 const WEST_CLIFF_A=[
-	Vector2(-402,-215),Vector2(-409,-104),Vector2(-409,10),
-	Vector2(-402,75),Vector2(-351,96),Vector2(-295,93),
-	Vector2(-227,75),Vector2(-184,48),Vector2(-154,26)
+	Vector2(-286,-257),Vector2(-254,-222),
+	Vector2(-221,-187),Vector2(-176,-193)
 ]
 const WEST_CLIFF_B=[
-	Vector2(-153,2),Vector2(-179,-13),Vector2(-191,-50),
-	Vector2(-194,-101),Vector2(-199,-148),Vector2(-222,-175),
-	Vector2(-260,-197),Vector2(-329,-204),Vector2(-402,-215)
+	Vector2(-300,135),Vector2(-273,103),Vector2(-245,83)
 ]
 # Uphill war: police starts below, criminals defend the summit.
 # The western houses remain a SIDE BRANCH from central_hub, never a
@@ -79,25 +77,22 @@ static func _setup()->void:
 			_cliff_segments.append({"a":contour[i],"b":contour[i+1]})
 
 static func _natural(p: Vector2)->float:
-	# South-to-north hill: steep overall ascent, local roads terraced to
-	# the NODE_HEIGHTS above. No flat square map between bases anymore.
-	var base:=47.0-p.y*.132+1.8*sin(p.x*.015)*cos(p.y*.012)
-	var d:=Vector2((p.x+283.0)/148.0,(p.y+60.0)/145.0)
-	base+=12.0*exp(-.5*d.length_squared())
-	for hill: Dictionary in TOPO.HILL_CONTOURS:
-		var center: Vector2=hill["center"]
-		var radius: Vector2=hill["radius"]
-		var q:=Vector2((p.x-center.x)/radius.x,(p.y-center.y)/radius.y)
-		var rim:=absf(q.length()-1.0)
-		base+=4.0*exp(-.5*pow(rim/.17,2.0))
-	# Irregular earthen banks hide the technical rectangular mesh border;
-	# the intended walkable footprint stays contained within organic hills.
-	var dist_edge:=minf(minf(p.x-BOUNDS.position.x,BOUNDS.end.x-p.x),
-		minf(p.y-BOUNDS.position.y,BOUNDS.end.y-p.y))
-	var drift:=43.0+8.0*sin(p.x*.019)+5.0*cos(p.y*.024)
-	var margin:=clampf((drift-dist_edge)/maxf(drift,1.0),0.0,1.0)
-	base+=19.0*margin*margin
-	return base
+	# True hillside: the landmass climbs continuously from SOUTH (police)
+	# toward NORTH (traffickers). No perimeter uplift / crater / circular
+	# HILL_CONTOURS: the whole city is built ON the slope, not inside it.
+	var climb:=clampf((260.0-p.y)/560.0,0.0,1.0)
+	var ascent:=8.0+94.0*pow(climb,1.08)
+	# An elongated western shoulder, not a separate hill or walled ring.
+	# Its crest follows the climb as a natural meandering ridge.
+	var west_spine_x:=-187.0+25.0*sin((p.y+100.0)*.011)
+	var distance_spine:=(p.x-west_spine_x)/115.0
+	var shoulder:=16.0*pow(climb,.86)*exp(-.5*distance_spine*distance_spine)
+	# Large scale terracing + small drainage gullies: few dominant
+	# elevation bands, so players read "I am climbing" from any street.
+	var step_band:=.75*sin((p.y+35.0)*.036)*smoothstep(.12,.85,climb)
+	var erosion:=2.2*sin(.021*p.x+.010*p.y)*sin(.015*p.y)
+	var grain:=.55*sin(.082*p.x)*cos(.073*p.y)
+	return ascent+shoulder+step_band+erosion+grain
 
 static func _height_raw(p: Vector2)->float:
 	var natural:=_natural(p)
@@ -123,10 +118,22 @@ static func _height_raw(p: Vector2)->float:
 			best_dist=distance
 			best_width=float(road["half_width"])
 			best_road_alt=lerpf(float(road["h0"]),float(road["h1"]),float(projection["t"]))
+	var ground:=natural
 	if best_dist<best_width+11.0:
 		var blend:=1.0-smoothstep(best_width+1.0,best_width+11.0,best_dist)
-		return lerpf(natural,best_road_alt,blend)
-	return natural
+		ground=lerpf(natural,best_road_alt,blend)
+	# Actual terraces: safe team spawns and the original prefab football field
+	# need locally level SOIL. All platforms share this exact physics mesh.
+	for base_id in ["base_sul","base_norte"]:
+		var base_p:Vector2=TOPO.NODES[base_id]["p"]
+		var dist:=p.distance_to(base_p)
+		if dist<27.0:
+			ground=lerpf(float(NODE_HEIGHTS[base_id]),ground,smoothstep(18.0,27.0,dist))
+	var field:Vector2=TOPO.NODES["campinho"]["p"]
+	var field_u:=maxf(absf(p.x-field.x)/25.0,absf(p.y-field.y)/16.0)
+	if field_u<1.45:
+		ground=lerpf(float(NODE_HEIGHTS["campinho"]),ground,smoothstep(1.02,1.45,field_u))
+	return ground
 
 static func _ensure_samples()->void:
 	if not _samples.is_empty():return
@@ -163,11 +170,19 @@ static func _normal_at(x: int,z: int)->Vector3:
 	return Vector3((left-right)/(2.0*STEP),1.0,(down-up)/(2.0*STEP)).normalized()
 
 static func _terrain_material()->StandardMaterial3D:
+	# Keep the original Favela's sand material assets. One shared material
+	# across 49 chunks with triplanar UVs on the physical hillside.
 	var mat:=StandardMaterial3D.new()
-	mat.albedo_color=Color("#baa184")
+	mat.albedo_color=Color.WHITE
+	mat.albedo_texture=load("res://assets/environment/materials/sand-albedo.png")
+	mat.normal_enabled=true
+	mat.normal_scale=.38
+	mat.normal_texture=load("res://assets/environment/materials/sand-normal.png")
+	mat.roughness=.98
+	mat.roughness_texture=load("res://assets/environment/materials/sand-roughness.png")
+	mat.uv1_triplanar=true
+	mat.uv1_scale=Vector3(.075,.075,.075)
 	mat.vertex_color_use_as_albedo=true
-	mat.roughness=.95
-	mat.metallic=0.0
 	mat.cull_mode=BaseMaterial3D.CULL_DISABLED
 	return mat
 
@@ -186,9 +201,9 @@ static func _tile_mesh(x0:int,z0:int,nx:int,nz:int)->ArrayMesh:
 				h,BOUNDS.position.y+float(iz)*STEP))
 			normals.append(normal)
 			var slope:=1.0-normal.y
-			var alt_color:=clampf((h-14.0)/45.0,0.0,1.0)
-			var color:=Color("#827455").lerp(Color("#878078"),alt_color)
-			if slope>.22:color=Color("#73695e")
+			var high:=clampf((h-8.0)/115.0,0.0,1.0)
+			var color:=Color("#e4cdb0").lerp(Color("#c0b5a4"),high)
+			color=color.lerp(Color("#92938a"),smoothstep(.17,.46,slope)*.50)
 			colors.append(color)
 	for z in nz:
 		for x in nx:
@@ -208,8 +223,18 @@ static func _tile_mesh(x0:int,z0:int,nx:int,nz:int)->ArrayMesh:
 	return mesh
 
 static func _road_material()->StandardMaterial3D:
-	var material:=_terrain_material()
-	material.albedo_color=Color("#e7ded0")
+	# Reuse original Favela concrete; no white debug roads across hills.
+	var material:=StandardMaterial3D.new()
+	material.albedo_color=Color("#c8c0b1")
+	material.albedo_texture=load("res://assets/environment/materials/concrete-albedo.png")
+	material.roughness=.97
+	material.normal_enabled=true
+	material.normal_scale=.34
+	material.normal_texture=load("res://assets/environment/materials/concrete-normal.png")
+	material.uv1_triplanar=true
+	material.uv1_scale=Vector3(.085,.085,.085)
+	material.vertex_color_use_as_albedo=true
+	material.cull_mode=BaseMaterial3D.CULL_DISABLED
 	return material
 
 static func _roads_preview(parent: Node3D)->int:
@@ -275,6 +300,41 @@ static func _rock_material()->StandardMaterial3D:
 	_rock_visual_material=material
 	return material
 
+static func _rock_bank_mesh(a: Vector2,b: Vector2,center_height: float)->ArrayMesh:
+	# Five short geological outcrops, never a closed artificial wall.
+	# Irregular crest and foot share ONE mesh for visualization + physics.
+	var length:=a.distance_to(b)
+	var subdivisions:=maxi(2,ceili(length/4.2))
+	var verts:=PackedVector3Array()
+	for i in subdivisions+1:
+		var t:=float(i)/float(subdivisions)
+		var p:=a.lerp(b,t)
+		var x:=length*(t-.5)
+		var local_height:=height_at(p.x,p.y)
+		var ridge:=local_height+4.1+sin(float(i)*1.7)*1.1
+		var low:=local_height-7.5
+		var width:=1.8+sin(float(i)*1.13)*.35
+		verts.append(Vector3(x,low-center_height,-width))
+		verts.append(Vector3(x,ridge-center_height,-width*.58))
+		verts.append(Vector3(x,ridge-center_height,width*.58))
+		verts.append(Vector3(x,low-center_height,width))
+	var tool:=SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i in subdivisions:
+		var start:=i*4
+		var next:=(i+1)*4
+		for face in 4:
+			var k:=(face+1)%4
+			for index in [start+face,next+face,start+k,start+k,next+face,next+k]:
+				tool.add_vertex(verts[index])
+	for index in [0,2,1,0,3,2]:
+		tool.add_vertex(verts[index])
+	var end:=subdivisions*4
+	for index in [end,end+1,end+2,end,end+2,end+3]:
+		tool.add_vertex(verts[index])
+	tool.generate_normals()
+	return tool.commit()
+
 static func _build_west_rock_faces(parent: Node3D,visuals: bool)->int:
 	_setup()
 	var count:=0
@@ -282,29 +342,20 @@ static func _build_west_rock_faces(parent: Node3D,visuals: bool)->int:
 		var a: Vector2=segment["a"]
 		var b: Vector2=segment["b"]
 		var axis: Vector2=(b-a).normalized()
-		var span:=a.distance_to(b)
-		var middle: Vector2=(a+b)*.5
-		var a_height:=height_at(a.x,a.y)
-		var b_height:=height_at(b.x,b.y)
-		var middle_height:=height_at(middle.x,middle.y)
-		# The visible face joins the ridge; its simple solid is above the crest
-		# so the 42cm GameStepMotion solver CANNOT climb through the perimeter.
-		var bottom:=minf(minf(a_height,b_height),middle_height)-32.0
-		var top:=maxf(maxf(a_height,b_height),middle_height)+5.0
-		var block_height:=top-bottom
-		var shape:=BoxShape3D.new()
-		shape.size=Vector3(span+2.6,block_height,3.2)
+		var center: Vector2=(a+b)*.5
+		var ground_y:=height_at(center.x,center.y)
 		var body:=ROCK_FACE.instantiate() as StaticBody3D
-		body.name="FaceRochosaMorro_%02d" %count
-		body.position=Vector3(middle.x,(top+bottom)*.5,middle.y)
+		body.name="AfloramentoMorro_%02d" %count
+		body.position=Vector3(center.x,ground_y,center.y)
 		body.rotation.y=atan2(-axis.y,axis.x)
 		parent.add_child(body)
+		var rock_mesh:=_rock_bank_mesh(a,b,ground_y)
+		var shape:=rock_mesh.create_trimesh_shape()
+		shape.backface_collision=true
 		(body.get_node("ParedeFisica") as CollisionShape3D).shape=shape
 		if visuals:
-			var box:=BoxMesh.new()
-			box.size=shape.size
 			var view:=body.get_node("RochaVisivel") as MeshInstance3D
-			view.mesh=box
+			view.mesh=rock_mesh
 			view.material_override=_rock_material()
 		count+=1
 	return count

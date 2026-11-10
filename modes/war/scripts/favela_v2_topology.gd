@@ -2,7 +2,7 @@ extends RefCounted
 ## Favela V2 / fase 1 — desenho de circulacao, sem alterar a Favela publica.
 ## Coordenadas em metros no plano X/Z. Curvas sao vias; morros sao limites,
 ## NUNCA atalhos. Morro oeste comunica-se SOMENTE com o miolo central.
-const BOUNDS := Rect2(Vector2(-425,-300),Vector2(850,600))
+const BOUNDS := Rect2(Vector2(-310,-335),Vector2(640,670))
 ## Mode Guerra team base anchors (future spawn integration):
 ## Team 1 POLICIA starts at the bottom, Team 2 TRAFICANTES at the summit.
 const TEAM_BASES := {1:"base_sul",2:"base_norte"}
@@ -11,74 +11,68 @@ const SECTOR_LEFT := "morro_esquerdo"
 const SECTOR_CORE := "miolo"
 const SECTOR_RIGHT := "leste"
 const NODES := {
-	"base_sul": {"p":Vector2(-320,240),"zone":"base"},
-	"rua_baixa": {"p":Vector2(-235,205),"zone":"baixada"},
-	"curva_entrada": {"p":Vector2(-195,135),"zone":"baixada"},
-	"praca": {"p":Vector2(-110,105),"zone":"miolo","feature":"praca"},
-	"central_hub": {"p":Vector2(-65,30),"zone":"miolo"},
-	"mercadinho": {"p":Vector2(10,-55),"zone":"miolo","feature":"comercio"},
-	"escada_central": {"p":Vector2(-90,-115),"zone":"miolo","feature":"escada"},
-	"retorno_alto": {"p":Vector2(80,-155),"zone":"miolo"},
-	"rua_norte": {"p":Vector2(-90,-190),"zone":"miolo"},
-	"acesso_norte": {"p":Vector2(-185,-175),"zone":"miolo"},
-	"base_norte": {"p":Vector2(-300,-248),"zone":"base"},
-	"campinho": {"p":Vector2(130,100),"zone":"leste","feature":"campo"},
-	"curva_leste": {"p":Vector2(265,60),"zone":"leste"},
-	"beco_leste": {"p":Vector2(280,-35),"zone":"leste"},
-	"praceta_leste": {"p":Vector2(205,-120),"zone":"leste","feature":"praceta"},
-	"portal_oeste": {"p":Vector2(-165,15),"zone":"morro_esquerdo"},
-	"beco_baixo": {"p":Vector2(-225,45),"zone":"morro_esquerdo"},
-	"escada_sul": {"p":Vector2(-300,55),"zone":"morro_esquerdo","feature":"escada"},
-	"patio_oeste": {"p":Vector2(-338,-5),"zone":"morro_esquerdo","feature":"patio"},
-	"escada_longa": {"p":Vector2(-310,-68),"zone":"morro_esquerdo","feature":"escada"},
-	"plato_casas": {"p":Vector2(-270,-115),"zone":"morro_esquerdo","feature":"plato"},
-	"mirante": {"p":Vector2(-350,-140),"zone":"morro_esquerdo","feature":"mirante"},
-	"beco_meio": {"p":Vector2(-217,-55),"zone":"morro_esquerdo"},
-	"escada_curta": {"p":Vector2(-238,-103),"zone":"morro_esquerdo","feature":"escada"},
-	"plato_telha": {"p":Vector2(-315,-165),"zone":"morro_esquerdo","feature":"plato"}
+	"base_sul": {"p":Vector2(-223.2,254.4),"zone":"base"},
+	"rua_baixa": {"p":Vector2(-162.05,217.3),"zone":"baixada"},
+	"curva_entrada": {"p":Vector2(-126.85,143.1),"zone":"baixada"},
+	"praca": {"p":Vector2(-66.3,111.3),"zone":"miolo","feature":"praca"},
+	"central_hub": {"p":Vector2(-27.15,31.8),"zone":"miolo"},
+	"mercadinho": {"p":Vector2(33.3,-58.3),"zone":"miolo","feature":"comercio"},
+	"escada_central": {"p":Vector2(-26.5,-121.9),"zone":"miolo","feature":"escada"},
+	"retorno_alto": {"p":Vector2(92.2,-164.3),"zone":"miolo"},
+	"rua_norte": {"p":Vector2(-17.5,-201.4),"zone":"miolo"},
+	"acesso_norte": {"p":Vector2(-78.75,-222.6),"zone":"miolo"},
+	"base_norte": {"p":Vector2(-147.88,-292.56),"zone":"base"},
+	"campinho": {"p":Vector2(95.1,106),"zone":"leste","feature":"campo"},
+	"curva_leste": {"p":Vector2(190.35,63.6),"zone":"leste"},
+	"beco_leste": {"p":Vector2(211.8,-37.1),"zone":"leste"},
+	"praceta_leste": {"p":Vector2(171.75,-127.2),"zone":"leste","feature":"praceta"},
+	"portal_oeste": {"p":Vector2(-92.35,15.9),"zone":"morro_esquerdo"},
+	"beco_baixo": {"p":Vector2(-136.15,47.7),"zone":"morro_esquerdo"},
+	"escada_sul": {"p":Vector2(-187.6,58.3),"zone":"morro_esquerdo","feature":"escada"},
+	"patio_oeste": {"p":Vector2(-205.86,-5.3),"zone":"morro_esquerdo","feature":"patio"},
+	"escada_longa": {"p":Vector2(-179.54,-72.08),"zone":"morro_esquerdo","feature":"escada"},
+	"plato_casas": {"p":Vector2(-147.1,-121.9),"zone":"morro_esquerdo","feature":"plato"},
+	"mirante": {"p":Vector2(-197.7,-148.4),"zone":"morro_esquerdo","feature":"mirante"},
+	"beco_meio": {"p":Vector2(-118.79,-58.3),"zone":"morro_esquerdo"},
+	"escada_curta": {"p":Vector2(-127.1,-109.18),"zone":"morro_esquerdo","feature":"escada"},
+	"plato_telha": {"p":Vector2(-171.25,-174.9),"zone":"morro_esquerdo","feature":"plato"}
 }
 ## Rotas de pedestres sao conexoes EXPLICITAS. O AStar nunca deve converter
 ## a silhueta dos morros em vias nem ligar dois caminhos apenas por proximidade.
 const LINKS := [
-	{"id":"s01","a":"base_sul","b":"rua_baixa","kind":"rua","width":6.0,"via":[Vector2(-280,224)]},
-	{"id":"s02","a":"rua_baixa","b":"curva_entrada","kind":"rua","width":6.0,"via":[Vector2(-220,166)]},
-	{"id":"s03","a":"curva_entrada","b":"praca","kind":"rua","width":5.5,"via":[Vector2(-158,138)]},
-	{"id":"c01","a":"praca","b":"central_hub","kind":"beco","width":3.8,"via":[Vector2(-100,65)]},
-	{"id":"c02","a":"central_hub","b":"mercadinho","kind":"beco","width":3.2,"via":[Vector2(-10,10),Vector2(23,-23)]},
-	{"id":"c03","a":"mercadinho","b":"retorno_alto","kind":"rua","width":5.2,"via":[Vector2(35,-102)]},
-	{"id":"c04","a":"retorno_alto","b":"rua_norte","kind":"rua","width":5.0,"via":[Vector2(26,-198),Vector2(-37,-205)]},
-	{"id":"c05","a":"rua_norte","b":"acesso_norte","kind":"beco","width":3.7,"via":[Vector2(-144,-192)]},
-	{"id":"c06","a":"acesso_norte","b":"base_norte","kind":"rua","width":5.5,"via":[Vector2(-232,-201),Vector2(-268,-226)]},
-	{"id":"c07","a":"central_hub","b":"escada_central","kind":"escada","width":2.6,"via":[Vector2(-57,-25),Vector2(-90,-72)]},
-	{"id":"c08","a":"escada_central","b":"rua_norte","kind":"beco","width":2.6,"via":[Vector2(-69,-154)]},
-	{"id":"r01","a":"praca","b":"campinho","kind":"rua","width":6.0,"via":[Vector2(-50,130),Vector2(24,149),Vector2(86,130)]},
-	{"id":"r02","a":"campinho","b":"curva_leste","kind":"rua","width":5.7,"via":[Vector2(186,140),Vector2(254,112)]},
-	{"id":"r03","a":"curva_leste","b":"beco_leste","kind":"rua","width":5.1,"via":[Vector2(294,21)]},
-	{"id":"r04","a":"beco_leste","b":"praceta_leste","kind":"beco","width":3.8,"via":[Vector2(261,-83)]},
-	{"id":"r05","a":"praceta_leste","b":"retorno_alto","kind":"rua","width":5.1,"via":[Vector2(154,-111)]},
-	{"id":"r06","a":"campinho","b":"mercadinho","kind":"escada","width":3.0,"via":[Vector2(100,39),Vector2(53,-17)]},
-	{"id":"l00","a":"central_hub","b":"portal_oeste","kind":"beco","width":2.7,"via":[Vector2(-112,9)]},
-	{"id":"l01","a":"portal_oeste","b":"beco_baixo","kind":"beco","width":2.4,"via":[Vector2(-188,35)]},
-	{"id":"l02","a":"beco_baixo","b":"escada_sul","kind":"escada","width":2.3,"via":[Vector2(-264,70)]},
-	{"id":"l03","a":"escada_sul","b":"patio_oeste","kind":"escada","width":2.7,"via":[Vector2(-327,25)]},
-	{"id":"l04","a":"patio_oeste","b":"escada_longa","kind":"escada","width":2.4,"via":[Vector2(-322,-36)]},
-	{"id":"l05","a":"escada_longa","b":"plato_casas","kind":"beco","width":2.3,"via":[Vector2(-279,-91)]},
-	{"id":"l06","a":"plato_casas","b":"mirante","kind":"beco","width":2.2,"via":[Vector2(-314,-131)]},
-	{"id":"l07","a":"plato_casas","b":"plato_telha","kind":"escada","width":2.2,"via":[Vector2(-294,-145)]},
-	{"id":"l08","a":"portal_oeste","b":"beco_meio","kind":"beco","width":2.0,"via":[Vector2(-189,-14)]},
-	{"id":"l09","a":"beco_meio","b":"escada_curta","kind":"escada","width":2.2,"via":[Vector2(-245,-78)]},
-	{"id":"l10","a":"escada_curta","b":"plato_casas","kind":"beco","width":2.0,"via":[Vector2(-253,-104)]},
-	{"id":"l11","a":"beco_meio","b":"beco_baixo","kind":"beco","width":2.0,"via":[Vector2(-246,-4)]}
+	{"id":"s01","a":"base_sul","b":"rua_baixa","kind":"rua","width":6.0,"via":[Vector2(-194.48,237.44)]},
+	{"id":"s02","a":"rua_baixa","b":"curva_entrada","kind":"rua","width":6.0,"via":[Vector2(-147.32,175.96)]},
+	{"id":"s03","a":"curva_entrada","b":"praca","kind":"rua","width":5.5,"via":[Vector2(-102.42,146.28)]},
+	{"id":"c01","a":"praca","b":"central_hub","kind":"beco","width":3.8,"via":[Vector2(-54.8,68.9)]},
+	{"id":"c02","a":"central_hub","b":"mercadinho","kind":"beco","width":3.2,"via":[Vector2(12.1,10.6),Vector2(38.17,-24.38)]},
+	{"id":"c03","a":"mercadinho","b":"retorno_alto","kind":"rua","width":5.2,"via":[Vector2(55.69,-108.12)]},
+	{"id":"c04","a":"retorno_alto","b":"rua_norte","kind":"rua","width":5.0,"via":[Vector2(61.18,-209.88),Vector2(19.81,-217.3)]},
+	{"id":"c05","a":"rua_norte","b":"acesso_norte","kind":"beco","width":3.7,"via":[Vector2(-52.36,-213.06)]},
+	{"id":"c06","a":"acesso_norte","b":"base_norte","kind":"rua","width":5.5,"via":[Vector2(-107.24,-249.1),Vector2(-129.2,-268.18)]},
+	{"id":"c07","a":"central_hub","b":"escada_central","kind":"escada","width":2.6,"via":[Vector2(-15.19,-26.5),Vector2(-31.66,-76.32)]},
+	{"id":"c08","a":"escada_central","b":"rua_norte","kind":"beco","width":2.6,"via":[Vector2(-7.75,-163.24)]},
+	{"id":"r01","a":"praca","b":"campinho","kind":"rua","width":6.0,"via":[Vector2(-29.1,137.8),Vector2(18.2,157.94),Vector2(62.02,137.8)]},
+	{"id":"r02","a":"campinho","b":"curva_leste","kind":"rua","width":5.7,"via":[Vector2(127.82,148.4),Vector2(176.74,118.72)]},
+	{"id":"r03","a":"curva_leste","b":"beco_leste","kind":"rua","width":5.1,"via":[Vector2(214.46,22.26)]},
+	{"id":"r04","a":"beco_leste","b":"praceta_leste","kind":"beco","width":3.8,"via":[Vector2(204.83,-87.98)]},
+	{"id":"r05","a":"praceta_leste","b":"retorno_alto","kind":"rua","width":5.1,"via":[Vector2(136.5,-117.66)]},
+	{"id":"r06","a":"campinho","b":"mercadinho","kind":"escada","width":3.0,"via":[Vector2(82.32,41.34),Vector2(57.55,-18.02)]},
+	{"id":"l00","a":"central_hub","b":"portal_oeste","kind":"beco","width":2.7,"via":[Vector2(-56.12,9.54)]},
+	{"id":"l01","a":"portal_oeste","b":"beco_baixo","kind":"beco","width":2.4,"via":[Vector2(-110.16,37.1)]},
+	{"id":"l02","a":"beco_baixo","b":"escada_sul","kind":"escada","width":2.3,"via":[Vector2(-165.28,74.2)]},
+	{"id":"l03","a":"escada_sul","b":"patio_oeste","kind":"escada","width":2.7,"via":[Vector2(-202.09,26.5)]},
+	{"id":"l04","a":"patio_oeste","b":"escada_longa","kind":"escada","width":2.4,"via":[Vector2(-191.42,-38.16)]},
+	{"id":"l05","a":"escada_longa","b":"plato_casas","kind":"beco","width":2.3,"via":[Vector2(-156.01,-96.46)]},
+	{"id":"l06","a":"plato_casas","b":"mirante","kind":"beco","width":2.2,"via":[Vector2(-174.66,-138.86)]},
+	{"id":"l07","a":"plato_casas","b":"plato_telha","kind":"escada","width":2.2,"via":[Vector2(-159.58,-153.7)]},
+	{"id":"l08","a":"portal_oeste","b":"beco_meio","kind":"beco","width":2.0,"via":[Vector2(-104.95,-14.84)]},
+	{"id":"l09","a":"beco_meio","b":"escada_curta","kind":"escada","width":2.2,"via":[Vector2(-134.79,-82.68)]},
+	{"id":"l10","a":"escada_curta","b":"plato_casas","kind":"beco","width":2.0,"via":[Vector2(-137.03,-110.24)]},
+	{"id":"l11","a":"beco_meio","b":"beco_baixo","kind":"beco","width":2.0,"via":[Vector2(-144.34,-4.24)]}
 ]
 ## Orange contours in the sketch are LANDSCAPE, not a graph connection.
-const HILL_CONTOURS := [
-	{"center":Vector2(-427,18),"radius":Vector2(78,185)},
-	{"center":Vector2(-366,-257),"radius":Vector2(150,74)},
-	{"center":Vector2(12,-291),"radius":Vector2(234,58)},
-	{"center":Vector2(394,-112),"radius":Vector2(87,151)},
-	{"center":Vector2(342,256),"radius":Vector2(196,83)},
-	{"center":Vector2(-18,307),"radius":Vector2(165,52)}
-]
+# Hills are continuous physical slopes, never enclosing contour rings.
+const HILL_CONTOURS := []
 ## Areas are suggestions until final capture/respawn rules are approved.
 const FEATURE_CANDIDATES := [
 	{"node":"praca","label":"Praça improvisada"},
