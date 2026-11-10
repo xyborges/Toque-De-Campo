@@ -3,7 +3,6 @@ extends RefCounted
 ## sector batches: high visual density without keeping one live scene per prop.
 const MODULES := {
 	"favela_degrau_beco": preload("res://modes/war/library/favela_degrau_beco.tscn"),
-	"favela_z_stair_tread": preload("res://modes/war/library/favela_z_stair_tread.tscn"),
 	"janela_grade": preload("res://modes/war/library/favela_janela_grade.tscn"),
 	"janela_madeira": preload("res://modes/war/library/favela_janela_madeira.tscn"),
 	"porta_entrada": preload("res://modes/war/library/favela_porta_entrada.tscn"),

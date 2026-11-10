@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 31,
+  "version": 30,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,12 +8,9 @@
     1500,
     1500
   ],
-  "content_hash": "16e4631baed3a46cc26b7ce183fb029abe5fc3a95d1c6ea522dacd48e122615e",
-  "source_hash": "2337832c94cb25ad5214dd656ed7b6f0d5a7e2930784acac170e480b0bf75cec",
+  "content_hash": "50bd42198accd48e41d6e6a3fc60846ddb29adb27bf58e8f5dffa7d98fe2b7df",
+  "source_hash": "ebaebf9c55e0a0fa2ff61283d17e03d70b0a554d1692bfdb1b30719d030add9b",
   "sources": [
-    "res://assets/environment/materials/concrete-albedo.png",
-    "res://assets/environment/materials/concrete-normal.png",
-    "res://assets/environment/materials/concrete-roughness.png",
     "res://modes/war/audio/baile/ak_do_flamengo.mp3",
     "res://modes/war/audio/baile/eu_vi_o_mano.mp3",
     "res://modes/war/audio/baile/g3_chegou_clareando.mp3",
@@ -60,13 +57,11 @@
     "res://modes/war/library/favela_toldo.tscn",
     "res://modes/war/library/favela_tubulacao_externa.tscn",
     "res://modes/war/library/favela_varal.tscn",
-    "res://modes/war/library/favela_z_stair_tread.tscn",
     "res://modes/war/scripts/bot_director.gd",
     "res://modes/war/scripts/bot_transit.gd",
     "res://modes/war/scripts/favela_architecture.gd",
     "res://modes/war/scripts/favela_atmosphere.gd",
     "res://modes/war/scripts/favela_baile.gd",
-    "res://modes/war/scripts/favela_door_paths.gd",
     "res://modes/war/scripts/favela_edge_composition.gd",
     "res://modes/war/scripts/favela_frontline.gd",
     "res://modes/war/scripts/favela_hillside.gd",
@@ -77,14 +72,13 @@
     "res://modes/war/scripts/favela_street_art.gd",
     "res://modes/war/scripts/favela_street_space.gd",
     "res://modes/war/scripts/favela_uniform.gd",
-    "res://modes/war/scripts/favela_z_stairway.gd",
     "res://modes/war/scripts/game.gd",
+    "res://scripts/ui/match_dashboard.gd",
     "res://modes/war/scripts/operation.gd",
     "res://modes/war/scripts/prefab_factory.gd",
     "res://modes/war/scripts/rules.gd",
     "res://modes/war/scripts/ui.gd",
-    "res://modes/war/scripts/vehicles.gd",
-    "res://scripts/ui/match_dashboard.gd"
+    "res://modes/war/scripts/vehicles.gd"
   ],
   "grass_enabled": false,
   "grass_approved": false,
