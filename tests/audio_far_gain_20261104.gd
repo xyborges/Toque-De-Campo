@@ -53,8 +53,8 @@ func run() -> void:
 	var distant_gun:=guns._play_now(101,"g3",Vector3(0,0,-600))
 	check(is_instance_valid(near_gun) and is_instance_valid(distant_gun),"G3 sounds load at 50 and 600 meters")
 	if is_instance_valid(near_gun) and is_instance_valid(distant_gun):
-		check(close(near_gun.volume_db,float(near_gun.get_meta("base_db"))+GameSoundPropagation.combat_presence_db(50.),.002),"50m shot keeps the global calibrated combat presence")
-		check(close(distant_gun.volume_db,float(distant_gun.get_meta("base_db"))+GameSoundPropagation.combat_presence_db(600.)+boost,.002),"600m shot keeps both the existing 5% trim and the new global combat presence")
+		check(close(near_gun.volume_db,float(near_gun.get_meta("base_db"))+GameSoundPropagation.combat_presence_db(50.)+GameWeaponAudio.distant_shot_relief_db("g3",50.),.002),"50m shot keeps the global calibrated combat presence")
+		check(close(distant_gun.volume_db,float(distant_gun.get_meta("base_db"))+GameSoundPropagation.combat_presence_db(600.)+boost+GameWeaponAudio.distant_shot_relief_db("g3",600.),.002),"600m shot keeps both the existing 5% trim and the new global combat presence")
 		check(distant_gun.global_position==Vector3(0,0,-600),"600m shot retains the actual spatial origin")
 
 	var near_blast:=explosions._start("far-gain:near",Vector3(0,0,-50),"destroy")

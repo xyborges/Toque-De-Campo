@@ -6,6 +6,10 @@ class_name GameWeaponAudio
 const LIMIT := 96
 const FILTER_OPEN_HZ := 18000.0
 const FILTER_DISTANT_HZ := 9200.0
+# Gunfire needs a distinct long-range signature; retaining almost all treble
+# at 400m made remote shots sound as if they came from the listener's rifle.
+const SMALL_ARMS := ["glock","ak","fal","g3","sniper","lightMG","heavyMG","hmg"]
+const SMALL_ARMS_FAR_CUTOFF_HZ := 7400.0
 const FILTER_REAR_HZ := 10800.0
 const FILTER_BLOCKED_HZ := 5600.0
 const FILTER_INTERIOR_HZ := 14500.0
@@ -29,10 +33,13 @@ const AUTOCANNON_FAR_START_M:=300.0
 static func profile(weapon: String) -> Dictionary:
 	match weapon:
 		"fists":return {"range":12.,"unit":2.,"db":-17.,"limit":4}
-		"glock": return {"range":850.0,"unit":46.0,"db":-3.0,"limit":8}
-		"ak","fal","g3": return {"range":1800.0,"unit":95.0,"db":-5.5,"limit":24}
-		"sniper": return {"range":3200.0,"unit":155.0,"db":-3.0,"limit":8}
-		"lightMG","heavyMG","hmg": return {"range":2400.0,"unit":140.0,"db":-7.0,"limit":24}
+		"glock": return {"range":850.0,"unit":42.0,"db":-3.0,"limit":8}
+		# The 95/155m reference sizes made remote muzzles almost as loud as
+		# the player-owned shot at 5m. Use realistic relative falloff while
+		# retaining long audible range and the regular 3D spatial origin.
+		"ak","fal","g3": return {"range":1800.0,"unit":70.0,"db":-5.5,"limit":24}
+		"sniper": return {"range":3200.0,"unit":110.0,"db":-3.0,"limit":8}
+		"lightMG","heavyMG","hmg": return {"range":2400.0,"unit":105.0,"db":-7.0,"limit":24}
 		"tank","rpg","stinger","tv","missile","autocannon": return {"range":4000.0,"unit":210.0,"db":-5.0,"limit":12}
 		"torpedo": return {"range":700.0,"unit":40.0,"db":-12.0,"limit":8}
 	return {"range":45.0,"unit":3.0,"db":-9.0,"limit":6}
@@ -72,11 +79,23 @@ static func source_rear_blend(viewport: Viewport, point: Vector3) -> float:
 	var rear_amount:=relative.normalized().dot(observer.basis.z)
 	return smoothstep(-0.08,0.92,rear_amount)
 
-static func filter_target_hz(distance_to: float,max_distance: float,blocked: bool,enclosed: bool,rear_blend: float) -> float:
-	var start:=maxf(25.0,minf(120.0,max_distance*.06))
-	var finish:=maxf(start+80.0,minf(1400.0,max_distance*.60))
+static func distant_shot_relief_db(weapon: String,distance_to: float) -> float:
+	if weapon not in SMALL_ARMS: return 0.0
+	# Leave a weapon fired beside the listener intact. Farther away, reduce
+	# only the excess boost on small arms, not tank fire or explosions.
+	var meters:=maxf(0.0,distance_to)
+	# The old 95m rifle reference plus boosted presence made a 50m NPC shot
+	# almost as loud as the listener's own weapon. Restore the near/mid-range
+	# cue, then stop subtracting extra gain at longer distances: the actual
+	# 3D inverse-distance falloff still does that job without losing audibility.
+	return -5.0*smoothstep(8.0,75.0,meters)
+
+static func filter_target_hz(distance_to: float,max_distance: float,blocked: bool,enclosed: bool,rear_blend: float,weapon: String="") -> float:
+	var small_arms:=weapon in SMALL_ARMS
+	var start:=35.0 if small_arms else maxf(25.0,minf(120.0,max_distance*.06))
+	var finish:=375.0 if small_arms else maxf(start+80.0,minf(1400.0,max_distance*.60))
 	var distance_blend:=smoothstep(start,finish,maxf(0.0,distance_to))
-	var cutoff:=lerpf(FILTER_OPEN_HZ,FILTER_DISTANT_HZ,distance_blend)
+	var cutoff:=lerpf(FILTER_OPEN_HZ,SMALL_ARMS_FAR_CUTOFF_HZ if small_arms else FILTER_DISTANT_HZ,distance_blend)
 	cutoff=lerpf(cutoff,minf(cutoff,FILTER_REAR_HZ),clampf(rear_blend,0.0,1.0)*.55)
 	if enclosed: cutoff=minf(cutoff,FILTER_INTERIOR_HZ)
 	if blocked: cutoff=minf(cutoff,FILTER_BLOCKED_HZ)
@@ -101,7 +120,7 @@ static func apply_acoustics(voice: AudioStreamPlayer3D,distance_to: float,blocke
 	var edge:=1.0-smoothstep(voice.max_distance*.78,voice.max_distance,distance_to)
 	var name:=str(voice.get_meta("weapon",""))
 	var gain:=0.0 if name in ["fists","broom","squeegee","axe","grenade"] else GameSoundPropagation.combat_presence_db(distance_to)
-	var goal:=float(voice.get_meta("base_db",-12))+gain+GameSoundPropagation.distant_gain_db(distance_to)-(4.5 if blocked else 0.0)+linear_to_db(maxf(.001,edge))
+	var goal:=float(voice.get_meta("base_db",-12))+gain+GameSoundPropagation.distant_gain_db(distance_to)+distant_shot_relief_db(name,distance_to)-(4.5 if blocked else 0.0)+linear_to_db(maxf(.001,edge))
 	voice.volume_db=lerpf(voice.volume_db,goal,clampf(smoothing,0,1))
 
 func _update_voice_filters(delta: float) -> void:
@@ -114,7 +133,7 @@ func _update_voice_filters(delta: float) -> void:
 		var distance_to:=listener.distance_to(voice.global_position)
 		var blocked:=bool(voice.get_meta("acoustic_blocked",false))
 		var enclosed:=bool(voice.get_meta("acoustic_enclosed",false))
-		var target_hz:=filter_target_hz(distance_to,voice.max_distance,blocked,enclosed,source_rear_blend(viewport,voice.global_position))
+		var target_hz:=filter_target_hz(distance_to,voice.max_distance,blocked,enclosed,source_rear_blend(viewport,voice.global_position),str(voice.get_meta("weapon","")))
 		var target_db: float=-14.0 if blocked else (-14.0 if enclosed else -12.0)
 		voice.attenuation_filter_cutoff_hz=lerpf(voice.attenuation_filter_cutoff_hz,target_hz,blend)
 		voice.attenuation_filter_db=lerpf(voice.attenuation_filter_db,target_db,blend)
@@ -277,7 +296,8 @@ func _play_now(emitter: int,weapon: String,point: Vector3) -> AudioStreamPlayer3
 	# Short samples must not wait for the next budgeted acoustic scan before
 	# receiving their distance character. Wall/interior routing follows in
 	# the existing controller; the first route uses a bounded, cached query.
-	voice.bus=acoustic_bus(point.distance_to(listener),_blocked(point,listener),interior,source_behind(get_viewport(),point))
+	var blocked:=_blocked(point,listener)
+	voice.bus=acoustic_bus(distance_to_listener,blocked,interior,source_behind(get_viewport(),point))
 	voice.pitch_scale=elevation_pitch(get_viewport(),point)
 	if weapon=="autocannon":
 		var shot_index:=int(autocannon_sequence.get(emitter,0))
@@ -292,13 +312,13 @@ func _play_now(emitter: int,weapon: String,point: Vector3) -> AudioStreamPlayer3
 	voice.unit_size=float(settings.unit)
 	voice.max_distance=float(settings.range)
 	voice.attenuation_model=AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
-	voice.attenuation_filter_cutoff_hz=FILTER_OPEN_HZ
+	voice.attenuation_filter_cutoff_hz=filter_target_hz(distance_to_listener,float(settings.range),blocked,interior,source_rear_blend(get_viewport(),point),weapon)
 	voice.attenuation_filter_db=-12.0
 	voice.set_meta("base_db",float(settings.db))
 	voice.set_meta("pool",key)
 	voice.set_meta("weapon",weapon)
 	voice.set_meta("started",Time.get_ticks_usec())
-	apply_acoustics(voice,point.distance_to(listener),_blocked(point,listener),interior)
+	apply_acoustics(voice,distance_to_listener,blocked,interior)
 	voice.play();started_events+=1
 	return voice
 

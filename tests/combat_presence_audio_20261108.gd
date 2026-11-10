@@ -77,7 +77,7 @@ func run() -> void:
 	for i in gun_names.size():
 		var name: String=gun_names[i]
 		var shot:=guns._play_now(100+i,name,Vector3(0,0,-400))
-		var wanted:=float(GameWeaponAudio.profile(name).db)+GameSoundPropagation.combat_presence_db(400.)+GameSoundPropagation.distant_gain_db(400.)
+		var wanted:=float(GameWeaponAudio.profile(name).db)+GameSoundPropagation.combat_presence_db(400.)+GameSoundPropagation.distant_gain_db(400.)+GameWeaponAudio.distant_shot_relief_db(name,400.)
 		verify(is_instance_valid(shot) and shot.playing,"weapon "+name+" has real loaded 3D sound at 400m")
 		if is_instance_valid(shot):
 			verify(within(shot.volume_db,wanted,.04),"weapon "+name+" receives calibrated long-range gain")
@@ -90,7 +90,7 @@ func run() -> void:
 	scene.add_child(war)
 	await process_frame
 	var war_rifle:=war._play_now(1250,"fal",Vector3(0,0,-400))
-	verify(is_instance_valid(war_rifle) and within(war_rifle.volume_db,GameWeaponAudio.profile("fal").db+GameSoundPropagation.combat_presence_db(400.)+GameSoundPropagation.distant_gain_db(400.),.04),"War mode inherits amplified world-space rifle")
+	verify(is_instance_valid(war_rifle) and within(war_rifle.volume_db,GameWeaponAudio.profile("fal").db+GameSoundPropagation.combat_presence_db(400.)+GameSoundPropagation.distant_gain_db(400.)+GameWeaponAudio.distant_shot_relief_db("fal",400.),.04),"War mode inherits amplified world-space rifle")
 	var war_cannon:=war._play_now(1251,"tank",Vector3(0,0,-400))
 	verify(is_instance_valid(war_cannon) and war_cannon.stream.resource_path=="res://audio/war/tank-fire.wav","War tank override keeps its dedicated cannon sample")
 	verify(is_instance_valid(war_cannon) and within(war_cannon.volume_db,GameWeaponAudio.profile("tank").db+GameSoundPropagation.combat_presence_db(400.)+GameSoundPropagation.distant_gain_db(400.),.04),"War tank cannon keeps global gain after stream override")
@@ -101,7 +101,7 @@ func run() -> void:
 	var gun:=guns._play_now(900,"ak",Vector3(0,0,-400))
 	var free_gain:=gun.volume_db
 	GameWeaponAudio.apply_acoustics(gun,400.,true,false)
-	verify(gun.bus.begins_with("WeaponBlocked") and within(free_gain-gun.volume_db,4.5,.01),"one Favela wall now muffles by 4.5 dB instead of 8 dB")
+	verify(gun.bus.begins_with("WeaponBlocked") and within(free_gain-gun.volume_db,4.5,.01),"remote rifle behind a Favela wall retains the original 4.5dB occlusion")
 	verify(GameWeaponAudio.filter_target_hz(400.,1800.,true,false,0.)>=5500.,"occluded weapons retain useful midrange energy")
 	gun.stop()
 	var melee:=guns._play_now(901,"fists",Vector3(0,0,-4))
