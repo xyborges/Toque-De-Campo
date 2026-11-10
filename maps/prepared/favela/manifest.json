@@ -1,6 +1,6 @@
 {
   "id": "favela",
-  "version": 28,
+  "version": 30,
   "status": "testing",
   "bounds": [
     -750,
@@ -8,8 +8,8 @@
     1500,
     1500
   ],
-  "content_hash": "b7d03715ea9f083ba20dd383063ff14e4610ac304f3c19c6186099aa04d932a7",
-  "source_hash": "ec8061b317d757eb9b392574b6cb2607c0df4ce1c39b0015164727a575f69f7b",
+  "content_hash": "50bd42198accd48e41d6e6a3fc60846ddb29adb27bf58e8f5dffa7d98fe2b7df",
+  "source_hash": "ebaebf9c55e0a0fa2ff61283d17e03d70b0a554d1692bfdb1b30719d030add9b",
   "sources": [
     "res://modes/war/audio/baile/ak_do_flamengo.mp3",
     "res://modes/war/audio/baile/eu_vi_o_mano.mp3",

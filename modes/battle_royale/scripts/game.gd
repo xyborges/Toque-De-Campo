@@ -6,7 +6,8 @@ const BR_PROTOCOL:=10
 const BR_PORT:=3016
 const BR_CAPACITY:=40
 const HUMAN_CAPACITY:=12
-const ONLINE_BOTS:=28
+# FFA has no teams: cap the total number of bots to 2 * 11.
+const ONLINE_BOTS:=GameBotPopulation.TOTAL_BOTS
 const QUEUE_SECONDS:=30.
 const ROOM_REGISTRY=preload("res://modes/battle_royale/matchmaking/room_registry.gd")
 const MAP=preload("res://modes/battle_royale/map/afghan_map.gd")

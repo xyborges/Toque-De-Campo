@@ -15,13 +15,13 @@ func run()->void:
  var bots:=0
  for actor:BRPlayer in game.players.values():
   if actor.br_bot:bots+=1
- check(bots==28 and game.players.size()==29,"28 authority bots plus one human")
+ check(bots==22 and game.players.size()==23,"22 authority bots plus one human")
  var extra:=game._spawn_player(2,false,false,Vector3(10,0,-18)) as BRPlayer
  game.br_inventory.add_player(2);game._fill_queue_bots();bots=0
  for actor:BRPlayer in game.players.values():
   if actor.br_bot:bots+=1
- check(bots==28 and game.players.size()==30,"28 bots persist after another human joins")
- check(game._queue_roster(1).size()==30,"roster contains all participants")
+ check(bots==22 and game.players.size()==24,"22 bots persist after another human joins")
+ check(game._queue_roster(1).size()==24,"roster contains all participants")
  var report={"checks":checks,"failures":failures,"participants":game.players.size(),"bots":bots,"scope":"Authority flat scene fill/roster, not a full round or 28-client performance test"}
  NavalStorage.write_json("res://work/1102-br-population.json",report);print(JSON.stringify(report))
  game.leave_match();await create_timer(.05).timeout;game.free();await process_frame;quit(0 if failures.is_empty() else 1)

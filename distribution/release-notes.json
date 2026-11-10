@@ -1,38 +1,34 @@
 {
-  "version": "1.13.9",
-  "date": "08/11/2026",
-  "title": "Favela v26, novo placar e carregamento mais enxuto",
-  "summary": "A Favela ganhou novas escadarias, bairros mais densos, setores de linha de frente A?E e corre??es nas lajes; o painel superior das partidas foi unificado para Guerra, Battle Royale e Naval. No servidor dedicado da Favela, o planejamento de vegeta??o puramente visual ? dispensado, preservando ?rvores f?sicas e terreno.",
+  "version": "1.13.10",
+  "date": "10/11/2026",
+  "title": "Novos caminhos na Favela, bots táticos e áudio aprimorado",
+  "summary": "A Favela recebeu novos caminhos de terra ligando ruas e becos às entradas das casas. Os bots agora contornam melhor obstáculos e reagem à ameaça de blindados, com limite provisório de 11 bots por equipe no Guerra. Tiros e explosões têm presença sonora aprimorada a distância e proteção contra picos. Também corrigimos a codificação das atualizações.",
   "changes": [
     {
-      "title": "Favela urbana ampliada",
-      "text": "4.313 casas, 31 lances com 217 degraus f?sicos, acesso entre lajes e concreto urbano texturizado, mantendo vias e passagens."
+      "title": "Acessos de terra às casas",
+      "text": "Foram acrescentados 253 caminhos de terra entre as portas das residências e as ruas ou becos da Favela, respeitando o relevo do mapa."
     },
     {
-      "title": "Linha de frente e contra-ataques",
-      "text": "Avan?o sequencial A?E com objetivos ativos, defesa, contra-ataque e regras sincronizadas de captura e implanta??o."
+      "title": "Bots encontram rotas alternativas",
+      "text": "Os bots conseguem replanejar a rota ao encontrar obstáculos e procuram cobertura ao detectar APCs ou outros blindados inimigos ocupados."
     },
     {
-      "title": "Painel de partida unificado",
-      "text": "Tickets, tempo, equipes e objetivos num s? dashboard em Guerra; contadores e estados adequados em Battle Royale, Naval e outros modos."
+      "title": "Limite de bots por equipe",
+      "text": "O modo Guerra passa a ter até 11 bots por equipe, além dos jogadores humanos. O Battle Royale suporta até 22 bots, sem reduzir o limite de jogadores humanos."
     },
     {
-      "title": "Inicializa??o mais enxuta no servidor",
-      "text": "Servidor dedicado da Favela evita calcular posi??es decorativas que n?o renderiza; posi??o de ?rvores e colisores permanece igual. Opcionalmente desative com TDC_IA2_HEADLESS_SKIP_VISUAL_HILLSIDE=0."
+      "title": "Tiros e explosões mais presentes",
+      "text": "A mixagem de combate foi ajustada para manter tiros e explosões perceptíveis a distâncias maiores. O compressor dedicado e o limitador final controlam picos ao ocorrerem várias explosões."
     }
   ],
   "fixes": [
     {
-      "title": "Lajes e telhados v26",
-      "text": "Corrige superf?cies coplanares que causavam tremor e bloqueio de movimento em certas lajes."
+      "title": "Atualizações e site sem caracteres quebrados",
+      "text": "O sistema agora valida os textos em UTF-8 antes de assinar e publicar o manifesto e a página de downloads."
     },
     {
-      "title": "Coer?ncia do HUD",
-      "text": "Remove marcadores e barras redundantes do topo sem alterar resultados ou autoridade da partida."
-    },
-    {
-      "title": "Identidade dos mapas no pacote",
-      "text": "Manifestos da Favela e da Ucr?nia ajustados para os hashes can?nicos LF do c?digo distribu?do, evitando incompatibilidade de conte?do entre m?quinas."
+      "title": "Identidade de mapa sincronizada",
+      "text": "O manifesto preparado da Favela foi reconstruído a partir dos arquivos finais para manter cliente e servidor com a mesma identidade de mapa."
     }
   ]
 }

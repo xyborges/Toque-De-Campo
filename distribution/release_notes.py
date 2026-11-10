@@ -2,8 +2,16 @@
 from pathlib import Path
 import html
 import json
+import re
 
 SOURCE = Path(__file__).with_name('release-notes.json')
+HISTORY = Path(__file__).with_name('release-history.json')
+
+
+def reject_corrupted_text(value, field):
+    """Never sign or publish release text with lost UTF-8 characters."""
+    if '\ufffd' in value or re.search(r'(?<=\w)\?(?=\w)|\?\?|\s\?\s', value):
+        raise ValueError(f'Caracteres corrompidos nas notas ({field}); corrija o UTF-8 antes de publicar.')
 
 
 def load_notes(version):
@@ -20,6 +28,15 @@ def load_notes(version):
             raise ValueError('Título de novidade inválido.')
         if not isinstance(change['text'], str) or not 1 <= len(change['text']) <= 600:
             raise ValueError('Descrição de novidade inválida.')
+    for key in ('title', 'summary'):
+        reject_corrupted_text(notes[key], key)
+    for section in ('changes', 'fixes'):
+        for i, item in enumerate(notes.get(section, [])):
+            for key in ('title', 'text'):
+                value = item.get(key)
+                if not isinstance(value, str) or not value:
+                    raise ValueError(f'Campo inválido nas notas: {section}[{i}].{key}')
+                reject_corrupted_text(value, f'{section}[{i}].{key}')
     return notes
 
 
@@ -32,8 +49,13 @@ def render_download_page(client):
         for i, change in enumerate(notes['changes']))
     def listing(items):
         return '<ul>' + ''.join('<li>' + escape(str(item)) + '</li>' for item in items) + '</ul>' if items else '<p class="empty">Nenhum item registrado separadamente.</p>'
-    history_file=Path(__file__).with_name('release-history.json')
+    history_file=HISTORY
     history=json.loads(history_file.read_text(encoding='utf-8')) if history_file.exists() else []
+    for entry in history:
+        reject_corrupted_text(str(entry.get('title', '')), 'history.title')
+        for section in ('additions', 'fixes'):
+            for value in entry.get(section, []):
+                reject_corrupted_text(str(value), 'history.' + section)
     current={'version':client['version_name'],'title':notes['title'],
              'additions':[item['title']+': '+item['text'] for item in notes['changes']],
              'fixes':[item['title']+': '+item['text'] for item in notes.get('fixes',[])]}

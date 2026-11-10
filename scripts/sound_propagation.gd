@@ -8,6 +8,18 @@ const LIMIT:=256
 const FAR_GAIN_START_M:=350.0
 const FAR_GAIN_FULL_M:=600.0
 const FAR_GAIN_LINEAR:=1.05
+# Combat presence: make firefights readable throughout compact and open maps.
+# This is a source gain, not a change to sound speed or 3D falloff.
+const COMBAT_NEAR_GAIN_DB:=3.5
+const COMBAT_MAX_GAIN_DB:=12.5
+const COMBAT_REFERENCE_UNIT_M:=240.0 # maximum unit size used by current combat profiles
+const COMBAT_ATTENUATION_COMPENSATION:=0.78
+
+static func combat_presence_db(distance: float) -> float:
+	# Compensate only part of 3D loss. Even the loudest 240m-unit cannon
+	# must keep fading as it moves away; never reverse the audible falloff.
+	var natural_loss:=linear_to_db(1.0+maxf(0.0,distance)/COMBAT_REFERENCE_UNIT_M)
+	return minf(COMBAT_MAX_GAIN_DB,COMBAT_NEAR_GAIN_DB+natural_loss*COMBAT_ATTENUATION_COMPENSATION)
 
 static func distant_gain_db(distance: float) -> float:
 	var blend:=smoothstep(FAR_GAIN_START_M,FAR_GAIN_FULL_M,maxf(0.0,distance))
