@@ -208,7 +208,10 @@ func build() -> void:
 	var begun:=Time.get_ticks_msec()
 	set_meta("sector_colliders",true)
 	set_meta("war_detail_lod",true)
-	set_meta("use_occluders",false)
+	# Explicit A/B pilot only; no rendering, physics or navigation change by default.
+	set_meta("use_occluders",render_visuals and OS.get_cmdline_user_args().has("--favela-occlusion-pilot"))
+	set_meta("occluder_labels",PackedStringArray(["CasaFavela","Puxadinho"]))
+	set_meta("occluder_cell_size",32.0)
 	streets = STREET_SPACE.new(road_envelopes())
 	_reserve_buildings_and_spawns()
 	if render_visuals and ground_material == null:

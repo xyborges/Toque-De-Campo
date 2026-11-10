@@ -77,6 +77,8 @@ static func build(parent: Node3D,visuals: bool) -> void:
 	parent.set_meta("war_map_size",3500)
 
 static func _build_favela(parent: Node3D,visuals: bool) -> void:
+	# Occlusion is an opt-in render-only experiment; dedicated authority stays off.
+	parent.get_viewport().use_occlusion_culling = visuals and OS.get_cmdline_user_args().has("--favela-occlusion-pilot")
 	var map:=WarFavelaMap.new()
 	map.name="FavelaWar";map.render_visuals=visuals
 	parent.add_child(map);map.build()

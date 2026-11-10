@@ -12,6 +12,7 @@ var sector := 24.0
 var batches: Dictionary = {}
 var collision_count := 0
 var collision_bodies: Dictionary={}
+var occluder_cells: Dictionary={}
 var detail_count := 0
 
 func _init(parent: Node3D, render_visuals := true, sector_size := 24.0) -> void:
@@ -148,12 +149,24 @@ func _collider(label: String, shape: Shape3D, transform: Transform3D,surface:=""
 		body=collision_bodies[key]
 	body.add_child(collision)
 	collision_count += 1
-	if visuals and root.get_meta("use_occluders",false) and shape is BoxShape3D and shape.size.y>2.0 and maxf(shape.size.x,shape.size.z)>3.0:
+	var occluder_labels: PackedStringArray=root.get_meta("occluder_labels",PackedStringArray())
+	if visuals and root.get_meta("use_occluders",false) and (occluder_labels.is_empty() or occluder_labels.has(label)) and shape is BoxShape3D and shape.size.y>2.0 and maxf(shape.size.x,shape.size.z)>3.0:
+		# Occluders are CPU work. A single conservative closed block per spatial
+		# cell is usually enough; do not register thousands of stacked storeys.
+		var cell_size: float=float(root.get_meta("occluder_cell_size",0.0))
+		if cell_size>0.0:
+			var cell:=Vector2i(floori(transform.origin.x/cell_size),floori(transform.origin.z/cell_size))
+			if occluder_cells.has(cell):return collision
+			occluder_cells[cell]=true
+		# In strict mode, only closed solid blocks become occluders. Doorways,
+		# traversable roofs and thin walls stay visible through their openings.
 		var occluder := OccluderInstance3D.new()
 		var box := BoxOccluder3D.new()
-		box.size = shape.size
+		var inset:=0.24 if not occluder_labels.is_empty() else 0.0
+		box.size = shape.size-Vector3.ONE*inset
 		occluder.occluder = box
 		occluder.transform = transform
+		occluder.set_meta("source_collider",label)
 		root.add_child(occluder)
 	return collision
 

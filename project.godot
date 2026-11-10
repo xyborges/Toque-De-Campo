@@ -60,4 +60,5 @@ jolt_physics_3d/motion_queries/recovery_amount=1.0
 renderer/rendering_method="forward_plus"
 renderer/rendering_method.mobile="gl_compatibility"
 renderer/rendering_method.web="gl_compatibility"
+occlusion_culling/use_occlusion_culling=true
 environment/defaults/default_clear_color=Color(0.16, 0.19, 0.2, 1)
