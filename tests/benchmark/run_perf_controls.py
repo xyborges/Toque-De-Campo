@@ -49,6 +49,7 @@ def main():
     destination = ROOT / "work/perf-audit"
     destination.mkdir(parents=True, exist_ok=True)
     source = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for folder in ("scripts", "modes/war/scripts", "tests/benchmark") for p in (ROOT/folder).rglob("*.gd")}
+    source.update({str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(__file__).resolve(), ROOT/"tests/benchmark/run_benchmark.py", ROOT/"tests/benchmark/benchmark_config.json")})
     records = []
     try:
         subprocess.run(coord + ["check", sid], cwd=ROOT, check=True)
@@ -109,13 +110,14 @@ def main():
             (destination/f"{args.prefix}-aggregate.json").write_text(json.dumps({"base_sha": official.command_output(["git", "rev-parse", "HEAD"]), "source_sha256": source, "duration": args.duration, "pairs": args.pairs, "records": records, "approval": "exploratory only; not a production performance gate", "cpu_temperature": None, "limitation": "CPU temperature unavailable; native hitbox ablations change combat; no remote clients"}, ensure_ascii=False, indent=2), encoding="utf-8")
             print(json.dumps({"label":label, "problems":problems, "frames":data.get("frames"), "physics":data.get("physics_ms"), "simulation_ratio":data.get("simulation_wall_ratio")}), flush=True)
             # A malformed fixture stops the batch; focus loss is retained as invalid evidence.
-            if not data or code != 0 or "engine error" in problems:
+            if not data or code != 0 or "engine error" in problems or "source changed during batch" in problems or data.get("control_failures"):
                 raise RuntimeError(f"Invalid fixture: {label}; inspect its log")
         subprocess.run(coord + ["checkpoint", sid, "--confirm-own-changes", "--note", "Raw exploratory measurements reviewed; invalid samples explicitly marked"], cwd=ROOT, check=True)
         subprocess.run(coord + ["finish", sid, "--notes", "Paired rendered ablations completed; see aggregate problems for invalid samples. Not gameplay approval."], cwd=ROOT, check=True)
     except BaseException:
         subprocess.run(coord + ["abort", sid, "--notes", "Batch interrupted; partial raw output retained; inspect logs, no gameplay promotion"], cwd=ROOT)
         raise
+    return 4 if any(record["problems"] for record in records) else 0
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
