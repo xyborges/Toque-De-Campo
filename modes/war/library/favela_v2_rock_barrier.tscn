@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[node name="FavelaV2ParedaoRocha" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 0
+metadata/library_id = "favela_v2_rock_barrier"
+metadata/surface = "rock"
+metadata/asset_revision = 1
+metadata/lod_near = 0.0
+metadata/lod_far = 850.0
+metadata/destructible = false
+
+[node name="RochaVisivel" type="MeshInstance3D" parent="."]
+cast_shadow = 1
+visibility_range_end = 850.0
+
+[node name="ParedeFisica" type="CollisionShape3D" parent="."]

@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[node name="FavelaV2TerrenoCelula" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 0
+metadata/library_id = "favela_v2_terrain_chunk"
+metadata/surface = "earth_concrete"
+metadata/asset_revision = 1
+metadata/lod_near = 0.0
+metadata/lod_far = 1100.0
+metadata/destructible = false
+
+[node name="TerrenoVisual" type="MeshInstance3D" parent="."]
+cast_shadow = 1
+
+[node name="SoloFisico" type="CollisionShape3D" parent="."]
