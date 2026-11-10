@@ -1,0 +1,38 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/environment/materials/concrete-albedo.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/environment/materials/concrete-normal.png" id="2"]
+
+[sub_resource type="StandardMaterial3D" id="Concrete"]
+albedo_color = Color(0.75, 0.72, 0.68, 1)
+albedo_texture = ExtResource("1")
+normal_enabled = true
+normal_scale = 0.46
+normal_texture = ExtResource("2")
+roughness = 0.96
+
+[sub_resource type="BoxMesh" id="TreadMesh"]
+size = Vector3(2.24, 0.14, 0.79)
+
+[sub_resource type="BoxShape3D" id="TreadCollider"]
+size = Vector3(2.24, 0.14, 0.79)
+
+[node name="FavelaV2DegrauMorro" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 0
+metadata/library_id = "favela_v2_stair_tread"
+metadata/origin = "center"
+metadata/footprint = Vector2(2.24, 0.79)
+metadata/surface = "concrete"
+metadata/lod_near = 0.0
+metadata/lod_far = 280.0
+metadata/destructible = false
+metadata/asset_revision = 1
+
+[node name="ColisaoDegrau" type="CollisionShape3D" parent="."]
+shape = SubResource("TreadCollider")
+
+[node name="DegrauConcreto" type="MeshInstance3D" parent="."]
+mesh = SubResource("TreadMesh")
+material_override = SubResource("Concrete")
+visibility_range_end = 280.0
