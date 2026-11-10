@@ -51,6 +51,19 @@ func _stats(values: Array[float]) -> Dictionary:
 	for index in range(n-worst_count,n):worst_sum+=ordered[index]
 	return {"average_fps":1000.*n/sum,"one_percent_low_fps":1000.*worst_count/worst_sum,"mean_ms":sum/n,"p50_ms":ordered[mini(n-1,ceili(n*.50)-1)],"p95_ms":ordered[mini(n-1,ceili(n*.95)-1)],"p99_ms":ordered[mini(n-1,ceili(n*.99)-1)],"max_ms":ordered[-1],"samples":n}
 
+# Extension hooks for isolated QA controls; the default benchmark is unchanged.
+func _make_game() -> WarGame:
+	return WarGame.new()
+
+func _after_deploy() -> void:
+	pass
+
+func _sample_extra() -> void:
+	pass
+
+func _result_extra() -> Dictionary:
+	return {}
+
 func run() -> void:
 	if DisplayServer.get_name()=="headless":fail("GPU benchmark requires a window");return
 	seed(712907)
@@ -65,7 +78,7 @@ func run() -> void:
 	GameOptions.values["scale"]=1.0
 	GameOptions.values["fps"]=0
 	GameOptions.values["vsync"]=false
-	game=WarGame.new()
+	game=_make_game()
 	game.operation_id=operation
 	game.offline_operation=true
 	game.offline_participants=29
@@ -93,6 +106,7 @@ func run() -> void:
 		for other: GamePlayer in game.players.values():
 			other.set_physics_process(false)
 		if is_instance_valid(game.vehicle_system):game.vehicle_system.set_physics_process(false)
+	_after_deploy()
 	game.ui_focus.close_all()
 	camera=Camera3D.new()
 	camera.far=2200.
@@ -130,6 +144,7 @@ func run() -> void:
 	var previous_physics:=Engine.get_physics_frames()
 	while Time.get_ticks_usec()-started<duration*1000000.:
 		await process_frame
+		_sample_extra()
 		var now:=Time.get_ticks_usec()
 		var elapsed:float=(now-started)*.000001
 		var ms:float=(now-last)*.001;last=now
@@ -181,6 +196,7 @@ func run() -> void:
 		if dt>50.:over50+=1
 		if dt>100.:over100+=1
 	var result: Dictionary={"operation":operation,"label":label,"renderer":RenderingServer.get_current_rendering_method(),"gpu_name":RenderingServer.get_video_adapter_name(),"requested_resolution":[1920,1080],"render_texture":[rendered.x,rendered.y],"internal_scale":actual_scale,"preset":"Médio com escala 100%; fps e VSync desligados","actual_bots":deployed,"actual_bots_end":bots_at_end,"players":game.players.size(),"qa_presentation_only":qa_presentation_only,"qa_frozen_scene":qa_frozen_scene,"fps_cap":fps_cap,"collection_protocol":"war-1080p-28-bots-focus-gpu-v2","frames":times,"frame_time_trace_ms":samples,"measurement_window_unix_ms":{"start":measurement_start_unix_ms,"end":measurement_end_unix_ms},"focus":{"start_focused":focused_on_start,"focused_frames":focus_frames-unfocused_frames,"unfocused_frames":unfocused_frames,"total_frames":focus_frames,"transitions":focus_transitions,"change_events":focus_changes},"bot_population":{"minimum":minimum_bots,"at_end":bots_at_end,"samples":bot_population_checks},"actual_vsync":DisplayServer.window_get_vsync_mode(),"actual_fps_cap":Engine.max_fps,"gpu_ms":_stats(gpu_samples),"process_ms":_stats(cpu_samples),"physics_ms":_stats(physics_samples),"median_fps":1000./float(times.p50_ms),"over33_per_min":over33*60./duration,"over50_per_min":over50*60./duration,"over100_count":over100,"draw_calls_max":max_draws,"reported_gpu_mib_max":max_vram/1048576.,"nodes_max":max_nodes,"collision_pairs_max":max_collision_pairs,"pipeline_compilations_during_measurement":pipeline_total,"frames_over_33ms_with_new_pipelines":pipeline_spike_count,"spikes":spikes,"physics_ticks_per_frame":tick_deltas,"scoped_probe":GamePerformanceProbe.report(),"step_stats":GameStepMotion.qa_report(),"duration":duration,"warmup_seconds":warmup,"scope":"Offline WarGame, 28 deployed bots, fixed stationary camera near objective C (Favela), Afghan village or Ukraine B; no remote client, uncapped; after warmup.","valid":true}
+	result.merge(_result_extra(),true)
 	var output:="res://work/benchmark-results/"+label+".json"
 	NavalStorage.write_json(output,result)
 	print("PERF_1080P_RESULT ",JSON.stringify({"label":label,"operation":operation,"median_fps":result.median_fps,"p95_ms":times.p95_ms,"p99_ms":times.p99_ms,"over33_per_min":result.over33_per_min,"gpu_ms_mean":result.gpu_ms.mean_ms,"bots":deployed,"texture":rendered,"scale":actual_scale}))
