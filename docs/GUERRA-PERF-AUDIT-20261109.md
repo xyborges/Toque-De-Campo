@@ -4,6 +4,11 @@ Base: origin/main `e8891aedce71065b4ce52bee1bbaae401269d80a`.
 Branch: `codex/jj7-guerra-perf-audit-20261109`.
 Máquina desta coleta: i5-11400H, NVIDIA GTX 1650, Windows, Godot 4.7.2,
 Forward+, 1920×1080, Médio, escala 100%, 28 bots, física 60 Hz, sem VSync/limite de FPS.
+Esta é a única máquina disponível para testes no momento. O alvo oficial
+(i5-3470 + GTX 1650) não está acessível; os números absolutos e a escala sob
+carga não são homologação nem previsão para ele. As comparações A/B valem como
+evidência relativa dentro desta máquina e precisam de repetição no alvo quando
+ele estiver disponível.
 
 ## Escopo e critérios
 
@@ -157,6 +162,12 @@ python tests/benchmark/run_perf_controls.py --controls baseline --pairs 1 --dura
 
 
 ## Limites e riscos
+
+A indisponibilidade do i5-3470 é uma limitação central desta entrega: a coleta
+usa um CPU 6C/12T, enquanto o alvo oficial é 4C/4T. Custo absoluto por bot, teto
+de FPS e sensibilidade a cache/clocks podem mudar no alvo. A prioridade relativa
+da apresentação é a hipótese a revalidar, não um resultado transferível; nenhuma
+conclusão desta triagem substitui a homologação no i5-3470.
 
 Cenário offline de câmera fixa com bots/combate reais, sem clientes remotos ou
 trajetória humana. Seed fixa não garante replay idêntico: combate, movimento,
