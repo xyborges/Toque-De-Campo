@@ -92,7 +92,19 @@ static func _natural(p: Vector2)->float:
 	var step_band:=.75*sin((p.y+35.0)*.036)*smoothstep(.12,.85,climb)
 	var erosion:=2.2*sin(.021*p.x+.010*p.y)*sin(.015*p.y)
 	var grain:=.55*sin(.082*p.x)*cos(.073*p.y)
-	return ascent+shoulder+step_band+erosion+grain
+	# Northern ridge at the BACK of the western cul-de-sac. It blocks a
+	# direct on-foot cut toward the traffickers' base while staying clear
+	# of the official S-road. Unlike the rejected ring-wall, these are
+	# broad earth/stone mountains, shared by the visual + physical mesh.
+	var ridge_center_z:=-231.0+7.0*sin(p.x*.029)
+	var ridge_fade_x:=smoothstep(-309.0,-285.0,p.x)*(1.0-smoothstep(-123.0,-100.0,p.x))
+	var northern_ridge:=31.5*ridge_fade_x*exp(-.5*pow((p.y-ridge_center_z)/10.0,2.0))
+	# A separate natural outer shoulder deters wandering around the
+	# western edge of the dead-end district; the entry at l00 stays open.
+	var west_center_x:=-295.0+5.0*sin(p.y*.021)
+	var flank:=17.0*exp(-.5*pow((p.x-west_center_x)/13.0,2.0))
+	flank*=smoothstep(-255.0,-204.0,p.y)*(1.0-smoothstep(105.0,153.0,p.y))
+	return ascent+shoulder+step_band+erosion+grain+northern_ridge+flank
 
 static func _height_raw(p: Vector2)->float:
 	var natural:=_natural(p)

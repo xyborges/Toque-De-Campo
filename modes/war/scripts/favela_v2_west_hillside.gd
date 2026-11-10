@@ -15,7 +15,9 @@ const REUSED_FACADES={
 	"comercio":preload("res://modes/war/library/favela_comercio_fachada.tscn"),
 	"varal":preload("res://modes/war/library/favela_varal.tscn"),
 	"roof_kit":preload("res://modes/war/library/favela_laje_domestica.tscn"),
-	"puxadinho":preload("res://modes/war/library/favela_puxadinho_chapa.tscn")
+	"puxadinho":preload("res://modes/war/library/favela_puxadinho_chapa.tscn"),
+	"kit_obra":preload("res://modes/war/library/favela_kit_obra.tscn"),
+	"lavanderia":preload("res://modes/war/library/favela_tanque_lavanderia.tscn")
 }
 const STAIR_IDS=["l02","l03","l04","l07","l09"]
 const STEP_RUN:=.765
@@ -218,33 +220,69 @@ static func plan_houses()->Array[Dictionary]:
 						break
 	return results
 
-static var _shared_wall_materials: Array[Material]=[]
+static var _shared_wall_materials:Array[Material]=[]
+static var _shared_roof_materials:Array[Material]=[]
 
-static func _wall_material(variant: int)->Material:
+static func _wall_material(variant:int)->Material:
 	if _shared_wall_materials.is_empty():
-		for shade in ["#b9a68f","#adaaa0","#c0b6a7","#a69787","#b3a88c"]:
+		# Old Favela's actual brick, plaster and concrete maps instead of
+		# solid flat cubes. Only nine shared StandardMaterial3D resources.
+		var paints=["#f0e8d6","#e4e5db","#e3b4a6",
+			"#e0d7c1","#c7c5bd","#d7aa93",
+			"#d7d2a9","#b9c4bd","#e9d5c6"]
+		var surfaces=["plaster","plaster","brick","plaster",
+			"concrete","brick","plaster","concrete","plaster"]
+		for i in paints.size():
 			var m:=StandardMaterial3D.new()
-			m.albedo_color=Color(shade)
-			m.roughness=.96
+			var name:String=surfaces[i]
+			var dir: String="res://assets/environment/materials/"+name
+			m.albedo_color=Color(paints[i])
+			m.albedo_texture=load(dir+"-albedo.png")
+			m.normal_enabled=true
+			m.normal_scale=.44
+			m.normal_texture=load(dir+"-normal.png")
+			m.roughness=.97
+			m.uv1_triplanar=true
+			m.uv1_scale=Vector3(.17,.17,.17)
 			_shared_wall_materials.append(m)
 	return _shared_wall_materials[posmod(variant,_shared_wall_materials.size())]
+
+static func _roof_material(variant:int)->Material:
+	if _shared_roof_materials.is_empty():
+		for shade in ["#c1bfb6","#b5b0a6","#a8aca7","#d0c2ae"]:
+			var m:=StandardMaterial3D.new()
+			m.albedo_color=Color(shade)
+			m.albedo_texture=load("res://assets/environment/materials/concrete-albedo.png")
+			m.normal_enabled=true
+			m.normal_scale=.33
+			m.normal_texture=load("res://assets/environment/materials/concrete-normal.png")
+			m.roughness=.97
+			m.uv1_triplanar=true
+			m.uv1_scale=Vector3(.17,.17,.17)
+			_shared_roof_materials.append(m)
+	return _shared_roof_materials[posmod(variant,_shared_roof_materials.size())]
 
 static func _reuse_detail(house: Node3D,id: String,at: Vector3)->void:
 	var decor:=REUSED_FACADES[id].instantiate() as Node3D
 	decor.name="Reuso_"+id
 	decor.position=at
-	house.add_child(decor)
-	# Facades/roof kits are visually reused; the building's existing
-	# StaticBody3D remains the *single* combat collider. This prevents
-	# roof-support coplanar collisions (the old Favela roof jitter).
-	for body: CollisionObject3D in decor.find_children("*","CollisionObject3D",true,false):
+	# Disable ALL decorative physics BEFORE parenting into World3D.
+	# Jolt was attempting to instantiate non-uniformly scaled roof kit
+	# collisions despite collision_layer=0, and logging physics errors.
+	# The house Body/Collision is still the only structural solid.
+	for body:CollisionObject3D in decor.find_children("*","CollisionObject3D",true,false):
 		body.collision_layer=0
 		body.collision_mask=0
+	for collider:CollisionShape3D in decor.find_children("*","CollisionShape3D",true,false):
+		collider.disabled=true
+	house.add_child(decor)
 
 static func _decorate_house(house: Node3D,i: int)->int:
 	var shell:=house.get_node_or_null("Edificio") as MeshInstance3D
 	if shell!=null:shell.set_surface_override_material(0,_wall_material(i))
-	var variant:=posmod(i,5)
+	var roof:=house.get_node_or_null("Laje") as MeshInstance3D
+	if roof!=null:roof.set_surface_override_material(0,_roof_material(i))
+	var variant:=posmod(i,9)
 	var modules:=0
 	# Front (+Z) is the same facade convention as favela_casa_laje.
 	_reuse_detail(house,"door",Vector3(-.25,.10,5.10))
@@ -252,17 +290,23 @@ static func _decorate_house(house: Node3D,i: int)->int:
 	_reuse_detail(house,"wood" if variant in [1,4] else "grid",
 		Vector3(-2.85,3.60,5.12))
 	modules+=1
-	if variant in [0,2,4]:
+	if variant in [0,2,4,6,8]:
 		_reuse_detail(house,"awning",Vector3(-.35,2.80,5.13))
 		modules+=1
-	if variant==3:
+	if variant in [3,7]:
 		_reuse_detail(house,"comercio",Vector3(.15,0.0,5.15))
 		modules+=1
-	if variant==0:
+	if variant in [0,5]:
 		_reuse_detail(house,"puxadinho",Vector3(1.65,7.23,-1.60))
 		modules+=1
-	elif variant==1:
+	elif variant in [1,6]:
 		_reuse_detail(house,"roof_kit",Vector3(-1.80,7.23,-1.35))
+		modules+=1
+	elif variant==7:
+		_reuse_detail(house,"lavanderia",Vector3(-1.65,7.23,-1.20))
+		modules+=1
+	elif variant==8:
+		_reuse_detail(house,"kit_obra",Vector3(-1.15,7.23,-1.35))
 		modules+=1
 	else:
 		_reuse_detail(house,"varal",Vector3(-1.35,7.22,-1.15))
@@ -293,7 +337,8 @@ static func _add_houses(parent: Node3D,houses: Array[Dictionary],visuals: bool)-
 				mesh.visible=false
 	return module_count
 
-static func build(parent: Node3D,visuals: bool=true,with_houses: bool=true)->Dictionary:
+static func build(parent:Node3D,visuals:bool=true,with_houses:bool=true,
+		prepared_houses:Array[Dictionary]=[])->Dictionary:
 	_resources()
 	var root:=Node3D.new()
 	root.name="FavelaV2MorroEsquerdo"
@@ -304,11 +349,12 @@ static func build(parent: Node3D,visuals: bool=true,with_houses: bool=true)->Dic
 		_make_flight(root,flight,visuals)
 		step_total+=flight["poses"].size()
 	var rail_count:=_edge_posts(root,flights) if visuals else 0
-	var houses: Array[Dictionary]=[]
-	if with_houses:houses=plan_houses()
+	var houses:Array[Dictionary]=[]
+	if with_houses:
+		houses=prepared_houses if not prepared_houses.is_empty() else plan_houses()
 	var reused_modules:=_add_houses(root,houses,visuals)
 	return {"flights":flights.size(),"treads":step_total,
 		"houses":houses.size(),"reused_facade_modules":reused_modules,
-		"reused_house_variants":5,"rails":rail_count,
+		"reused_house_variants":9,"rails":rail_count,
 		"physical_stair_bodies":flights.size(),
 		"west_gateways":TOPO.left_gate_links().size()}
