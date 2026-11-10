@@ -93,9 +93,10 @@ func close_top() -> void:
 	if stack.is_empty(): return
 	var panel: Control = stack.pop_back()
 	GameUI.dismiss(panel)
-	# Fast gameplay overlays cannot remain visually interactive after closing.
-	# The dismissal tween is retained, but this panel hides immediately.
-	if bool(panel.get_meta("ui_instant_close",false)): panel.hide()
+	# When revealing an underlying modal, hide the dismissed overlay now;
+	# keeping it drawn during the fade obscures the restored menu.
+	# The last modal can retain the original animated dismissal.
+	if not stack.is_empty() or bool(panel.get_meta("ui_instant_close",false)): panel.hide()
 	if not stack.is_empty():
 		stack.back().show()
 	else:

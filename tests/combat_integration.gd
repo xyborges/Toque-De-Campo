@@ -73,7 +73,9 @@ func run() -> void:
 			shooter.pitch = angle
 			shooter._update_weapon_pose()
 			var model := shooter.weapon_root.get_node("Imported_" + weapon) as Node3D
-			var actual := (model.global_basis * (Vector3.LEFT if weapon == "glock" else Vector3.RIGHT)).normalized()
+			# Both authored models are forward -Z; the historical LEFT/RIGHT axis
+			# came from older imported weapon models and is no longer the barrel.
+			var actual := (model.global_basis * (Vector3.RIGHT if weapon == "sniper" else Vector3.FORWARD)).normalized()
 			var expected := shooter.global_basis * (Basis(Vector3.RIGHT,angle) * Vector3.FORWARD)
 			check(actual.dot(expected) > 0.999,"model barrel forward %s %.1f" % [weapon,angle])
 			check(shooter.get_muzzle_position().is_equal_approx(shooter.muzzle_marker.global_position),"physical muzzle " + weapon)
@@ -184,6 +186,9 @@ func run() -> void:
 	# A slow frame still clamps the ray to the weapon's configured range.
 	game._spawn_projectile(1,Vector3(30,20,0),Vector3.RIGHT,"fal",false,true,"max-range-case")
 	var limited: Dictionary = game.projectiles.back()
+	# The current FAL uses 1100 m range, not the old 80 m value. Override
+	# only this projectile to exercise range clipping under a long frame.
+	limited.range = 80.0
 	game._step_projectiles(1.0)
 	check(limited.distance <= 80.001,"maximum range survives a large physics step")
 	target.global_position = Vector3(-0.1,0,-30)
