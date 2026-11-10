@@ -6,7 +6,7 @@
 		},
 		{
 			"path": "res://maps/prepared/ukraine/grass.res",
-			"sha256": "49ca26c56c97ee5bf1b8f5aa172f2cc8bb98d4bd05bcdb4cc4aa31a7cd667b85"
+			"sha256": "e10dd3c273fabbb8ad6b69ff8b4f872e0c1de1aeb26f89a9671dd916091a8de9"
 		},
 		{
 			"path": "res://maps/prepared/ukraine/grass_far_mesh.res",
@@ -30,7 +30,7 @@
 		},
 		{
 			"path": "res://maps/prepared/ukraine/navigation.res",
-			"sha256": "a4cba7bf4bde95288335663fed604856936ba6b5755836d760822d0b505ab0fb"
+			"sha256": "86f24c309c11bce1ff4af0bee361209593ae32066506d246fff82c07c75f685e"
 		}
 	],
 	"benchmark": {
@@ -51,7 +51,7 @@
 		3500.0,
 		3500.0
 	],
-	"content_hash": "867b642b6f17f3a69753d095156b597939516611bfaa1169dff24a34fa6eab3e",
+	"content_hash": "ff930c933f546882182491989f44cfd89116808ed49e2111f9aa10a37877d67a",
 	"grass_approved": false,
 	"grass_enabled": true,
 	"id": "ukraine",
@@ -105,7 +105,7 @@
 		"objectives",
 		"authored_terrain"
 	],
-	"source_hash": "23301a19fbedb2a7dc22395af169265aa22273fc7751605efa98e8b3ca94a360",
+	"source_hash": "9d91a339f93fcf30c16813a2b85949e6d8d2839b9a93b31038195ffb27fe3f6c",
 	"sources": [
 		"res://assets/war/biomes/nova_grama.png",
 		"res://modes/naval/scripts/catalog.gd",
@@ -119,6 +119,7 @@
 		"res://modes/war/library/carga_portuaria.tscn",
 		"res://modes/war/library/carro_carbonizado.tscn",
 		"res://modes/war/library/casa_ruina.tscn",
+		"res://modes/war/library/caveirao_cinza.tscn",
 		"res://modes/war/library/container_20ft.tscn",
 		"res://modes/war/library/cratera_impacto.tscn",
 		"res://modes/war/library/defensa_portuaria.tscn",
@@ -139,11 +140,13 @@
 		"res://modes/war/library/favela_caixa_dagua.tscn",
 		"res://modes/war/library/favela_caixa_eletrica.tscn",
 		"res://modes/war/library/favela_caixa_fibra_optica.tscn",
+		"res://modes/war/library/favela_campo_baile.tscn",
 		"res://modes/war/library/favela_canaleta_drenagem.tscn",
 		"res://modes/war/library/favela_carro_compacto.tscn",
 		"res://modes/war/library/favela_casa_laje.tscn",
 		"res://modes/war/library/favela_comercio_fachada.tscn",
 		"res://modes/war/library/favela_corrimao_beco.tscn",
+		"res://modes/war/library/favela_degrau_beco.tscn",
 		"res://modes/war/library/favela_escada_externa.tscn",
 		"res://modes/war/library/favela_janela_grade.tscn",
 		"res://modes/war/library/favela_janela_madeira.tscn",
@@ -168,6 +171,7 @@
 		"res://modes/war/library/favela_toldo.tscn",
 		"res://modes/war/library/favela_tubulacao_externa.tscn",
 		"res://modes/war/library/favela_varal.tscn",
+		"res://modes/war/library/favela_z_stair_tread.tscn",
 		"res://modes/war/library/glock_referencia.tscn",
 		"res://modes/war/library/grama_baixa_2m.tscn",
 		"res://modes/war/library/guarani_referencia.tscn",
@@ -202,13 +206,19 @@
 		"res://modes/war/scripts/effects.gd",
 		"res://modes/war/scripts/favela_architecture.gd",
 		"res://modes/war/scripts/favela_atmosphere.gd",
+		"res://modes/war/scripts/favela_baile.gd",
+		"res://modes/war/scripts/favela_door_paths.gd",
 		"res://modes/war/scripts/favela_edge_composition.gd",
+		"res://modes/war/scripts/favela_frontline.gd",
 		"res://modes/war/scripts/favela_hillside.gd",
 		"res://modes/war/scripts/favela_layout.gd",
 		"res://modes/war/scripts/favela_map.gd",
+		"res://modes/war/scripts/favela_pedestrian_stairs.gd",
+		"res://modes/war/scripts/favela_rim.gd",
 		"res://modes/war/scripts/favela_street_art.gd",
 		"res://modes/war/scripts/favela_street_space.gd",
 		"res://modes/war/scripts/favela_uniform.gd",
+		"res://modes/war/scripts/favela_z_stairway.gd",
 		"res://modes/war/scripts/game.gd",
 		"res://modes/war/scripts/grass_assets.gd",
 		"res://modes/war/scripts/grass_stream.gd",
@@ -222,7 +232,6 @@
 		"res://modes/war/scripts/map_content.gd",
 		"res://modes/war/scripts/module_snap.gd",
 		"res://modes/war/scripts/motorbike.gd",
-		"res://scripts/ui/match_dashboard.gd",
 		"res://modes/war/scripts/operation.gd",
 		"res://modes/war/scripts/outskirts.gd",
 		"res://modes/war/scripts/player.gd",
@@ -232,6 +241,7 @@
 		"res://modes/war/scripts/projectiles.gd",
 		"res://modes/war/scripts/render_batch.gd",
 		"res://modes/war/scripts/roads.gd",
+		"res://modes/war/scripts/rpg_ballistics.gd",
 		"res://modes/war/scripts/rules.gd",
 		"res://modes/war/scripts/scenery_batch.gd",
 		"res://modes/war/scripts/ship.gd",
@@ -240,7 +250,10 @@
 		"res://modes/war/scripts/stance.gd",
 		"res://modes/war/scripts/stinger_lock_audio.gd",
 		"res://modes/war/scripts/structures.gd",
+		"res://modes/war/scripts/tactical_body_pose.gd",
 		"res://modes/war/scripts/tactical_map.gd",
+		"res://modes/war/scripts/tactical_pose_frame.gd",
+		"res://modes/war/scripts/tactical_world_body.gd",
 		"res://modes/war/scripts/terrain.gd",
 		"res://modes/war/scripts/terrain_edits.gd",
 		"res://modes/war/scripts/thermal.gd",
@@ -305,5 +318,5 @@
 		"match"
 	],
 	"status": "validation_pending",
-	"version": 23
+	"version": 24
 }
