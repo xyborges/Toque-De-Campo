@@ -219,10 +219,16 @@ func _client_explosions() -> void:
 		var mix:=_measure(mix_capture.get_buffer(mix_capture.get_frames_available()))
 		var output:=_measure(master_capture.get_buffer(master_capture.get_frames_available()))
 		var layers:=client_audio.started_events-prior_events
-		var dedup:=game.seen_impacts.size()-prior_seen
+		# Live bots can create unrelated explosions during the audio QA window.
+		# Count only this fixture's known event IDs, not all live seen_impacts.
+		var dedup:=0
+		for seen_id in game.seen_impacts:
+			if str(seen_id).contains("r01-enet-qa:"+tag+":"):dedup+=1
+		var unrelated_impacts:=maxi(0,game.seen_impacts.size()-prior_seen-dedup)
 		var report: Dictionary={
 			"case":tag,"distance_m":spec.distance,"kind":spec.kind,
 			"events":spec.count,"started_layers":layers,"received_ids":dedup,
+			"ambient_impacts":unrelated_impacts,
 			"travel_delay_sec":travel,"mixer":mix,"master":output,
 			"bot_count":_remote_actors().size()}
 		event_reports.append(report)
