@@ -1,0 +1,10 @@
+[configuration]
+entry_symbol = "war_pose_math_init"
+compatibility_minimum = "4.7"
+reloadable = false
+
+[libraries]
+windows.debug.x86_64 = "res://native/pose/bin/windows/warpose.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://native/pose/bin/windows/warpose.windows.template_release.x86_64.dll"
+linux.debug.x86_64 = "res://native/pose/bin/linux/libwarpose.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://native/pose/bin/linux/libwarpose.linux.template_release.x86_64.so"

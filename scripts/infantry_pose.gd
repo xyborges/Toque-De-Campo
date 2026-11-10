@@ -5,6 +5,20 @@ const LEAN_DISTANCE:=.23
 const LEAN_ROLL:=.18
 const WAIST:=Vector3(0,.87,0)
 
+# GDE math pilot: disabled by default; authoritative collisions / hitboxes
+# continue to use the same pose state and transforms as before.
+static var native_pose_enabled:=OS.get_cmdline_user_args().has("--pose-gde-pilot")
+static var native_pose_checked:=false
+static var native_pose_instance: Object
+
+static func _native_math() -> Object:
+	if not native_pose_enabled:return null
+	if not native_pose_checked:
+		native_pose_checked=true
+		if ClassDB.class_exists("WarNativePoseMath"):
+			native_pose_instance=ClassDB.instantiate("WarNativePoseMath")
+	return native_pose_instance
+
 static func allowed(actor: GamePlayer) -> bool:
 	if actor.hp<=0 or actor.is_npc: return false
 	if actor is WarPlayer:
@@ -38,6 +52,11 @@ static func advance(actor: GamePlayer,delta: float) -> void:
 	actor.camera_pivot.rotation.z=-actor.lean*LEAN_ROLL
 
 static func upper_transform(actor: GamePlayer) -> Transform3D:
+	if native_pose_enabled:
+		var native: Object=_native_math()
+		if native!=null:
+			var result: Transform3D=native.upper_transform(actor.pitch,actor.lean)
+			return result
 	var bend:=clampf(actor.pitch*.42,-.49,.49)
 	var basis:=Basis(Vector3.BACK,-actor.lean*LEAN_ROLL)*Basis(Vector3.RIGHT,bend)
 	return Transform3D(basis,WAIST+Vector3(actor.lean*.04,0,0)-basis*WAIST)
@@ -79,6 +98,11 @@ static func apply(actor: GamePlayer) -> void:
 
 static func weapon_pose(actor: GamePlayer,offset: Vector3) -> Transform3D:
 	var pitch:=actor.clamp_aim_pitch(actor.pitch+(actor.recoil if actor.is_local else 0.))
+	if native_pose_enabled:
+		var native: Object=_native_math()
+		if native!=null:
+			var result: Transform3D=native.weapon_transform(pitch,actor.lean,actor.stance.prone_weight,actor.body_root.transform,offset)
+			return result
 	# Roll is around the sight axis after pitch, just like the camera. Doing
 	# these in reverse steers a raised/lowered barrel sideways while leaning.
 	var aim:=Basis(Vector3.RIGHT,pitch)*Basis(Vector3.BACK,-actor.lean*LEAN_ROLL)
