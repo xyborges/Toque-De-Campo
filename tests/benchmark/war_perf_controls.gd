@@ -56,6 +56,8 @@ func _apply_controls() -> void:
 
 func _after_deploy() -> void:
 	_apply_controls()
+	# Request focus before warmup only; every measured frame is still validated.
+	DisplayServer.window_move_to_foreground()
 
 func _sample_extra() -> void:
 	_apply_controls()

@@ -4,6 +4,7 @@ import argparse
 import csv
 import hashlib
 import json
+import re
 import subprocess
 import sys
 import threading
@@ -18,6 +19,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--controls", default=",".join(CONTROLS))
     parser.add_argument("--pairs", type=int, default=2)
+    parser.add_argument("--pair-offset", type=int, default=0)
     parser.add_argument("--duration", type=float, default=30)
     parser.add_argument("--godot")
     parser.add_argument("--prefix", default="perf-audit")
@@ -25,11 +27,13 @@ def main():
     controls = args.controls.split(",")
     if any(c not in CONTROLS + ["baseline"] for c in controls) or args.pairs < 1:
         parser.error("invalid control or pair count")
+    if args.pair_offset < 0 or not re.fullmatch(r"[A-Za-z0-9_-]{1,48}", args.prefix):
+        parser.error("invalid pair offset or output prefix")
     if not 10 <= args.duration <= 120:
         parser.error("duration must be 10..120 seconds")
     engine = official.find_godot(args.godot)
     schedule = []
-    for pair in range(args.pairs):
+    for pair in range(args.pair_offset, args.pair_offset + args.pairs):
         for control in controls:
             order = ["baseline", control] if pair % 2 == 0 else [control, "baseline"]
             for side, variant in enumerate(order):
@@ -97,7 +101,10 @@ def main():
             telemetry = list(csv.DictReader(gpu_window.open(encoding="utf-8"))) if gpu_window.exists() else []
             if any(hashlib.sha256((ROOT/path).read_bytes()).hexdigest() != digest for path, digest in source.items()):
                 problems.append("source changed during batch")
-            record = {"gpu_integrity": gpu, "integrity": integrity, "gpu_window_rows": telemetry, "label": label, "control": control, "pair": pair, "contrast": contrast, "problems": problems, "data": data}
+            trace_seconds = sum(data.get("frame_time_trace_ms", [])) / 1000
+            engine_ticks = sum(int(k) * int(v) for k, v in data.get("physics_ticks_per_frame", {}).items())
+            engine_ratio = engine_ticks / data.get("physics_hz", 60) / trace_seconds if trace_seconds else None
+            record = {"engine_simulation_wall_ratio": engine_ratio, "gpu_integrity": gpu, "integrity": integrity, "gpu_window_rows": telemetry, "label": label, "control": control, "pair": pair, "contrast": contrast, "problems": problems, "data": data}
             records.append(record)
             (destination/f"{args.prefix}-aggregate.json").write_text(json.dumps({"base_sha": official.command_output(["git", "rev-parse", "HEAD"]), "source_sha256": source, "duration": args.duration, "pairs": args.pairs, "records": records, "approval": "exploratory only; not a production performance gate", "cpu_temperature": None, "limitation": "CPU temperature unavailable; native hitbox ablations change combat; no remote clients"}, ensure_ascii=False, indent=2), encoding="utf-8")
             print(json.dumps({"label":label, "problems":problems, "frames":data.get("frames"), "physics":data.get("physics_ms"), "simulation_ratio":data.get("simulation_wall_ratio")}), flush=True)
