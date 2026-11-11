@@ -5,9 +5,10 @@ const LEAN_DISTANCE:=.23
 const LEAN_ROLL:=.18
 const WAIST:=Vector3(0,.87,0)
 
-# GDE math pilot: disabled by default; authoritative collisions / hitboxes
-# continue to use the same pose state and transforms as before.
-static var native_pose_enabled:=OS.get_cmdline_user_args().has("--pose-gde-pilot")
+# C++ visual-pose backend preferred when the native extension is complete;
+# explicit legacy flags or missing native methods retain GDScript fallback.
+# Authoritative collision physics still owns the same pose state / hitboxes.
+static var native_pose_enabled:=GameNativeRuntime.enabled("pose")
 static var native_pose_checked:=false
 static var native_pose_instance: Object
 

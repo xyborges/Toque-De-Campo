@@ -72,35 +72,52 @@ static func build(actor: GamePlayer) -> void:
 		WarBodyMesh._update_region(actor,"hand"+side,Vector3(.13,.16,.09),Vector3(0,-.02,0))
 	actor.set_meta("articulated_arms",true)
 
-static func _prepare_arm(actor: GamePlayer,arm: Node3D,target: Vector3,group: String,held_object: Node3D=null) -> Dictionary:
+static func _prepare_arm(actor: GamePlayer,arm: Node3D,target: Vector3,group: String,held_object: Node3D=null,shared: Dictionary={}) -> Dictionary:
 	var side: String=group.right(1)
 	var lower:=arm.get_node_or_null("Forearm"+side+"Mesh") as MeshInstance3D
-	if lower==null: return {}
+	if lower==null:return {}
 	var hand:=arm.get_node("Hand"+side) as MeshInstance3D
 	var upper:=arm.get_node("Arm"+side+"Mesh") as MeshInstance3D
+	var reuse: bool=bool(shared.get("pair",false))
+	var canonical: String=str(shared["canonical"]) if reuse and shared.has("canonical") else GameWeapons.canonical(actor.weapon_id)
+	if reuse and not shared.has("canonical"):shared["canonical"]=canonical
 	var proportion:=clampf(float(actor.body_proportions.get("arms",1.)),.65,1.5)
 	var shoulder: Vector3=arm.position
 	var grip:=actor.body_root.to_local(target)
-	var hand_basis: Basis=actor.body_root.global_basis.inverse()*actor.weapon_root.global_basis
-	if is_instance_valid(held_object): hand_basis=actor.body_root.global_basis.inverse()*held_object.global_basis
-	var firearm: bool=not is_instance_valid(held_object) and GameWeapons.ITEMS[actor.weapon_id].kind=="firearm" and not actor._grenade_active()
-	if firearm and GameWeapons.canonical(actor.weapon_id) in ["fal","glock","g3"]:
-		var model:=actor.weapon_root.get_node_or_null("Imported_"+GameWeapons.canonical(actor.weapon_id)) as Node3D
-		if model: hand_basis=actor.body_root.global_basis.inverse()*model.global_basis
-	elif firearm and GameWeapons.canonical(actor.weapon_id)=="ak":
-		var model:=actor.weapon_root.get_node_or_null("Imported_ak") as Node3D
-		if model:hand_basis=actor.body_root.global_basis.inverse()*GameAKReload.hand_basis(model)
+	var firearm: bool
+	if reuse and shared.has("firearm"):
+		firearm=bool(shared["firearm"])
+	else:
+		firearm=not is_instance_valid(held_object) and GameWeapons.ITEMS[actor.weapon_id].kind=="firearm" and not actor._grenade_active()
+		if reuse:shared["firearm"]=firearm
+	var hand_basis: Basis
+	if reuse and shared.has("hand_basis"):
+		hand_basis=shared["hand_basis"]
+	else:
+		var body_inv: Basis=shared["body_inv"] if reuse and shared.has("body_inv") else actor.body_root.global_basis.inverse()
+		if reuse and not shared.has("body_inv"):shared["body_inv"]=body_inv
+		hand_basis=body_inv*actor.weapon_root.global_basis
+		if is_instance_valid(held_object):hand_basis=body_inv*held_object.global_basis
+		if firearm and canonical in ["fal","glock","g3"]:
+			var model:=actor.weapon_root.get_node_or_null("Imported_"+canonical) as Node3D
+			if model:hand_basis=body_inv*model.global_basis
+		elif firearm and canonical=="ak":
+			var model:=actor.weapon_root.get_node_or_null("Imported_ak") as Node3D
+			if model:hand_basis=body_inv*GameAKReload.hand_basis(model)
+		if reuse:shared["hand_basis"]=hand_basis
 	var grabbing: bool=side=="L" and actor.reload_weapon==actor.weapon_id and actor.reload_left>0
-	if grabbing and GameWeapons.canonical(actor.weapon_id) in ["ak","fal","glock","sniper","g3"]:
-		grabbing=bool(actor.reload_pose_state(GameWeapons.canonical(actor.weapon_id),actor.reload_left,actor.reload_total).hand_grabbing)
+	if grabbing and canonical in ["ak","fal","glock","sniper","g3"]:
+		grabbing=bool(actor.reload_pose_state(canonical,actor.reload_left,actor.reload_total).hand_grabbing)
 	var previous: Dictionary=arm.get_meta("human_pose_cache",{})
-	if not previous.is_empty() and bool(previous.grabbing)==grabbing and previous.weapon==actor.weapon_id and Vector3(previous.grip).distance_squared_to(grip)<.00000001 and Basis(previous.basis).is_equal_approx(hand_basis) and float(previous.proportion)==proportion and bool(previous.firearm)==firearm and arm.transform.is_equal_approx(previous.arm): return {}
-	var cuff:=Vector3(-.035,-.029,.075) if side=="L" and GameWeapons.canonical(actor.weapon_id)!="glock" and not grabbing else Vector3(.023,-.025,.085)
+	if not previous.is_empty() and bool(previous.grabbing)==grabbing and previous.weapon==actor.weapon_id and Vector3(previous.grip).distance_squared_to(grip)<.00000001 and Basis(previous.basis).is_equal_approx(hand_basis) and float(previous.proportion)==proportion and bool(previous.firearm)==firearm and arm.transform.is_equal_approx(previous.arm):return {}
+	var cuff:=Vector3(-.035,-.029,.075) if side=="L" and canonical!="glock" and not grabbing else Vector3(.023,-.025,.085)
 	var wrist:=grip+hand_basis*(cuff if firearm else Vector3(0,.067,0))
 	if wrist.distance_to(shoulder)<.01:return {}
+	var upper_basis: Basis=shared["upper_basis"] if reuse and shared.has("upper_basis") else GameInfantryPose.upper_transform(actor).basis
+	if reuse and not shared.has("upper_basis"):shared["upper_basis"]=upper_basis
 	return {"actor":actor,"arm":arm,"target":target,"side":side,"upper":upper,"lower":lower,"hand":hand,
 		"proportion":proportion,"shoulder":shoulder,"grip":grip,"hand_basis":hand_basis,
-		"upper_basis":GameInfantryPose.upper_transform(actor).basis,
+		"upper_basis":upper_basis,"canonical":canonical,
 		"cuff":cuff if firearm else Vector3(0,.067,0),
 		"firearm":firearm,"grabbing":grabbing}
 
@@ -150,7 +167,7 @@ static func _finish_arm(data: Dictionary) -> void:
 	var proportion: float=data.proportion
 	var firearm: bool=data.firearm
 	var grabbing: bool=data.grabbing
-	var hand_mesh:=grip_glove(side=="L",GameWeapons.canonical(actor.weapon_id)=="glock" or grabbing) if firearm else glove(-1 if side=="L" else 1)
+	var hand_mesh:=grip_glove(side=="L",str(data.canonical)=="glock" or grabbing) if firearm else glove(-1 if side=="L" else 1)
 	if hand.mesh!=hand_mesh:hand.mesh=hand_mesh
 	var target: Vector3=data.target
 	arm.set_meta("grip_error",actor.body_root.to_global(arm.transform*hand.position).distance_to(target))
@@ -196,10 +213,14 @@ static func pose_pair(actor: GamePlayer,right_target: Vector3,left_target: Vecto
 		pose(actor,actor.avatar_parts.arm_r,right_target,"armR")
 		pose(actor,actor.avatar_parts.arm_l,left_target,"armL")
 		return
+	# Share costly pose inputs only inside this synchronous pair. Lazy
+	# cache avoids solving the upper body if both arms are unchanged.
+	var common: Dictionary={"pair":true}
 	var pending: Array[Dictionary]=[]
-	for entry in [[actor.avatar_parts.arm_r,right_target,"armR"],[actor.avatar_parts.arm_l,left_target,"armL"]]:
-		var data: Dictionary=_prepare_arm(actor,entry[0],entry[1],entry[2])
-		if not data.is_empty():pending.append(data)
+	var right: Dictionary=_prepare_arm(actor,actor.avatar_parts.arm_r,right_target,"armR",null,common)
+	if not right.is_empty():pending.append(right)
+	var left: Dictionary=_prepare_arm(actor,actor.avatar_parts.arm_l,left_target,"armL",null,common)
+	if not left.is_empty():pending.append(left)
 	if pending.is_empty():return
 	if _native_apply_direct(pending):return
 	for data: Dictionary in pending:_apply_arm(data,_solve_arm_gd(data))

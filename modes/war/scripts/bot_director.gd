@@ -32,9 +32,10 @@ var evacuations: Dictionary={}
 var bot_ids: Array=[]
 var spatial: Dictionary={}
 var spatial_at:=0.0
-# Opt-in CPU batch. Do not change the gameplay's steering/hitbox mechanics
-# unless tests confirm the native separation calculations are equivalent.
-var native_separation_enabled:=OS.get_cmdline_user_args().has("--experimental-native-separation")
+# Single-call C++ separation preferred when GDE is available; legacy flags or
+# missing native methods restore the original steering loop. Does not modify
+# combat, navigation or authoritative Jolt collision mechanics.
+var native_separation_enabled:=GameNativeRuntime.enabled("separation")
 var native_separation_checked:=false
 var native_separation_math: Object
 var native_separation_ready:=false
