@@ -1,5 +1,19 @@
 [
   {
+    "version": "1.13.10",
+    "title": "Novos caminhos na Favela, bots táticos e áudio aprimorado",
+    "additions": [
+      "Acessos de terra às casas: Foram acrescentados 253 caminhos de terra entre as portas das residências e as ruas ou becos da Favela, respeitando o relevo do mapa.",
+      "Bots encontram rotas alternativas: Os bots conseguem replanejar a rota ao encontrar obstáculos e procuram cobertura ao detectar APCs ou outros blindados inimigos ocupados.",
+      "Limite de bots por equipe: O modo Guerra passa a ter até 11 bots por equipe, além dos jogadores humanos. O Battle Royale suporta até 22 bots, sem reduzir o limite de jogadores humanos.",
+      "Tiros e explosões mais presentes: A mixagem de combate foi ajustada para manter tiros e explosões perceptíveis a distâncias maiores. O compressor dedicado e o limitador final controlam picos ao ocorrerem várias explosões."
+    ],
+    "fixes": [
+      "Atualizações e site sem caracteres quebrados: O sistema agora valida os textos em UTF-8 antes de assinar e publicar o manifesto e a página de downloads.",
+      "Identidade de mapa sincronizada: O manifesto preparado da Favela foi reconstruído a partir dos arquivos finais para manter cliente e servidor com a mesma identidade de mapa."
+    ]
+  },
+  {
     "version": "1.13.5",
     "title": "Atualização 1.13.5 — Favela online, RPG/Stinger e combate mais intenso",
     "additions": [

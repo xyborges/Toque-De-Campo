@@ -1,34 +1,26 @@
 {
-  "version": "1.13.10",
-  "date": "10/11/2026",
-  "title": "Novos caminhos na Favela, bots táticos e áudio aprimorado",
-  "summary": "A Favela recebeu novos caminhos de terra ligando ruas e becos às entradas das casas. Os bots agora contornam melhor obstáculos e reagem à ameaça de blindados, com limite provisório de 11 bots por equipe no Guerra. Tiros e explosões têm presença sonora aprimorada a distância e proteção contra picos. Também corrigimos a codificação das atualizações.",
+  "version": "1.13.11",
+  "date": "11/11/2026",
+  "title": "Áudio 3D corrigido, LOD tático dos bots e Favela sem trilhas residenciais",
+  "summary": "Disparos de outros jogadores e bots agora preservam melhor a percepção de distância e direção. A IA dos bots usa intervalos táticos por proximidade do combate, sem alterar a física ou a replicação. Na Favela, removemos os 253 caminhos artificiais de terra entre portas e ruas, preservando becos, casas e escadarias. O manifesto do mapa foi recalculado.",
   "changes": [
     {
-      "title": "Acessos de terra às casas",
-      "text": "Foram acrescentados 253 caminhos de terra entre as portas das residências e as ruas ou becos da Favela, respeitando o relevo do mapa."
+      "title": "Áudio 3D de disparos remotos",
+      "text": "Corrigida a sensação de tiros de NPCs e jogadores saindo do próprio personagem: intensidade e agudos diminuem com a distância, com a fonte mantendo sua posição real no mundo 3D. Sem alteração na balística ou nos arquivos de som."
     },
     {
-      "title": "Bots encontram rotas alternativas",
-      "text": "Os bots conseguem replanejar a rota ao encontrar obstáculos e procuram cobertura ao detectar APCs ou outros blindados inimigos ocupados."
+      "title": "LOD tático da IA dos bots",
+      "text": "Bots longe do combate consultam decisões táticas com menos frequência; bots próximos dos inimigos e dos objetivos mantêm prioridade. Movimento, colisões, dano e replicação seguem na cadência normal. O agendador anterior pode ser restaurado com a opção --war-bot-ai-lod-legacy."
     },
     {
-      "title": "Limite de bots por equipe",
-      "text": "O modo Guerra passa a ter até 11 bots por equipe, além dos jogadores humanos. O Battle Royale suporta até 22 bots, sem reduzir o limite de jogadores humanos."
-    },
-    {
-      "title": "Tiros e explosões mais presentes",
-      "text": "A mixagem de combate foi ajustada para manter tiros e explosões perceptíveis a distâncias maiores. O compressor dedicado e o limitador final controlam picos ao ocorrerem várias explosões."
+      "title": "Remoção das trilhas de terra da Favela",
+      "text": "Retirados os 253 caminhos artificiais que ligavam portas das residências às ruas. Casas, becos, vias, escadas existentes, lajes e regras de combate foram mantidos."
     }
   ],
   "fixes": [
     {
-      "title": "Atualizações e site sem caracteres quebrados",
-      "text": "O sistema agora valida os textos em UTF-8 antes de assinar e publicar o manifesto e a página de downloads."
-    },
-    {
-      "title": "Identidade de mapa sincronizada",
-      "text": "O manifesto preparado da Favela foi reconstruído a partir dos arquivos finais para manter cliente e servidor com a mesma identidade de mapa."
+      "title": "Manifesto da Favela sincronizado",
+      "text": "Identidade do mapa recalculada como v32, a partir das 68 fontes finais após a remoção das trilhas e integração do LOD, garantindo consistência entre os pacotes de cliente e servidor."
     }
   ]
 }
