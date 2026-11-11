@@ -1,0 +1,325 @@
+{
+  "method": "FullHD 1920x1080 exclusive fullscreen, Forward+, Medium 100 percent, ENet 28 bots, uncapped Vsync off, Windows GTX1650, ABBA",
+  "runs": {
+    "candidate-fhd-r1": {
+      "role": "client",
+      "renderer": "forward_plus",
+      "viewport": "(1920, 1080)",
+      "fullscreen": true,
+      "focus_frames": null,
+      "unfocus_frames": null,
+      "client_lod": {
+        "camera_reacquired": 9,
+        "pilot_enabled": true,
+        "posed_front": 8147,
+        "posed_rear": 4260,
+        "skipped_rear": 33484
+      },
+      "server_bot_count": 28,
+      "full": {
+        "frames": 3110,
+        "p50_ms": 22.034,
+        "p95_ms": 30.14,
+        "p99_ms": 33.894,
+        "avg_fps": 43.74,
+        "over_33ms": 39,
+        "over_50ms": 1
+      },
+      "phases": {
+        "idle": {
+          "frames": 1102,
+          "p50_ms": 21.746,
+          "p95_ms": 29.502,
+          "p99_ms": 32.754,
+          "avg_fps": 44.49,
+          "over_33ms": 9,
+          "over_50ms": 1,
+          "movement_distance_m": 0.1,
+          "corrections": 8,
+          "actors": 29
+        },
+        "foot": {
+          "frames": 950,
+          "p50_ms": 24.364,
+          "p95_ms": 31.452,
+          "p99_ms": 34.638,
+          "avg_fps": 40.67,
+          "over_33ms": 23,
+          "over_50ms": 0,
+          "movement_distance_m": 102.14,
+          "corrections": 8,
+          "actors": 29
+        },
+        "tank": {
+          "frames": 1058,
+          "p50_ms": 20.874,
+          "p95_ms": 28.836,
+          "p99_ms": 33.161,
+          "avg_fps": 46.05,
+          "over_33ms": 7,
+          "over_50ms": 0,
+          "movement_distance_m": 298.15,
+          "corrections": 8,
+          "actors": 29
+        }
+      },
+      "scope": {
+        "player.pose": {
+          "calls": 85418,
+          "mean_ms": 0.06914,
+          "total_ms": 5905.4
+        },
+        "player.remote.physics": {
+          "calls": 121744,
+          "mean_ms": 0.14249,
+          "total_ms": 17347.2
+        },
+        "player.weapon_pose": {
+          "calls": 30969,
+          "mean_ms": 0.08413,
+          "total_ms": 2605.3
+        }
+      }
+    },
+    "legacy-fhd-r1": {
+      "role": "client",
+      "renderer": "forward_plus",
+      "viewport": "(1920, 1080)",
+      "fullscreen": true,
+      "focus_frames": null,
+      "unfocus_frames": null,
+      "client_lod": {
+        "camera_reacquired": 0,
+        "pilot_enabled": false,
+        "posed_front": 0,
+        "posed_rear": 0,
+        "skipped_rear": 0
+      },
+      "server_bot_count": 28,
+      "full": {
+        "frames": 2975,
+        "p50_ms": 23.128,
+        "p95_ms": 31.581,
+        "p99_ms": 35.132,
+        "avg_fps": 41.95,
+        "over_33ms": 66,
+        "over_50ms": 0
+      },
+      "phases": {
+        "idle": {
+          "frames": 1039,
+          "p50_ms": 23.67,
+          "p95_ms": 32.06,
+          "p99_ms": 35.633,
+          "avg_fps": 41.42,
+          "over_33ms": 30,
+          "over_50ms": 0,
+          "movement_distance_m": 1.27,
+          "corrections": 11,
+          "actors": 29
+        },
+        "foot": {
+          "frames": 901,
+          "p50_ms": 25.898,
+          "p95_ms": 33.071,
+          "p99_ms": 36.204,
+          "avg_fps": 38.62,
+          "over_33ms": 36,
+          "over_50ms": 0,
+          "movement_distance_m": 101.94,
+          "corrections": 11,
+          "actors": 29
+        },
+        "tank": {
+          "frames": 1035,
+          "p50_ms": 21.298,
+          "p95_ms": 28.075,
+          "p99_ms": 30.509,
+          "avg_fps": 45.98,
+          "over_33ms": 0,
+          "over_50ms": 0,
+          "movement_distance_m": 295.95,
+          "corrections": 11,
+          "actors": 29
+        }
+      },
+      "scope": {
+        "player.pose": {
+          "calls": 85112,
+          "mean_ms": 0.08536,
+          "total_ms": 7265.0
+        },
+        "player.remote.physics": {
+          "calls": 121296,
+          "mean_ms": 0.1545,
+          "total_ms": 18740.2
+        },
+        "player.weapon_pose": {
+          "calls": 37649,
+          "mean_ms": 0.07961,
+          "total_ms": 2997.1
+        }
+      }
+    },
+    "legacy-fhd-r2": {
+      "role": "client",
+      "renderer": "forward_plus",
+      "viewport": "(1920, 1080)",
+      "fullscreen": true,
+      "focus_frames": 2967,
+      "unfocus_frames": 0,
+      "client_lod": {
+        "camera_reacquired": 0,
+        "pilot_enabled": false,
+        "posed_front": 0,
+        "posed_rear": 0,
+        "skipped_rear": 0
+      },
+      "server_bot_count": 28,
+      "full": {
+        "frames": 2964,
+        "p50_ms": 23.459,
+        "p95_ms": 31.75,
+        "p99_ms": 36.098,
+        "avg_fps": 41.6,
+        "over_33ms": 82,
+        "over_50ms": 4
+      },
+      "phases": {
+        "idle": {
+          "frames": 1031,
+          "p50_ms": 23.418,
+          "p95_ms": 31.208,
+          "p99_ms": 35.55,
+          "avg_fps": 42.02,
+          "over_33ms": 20,
+          "over_50ms": 0,
+          "movement_distance_m": 0.3,
+          "corrections": 3,
+          "actors": 29
+        },
+        "foot": {
+          "frames": 902,
+          "p50_ms": 25.8,
+          "p95_ms": 32.512,
+          "p99_ms": 35.329,
+          "avg_fps": 38.83,
+          "over_33ms": 32,
+          "over_50ms": 0,
+          "movement_distance_m": 101.57,
+          "corrections": 3,
+          "actors": 29
+        },
+        "tank": {
+          "frames": 1031,
+          "p50_ms": 22.072,
+          "p95_ms": 30.639,
+          "p99_ms": 39.957,
+          "avg_fps": 43.91,
+          "over_33ms": 30,
+          "over_50ms": 4,
+          "movement_distance_m": 298.28,
+          "corrections": 3,
+          "actors": 29
+        }
+      },
+      "scope": {
+        "player.pose": {
+          "calls": 85430,
+          "mean_ms": 0.08608,
+          "total_ms": 7353.7
+        },
+        "player.remote.physics": {
+          "calls": 121940,
+          "mean_ms": 0.15588,
+          "total_ms": 19008.0
+        },
+        "player.weapon_pose": {
+          "calls": 37653,
+          "mean_ms": 0.07996,
+          "total_ms": 3010.8
+        }
+      }
+    },
+    "candidate-fhd-r2": {
+      "role": "client",
+      "renderer": "forward_plus",
+      "viewport": "(1920, 1080)",
+      "fullscreen": true,
+      "focus_frames": 3112,
+      "unfocus_frames": 0,
+      "client_lod": {
+        "camera_reacquired": 9,
+        "pilot_enabled": true,
+        "posed_front": 8022,
+        "posed_rear": 4381,
+        "skipped_rear": 33824
+      },
+      "server_bot_count": 28,
+      "full": {
+        "frames": 3109,
+        "p50_ms": 22.161,
+        "p95_ms": 29.881,
+        "p99_ms": 33.186,
+        "avg_fps": 43.68,
+        "over_33ms": 29,
+        "over_50ms": 1
+      },
+      "phases": {
+        "idle": {
+          "frames": 1110,
+          "p50_ms": 22.029,
+          "p95_ms": 29.776,
+          "p99_ms": 33.186,
+          "avg_fps": 44.36,
+          "over_33ms": 9,
+          "over_50ms": 1,
+          "movement_distance_m": 0.3,
+          "corrections": 2,
+          "actors": 29
+        },
+        "foot": {
+          "frames": 958,
+          "p50_ms": 23.876,
+          "p95_ms": 30.276,
+          "p99_ms": 33.163,
+          "avg_fps": 41.46,
+          "over_33ms": 9,
+          "over_50ms": 0,
+          "movement_distance_m": 100.99,
+          "corrections": 2,
+          "actors": 29
+        },
+        "tank": {
+          "frames": 1041,
+          "p50_ms": 21.433,
+          "p95_ms": 29.427,
+          "p99_ms": 33.441,
+          "avg_fps": 45.18,
+          "over_33ms": 11,
+          "over_50ms": 0,
+          "movement_distance_m": 298.44,
+          "corrections": 2,
+          "actors": 29
+        }
+      },
+      "scope": {
+        "player.pose": {
+          "calls": 85367,
+          "mean_ms": 0.06864,
+          "total_ms": 5859.2
+        },
+        "player.remote.physics": {
+          "calls": 121716,
+          "mean_ms": 0.14193,
+          "total_ms": 17275.2
+        },
+        "player.weapon_pose": {
+          "calls": 30981,
+          "mean_ms": 0.08352,
+          "total_ms": 2587.5
+        }
+      }
+    }
+  }
+}

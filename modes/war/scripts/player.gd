@@ -31,6 +31,12 @@ var _water_clock:=0.0
 var _water_weather_seed: int=-1
 var _water_value:=false
 var p1a_authority_collision_pilot:=false
+# Non-authoritative client visual LOD: independent from hit regions/server.
+var client_lod_behind:=false
+var client_lod_last_weapon: String=""
+var client_lod_last_gadget:=false
+var client_lod_last_prone:=false
+var client_lod_last_crouched:=false
 
 func _exit_tree() -> void:
 	if is_instance_valid(binocular_overlay): binocular_overlay.queue_free()
@@ -218,10 +224,16 @@ func _animate_walk() -> void:
 	var force_authoritative_pose: bool=p1a_authority_collision_pilot and is_instance_valid(game) and game.multiplayer.is_server()
 	if not force_authoritative_pose and not is_local and is_instance_valid(game) and is_instance_valid(game.local_player):
 		var now:=Time.get_ticks_usec()
-		if now<next_pose_usec: return
-		var observer:=get_viewport().get_camera_3d()
-		var distance:=global_position.distance_squared_to(observer.global_position if is_instance_valid(observer) else game.local_player.global_position)
-		next_pose_usec=now+(33333 if distance<6400 else (66666 if distance<62500 else 125000))
+		if WarClientVisualLOD.active_for(game):
+			# Only remote multiplayer CLIENT animation. Server and local hitboxes
+			# keep their original tick/collision behavior. Rear-view actors
+			# cost less while camera return/weapon/posture force immediate pose.
+			if not WarClientVisualLOD.should_update(self,game,now):return
+		else:
+			if now<next_pose_usec:return
+			var observer:=get_viewport().get_camera_3d()
+			var distance:=global_position.distance_squared_to(observer.global_position if is_instance_valid(observer) else game.local_player.global_position)
+			next_pose_usec=now+(33333 if distance<6400 else (66666 if distance<62500 else 125000))
 	if in_water():
 		_swim_pose();return
 	# Network velocity is the last packet's derivative and can outlive motion.
@@ -735,7 +747,12 @@ func _swim_physics(delta: float) -> void:
 		velocity.y=clampf((surface-.85-global_position.y)*6,-3,3)
 		move_and_slide()
 	elif has_network_state and not game.multiplayer.is_server():
-		global_position=global_position.lerp(network_target,1-exp(-delta*18));yaw=lerp_angle(yaw,network_yaw,1-exp(-delta*18));pitch=lerpf(pitch,network_pitch,1-exp(-delta*18));rotation.y=yaw
+		# One interpolation weight for all three replicated components.
+		var network_alpha:=1.0-exp(-delta*18.0)
+		global_position=global_position.lerp(network_target,network_alpha)
+		yaw=lerp_angle(yaw,network_yaw,network_alpha)
+		pitch=lerpf(pitch,network_pitch,network_alpha)
+		rotation.y=yaw
 	camera_pivot.position.y=.98;camera_pivot.rotation.x=pitch
 	_swim_pose();weapon_root.hide()
 	if is_instance_valid(view_root): view_root.hide()
