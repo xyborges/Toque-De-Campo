@@ -249,7 +249,14 @@ func _run() -> void:
 	if strong_progress<4:failures.append("fewer than four last-mile objectives made strong progress")
 	if not visible_start.is_finite() or visible_ticks<30:failures.append("visible assault LOS was not sustained")
 	if float(assault_result.end_gap)>=float(assault_result.start_gap)-2.:failures.append("visible assault did not pressure objective")
-	if defended_points.size()!=5:failures.append("full control does not cover all five objectives")
+	# Favela now has one active sequential frontline, not five independent flags.
+	# Do not invalidate the bot pressure test just because the original mode
+	# expected squads spread across A-E after full map control.
+	if WarFavelaFrontline.enabled(WarRules.CURRENT_OPERATION):
+		if defended_points.size()!=1 or not defended_points.has("C"):
+			failures.append("sequential frontline fallback does not defend sector C")
+	elif defended_points.size()!=5:
+		failures.append("full control does not cover all five objectives")
 	if defense_max_gap>WarRules.CAPTURE_RADIUS:failures.append("full-control defender chased outside sector")
 	print("FAVELA_BOT_PRESSURE_RESULT ",JSON.stringify({"ok":failures.is_empty(),"failures":failures,"strong_progress":strong_progress}))
 	game.queue_free();await process_frame

@@ -42,7 +42,7 @@ def main():
                        "--", "--naval-test-accounts", f"--role={role}",
                        f"--naval-data={output / (role+'-data')}",
                        f"--game-tls-cert={cert}", f"--game-tls-key={key}",
-                       f"--game-tls-ca={cert}"]
+                       f"--game-tls-ca={cert}", "--game-tls-host=localhost"]
             proc = subprocess.Popen(command, env=environment, stdout=handle,
                                     stderr=subprocess.STDOUT,
                                     creationflags=getattr(subprocess,"CREATE_NO_WINDOW",0))
