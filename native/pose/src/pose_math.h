@@ -2,6 +2,8 @@
 #define WAR_POSE_MATH_H
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/variant/array.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/variant/packed_float32_array.hpp>
 #include <godot_cpp/variant/packed_int32_array.hpp>
 #include <godot_cpp/variant/packed_vector3_array.hpp>
@@ -23,6 +25,11 @@ public:
     // Solve and apply the visual arms directly to existing Godot Node3D nodes.
     // Returns number of fully updated arms; GDScript can fall back on failure.
     int apply_arms_direct(const Array &inputs) const;
+    // Direct torso/head/shoulder/hip scene update. Mutates the SAME Node3D
+    // hierarchy and child hit regions as GameInfantryPose.apply (no LOD).
+    bool apply_upper_direct(const Dictionary &parts, Node3D *pelvis, const Dictionary &rest,
+                            double pitch, double lean, double torso_scale, double head_scale,
+                            bool articulated) const;
     // Calculate all bot separation forces with a single C++ call and compact
     // vector arrays. No physics world or Godot nodes are touched.
     PackedVector3Array separation_batch(const PackedVector3Array &positions) const;

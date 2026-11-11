@@ -24,6 +24,7 @@ void WarNativePoseMath::_bind_methods() {
     ClassDB::bind_method(D_METHOD("arm_batch", "shoulders", "grips", "hand_bases", "upper_bases", "left_sides", "proportions", "cuffs"), &WarNativePoseMath::arm_batch);
     ClassDB::bind_method(D_METHOD("arm_batch_dicts", "inputs"), &WarNativePoseMath::arm_batch_dicts);
     ClassDB::bind_method(D_METHOD("apply_arms_direct", "inputs"), &WarNativePoseMath::apply_arms_direct);
+    ClassDB::bind_method(D_METHOD("apply_upper_direct", "parts", "pelvis", "rest", "pitch", "lean", "torso_scale", "head_scale", "articulated"), &WarNativePoseMath::apply_upper_direct);
     ClassDB::bind_method(D_METHOD("separation_batch", "positions"), &WarNativePoseMath::separation_batch);
 }
 Transform3D WarNativePoseMath::upper_transform(double pitch, double lean) const {
@@ -231,4 +232,77 @@ PackedVector3Array WarNativePoseMath::separation_batch(
         out.set(i, total);
     }
     return out;
+}
+
+bool WarNativePoseMath::apply_upper_direct(const Dictionary &parts, Node3D *pelvis,
+        const Dictionary &rest, double pitch, double lean, double torso_scale,
+        double head_scale, bool articulated) const {
+    // Resolve all nodes before mutating any of them; a partially imported
+    // rig must fall back to the reference GDScript path, not half-pose.
+    if (!pelvis) return false;
+    if (!parts.has("torso") || !parts.has("head") || !parts.has("arm_l") ||
+        !parts.has("arm_r") || !parts.has("leg_l") || !parts.has("leg_r")) return false;
+    if (!rest.has("torso") || !rest.has("head") || !rest.has("left") ||
+        !rest.has("right") || !rest.has("pelvis") || !rest.has("leg_l") ||
+        !rest.has("leg_r")) return false;
+
+    const auto node = [&parts](const char *key) -> Node3D * {
+        Object *object = parts[key];
+        return Object::cast_to<Node3D>(object);
+    };
+    Node3D *torso = node("torso");
+    Node3D *head = node("head");
+    Node3D *arm_l = node("arm_l");
+    Node3D *arm_r = node("arm_r");
+    Node3D *leg_l = node("leg_l");
+    Node3D *leg_r = node("leg_r");
+    if (!torso || !head || !arm_l || !arm_r || !leg_l || !leg_r) return false;
+
+    const real_t l = real_t(lean);
+    const real_t p = real_t(pitch);
+    const real_t ts = clamp_real(real_t(torso_scale), real_t(0.65), real_t(1.5));
+    const real_t hs = clamp_real(real_t(head_scale), real_t(0.65), real_t(1.5));
+    const Transform3D upper = upper_transform(p, l);
+    const real_t hip_shift = l * real_t(0.04);
+    const Vector3 hip_offset(hip_shift, 0, 0);
+
+    pelvis->set_position(Vector3(rest["pelvis"]) + hip_offset);
+    Vector3 pelvis_rotation = pelvis->get_rotation();
+    pelvis_rotation.z = -l * real_t(0.035);
+    pelvis->set_rotation(pelvis_rotation);
+    const real_t leg_roll = -std::atan2(hip_shift, real_t(0.78));
+    const char *legs[] = {"leg_l", "leg_r"};
+    Node3D *leg_nodes[] = {leg_l, leg_r};
+    for (int i = 0; i < 2; ++i) {
+        leg_nodes[i]->set_position(Vector3(rest[legs[i]]) + hip_offset);
+        Vector3 leg_rotation = leg_nodes[i]->get_rotation();
+        leg_rotation.z = leg_roll;
+        leg_nodes[i]->set_rotation(leg_rotation);
+    }
+
+    // Read the authored gait/melee orientation BEFORE applying torso basis.
+    const Basis animation = Basis::from_euler(torso->get_rotation());
+    const Vector3 torso_rest = rest["torso"];
+    torso->set_position(upper.xform(torso_rest));
+    torso->set_basis(upper.basis * animation *
+                     Basis::from_scale(Vector3(ts, ts, ts)));
+
+    const Vector3 head_rest = rest["head"];
+    const Vector3 neck(0, head_rest.y - real_t(0.21), 0);
+    const Basis head_basis =
+        Basis(Vector3(1, 0, 0), clamp_real(p * real_t(0.92), real_t(-1.12), real_t(1.12))) *
+        Basis(Vector3(0, 0, 1), -l * real_t(0.18));
+    head->set_position(upper.xform(neck) + head_basis.xform(head_rest - neck));
+    head->set_basis(head_basis * Basis::from_scale(Vector3(hs, hs, hs)));
+
+    Vector3 left_rest = rest["left"];
+    Vector3 right_rest = rest["right"];
+    if (articulated) {
+        const real_t width = real_t(0.325) * ts + real_t(0.025);
+        left_rest.x = (left_rest.x > 0 ? width : (left_rest.x < 0 ? -width : real_t(0)));
+        right_rest.x = (right_rest.x > 0 ? width : (right_rest.x < 0 ? -width : real_t(0)));
+    }
+    arm_l->set_position(upper.xform(left_rest));
+    arm_r->set_position(upper.xform(right_rest));
+    return true;
 }

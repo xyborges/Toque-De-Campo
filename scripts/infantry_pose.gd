@@ -10,6 +10,10 @@ const WAIST:=Vector3(0,.87,0)
 # Authoritative collision physics still owns the same pose state / hitboxes.
 static var native_pose_enabled:=GameNativeRuntime.enabled("pose")
 static var native_pose_checked:=false
+# The full native scene-write experiment is opt-in: graphical P95/P99 were
+# inconsistent despite mathematical parity. Never enable it in production
+# just because a compiled method exists; preserve the safe GDScript default.
+static var native_upper_direct_enabled:=OS.get_cmdline_user_args().has("--experimental-native-upper") and not OS.get_cmdline_user_args().has("--war-upper-legacy")
 static var native_pose_instance: Object
 
 static func _native_math() -> Object:
@@ -64,12 +68,23 @@ static func upper_transform(actor: GamePlayer) -> Transform3D:
 
 static func apply(actor: GamePlayer) -> void:
 	if actor.avatar_parts.is_empty() or not allowed(actor): return
-	var upper:=upper_transform(actor)
 	var torso: Node3D=actor.avatar_parts.torso
 	var head: Node3D=actor.avatar_parts.head
 	if not actor.has_meta("upper_body_rest"):
 		actor.set_meta("upper_body_rest",{"torso":torso.position,"head":head.position,"left":actor.avatar_parts.arm_l.position,"right":actor.avatar_parts.arm_r.position,"pelvis":actor.body_root.get_node("Pelvis").position,"leg_l":actor.avatar_parts.leg_l.position,"leg_r":actor.avatar_parts.leg_r.position})
 	var rest: Dictionary=actor.get_meta("upper_body_rest")
+	# One C++ call computes AND applies the six body pivots plus pelvis.
+	# Hitboxes are children of the exact same nodes; physics authority stays
+	# continuous at the original tick rate, with an unmodified GDScript path.
+	if native_pose_enabled and native_upper_direct_enabled:
+		var native: Object=_native_math()
+		if native!=null and native.has_method("apply_upper_direct"):
+			if native.apply_upper_direct(actor.avatar_parts,actor.body_root.get_node("Pelvis"),
+				rest,actor.pitch,actor.lean,float(actor.body_proportions.get("torso",1.)),
+				float(actor.body_proportions.get("head",1.)),
+				bool(actor.get_meta("articulated_arms",false))):
+				return
+	var upper:=upper_transform(actor)
 	var hip_shift:=actor.lean*.04
 	var pelvis:=actor.body_root.get_node("Pelvis") as Node3D
 	pelvis.position=Vector3(rest.pelvis)+Vector3(hip_shift,0,0)
